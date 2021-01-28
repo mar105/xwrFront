@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { Route, Switch, routerRedux } from 'dva/router';
 import dynamic from 'dva/dynamic';
 import { Layout } from 'antd';

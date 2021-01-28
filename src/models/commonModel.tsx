@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router';
-import { application } from '../application';
+import * as application from '../application';
 
 export default {
   namespace: 'commonModel',

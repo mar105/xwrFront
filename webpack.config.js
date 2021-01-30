@@ -27,9 +27,9 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           presets: ['@babel/react', '@babel/preset-env', '@babel/preset-typescript'],
-          // plugins: [
-          //   ['import', {libraryName: 'antd', libraryDirectory: 'es', style: 'css'}], // `style: true` 会加载 less 文件
-          // ],
+          plugins: [
+            ['import', {libraryName: 'antd', libraryDirectory: 'es', style: 'true'}], // `style: true` 会加载 less 文件
+          ],
         }
       },
     },

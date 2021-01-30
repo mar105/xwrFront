@@ -4,7 +4,8 @@ import dynamic from 'dva/dynamic';
 import { Layout } from 'antd';
 
 const { ConnectedRouter } = routerRedux;
-function RouterConfig(history: any, app: any) {
+
+function RouterConfig({ history, app }) {
   const routeInfo: any[] = [];
   const routeIndex = {
     path: '/', name: 'index', layout: Layout, component: () => import('./routes/IndexPage'),

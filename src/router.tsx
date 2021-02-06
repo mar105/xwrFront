@@ -6,11 +6,17 @@ import { Layout } from 'antd';
 const { ConnectedRouter } = routerRedux;
 
 function RouterConfig({ history, app }) {
-  const routeInfo: any[] = [];
-  const routeIndex = {
-    path: '/', name: 'index', layout: Layout, component: () => import('./routes/IndexPage'),
-  };
-  routeInfo.push(routeIndex);
+  const routeInfo: any[] = [{
+      path: '/', name: 'index', layout: Layout, component: () => import('./routes/IndexPage'),
+  },{
+      path: '/register', name: 'register', layout: Layout, component: () => import('./routes/Register'),
+  },
+
+  ];
+  // const routeIndex = {
+  //     path: '/', name: 'index', layout: Layout, components: () => import('./routes/IndexPage'),
+  // };
+  // routeInfo.push(routeIndex);
 
   return (
     <ConnectedRouter history={history}>
@@ -29,7 +35,7 @@ function RouterConfig({ history, app }) {
                 }
                 return <Component {...props} />;
               }}
-              // component={Component}
+              // components={Component}
             />
           );
         })

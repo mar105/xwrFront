@@ -7,9 +7,9 @@ const { ConnectedRouter } = routerRedux;
 
 function RouterConfig({ history, app }) {
   const routeInfo: any[] = [{
-      path: '/', name: 'index', layout: Layout, component: () => import('./routes/IndexPage'),
+      path: '/', name: 'index', layout: Layout, component: () => import('./routes/Register'),
   },{
-      path: '/register', name: 'register', layout: Layout, component: () => import('./routes/Register'),
+      path: 'register', name: 'register', layout: Layout, component: () => import('./routes/Register'),
   },
 
   ];

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input } from 'antd';
 import { componentType } from '../utils/commonTypes';
-
+import * as commonUtils from '../utils/commonUtils';
 // export type paramProps = {
 //   form: any,
 //   fieldName: string,
@@ -20,11 +20,16 @@ import { componentType } from '../utils/commonTypes';
 // export default InputComponent;
 
 function InputFieldDecoratorComponent(params) {
-  const { getFieldDecorator } = params.form;
-  return (
-    getFieldDecorator(params.fieldName, { rules: [{ ...params.rules }] })(
-      <Input id={params.fieldName} {...params.property} />)
-  );
+  const { current } = params.form;
+  if (commonUtils.isNotEmpty(current)) {
+    return (
+      current.getFieldDecorator(params.fieldName, { rules: [{ ...params.rules }] })(
+        <Input id={params.fieldName} {...params.property} />)
+    );
+  } else {
+    return <Input {...params.property} />;
+  }
+
 }
 
 export function InputComponent(params) {

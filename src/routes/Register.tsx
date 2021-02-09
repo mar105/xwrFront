@@ -29,7 +29,6 @@ class Register extends Component {
         placeholder: '请输入你的用户名',
       },
     };
-    console.log('userName', userName);
     return (
         <Form ref={form}>
           <Form.Item>

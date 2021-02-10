@@ -28,7 +28,6 @@
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.1",
     "dva": "^2.6.0-beta.22",
-    "dva-router-config": "^1.1.0",
     "eslint": "^7.18.0",
     "eslint-plugin-react": "^7.22.0",
     "html-webpack-plugin": "^4.5.1",

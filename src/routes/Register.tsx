@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form, Input } from 'antd';
+import { Form } from 'antd';
 import { connect } from 'dva';
 import { InputComponent } from "../components/InputComponent";
 
@@ -9,14 +9,12 @@ class Register extends Component {
     this.state = {
         token: '',
     };
-    // this.form = React.createRef();
   }
   handleFinish = (e) => {
     console.log('ee', e);
   }
 
   render() {
-    // const [form] = Form.useForm();
     const form: any = React.createRef();
     const userName = {
       form,
@@ -31,9 +29,6 @@ class Register extends Component {
     };
     return (
         <Form ref={form}>
-          <Form.Item>
-            <Input/>
-          </Form.Item>
           <InputComponent {...userName} />
         </Form>
     );

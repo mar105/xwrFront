@@ -36,8 +36,8 @@ module.exports = {
       },
     },
       {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'style-loader', 'css-loader']
+        test: /\.(css|less)$/,
+        use: [MiniCssExtractPlugin.loader, 'style-loader', 'css-loader', 'less-loader']
       }
     ]
   },
@@ -48,8 +48,8 @@ module.exports = {
       template: './src/index.html'
     }),
     new MiniCssExtractPlugin({
-      filename: devMode ? '[name].css' : '[name].[hash].css',
-      chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
+      filename: devMode ? '[name].less' : '[name].[hash].less',
+      chunkFilename: devMode ? '[id].less' : '[id].[hash].less',
     })
   ]
 };

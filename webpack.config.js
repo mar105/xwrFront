@@ -30,14 +30,26 @@ module.exports = {
           presets: ['@babel/react', '@babel/preset-env', '@babel/preset-typescript'],
           plugins: [
             '@babel/plugin-proposal-class-properties',
-            ['import', {libraryName: 'antd', libraryDirectory: 'es', style: 'true'}], // `style: true` 会加载 less 文件
+            ['import', {libraryName: 'antd', libraryDirectory: 'es', style: 'true' }], // `style: true` 会加载 less 文件
           ],
         }
       },
     },
       {
         test: /\.(css|less)$/,
-        use: [MiniCssExtractPlugin.loader, 'style-loader', 'css-loader', 'less-loader']
+
+        use: [MiniCssExtractPlugin.loader, {
+            loader: "style-loader" // creates style nodes from JS strings
+        }, {
+            loader: "css-loader" // translates CSS into CommonJS
+        }, {
+            loader: "less-loader",// compiles Less to CSS
+            options: {
+                sourceMap: true,
+                modifyVars: {'primary-color': 'red', 'link-color': 'black', 'border-radius-base': '2px'},
+                javascriptEnabled: true,
+            }
+        }]
       }
     ]
   },
@@ -48,8 +60,8 @@ module.exports = {
       template: './src/index.html'
     }),
     new MiniCssExtractPlugin({
-      filename: devMode ? '[name].less' : '[name].[hash].less',
-      chunkFilename: devMode ? '[id].less' : '[id].[hash].less',
+      filename: devMode ? '[name].css' : '[name].[hash].css',
+      chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
     })
   ]
 };

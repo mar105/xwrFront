@@ -20,8 +20,8 @@ const  Register = () => {
   };
   const userName1 = {
     form,
-    fieldName: 'userName1',
-    rules: [{ required: true, message: '请输入你的用户名' }],
+    fieldName: 'userPwd',
+    rules: [{ required: true, message: '请输入你的密码' }],
     property: { placeholder: '请输入你的用户名' },
   };
   const onFinishFailed = (errorInfo: any) => {

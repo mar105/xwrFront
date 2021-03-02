@@ -6,7 +6,8 @@ function IndexPage() {
     <div>
       <a href="/IndexPage">完善店铺</a>
       <a href="/IndexPage">发布课程</a>
-      <a href="/aaa">register</a>
+      <a href="/register">register</a>
+      <a href="/login">login</a>
     </div>
   );
 }

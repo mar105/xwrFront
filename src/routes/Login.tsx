@@ -1,8 +1,8 @@
-import { connect } from "react-redux";
-import { InputComponent } from "../components/InputComponent";
-import { Form, Button } from "antd";
-import React from "react";
-import * as application from "../application";
+import { connect } from 'dva';
+import { InputComponent } from '../components/InputComponent';
+import { Form, Button } from 'antd';
+import React from 'react';
+import * as application from '../application';
 import * as request from '../utils/request';
 import { Md5 } from 'ts-md5';
 

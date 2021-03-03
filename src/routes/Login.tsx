@@ -4,7 +4,7 @@ import { Form, Button } from "antd";
 import React from "react";
 import * as application from "../application";
 import * as request from '../utils/request';
-// import { Md5 } from 'ts-md5';
+import { Md5 } from 'ts-md5';
 
 const Login = () => {
     const [form] = Form.useForm();
@@ -35,7 +35,7 @@ const Login = () => {
       const params: any = {};
       // const md5 = new Md5();
       params.userName = values.userName;
-      params.userPwd = values.userPwd; //md5.appendStr(`${values.userPwd}aoyox`);
+      params.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
       const interfaceReturn = (await request.postRequest(url, null, params));
       // if (interfaceReturn.code === 'success') {
       //

@@ -34,8 +34,7 @@ module.exports = {
           ],
         }
       },
-    },
-      {
+    }, {
         test: /\.(css|less)$/,
 
         use: [MiniCssExtractPlugin.loader, {
@@ -50,7 +49,10 @@ module.exports = {
                 javascriptEnabled: true,
             }
         }]
-      }
+      }, {
+        test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+        loader: 'file-loader'
+      },
     ]
   },
   plugins: [

@@ -1,6 +1,7 @@
 import dva from 'dva';
 import { createBrowserHistory } from 'history';
 import { message } from 'antd';
+// import './index.css';
 // import 'antd/dist/antd.less';
 
 // 1. Initialize

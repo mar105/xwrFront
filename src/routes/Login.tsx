@@ -33,15 +33,23 @@ const Login = () => {
       console.log('Failed:', errorInfo);
   };
   const onFinish = async (values: any) => {
-    const url: string = `${application.urlPrefix}/login/loginVerify`;
-    const params: any = {};
-    params.userName = values.userName;
-    params.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
-    const interfaceReturn = (await request.postRequest(url, null, params));
-    // if (interfaceReturn.code === 'success') {
-    //
-    // }
-    console.log('Success:', params, interfaceReturn);
+    try {
+      const params = await form.validateFields();
+      console.log('params', params);
+      const url: string = `${application.urlPrefix}/login/loginVerify`;
+      values.userName = values.userName;
+      values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
+      const interfaceReturn = (await request.postRequest(url, null, values));
+      // if (interfaceReturn.code === 'success') {
+      //
+      // }
+      console.log('Success:', params, interfaceReturn);
+    }
+    catch(errorInfo) {
+      console.log(errorInfo);
+    }
+
+
   };
   return (
       <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>

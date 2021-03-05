@@ -5,7 +5,7 @@ import { componentType } from '../utils/commonTypes';
 export function InputComponent(params) {
   if (params.password) {
     if (params.componentType === componentType.Soruce) {
-      return <Input.Password {...params.property} />;
+      return <Input.Password {...params.property} visibilityToggle={false} />;
     } else {
       return <Form.Item
         label={params.label}
@@ -29,7 +29,7 @@ export function InputComponent(params) {
         shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]
         }
         }>
-        <Input {...params.property} visibilityToggle={false} />
+        <Input {...params.property} />
       </Form.Item>;
     }
   }

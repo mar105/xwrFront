@@ -1,7 +1,6 @@
 const path = require('path');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const devMode = true; //process.env.NODE_ENV !== 'production';
 
@@ -36,9 +35,9 @@ module.exports = {
       },
     }, {
       test: /\.css$/,
-      use: [devMode  ? "style-loader" : MiniCssExtractPlugin.loader, "css-loader"]
+      use: ["style-loader", "css-loader"]
     }, {
-      test: /\.less$/,
+      test: /\.(less)$/,
       use: [{
           loader: "style-loader" // creates style nodes from JS strings
       }, {
@@ -64,10 +63,6 @@ module.exports = {
     new htmlWebpackPlugin({
       hash: true,
       template: './src/index.html'
-    }),
-    new MiniCssExtractPlugin({
-      filename: devMode ? '[name].css' : '[name].[hash].css',
-      chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
     })
   ]
 };

@@ -2,7 +2,7 @@ const path = require('path');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-const devMode = true; //process.env.NODE_ENV !== 'production';
+// const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   mode: 'production',
@@ -37,18 +37,18 @@ module.exports = {
       test: /\.css$/,
       use: ["style-loader", "css-loader"]
     }, {
-      test: /\.(less)$/,
+      test: /\.less$/,
       use: [{
           loader: "style-loader" // creates style nodes from JS strings
       }, {
           loader: "css-loader" // translates CSS into CommonJS
       }, {
           loader: "less-loader",// compiles Less to CSS
-          options: {
-              sourceMap: true,
-              modifyVars: {'primary-color': 'red', 'link-color': 'black', 'border-radius-base': '2px'},
-              javascriptEnabled: true,
-          }
+          // options: {
+          //     sourceMap: true,
+          //     modifyVars: {'primary-color': 'red', 'link-color': 'black', 'border-radius-base': '2px'},
+          //     javascriptEnabled: true,
+          // }
       }]
     }, {
       test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,

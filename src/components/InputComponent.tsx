@@ -15,7 +15,7 @@ export function InputComponent(params) {
           return prevValues[params.fieldName] !== currentValues[params.fieldName]
         }
         }>
-        <Input.Password {...params.property} />
+        <Input.Password {...params.property} visibilityToggle={false} />
       </Form.Item>;
     }
   } else {
@@ -29,7 +29,7 @@ export function InputComponent(params) {
         shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]
         }
         }>
-        <Input {...params.property} />
+        <Input {...params.property} visibilityToggle={false} />
       </Form.Item>;
     }
   }

@@ -35,25 +35,29 @@ module.exports = {
         }
       },
     }, {
-        test: /\.(css|less)$/,
-
-        use: [MiniCssExtractPlugin.loader, {
-            loader: "style-loader" // creates style nodes from JS strings
-        }, {
-            loader: "css-loader" // translates CSS into CommonJS
-        }, {
-            loader: "less-loader",// compiles Less to CSS
-            options: {
-                sourceMap: true,
-                modifyVars: {'primary-color': 'red', 'link-color': 'black', 'border-radius-base': '2px'},
-                javascriptEnabled: true,
-            }
-        }]
+      test: /\.css$/,
+      use: [devMode  ? "style-loader" : MiniCssExtractPlugin.loader, "css-loader"]
+    }, {
+      test: /\.less$/,
+      use: [{
+          loader: "style-loader" // creates style nodes from JS strings
       }, {
-        test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
-        loader: 'file-loader'
-      },
-    ]
+          loader: "css-loader" // translates CSS into CommonJS
+      }, {
+          loader: "less-loader",// compiles Less to CSS
+          options: {
+              sourceMap: true,
+              modifyVars: {'primary-color': 'red', 'link-color': 'black', 'border-radius-base': '2px'},
+              javascriptEnabled: true,
+          }
+      }]
+    }, {
+      test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+      loader: 'file-loader'
+    }, {
+      test:/\.(jpg|png|gif|bmp|jpeg)$/,
+      use:'url-loader?limit=8908&name=[hash:8]-[name].[ext]'
+    }]
   },
   plugins: [
     new CleanWebpackPlugin(),

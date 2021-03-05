@@ -2,6 +2,7 @@ const path = require('path');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
+const { getThemeVariables } = require('antd/dist/theme');
 // const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
@@ -44,11 +45,20 @@ module.exports = {
           loader: "css-loader" // translates CSS into CommonJS
       }, {
           loader: "less-loader",// compiles Less to CSS
-          // options: {
-          //     sourceMap: true,
-          //     modifyVars: {'primary-color': 'red', 'link-color': 'black', 'border-radius-base': '2px'},
-          //     javascriptEnabled: true,
-          // }
+          options: {
+            lessOptions: { // 如果使用less-loader@5，请移除 lessOptions 这一级直接配置选项。
+              // modifyVars: getThemeVariables({
+              //   dark: true, // 开启暗黑模式
+              //   compact: true, // 开启紧凑模式
+              // }),
+              modifyVars: {
+                'primary-color': '#1DA57A',
+                'link-color': '#1DA57A',
+                'border-radius-base': '2px',
+              },
+              javascriptEnabled: true,
+            },
+          },
       }]
     }, {
       test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,

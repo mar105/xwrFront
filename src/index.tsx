@@ -2,15 +2,15 @@ import dva from 'dva';
 import { createBrowserHistory } from 'history';
 import { message } from 'antd';
 import './index.less';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.less';
 
 // 1. Initialize
 const app = dva({
-    history: createBrowserHistory(),
-    onError(err) {
-        message.destroy();
-        message.error(err.message);
-    },
+  history: createBrowserHistory(),
+  onError(err) {
+    message.destroy();
+    message.error(err.message);
+  },
 });
 
 // 2. Plugins

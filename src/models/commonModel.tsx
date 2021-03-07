@@ -28,8 +28,9 @@ export default {
     },
     * gotoError({ payload }, { put }) {
       const { code, msg } = payload.interfaceReturn;
+      console.log('payload', msg, code);
       if (code === 'login') {
-        yield put(routerRedux.push('Login'));
+        yield put(routerRedux.push('login'));
         throw new Error(msg);
       } else {
         throw new Error(msg);

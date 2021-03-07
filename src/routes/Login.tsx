@@ -26,7 +26,7 @@ const Login = () => {
     fieldName: 'userPwd',
     password: true,
     rules: [{ required: true, message: '请输入你的密码' }],
-    property: { placeholder: '请输入你的用户名' },
+    property: { placeholder: '请输入你的密码' },
 
   };
   const onFinishFailed = (errorInfo: any) => {
@@ -39,14 +39,14 @@ const Login = () => {
       const url: string = `${application.urlPrefix}/login/loginVerify`;
       values.userName = values.userName;
       values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
-      const interfaceReturn = (await request.postRequest(url, null, values));
+      const interfaceReturn = (await request.postRequest(url, null, values)).data;
       // if (interfaceReturn.code === 'success') {
       //
       // }
       console.log('Success:', params, interfaceReturn);
     }
     catch(errorInfo) {
-      console.log(errorInfo);
+      console.log(222222222222, errorInfo);
     }
 
 
@@ -57,7 +57,7 @@ const Login = () => {
           <InputComponent {...userPwd} />
           <Form.Item {...tailLayout}>
               <Button type="primary" htmlType="submit">
-                  Submit
+                  登录
               </Button>
           </Form.Item>
       </Form>

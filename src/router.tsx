@@ -14,6 +14,8 @@ function RouterConfig({ history, app }) {
     path: '/login', name: 'login', component: () => import('./routes/Login'),
   }, {
     path: '/loginManage', name: 'loginManage', component: () => import('./routes/manage/LoginManage'),
+  }, {
+    path: '/indexManage', name: 'indexManage', component: () => import('./routes/manage/IndexManage'),
     children: {
       path: '/config', name: 'config', component: () => import('./routes/manage/LoginManage'),
     }

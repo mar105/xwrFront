@@ -53,7 +53,7 @@ const LoginManage = ({ dispatch }) => {
       });
       dispatch({
         type: 'commonModel/gotoNewPage',
-        payload: { newPage: '/' },
+        payload: { newPage: '/indexManage' },
       });
     } else {
       dispatch({

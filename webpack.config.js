@@ -2,12 +2,16 @@ const path = require('path');
 const htmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
+const getEntry = require("./webpackConfig/getEntry"); //入口配置
+const entryArr = getEntry("./src");
+const htmlArr =require("./webpackConfig/htmlConfig");// html配置
+
 // const { getThemeVariables } = require('antd/dist/theme');
 // const devMode = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   mode: 'production',
-  entry: path.resolve(__dirname, './src/index.tsx'),
+  entry: entryArr, //path.resolve(__dirname, './src/index.tsx'),
   output: {
     path: path.resolve(__dirname, './dist'),
     filename: '[name].[hash].js'
@@ -70,9 +74,10 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
-    new htmlWebpackPlugin({
-      hash: true,
-      template: './src/index.html'
-    })
+    ...htmlArr, // html插件数组
+    // new htmlWebpackPlugin({
+    //   hash: true,
+    //   template: './src/index.html'
+    // })
   ]
 };

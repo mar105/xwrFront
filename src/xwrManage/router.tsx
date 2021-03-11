@@ -7,12 +7,12 @@ const { ConnectedRouter } = routerRedux;
 
 function RouterConfig({ history, app }) {
   const routeInfo: any[] = [{
-      path: '/', name: 'index', component: () => import('./routes/IndexPage'),
+    path: '/xwrManage/login', layout: Layout, name: 'login1', component: () => import('./routes/Login'),
   }, {
-      path: '/register', name: 'register', component: () => import('./routes/Register'),
+    path: '/xwrManage/register', layout: Layout, name: 'register1', component: () => import('./routes/Register'),
   }, {
-    path: '/login', name: 'login', component: () => import('./routes/Login'),
-  // }, {
+    path: '/xwrManage', layout: Layout, name: 'index', component: () => import('./routes/IndexPage'),
+    // }, {
   //   path: '/loginManage', name: 'loginManage', component: () => import('./routes/manage/LoginManage'),
   // }, {
   //   path: '/indexManage', name: 'indexManage', component: () => import('./routes/manage/IndexManage'),
@@ -33,6 +33,7 @@ function RouterConfig({ history, app }) {
         {
         routeInfo.map(({ path, name, layout, ...dynamics }) => {
           const Component: any = dynamic({ app, ...dynamics });
+          // console.log(path, exact);
           return (
             <Route
               path={path}

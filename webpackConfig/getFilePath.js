@@ -22,6 +22,7 @@ module.exports = function getFilePath(path){
         fileArr.push(item);
       }
     });
+    fileArr.push('index');
     console.log('getFilePath', fileArr);
     return fileArr;
   }

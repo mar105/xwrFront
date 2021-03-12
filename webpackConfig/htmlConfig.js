@@ -17,22 +17,32 @@ getFilePath("./src").map((item)=>{
   }catch(err){
     infoData = {};
   }
-  htmlArr.push(new HtmlWebpackPlugin({
-    hash: true,
-    title: infoData.title ? infoData.title : "webpack,react多页面架构",
-    meta:{
-      keywords: infoData.keywords ? infoData.keywords : "webpack，react，github",
-      description:infoData.description ? infoData.description : "这是一个webpack，react多页面架构"
-    },
-    chunks:[`${item}/${item}`], //引入的js
-    // template: "./src/index.html",
-    template: "./src/template.html",
-    filename : item == "index" ? "index.html" : `${item}/index.html`, //html位置
-    minify:{//压缩html
-      collapseWhitespace: true,
-      preserveLineBreaks: true
-    },
-  }));
+  if (item == "index") {
+    htmlArr.push(new HtmlWebpackPlugin({
+      hash: true,
+      template: './src/index.html',
+      chunks: ['index'],
+    }));
+  } else {
+    htmlArr.push(new HtmlWebpackPlugin({
+      hash: true,
+      title: infoData.title ? infoData.title : "webpack,react多页面架构",
+      meta:{
+        keywords: infoData.keywords ? infoData.keywords : "webpack，react，github",
+        description:infoData.description ? infoData.description : "这是一个webpack，react多页面架构"
+      },
+      chunks:[`${item}/${item}`], //引入的js
+      // template: "./src/index.html",
+      template: "./src/template.html",
+      inject: true,
+      filename : item == "index" ? "index.html" : `${item}/index.html`, //html位置
+      minify:{//压缩html
+        collapseWhitespace: true,
+        preserveLineBreaks: true
+      },
+    }));
+  }
+
 });
 
 module.exports = htmlArr;

@@ -1,5 +1,5 @@
 const path = require('path');
-const htmlWebpackPlugin = require('html-webpack-plugin');
+// const htmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const getEntry = require("./webpackConfig/getEntry"); //入口配置

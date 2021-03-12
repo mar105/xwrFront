@@ -16,8 +16,11 @@ module.exports = function getEntry(pathOld){
      * 这样目的是为了将js打包到对应的文件夹下
      */
     const path = pathOld.substring(1, pathOld.length);
-
-    entry[`${item}/${item}`] = `${path}/${item}/index.tsx`;
+    if (item === 'index') {
+      entry['index'] = `${path}/index.tsx`;
+    } else {
+      entry[`${item}/${item}`] = `${path}/${item}/index.tsx`;
+    }
   });
   console.log('getEntry', entry);
   return entry;

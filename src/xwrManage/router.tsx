@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Route, Switch, routerRedux } from 'dva/router';
+import { Route, Switch, routerRedux, Redirect } from 'dva/router';
 import dynamic from 'dva/dynamic';
 import { Layout } from 'antd';
 
@@ -33,12 +33,13 @@ function RouterConfig({ history, app }) {
         {
         routeInfo.map(({ path, name, layout, ...dynamics }) => {
           const Component: any = dynamic({ app, ...dynamics });
+          // const exact = path === '/xwrManage';
           // console.log(path, exact);
           return (
             <Route
               path={path}
               key={name}
-              exact
+              // exact={exact}
               render={(props) => {
                 if (layout) {
                   return <Layout><Component {...props} /></Layout>;
@@ -50,6 +51,7 @@ function RouterConfig({ history, app }) {
           );
         })
       }
+      <Redirect to="/xwrManage"/>
       </Switch>
     </ConnectedRouter>
   );

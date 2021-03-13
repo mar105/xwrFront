@@ -1,5 +1,5 @@
 const path = require('path');
-// const htmlWebpackPlugin = require('html-webpack-plugin');
+const WebpackBar = require('webpackbar');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const getEntry = require("./webpackConfig/getEntry"); //入口配置
@@ -75,6 +75,7 @@ module.exports = {
     }]
   },
   plugins: [
+    new WebpackBar(),
     new CleanWebpackPlugin(),
     ...htmlArr, // html插件数组
     // new htmlWebpackPlugin({

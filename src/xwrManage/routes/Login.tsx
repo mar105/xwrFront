@@ -3,7 +3,7 @@ import { InputComponent } from '../../components/InputComponent';
 import { ButtonComponent } from '../../components/ButtonComponent';
 import { Form } from 'antd';
 import React from 'react';
-import * as application from '../../application';
+import * as application from '../application';
 import * as request from '../../utils/request';
 import { Md5 } from 'ts-md5';
 
@@ -38,7 +38,7 @@ const Login = ({ dispatch }) => {
       console.log('Failed:', errorInfo);
   };
   const onFinish = async (values: any) => {
-    const url: string = `${application.urlPrefix}/loginManage/loginManageVerify`;
+    const url: string = `${application.urlPrefix}/login/loginVerify`;
     values.userName = values.userName;
     values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
     const interfaceReturn = (await request.postRequest(url, null, values)).data;

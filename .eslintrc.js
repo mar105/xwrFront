@@ -34,5 +34,6 @@ module.exports = {
       "react/no-unused-state": 0,
       "no-return-assign": 0,
       "no-console": "on",
+      "quotes": [1, "single"],//引号类型
     }
 };

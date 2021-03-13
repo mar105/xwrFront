@@ -44,8 +44,8 @@
     "webpackbar": "^5.0.0-3"
   },
   "scripts": {
-    "start": "webpack-dev-server --progress --watch --open --mode development",
-    "build": "webpack --progress --mode production",
+    "start": "webpack-dev-server -p --color --progress --watch --open --mode development",
+    "build": "webpack -p --color --progress --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

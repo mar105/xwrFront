@@ -34,12 +34,12 @@ function RouterConfig({ history, app }) {
         routeInfo.map(({ path, name, layout, ...dynamics }) => {
           const Component: any = dynamic({ app, ...dynamics });
           // const exact = path === '/xwrManage';
-          // console.log(path, exact);
+          console.log(path);
           return (
             <Route
               path={path}
               key={name}
-              // exact={exact}
+              exact
               render={(props) => {
                 if (layout) {
                   return <Layout><Component {...props} /></Layout>;

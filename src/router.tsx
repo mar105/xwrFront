@@ -11,8 +11,8 @@ function RouterConfig({ history, app }) {
   }, {
     path: '/register', name: 'register', component: () => import('./routes/Register'),
   }, {
-    path: '/xwrManage/login', name: 'login', component: () => import('./xwrManage/routes/Login'),
-  }, {
+  //   path: '/xwrManage/login', name: 'login', component: () => import('./xwrManage/routes/Login'),
+  // }, {
     path: '/login', name: 'login', component: () => import('./routes/Login'),
     // }, {
   //   path: '/loginManage', name: 'loginManage', component: () => import('./routes/manage/LoginManage'),

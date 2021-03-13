@@ -17,7 +17,7 @@ getFilePath("./src").map((item)=>{
   }catch(err){
     infoData = {};
   }
-  if (item == "index") {
+  if (item == 'index') {
     htmlArr.push(new HtmlWebpackPlugin({
       hash: true,
       template: './src/index.html',
@@ -35,7 +35,7 @@ getFilePath("./src").map((item)=>{
       // template: "./src/index.html",
       template: "./src/template.html",
       inject: true,
-      filename : item == "index" ? "index.html" : `${item}/index.html`, //html位置
+      filename : `${item}/index.html`, //html位置
       minify:{//压缩html
         collapseWhitespace: true,
         preserveLineBreaks: true
@@ -44,5 +44,7 @@ getFilePath("./src").map((item)=>{
   }
 
 });
+
+
 
 module.exports = htmlArr;

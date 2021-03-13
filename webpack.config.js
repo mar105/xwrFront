@@ -5,7 +5,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const getEntry = require("./webpackConfig/getEntry"); //入口配置
 const entryArr = getEntry("./src");
 const htmlArr =require("./webpackConfig/htmlConfig");// html配置
-
+const { getRewritesList } = require("./webpackConfig/getRewritesList");
 // const { getThemeVariables } = require('antd/dist/theme');
 // const devMode = process.env.NODE_ENV !== 'production';
 
@@ -20,7 +20,9 @@ module.exports = {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
     port: 9000,
-    historyApiFallback: true,
+    historyApiFallback: {
+      rewrites: getRewritesList(),
+    }, // 当找不到路径的时候，默认加载index.html文件
   },
   resolve: {extensions: ['.js', '.jsx', '.css', '.json', '.less', '.ts', '.tsx']},
   module: {

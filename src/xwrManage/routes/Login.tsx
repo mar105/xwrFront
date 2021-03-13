@@ -49,7 +49,7 @@ const Login = ({ dispatch }) => {
       });
       dispatch({
         type: 'commonModel/saveUserInfo',
-        payload: values.userName,
+        payload: { userName: values.userName },
       });
       dispatch({
         type: 'commonModel/gotoNewPage',

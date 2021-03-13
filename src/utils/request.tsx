@@ -41,7 +41,6 @@ export function getRequest(url, token): any {
 }
 
 export function postRequest(url, token, params): any {
-  params.type = 'computer';
   const options = {
     method: 'POST',
     headers: {

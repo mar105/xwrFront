@@ -14,7 +14,6 @@ export default {
       return { ...state, token };
     },
     saveUserInfo(state, { payload: userInfo }) {
-      console.log('userInfo', userInfo);
       localStorage.setItem(`${application.prefix}userInfo`, JSON.stringify(userInfo));
       return { ...state, userInfo };
     },
@@ -29,7 +28,6 @@ export default {
     },
     * gotoError({ payload }, { put }) {
       const { code, msg } = payload.interfaceReturn;
-      console.log('payload', msg, code);
       if (code === 'login') {
         yield put(routerRedux.push('login'));
         throw new Error(msg);

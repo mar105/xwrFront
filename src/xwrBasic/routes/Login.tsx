@@ -2,7 +2,7 @@ import { connect } from 'dva';
 import { InputComponent } from '../../components/InputComponent';
 import { Form, Button } from 'antd';
 import React from 'react';
-import * as application from '../../application';
+import * as application from '../application';
 import * as request from '../../utils/request';
 import { Md5 } from 'ts-md5';
 
@@ -39,7 +39,7 @@ const Login = () => {
       const url: string = `${application.urlPrefix}/login/loginVerify`;
       values.userName = values.userName;
       values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
-      const interfaceReturn = (await request.postRequest(url, null, values)).data;
+      const interfaceReturn = (await request.postRequest(url, null, application.paramInit(values))).data;
       // if (interfaceReturn.code === 'success') {
       //
       // }

@@ -46,6 +46,7 @@
   "scripts": {
     "start": "webpack-dev-server -p --color --progress --watch --open --mode development",
     "build": "webpack -p --color --progress --mode production",
+    "lint": "eslint --ext .tsx ./src ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

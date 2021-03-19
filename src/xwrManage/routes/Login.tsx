@@ -53,7 +53,7 @@ const Login = ({ dispatch }) => {
       });
       dispatch({
         type: 'commonModel/gotoNewPage',
-        payload: { newPage: '/indexManage' },
+        payload: { newPage: '/xwrManage' },
       });
     } else {
       dispatch({

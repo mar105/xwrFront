@@ -8,6 +8,7 @@ function IndexPage({ commonModel }) {
       <a href="/xwrManage">管理主页</a>
       <a href="/xwrManage/register">register</a>
       <a href="/xwrManage/login">login</a>
+      <a href="/xwrManage/module">module</a>
       <div>{commonModel.userInfo.userName}</div>
     </div>
   );

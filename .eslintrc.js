@@ -33,7 +33,9 @@ module.exports = {
       "no-param-reassign": [0], //禁止给参数重新赋值
       "react/no-unused-state": 0,
       "no-return-assign": 0,
-      "no-console": "on",
-      "quotes": [1, "single"],//引号类型
+      "no-console": 1,
+      "quotes": [q, "single"], //单引号类型
+      "quote-props":[2, "as-needed"], // 双引号自动变单引号
+      "no-unused-vars": [2, {"vars": "all", "args": "after-used"}], //不能有声明后未被使用的变量或参数
     }
 };

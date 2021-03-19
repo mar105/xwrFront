@@ -12,9 +12,9 @@ function RouterConfig({ history, app }) {
     path: '/xwrManage/register', layout: Layout, name: 'register', component: () => import('./routes/Register'),
   }, {
     path: '/xwrManage', layout: Layout, name: 'index', component: () => import('./routes/IndexPage'),
-    // }, {
-  //   path: '/loginManage', name: 'loginManage', component: () => import('./routes/manage/LoginManage'),
-  // }, {
+    }, {
+    path: '/xwrManage/module', name: 'module', component: () => import('./routes/Module'),
+  }, {
   //   path: '/indexManage', name: 'indexManage', component: () => import('./routes/manage/IndexManage'),
   //   children: {
   //     path: '/config', name: 'config', component: () => import('./routes/manage/LoginManage'),

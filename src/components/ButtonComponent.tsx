@@ -6,7 +6,7 @@ const FormItem = Form.Item;
 
 export function ButtonComponent(params) {
   if (params.componentType === componentType.Soruce) {
-    return <Button {...params.property}>{params.caption}</Button>;
+    return <Button {...params.property} {...params.event}>{params.caption}</Button>;
   }
   return <FormItem><Button {...params.property} {...params.event}>{params.caption}</Button></FormItem>;
 }

@@ -1,7 +1,8 @@
 import { connect } from 'dva';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TreeComponent } from '../../components/TreeComponent';
 import * as application from "../application";
+import * as commonUtils from "../../utils/commonUtils";
 import * as request from "../../utils/request";
 import {Form} from "antd";
 import {ButtonComponent} from "../../components/ButtonComponent";
@@ -9,19 +10,20 @@ import {componentType} from "../../utils/commonTypes";
 
 const Module = ({ dispatch }) => {
   const [form] = Form.useForm();
-  const [treeData, setTreeData] = useState([]);
+  const initTreeData: any[] = [];
+  const [treeData, setTreeData] = useState(initTreeData);
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
-  useLayoutEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       const url: string = `${application.urlPrefix}/module/getAllModule`;
       const interfaceReturn = (await request.getRequest(url, null)).data;
-      const data: any = { title: 'Expand to load', key: '0' };
-      treeData.push(data);
+      const data = { title: 'Expand to load', key: commonUtils.newId() };
+      // treeData.push(data);
       console.log('treedata', treeData);
-      setTreeData([...treeData]);
+      setTreeData([...treeData, data]);
       console.log(interfaceReturn);
       // setTreeData(interfaceReturn.result);
     }
@@ -35,11 +37,8 @@ const Module = ({ dispatch }) => {
   }
 
   const onClick = (values: any) => {
-    // const treeDataA = [{ title: 'Expand to load', key: '0' }];
-    // console.log('treeData', treeData);
-    const treeNewData: object[] = [];
-    treeNewData.push({title: 'Expand to load', key: '0'});
-    setTreeData(treeNewData);
+    console.log('onClick111', treeData);
+    setTreeData([...treeData, {title: 'Expand to load11111', key: commonUtils.newId() }]);
   }
 
   const treeParam = {

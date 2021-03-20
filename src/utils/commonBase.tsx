@@ -1,8 +1,9 @@
 import * as commonUtils from "./commonUtils";
 
 export function onAdd() {
-  const mainData: any = {};
-  mainData.handleType = 'add';
-  mainData.sId = commonUtils.newId();
-  return mainData;
+  const dataRow: any = {};
+  dataRow.handleType = 'add';
+  dataRow.id = commonUtils.newId();
+  dataRow.key = dataRow.id;
+  return dataRow;
 }

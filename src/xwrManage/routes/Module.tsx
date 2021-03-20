@@ -2,16 +2,16 @@ import { connect } from 'dva';
 import React, { useEffect, useState } from 'react';
 import { TreeComponent } from '../../components/TreeComponent';
 import * as application from "../application";
-import * as commonUtils from "../../utils/commonUtils";
 import * as request from "../../utils/request";
-import {Form} from "antd";
-import {ButtonComponent} from "../../components/ButtonComponent";
-import {componentType} from "../../utils/commonTypes";
+import {Col, Form, Row} from "antd";
+import { onAdd } from "../../utils/commonBase";
+import {ButtonGroup} from "./ButtonGroup";
 
 const Module = ({ dispatch }) => {
   const [form] = Form.useForm();
   const initTreeData: any[] = [];
   const [treeData, setTreeData] = useState(initTreeData);
+  const [treeSelectedKeys, setTreeSelectedKeys] = useState(initTreeData);
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
@@ -20,12 +20,7 @@ const Module = ({ dispatch }) => {
     const fetchData = async () => {
       const url: string = `${application.urlPrefix}/module/getAllModule`;
       const interfaceReturn = (await request.getRequest(url, null)).data;
-      const data = { title: 'Expand to load', key: commonUtils.newId() };
-      // treeData.push(data);
-      console.log('treedata', treeData);
-      setTreeData([...treeData, data]);
-      console.log(interfaceReturn);
-      // setTreeData(interfaceReturn.result);
+      setTreeData(interfaceReturn.result);
     }
     fetchData();
   }, []);
@@ -36,37 +31,40 @@ const Module = ({ dispatch }) => {
     console.log(values);
   }
 
-  const onClick = (values: any) => {
-    console.log('onClick111', treeData);
-    setTreeData([...treeData, {title: 'Expand to load11111', key: commonUtils.newId() }]);
+  const onClick = (e) => {
+    console.log(e);
+    const data = onAdd();
+    setTreeData([...treeData, data]);
+    setTreeSelectedKeys([data.key]);
+  }
+
+  const onSelect = (selectedKeys: React.Key[]) => {
+    setTreeSelectedKeys(selectedKeys);
   }
 
   const treeParam = {
-    treeData,
-    height: 500,
+    property: { treeData, selectedKeys: treeSelectedKeys, height: 500 },
+    event: { onSelect },
   };
-  const addButton = {
-    caption: '增加',
-    property: { htmlType: 'button' },
-    event: { onClick },
-    componentType: componentType.Soruce,
-  };
-  const editButton = {
-    caption: '修改',
-    property: { htmlType: 'button' },
-  };
-  const postButton = {
-    caption: '保存',
-    property: { htmlType: 'submit' },
-    componentType: componentType.Soruce,
-  };
-
+  console.log('111111111', treeData);
+  const buttonGroup: any = [];
+  buttonGroup.push({ key: 'addButton', caption: '增加', htmlType: 'button', onClick });
+  buttonGroup.push({ key: 'addChildButton', caption: '增加子级', htmlType: 'button', onClick });
+  buttonGroup.push({ key: 'editButton', caption: '修改', htmlType: 'button', onClick });
+  buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', onClick });
+  buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', onClick });
+  buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', onClick });
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
-      <TreeComponent {...treeParam} />
-      <ButtonComponent {...addButton} />
-      <ButtonComponent {...editButton} />
-      <ButtonComponent {...postButton} />
+      <ButtonGroup buttonGroup={buttonGroup} />
+      <Row style={{ height: 'auto', overflow: 'auto' }}>
+        <Col>
+          <TreeComponent {...treeParam} />
+        </Col>
+        <Col>
+          <TreeComponent {...treeParam} />
+        </Col>
+      </Row>
     </Form>
   );
 }

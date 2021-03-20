@@ -1,8 +1,13 @@
 import React from 'react';
 import {Form, Tree} from 'antd';
+import {componentType} from "../utils/commonTypes";
 
 const FormItem = Form.Item;
 export function TreeComponent(params) {
-  console.log(111111122222, params.treeData);
-  return <FormItem><Tree treeData={params.treeData} height={params.height} {...params.event} /></FormItem>;
+  if (params.componentType === componentType.Soruce) {
+    return <Tree style={{ width: 300 }} {...params.property} {...params.event} />;
+  } else {
+    return <FormItem><Tree style={{ width: 300 }} {...params.property} {...params.event} /></FormItem>;
+  }
+
 }

@@ -35,7 +35,6 @@ const Login = () => {
   const onFinish = async (values: any) => {
     try {
       const params = await form.validateFields();
-      console.log('params', params);
       const url: string = `${application.urlPrefix}/login/loginVerify`;
       values.userName = values.userName;
       values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());

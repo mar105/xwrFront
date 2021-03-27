@@ -1,17 +1,8 @@
-export function isEmpty(value) {
-  return value === null || value === undefined || value === '';
-}
+import { Stomp } from "@stomp/stompjs";
+import {urlSockJs, urlWs} from "../xwrManage/application";
+import SockJS from 'sockjs-client';
 
-export function isNotEmpty(value) {
-  return !isEmpty(value);
-}
-
-/**   创建主表id   */
-export function newId() {
-  return parseInt(new Snowflake(1n, 1n, 0n).nextId());
-}
-
-var Snowflake = /** @class */ (function() {
+const Snowflake = (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
     this.twepoch = 1288834974657n;
     //this.twepoch = 0n;
@@ -40,17 +31,17 @@ var Snowflake = /** @class */ (function() {
     this.dataCenterId = BigInt(_dataCenterId);
     this.sequence = BigInt(_sequence);
   }
-  Snowflake.prototype.tilNextMillis = function(lastTimestamp) {
+  Snowflake.prototype.tilNextMillis = (lastTimestamp) => {
     var timestamp = this.timeGen();
     while(timestamp <= lastTimestamp) {
       timestamp = this.timeGen();
     }
     return BigInt(timestamp);
   };
-  Snowflake.prototype.timeGen = function() {
+  Snowflake.prototype.timeGen = () => {
     return BigInt(Date.now());
   };
-  Snowflake.prototype.nextId = function() {
+  Snowflake.prototype.nextId = () => {
     var timestamp = this.timeGen();
     if(timestamp < this.lastTimestamp) {
       throw new Error("Clock moved backwards. Refusing to generate id for " +
@@ -72,3 +63,54 @@ var Snowflake = /** @class */ (function() {
   };
   return Snowflake;
 }());
+
+export function isEmpty(value) {
+  return value === null || value === undefined || value === '';
+}
+
+export function isNotEmpty(value) {
+  return !isEmpty(value);
+}
+
+export function isEmptyArr(value) {
+  return value === null || value === undefined || value === '' || value.length === 0;
+}
+
+export function isNotEmptyArr(value) {
+  return Array.isArray(value) && !isEmptyArr(value);
+}
+
+/**   创建主表id   */
+export function newId() {
+  return parseInt(new Snowflake(1n, 1n, 0n).nextId());
+}
+
+//  websocket 推送消息
+export function getWebSocketData(subscribeName: string, callBack: any) {
+  // 下面的url是本地运行的jar包的websocket地址
+  let socket;
+  if (false) { //('WebSocket' in window) {
+    socket = new WebSocket(urlWs);
+  } else {
+    socket = new SockJS(urlSockJs);
+  }
+  const stompClient = Stomp.over(socket);
+  stompClient.connect({}, frame => {
+    //setConnected(true);
+    console.log('Connected11: ' + frame);
+
+    // websocket订阅一个topic，第一个参数是top名称
+    // 第二个参数是一个回调函数,表示订阅成功后获得的data
+    stompClient.subscribe('/topic/test', data => {
+      // 一般来说这个data是一个 Frame对象,需要JSON.parse(data)一下拿到数据
+      const msg = JSON.parse(data.body);
+      console.log(12345678, msg);
+      // 这样才能拿到需要的数据格式,一个对象。  下面是一个例子
+      //  {name:"Andy",age:30,"lastLogin":"2018-08-15 12:33:12","ipAddress":"45.123.12.4"}
+      //  然后对这个数据进行处理,渲染到页面就可以了。
+    });
+
+  }, error => {
+    console.log("error1111:", error);
+  });
+}

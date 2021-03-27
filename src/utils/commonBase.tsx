@@ -7,3 +7,9 @@ export function onAdd() {
   dataRow.key = dataRow.id;
   return dataRow;
 }
+
+export function onModify() {
+  const dataRow: any = {};
+  dataRow.handleType = 'modify';
+  return dataRow;
+}

@@ -56,9 +56,10 @@ const Login = ({ dispatch }) => {
         payload: { newPage: '/xwrManage' },
       });
     } else {
+      console.log('interfaceReturn', interfaceReturn);
       dispatch({
         type: 'commonModel/gotoError',
-        payload: { interfaceReturn },
+        payload: { ...interfaceReturn },
       });
     }
   };

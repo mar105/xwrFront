@@ -1,5 +1,6 @@
 import { routerRedux } from 'dva/router';
 import * as application from '../application';
+import {message} from "antd";
 
 export default {
   namespace: 'commonModel',
@@ -27,13 +28,12 @@ export default {
       yield put(routerRedux.push(payload.newPage));
     },
     * gotoError({ payload }, { put }) {
-      const { code, msg } = payload.interfaceReturn;
+      const { code, msg } = payload;
       if (code === 'login') {
         yield put(routerRedux.push('login'));
-        throw new Error(msg);
-      } else {
-        throw new Error(msg);
       }
+      message.destroy();
+      message.error(msg);
     },
   },
 };

@@ -13,3 +13,7 @@ export function onModify() {
   dataRow.handleType = 'modify';
   return dataRow;
 }
+
+export function gotoError(dispatch, interfaceData) {
+  dispatch({ type: 'commonModel/gotoError', payload: interfaceData });
+}

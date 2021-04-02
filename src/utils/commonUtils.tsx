@@ -2,7 +2,7 @@ import { Stomp } from "@stomp/stompjs";
 import {urlSockJs, urlWs} from "../xwrManage/application";
 import SockJS from 'sockjs-client';
 
-const Snowflake = (function() {
+var Snowflake = /** @class */ (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
     this.twepoch = 1288834974657n;
     //this.twepoch = 0n;
@@ -31,17 +31,17 @@ const Snowflake = (function() {
     this.dataCenterId = BigInt(_dataCenterId);
     this.sequence = BigInt(_sequence);
   }
-  Snowflake.prototype.tilNextMillis = (lastTimestamp) => {
+  Snowflake.prototype.tilNextMillis = function(lastTimestamp) {
     var timestamp = this.timeGen();
     while(timestamp <= lastTimestamp) {
       timestamp = this.timeGen();
     }
     return BigInt(timestamp);
   };
-  Snowflake.prototype.timeGen = () => {
+  Snowflake.prototype.timeGen = function() {
     return BigInt(Date.now());
   };
-  Snowflake.prototype.nextId = () => {
+  Snowflake.prototype.nextId = function() {
     var timestamp = this.timeGen();
     if(timestamp < this.lastTimestamp) {
       throw new Error("Clock moved backwards. Refusing to generate id for " +
@@ -89,7 +89,7 @@ export function newId() {
 export function getWebSocketData(subscribeName: string, callBack: any) {
   // 下面的url是本地运行的jar包的websocket地址
   let socket;
-  if (false) { //('WebSocket' in window) {
+  if ('WebSocket' in window) {
     socket = new WebSocket(urlWs);
   } else {
     socket = new SockJS(urlSockJs);

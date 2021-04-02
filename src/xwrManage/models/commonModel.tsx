@@ -29,7 +29,7 @@ export default {
     },
     * gotoError({ payload }, { put }) {
       const { code, msg } = payload;
-      if (code === 'login') {
+      if (code === '5001') {
         yield put(routerRedux.push('login'));
       }
       message.destroy();

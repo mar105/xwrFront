@@ -4,14 +4,13 @@ import { TreeComponent } from '../../components/TreeComponent';
 import * as application from "../application";
 import * as request from "../../utils/request";
 import {Col, Form, Row} from "antd";
-import {onAdd} from "../../utils/commonBase";
+import {onAdd, gotoError} from "../../utils/commonBase";
 import * as commonUtils from "../../utils/commonUtils";
 import {ButtonGroup} from "./ButtonGroup";
 import {InputComponent} from "../../components/InputComponent";
 import {NumberComponent} from "../../components/NumberComponent";
 import {SwitchComponent} from "../../components/SwitchComponent";
-
-const Module = ({ dispatch }) => {
+const Module = ({ commonModel, dispatch }) => {
   const [form] = Form.useForm();
   const initTreeData: any[] = [];
   const [treeData, setTreeData] = useState(initTreeData);
@@ -24,8 +23,16 @@ const Module = ({ dispatch }) => {
   useEffect(() => {
     const fetchData = async () => {
       const url: string = `${application.urlPrefix}/module/getAllModule`;
-      const interfaceReturn = (await request.getRequest(url, null)).data;
-      setTreeData(interfaceReturn.result);
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      // const url: string = `${application.urlCommon}/verify/isExistModifying`;
+      // const interfaceReturn = (await request.postRequest(url, commonModel.token, {})).data;
+      console.log('interfaceReturn', interfaceReturn);
+      if (interfaceReturn.code === 1) {
+        setTreeData(interfaceReturn.data);
+      } else {
+        gotoError(dispatch, interfaceReturn);
+      }
+
     }
     fetchData();
     commonUtils.getWebSocketData();
@@ -45,10 +52,7 @@ const Module = ({ dispatch }) => {
       setEnabled(true);
     } else if (key === 'editButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
-        dispatch({
-          type: 'commonModel/gotoError',
-          payload: { code: 'error', msg: '请选择数据' },
-        });
+        gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
       }
       setEnabled(true);
@@ -136,4 +140,4 @@ const Module = ({ dispatch }) => {
   );
 }
 
-export default connect()(Module);
+export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(Module);

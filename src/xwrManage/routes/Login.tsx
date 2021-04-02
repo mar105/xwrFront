@@ -42,10 +42,11 @@ const Login = ({ dispatch }) => {
     values.userName = values.userName;
     values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
     const interfaceReturn = (await request.postRequest(url, null, application.paramInit(values))).data;
-    if (interfaceReturn.code === 'success') {
+    console.log('interfaceReturn111', interfaceReturn);
+    if (interfaceReturn.code === 1) {
       dispatch({
         type: 'commonModel/saveToken',
-        payload: interfaceReturn.result,
+        payload: interfaceReturn.data.token,
       });
       dispatch({
         type: 'commonModel/saveUserInfo',
@@ -56,7 +57,6 @@ const Login = ({ dispatch }) => {
         payload: { newPage: '/xwrManage' },
       });
     } else {
-      console.log('interfaceReturn', interfaceReturn);
       dispatch({
         type: 'commonModel/gotoError',
         payload: { ...interfaceReturn },

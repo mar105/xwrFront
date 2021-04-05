@@ -10,6 +10,7 @@ import {ButtonGroup} from "./ButtonGroup";
 import {InputComponent} from "../../components/InputComponent";
 import {NumberComponent} from "../../components/NumberComponent";
 import {SwitchComponent} from "../../components/SwitchComponent";
+import {DatePickerComponent} from "../../components/DatePickerComponent";
 
 // type IRoute = {
 //   id: string,
@@ -39,12 +40,12 @@ const Route = (props) => {
         const {treeData} = returnRoute;
         const selectedKeys = [treeData[0].id];
         form.resetFields();
-        form.setFieldsValue(treeData[0]);
+        form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
         dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], enabled: false});
       }
     }
     fetchData();
-    commonUtils.getWebSocketData();
+    // commonUtils.getWebSocketData();
   }, []);
 
   const getAllRoute = async (params) => {
@@ -52,9 +53,6 @@ const Route = (props) => {
     const { isWait } = params;
     const url: string = `${application.urlPrefix}/module/getAllRoute`;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-    // const url: string = `${application.urlCommon}/verify/isExistModifying`;
-    // const interfaceReturn = (await request.postRequest(url, commonModel.token, {})).data;
-    // console.log('interfaceReturn', interfaceReturn);
     if (interfaceReturn.code === 1) {
       if (isWait) {
         return { treeData: interfaceReturn.data };
@@ -83,35 +81,49 @@ const Route = (props) => {
   }
 
   const onClick = async (key, e) => {
-    const { treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, treeSelectedOldKeys } = props;
+    const { commonModel, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, treeSelectedOldKeys } = props;
     if (key === 'addButton') {
       const data = props.onAdd();
       const masterData = { ...data, allId: data.id };
       const treeData = [...treeDataOld, masterData];
       form.resetFields();
-      form.setFieldsValue(masterData);
+      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
       dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
     } else if (key === 'editButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
       }
-      dispatchModifyState({ enabled: true });
+      const url: string = `${application.urlCommon}/verify/isExistModifying`;
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({id: masterData.id}))).data;
+      console.log('interfaceReturn', interfaceReturn);
+      if (interfaceReturn.code === 1) {
+        dispatchModifyState({ enabled: true });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+
     } else if (key === 'cancelButton') {
-      const returnRoute: any = await getAllRoute({isWait: true});
-      if (commonUtils.isNotEmptyObj(returnRoute) && commonUtils.isNotEmptyArr(returnRoute.treeData)) {
-        const {treeData} = returnRoute;
+      // const returnRoute: any = await getAllRoute({isWait: true});
+      const treeData = [...treeDataOld];
+      if (masterData.handleType === 'add') {
+        const iIndex = treeDataOld.findIndex(item => item.key === masterData.id);
+        if (iIndex > -1) {
+          treeData.splice(iIndex, 1);
+        }
+      }
+      let selectRoute: any;
+      if (commonUtils.isNotEmptyArr(treeSelectedOldKeys)) {
         const iIndex = treeData.findIndex(item => item.key === treeSelectedOldKeys.toString());
-        let selectRoute: any;
         if (iIndex > -1) {
           const selectedKeys = [treeData[iIndex].id];
           form.resetFields();
-          form.setFieldsValue(treeData[iIndex]);
-          selectRoute = { treeSelectedKeys: selectedKeys, masterData: treeData[iIndex] };
+          form.setFieldsValue(commonUtils.setFieldsValue(treeData[iIndex]));
+          selectRoute = {treeSelectedKeys: selectedKeys, masterData: treeData[iIndex]};
         }
-
-        dispatchModifyState({...returnRoute, ...selectRoute, enabled: false});
       }
+      dispatchModifyState({...selectRoute, treeData, enabled: false});
+
     }
 
   }
@@ -120,7 +132,7 @@ const Route = (props) => {
     const { dispatchModifyState } = props;
     if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
       form.resetFields();
-      form.setFieldsValue(e.node);
+      form.setFieldsValue(commonUtils.setFieldsValue(e.node));
       dispatchModifyState({treeSelectedKeys: selectedKeys, masterData: e.node });
 
       // const url: string = `${application.urlPrefix}/module/getRoute?id=` + selectedKeys;
@@ -137,6 +149,7 @@ const Route = (props) => {
   }
 
   const { treeSelectedKeys, treeData, enabled, masterData, onMasterChange } = props;
+
   const treeParam = {
     property: { treeData, selectedKeys: treeSelectedKeys, height: 500 },
     event: { onSelect },
@@ -144,6 +157,13 @@ const Route = (props) => {
 
   const buttonGroup = { onClick, enabled };
 
+  const createDate = {
+    form,
+    fieldName: 'createDate',
+    label: '创建日期',
+    property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
+    event: { onMasterChange },
+  };
   const routeName = {
     form,
     fieldName: 'routeName',
@@ -151,7 +171,6 @@ const Route = (props) => {
     rules: [{ required: true, message: '请输入你的路由名称' }],
     property: { disabled: !enabled },
     event: { onMasterChange },
-
   };
   const sortNum = {
     form,
@@ -195,6 +214,7 @@ const Route = (props) => {
   const tree =  useMemo(()=>{ return <TreeComponent {...treeParam} />}, [treeData, treeSelectedKeys]);
   const component =  useMemo(()=>{ return (
     <div>
+      <DatePickerComponent {...createDate} />
       <InputComponent {...routeName} />
       <NumberComponent {...sortNum} />
       <InputComponent {...chineseName} />

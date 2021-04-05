@@ -1,6 +1,7 @@
 import { Stomp } from "@stomp/stompjs";
 import {urlSockJs, urlWs} from "../xwrManage/application";
 import SockJS from 'sockjs-client';
+import moment from 'moment';
 
 var Snowflake = /** @class */ (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
@@ -121,4 +122,18 @@ export function getWebSocketData(subscribeName: string, callBack: any) {
   }, error => {
     console.log("error1111:", error);
   });
+}
+
+export function setFieldsValue(value) {
+  const returnValue = {};
+  if (isNotEmptyObj(value)) {
+    Object.keys(value).forEach(item => {
+      if (item.substring(item.length - 4) === 'Date') {
+        returnValue[item] = isEmpty(value[item]) ? null : moment(value[item]);
+      } else {
+        returnValue[item] = value[item];
+      }
+    });
+  }
+  return returnValue;
 }

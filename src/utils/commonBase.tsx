@@ -11,7 +11,6 @@ const commonBase = (WrapComponent) => {
       return {...state, ...action };
     },{});
     useEffect(() => {
-      console.log('11');
       const listenerBeforeunload = (ev) => {
         ev.preventDefault();
         if (commonUtils.isNotEmpty(modifyState.masterData.handleType)) {

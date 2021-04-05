@@ -13,7 +13,7 @@ function RouterConfig({ history, app }) {
   }, {
     path: '/xwrManage', layout: Layout, name: 'index', component: () => import('./routes/IndexPage'),
     }, {
-    path: '/xwrManage/module', name: 'module', component: () => import('./routes/Module'),
+    path: '/xwrManage/route', name: 'module', component: () => import('./routes/Route'),
   }, {
   //   path: '/indexManage', name: 'indexManage', component: () => import('./routes/manage/IndexManage'),
   //   children: {

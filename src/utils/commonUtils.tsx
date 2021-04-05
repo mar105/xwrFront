@@ -80,6 +80,14 @@ export function isNotEmptyArr(value) {
   return Array.isArray(value) && !isEmptyArr(value);
 }
 
+export function isEmptyObj(value) {
+  return value === null || value === undefined || value === '' || Object.keys(value).length === 0;
+}
+
+export function isNotEmptyObj(value) {
+  return !isEmptyObj(value);
+}
+
 /**   创建主表id   */
 export function newId() {
   return parseInt(new Snowflake(1n, 1n, 0n).nextId());

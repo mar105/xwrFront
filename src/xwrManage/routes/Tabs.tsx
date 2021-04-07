@@ -30,8 +30,9 @@ const Tabs = (props) => {
   };
 
   const onEdit = (targetKey, action) => {
-    console.log('aaaaa', action);
-    onRemove(targetKey);
+    if (action === 'remove') {
+      onRemove(targetKey);
+    }
   };
 
   const tabs = {

@@ -30,7 +30,7 @@ export default {
     * gotoError({ payload }, { put }) {
       const { code, msg } = payload;
       if (code === '5001') {
-        yield put(routerRedux.push('login'));
+        yield put(routerRedux.push('/xwrManage/login'));
       }
       message.destroy();
       message.error(msg);

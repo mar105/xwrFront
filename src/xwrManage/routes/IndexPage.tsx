@@ -11,9 +11,10 @@ function IndexPage(props) {
     const {dispatchModifyState, panes: panesOld } = props;
     const iIndex = routeInfo.findIndex(item => item.path === '/xwrManage/route');
     if (iIndex > -1) {
+      const key = commonUtils.newId();
       const Component: any = dynamic({ ...routeInfo[iIndex] });
       const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-      panes.push({ key: commonUtils.newId(), title: routeInfo[iIndex].title, route: '/xwrManage/route', content: <Component /> });
+      panes.push({ key, title: routeInfo[iIndex].title, route: '/xwrManage/route', content: <Component tabId={key} /> });
       dispatchModifyState({ panes });
     }
   };

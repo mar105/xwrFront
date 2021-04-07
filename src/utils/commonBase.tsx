@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, {useEffect, useReducer, useRef} from 'react';
 import * as commonUtils from "./commonUtils";
 import * as application from "../xwrManage/application";
 import * as request from "./request";
@@ -7,42 +7,28 @@ import * as request from "./request";
 
 const commonBase = (WrapComponent) => {
   return function ChildComponent(props) {
+    const stateRef = useRef();
     const [modifyState, dispatchModifyState] = useReducer((state, action) => {
       return {...state, ...action };
     },{});
     useEffect(() => {
-      const listenerBeforeunload = (ev) => {
-        ev.preventDefault();
-        if (commonUtils.isNotEmpty(modifyState.masterData.handleType)) {
-          ev.returnValue='数据未保存，确定离开吗？';
-        }
-      };
-      window.addEventListener('beforeunload', listenerBeforeunload);
-      return () => {
-        window.removeEventListener('beforeunload', listenerBeforeunload)
-      }
-
-      const listenerUnload = async ev => {
-        const {commonModel, dispatch} = props;
-        ev.preventDefault();
-        const url: string = `${application.urlCommon}/verify/isExistModifying`;
-        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({id: modifyState.masterData.id}))).data;
-        console.log('interfaceReturn', interfaceReturn);
-        if (interfaceReturn.code === 1) {
-          dispatchModifyState({ enabled: true });
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-        }
-      };
-      window.addEventListener('unload', listenerUnload);
-      return () => {
-        window.removeEventListener('unload', listenerUnload)
-      }
-
-    }, []);
-
+      stateRef.current = modifyState;
+    }, [modifyState]);
     useEffect(() => {
-
+        return ()=> {
+          const clearModifying = async () => {
+            const {dispatch, commonModel, tabId} = props;
+            const { masterData }: any = stateRef.current;
+            const url: string = `${application.urlCommon}/verify/removeModifying`;
+            const params = {id: masterData.id, tabId};
+            const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+            if (interfaceReturn.code === 1) {
+            } else {
+              props.gotoError(dispatch, interfaceReturn);
+            }
+          }
+          clearModifying();
+        }
     }, []);
 
     const handleAdd = () => {

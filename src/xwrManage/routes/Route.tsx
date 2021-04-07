@@ -81,7 +81,7 @@ const Route = (props) => {
   }
 
   const onClick = async (key, e) => {
-    const { commonModel, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, treeSelectedOldKeys } = props;
+    const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, treeSelectedOldKeys } = props;
     if (key === 'addButton') {
       const data = props.onAdd();
       const masterData = { ...data, allId: data.id };
@@ -95,7 +95,8 @@ const Route = (props) => {
         return;
       }
       const url: string = `${application.urlCommon}/verify/isExistModifying`;
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({id: masterData.id}))).data;
+      const params = {id: masterData.id, tabId};
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       console.log('interfaceReturn', interfaceReturn);
       if (interfaceReturn.code === 1) {
         dispatchModifyState({ enabled: true });

@@ -19,12 +19,14 @@ const commonBase = (WrapComponent) => {
           const clearModifying = async () => {
             const {dispatch, commonModel, tabId} = props;
             const { masterData }: any = stateRef.current;
-            const url: string = `${application.urlCommon}/verify/removeModifying`;
-            const params = {id: masterData.id, tabId};
-            const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-            if (interfaceReturn.code === 1) {
-            } else {
-              props.gotoError(dispatch, interfaceReturn);
+            if (commonUtils.isNotEmpty(masterData.handleType)) {
+              const url: string = `${application.urlCommon}/verify/removeModifying`;
+              const params = {id: masterData.id, tabId};
+              const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+              if (interfaceReturn.code === 1) {
+              } else {
+                props.gotoError(dispatch, interfaceReturn);
+              }
             }
           }
           clearModifying();

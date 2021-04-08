@@ -15,22 +15,22 @@ const commonBase = (WrapComponent) => {
       stateRef.current = modifyState;
     }, [modifyState]);
     useEffect(() => {
-        return ()=> {
-          const clearModifying = async () => {
-            const {dispatch, commonModel, tabId} = props;
-            const { masterData }: any = stateRef.current;
-            if (commonUtils.isNotEmpty(masterData.handleType)) {
-              const url: string = `${application.urlCommon}/verify/removeModifying`;
-              const params = {id: masterData.id, tabId};
-              const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-              if (interfaceReturn.code === 1) {
-              } else {
-                props.gotoError(dispatch, interfaceReturn);
-              }
+      return ()=> {
+        const clearModifying = async () => {
+          const {dispatch, commonModel, tabId} = props;
+          const { masterData }: any = stateRef.current;
+          if (commonUtils.isNotEmpty(masterData.handleType)) {
+            const url: string = `${application.urlCommon}/verify/removeModifying`;
+            const params = {id: masterData.id, tabId};
+            const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+            if (interfaceReturn.code === 1) {
+            } else {
+              props.gotoError(dispatch, interfaceReturn);
             }
           }
-          clearModifying();
         }
+        clearModifying();
+      }
     }, []);
 
     const handleAdd = () => {
@@ -46,15 +46,16 @@ const commonBase = (WrapComponent) => {
       return dataRow;
     };
 
-    const handleMasterChange = (e) =>  {
+    const handleMasterChange = () =>  {
+      const { masterData }= modifyState;
       const dataRow: any = {};
-      dataRow.handleType = 'modify';
+      dataRow.handleType = commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType;
       return dataRow;
-    }
+    };
 
     const gotoError = (dispatch, interfaceData) => {
       dispatch({ type: 'commonModel/gotoError', payload: interfaceData });
-    }
+    };
     return <WrapComponent
       {...props}
       {...modifyState}
@@ -64,7 +65,7 @@ const commonBase = (WrapComponent) => {
       onMasterChange={handleMasterChange}
       gotoError={gotoError}
     />
-  }
+  };
 };
 
 export default commonBase;

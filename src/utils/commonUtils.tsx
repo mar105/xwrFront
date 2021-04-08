@@ -97,7 +97,7 @@ export function newId() {
 }
 
 //  websocket 推送消息
-export function getWebSocketData(subscribeName: string, callBack: any) {
+export function getWebSocketData(token, subscribeName: string, callBack: any) {
   // 下面的url是本地运行的jar包的websocket地址
   let socket;
   if ('WebSocket' in window) {
@@ -106,7 +106,8 @@ export function getWebSocketData(subscribeName: string, callBack: any) {
     socket = new SockJS(urlSockJs);
   }
   const stompClient = Stomp.over(socket);
-  stompClient.connect({}, frame => {
+  console.log("token", token);
+  stompClient.connect({ authorization: token, groupId: '', shopId: '' }, frame => {
     //setConnected(true);
     console.log('Connected11: ' + frame);
 

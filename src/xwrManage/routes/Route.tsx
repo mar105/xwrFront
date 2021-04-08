@@ -45,7 +45,6 @@ const Route = (props) => {
       }
     }
     fetchData();
-    // commonUtils.getWebSocketData();
   }, []);
 
   const getAllRoute = async (params) => {
@@ -81,7 +80,7 @@ const Route = (props) => {
   }
 
   const onClick = async (key, e) => {
-    const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, treeSelectedOldKeys } = props;
+    const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, treeSelectedOldKeys, masterData: masterDataOld } = props;
     if (key === 'addButton') {
       const data = props.onAdd();
       const masterData = { ...data, allId: data.id };
@@ -94,12 +93,13 @@ const Route = (props) => {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
       }
+      const data = props.onModify();
+      const masterData = {...masterDataOld, ...data };
       const url: string = `${application.urlCommon}/verify/isExistModifying`;
       const params = {id: masterData.id, tabId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-      console.log('interfaceReturn', interfaceReturn);
       if (interfaceReturn.code === 1) {
-        dispatchModifyState({ enabled: true });
+        dispatchModifyState({ masterData, enabled: true });
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }

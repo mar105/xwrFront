@@ -6,13 +6,19 @@ import * as commonUtils from "../../utils/commonUtils";
 import {routeInfo} from '../routeInfo';
 import * as application from "../application";
 import * as request from "../../utils/request";
+import {useEffect} from "react";
 
 function IndexPage(props) {
+  useEffect(() => {
+    const {commonModel} = props;
+    commonUtils.getWebSocketData(commonModel.token, "", null);
+  }, []);
+  //
   const onClick = () => {
     const {dispatchModifyState, panes: panesOld, panesComponents } = props;
     const iIndex = routeInfo.findIndex(item => item.path === '/xwrManage/route');
     if (iIndex > -1) {
-      const key = commonUtils.newId();
+      const key = commonUtils.newId().toString();
       const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
       const pane = { key, title: routeInfo[iIndex].title, route: '/xwrManage/route' };
       panes.push(pane);

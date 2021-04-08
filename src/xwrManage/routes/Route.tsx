@@ -89,7 +89,7 @@ const Route = (props) => {
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
       dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
-    } else if (key === 'editButton') {
+    } else if (key === 'modifyButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
@@ -107,10 +107,20 @@ const Route = (props) => {
     } else if (key === 'cancelButton') {
       // const returnRoute: any = await getAllRoute({isWait: true});
       const treeData = [...treeDataOld];
+      console.log('1111', masterData);
       if (masterData.handleType === 'add') {
         const iIndex = treeDataOld.findIndex(item => item.key === masterData.id);
         if (iIndex > -1) {
           treeData.splice(iIndex, 1);
+        }
+      } else { // if (masterData.handleType === 'modify') {
+        const {dispatch, commonModel, tabId, masterData} = props;
+        const url: string = `${application.urlCommon}/verify/removeModifying`;
+        const params = {id: masterData.id, tabId};
+        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+        if (interfaceReturn.code === 1) {
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
         }
       }
       let selectRoute: any;

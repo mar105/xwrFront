@@ -2,6 +2,8 @@ import { Stomp } from "@stomp/stompjs";
 import {urlSockJs, urlWs} from "../xwrManage/application";
 import SockJS from 'sockjs-client';
 import moment from 'moment';
+import dynamic from "dva/dynamic";
+import * as React from "react";
 
 var Snowflake = /** @class */ (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
@@ -137,3 +139,8 @@ export function setFieldsValue(value) {
   }
   return returnValue;
 }
+
+export function panesComponent(pane, routeData) {
+  const Component: any = dynamic({...routeData});
+  return {key: pane.key, component: <Component tabId={pane.key} />};
+};

@@ -36,7 +36,7 @@ const commonBase = (WrapComponent) => {
     const handleAdd = () => {
       const dataRow: any = {};
       dataRow.handleType = 'add';
-      dataRow.id = commonUtils.newId();
+      dataRow.id = commonUtils.newId().toString();
       dataRow.key = dataRow.id;
       return dataRow;
     }

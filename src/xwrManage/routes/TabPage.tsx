@@ -65,7 +65,6 @@ const TabPage = (props) => {
   };
 
   const panes = commonUtils.isEmptyArr(props.panes) ? [] : props.panes;
-  console.log('props', props.activeKey);
   return (
     <Tabs hideAdd type="editable-card" activeKey={props.activeKey} onEdit={onEdit} onChange={onChange}>
       { panes.map(pane => tabPane(pane)) }

@@ -106,7 +106,6 @@ export function getWebSocketData(token, subscribeName: string, callBack: any) {
     socket = new SockJS(urlSockJs);
   }
   const stompClient = Stomp.over(socket);
-  console.log("token", token);
   stompClient.connect({ authorization: token, groupId: '', shopId: '' }, frame => {
     //setConnected(true);
     console.log('Connected11: ' + frame);

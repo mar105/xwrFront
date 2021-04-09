@@ -38,7 +38,7 @@ const Route = (props) => {
       const returnRoute: any = await getAllRoute({isWait: true});
       if (commonUtils.isNotEmptyObj(returnRoute) && commonUtils.isNotEmptyArr(returnRoute.treeData)) {
         const {treeData} = returnRoute;
-        const selectedKeys = [treeData[0].id.toString()];
+        const selectedKeys = [treeData[0].id];
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
         dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], enabled: false});
@@ -74,21 +74,113 @@ const Route = (props) => {
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
       const returnRoute = await getAllRoute({isWait: true});
-      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id.toString()] });
+      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id] });
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }
   }
 
+  // 增加时，树节点增加空行数据
+  // delId不为空时为删除树节点数据。
+  const setNewTreeNode = (treeData, allId, newTreeNode, delId = '') => {
+    let treeNode: any = {};
+    if (allId === '' && commonUtils.isEmpty(delId)) {
+      treeData.push(newTreeNode);
+    } else {
+      allId.split(',').forEach((key, iAllIdIndex) => {
+        if (iAllIdIndex === 0) {
+          const iIndex = treeData.findIndex(item => item.key === key);
+          if (iIndex > -1) {
+            treeNode = treeData[iIndex];
+          }
+        } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
+          treeNode = getChildTreeNode(treeNode.children, key);
+        }
+      });
+      if (commonUtils.isEmpty(delId)) {
+        if (commonUtils.isNotEmptyArr(treeNode.children)) {
+          treeNode.children.push(newTreeNode);
+        } else {
+          treeNode.children = [newTreeNode];
+        }
+      } else {
+        if (commonUtils.isNotEmptyArr(treeNode.children)) {
+          const iIndex = treeNode.children.findIndex(item => item.key === delId);
+          if (iIndex > -1) {
+            treeNode.children.splice(iIndex, 1);
+          }
+        } else {
+          const iIndex = treeData.findIndex(item => item.key === delId);
+          if (iIndex > -1) {
+            treeData.splice(iIndex, 1);
+          }
+        }
+      }
+    }
+    return treeData;
+  }
+
+  const getChildTreeNode = (treeNode, key) => {
+    if (commonUtils.isNotEmptyArr(treeNode)) {
+      const iIndex = treeNode.findIndex(item => item.key === key);
+      if (iIndex > -1) {
+        return treeNode[iIndex];
+      }
+    }
+  }
+
+  const getTreeNode = (treeData, allId) => {
+    let treeNode: any = {};
+    if (allId === '') {
+      treeNode = treeData[0];
+    } else {
+      allId.split(',').forEach((key, iAllIdIndex) => {
+        if (iAllIdIndex === 0) {
+          const iIndex = treeData.findIndex(item => item.key === key);
+          if (iIndex > -1) {
+            treeNode = treeData[iIndex];
+          }
+        } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
+          treeNode = getChildTreeNode(treeNode.children, key);
+        }
+      });
+    }
+    return treeNode;
+  }
+
   const onClick = async (key, e) => {
-    const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, treeSelectedOldKeys, masterData: masterDataOld } = props;
+    const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
     if (key === 'addButton') {
       const data = props.onAdd();
-      const masterData = { ...data, allId: data.id };
-      const treeData = [...treeDataOld, masterData];
+      const masterData = { ...data, key: data.id, allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId : data.id, isVisible: 1 };
+      let treeData = [...treeDataOld];
+      const allList = masterDataOld.allId.split(',');
+      allList.splice(allList.length - 1, 1);
+      treeData = setNewTreeNode(treeData, allList.join(), masterData);
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
       dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
+    } else if (key === 'addChildButton') {
+      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+        return;
+      }
+
+      const data = props.onAdd();
+      const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id, isVisible: 1 };
+      let treeData = [...treeDataOld];
+      let treeExpandedKeys;
+      treeData = setNewTreeNode(treeData, masterDataOld.allId, masterData);
+      if (commonUtils.isNotEmptyArr(treeExpandedKeysOld)) {
+        treeExpandedKeys = [...treeExpandedKeysOld];
+        treeExpandedKeys.push(masterDataOld.id);
+      } else {
+        treeExpandedKeys = [masterDataOld.id];
+      }
+      form.resetFields();
+      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
+
     } else if (key === 'modifyButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
@@ -106,14 +198,16 @@ const Route = (props) => {
       }
 
     } else if (key === 'cancelButton') {
-      // const returnRoute: any = await getAllRoute({isWait: true});
-      const treeData = [...treeDataOld];
-      console.log('1111', masterData);
+      let treeData = [...treeDataOld];
+      const addState: any = {};
       if (masterData.handleType === 'add') {
-        const iIndex = treeDataOld.findIndex(item => item.key === masterData.id);
-        if (iIndex > -1) {
-          treeData.splice(iIndex, 1);
-        }
+        const allList = masterDataOld.allId.split(',');
+        allList.splice(allList.length - 1, 1);
+        treeData = setNewTreeNode(treeData, allList.join(), masterData, masterData.id);
+        addState.masterData = {...getTreeNode(treeData, allList.join()) };
+        addState.treeSelectedKeys = [addState.masterData.id];
+        form.resetFields();
+        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
         const url: string = `${application.urlCommon}/verify/removeModifying`;
@@ -124,17 +218,7 @@ const Route = (props) => {
           props.gotoError(dispatch, interfaceReturn);
         }
       }
-      let selectRoute: any;
-      if (commonUtils.isNotEmptyArr(treeSelectedOldKeys)) {
-        const iIndex = treeData.findIndex(item => item.key === treeSelectedOldKeys.toString());
-        if (iIndex > -1) {
-          const selectedKeys = [treeData[iIndex].id];
-          form.resetFields();
-          form.setFieldsValue(commonUtils.setFieldsValue(treeData[iIndex]));
-          selectRoute = {treeSelectedKeys: selectedKeys, masterData: treeData[iIndex]};
-        }
-      }
-      dispatchModifyState({...selectRoute, treeData, enabled: false});
+      dispatchModifyState({...addState, treeData, enabled: false});
 
     } else if (key === 'delButton') {
       const { commonModel, dispatch, masterData, dispatchModifyState } = props;
@@ -149,7 +233,7 @@ const Route = (props) => {
         const returnRoute: any = await getAllRoute({isWait: true});
         const addState: any = {};
         if (commonUtils.isNotEmpty(returnRoute.treeData)) {
-          addState.treeSelectedKeys = [returnRoute.treeData[0].id.toString()];
+          addState.treeSelectedKeys = [returnRoute.treeData[0].id];
           addState.masterData = {...returnRoute.treeData[0]};
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
@@ -164,30 +248,27 @@ const Route = (props) => {
   }
 
   const onSelect = (selectedKeys: React.Key[], e) => {
-    const { dispatchModifyState } = props;
-    if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
+    const { dispatchModifyState, dispatch, enabled } = props;
+    if (enabled) {
+      props.gotoError(dispatch, { code: '6001', msg: '数据正在编辑，请先保存或取消！' });
+    } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(e.node));
-      dispatchModifyState({treeSelectedKeys: selectedKeys, masterData: e.node });
-
-      // const url: string = `${application.urlPrefix}/module/getRoute?id=` + selectedKeys;
-      // const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-      // if (interfaceReturn.code === 1) {
-      //   dispatchModifyState({treeSelectedKeys: selectedKeys, masterData: interfaceReturn.data });
-      //   form.resetFields();
-      //   form.setFieldsValue(interfaceReturn.data);
-      //   console.log(interfaceReturn);
-      // } else {
-      //   props.gotoError(dispatch, interfaceReturn);
-      // }
+      dispatchModifyState({treeSelectedKeys: selectedKeys, masterData: { ...e.node }, selectNode: e.node });
     }
   }
 
-  const { treeSelectedKeys, treeData, enabled, masterData, onMasterChange } = props;
+  const onExpand= (expandedKeys) => {
+    const { dispatchModifyState } = props;
+    dispatchModifyState({treeExpandedKeys: expandedKeys });
+  }
+
+
+  const { treeSelectedKeys, treeData, enabled, masterData, onMasterChange, treeExpandedKeys } = props;
 
   const treeParam = {
-    property: { treeData, selectedKeys: treeSelectedKeys, height: 500 },
-    event: { onSelect },
+    property: { treeData, selectedKeys: treeSelectedKeys, expandedKeys: treeExpandedKeys, height: 500 },
+    event: { onSelect, onExpand },
   };
 
   const buttonGroup = { onClick, enabled };
@@ -243,11 +324,10 @@ const Route = (props) => {
     form,
     fieldName: 'isVisible',
     label: '是否显示',
-    property: { checkedChildren: '显示', unCheckedChildren: '隐藏', defaultChecked: true, disabled: !enabled }
+    property: { checkedChildren: '显示', unCheckedChildren: '隐藏', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled }
   };
-
-  const tree =  useMemo(()=>{ return <TreeComponent {...treeParam} />}, [treeData, treeSelectedKeys]);
-  const component =  useMemo(()=>{ return (
+  const tree =  useMemo(()=>{ return <TreeComponent {...treeParam} />}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled]);
+  const component = useMemo(()=>{ return (
     <div>
       <DatePickerComponent {...createDate} />
       <InputComponent {...routeName} />

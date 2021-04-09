@@ -42,8 +42,8 @@ const Login = ({ dispatch }) => {
     values.userName = values.userName;
     values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
     const interfaceReturn = (await request.postRequest(url, null, application.paramInit(values))).data;
-    console.log('interfaceReturn111', interfaceReturn);
     if (interfaceReturn.code === 1) {
+      localStorage.clear();
       dispatch({
         type: 'commonModel/saveToken',
         payload: interfaceReturn.data.token,

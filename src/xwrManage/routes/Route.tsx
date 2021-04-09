@@ -38,7 +38,7 @@ const Route = (props) => {
       const returnRoute: any = await getAllRoute({isWait: true});
       if (commonUtils.isNotEmptyObj(returnRoute) && commonUtils.isNotEmptyArr(returnRoute.treeData)) {
         const {treeData} = returnRoute;
-        const selectedKeys = [treeData[0].id];
+        const selectedKeys = [treeData[0].id.toString()];
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
         dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], enabled: false});
@@ -69,11 +69,12 @@ const Route = (props) => {
   const onFinish = async (values: any) => {
     const { commonModel, dispatch, masterData, dispatchModifyState } = props;
     const params = { ...masterData, ...values };
-    const url: string = `${application.urlPrefix}/module/saveRoute`;
+    const url: string = masterData.handleType === 'add' ?
+      `${application.urlPrefix}/module/saveRoute` : `${application.urlPrefix}/module/modifyRoute`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
       const returnRoute = await getAllRoute({isWait: true});
-      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id] });
+      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id.toString()] });
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }
@@ -113,7 +114,7 @@ const Route = (props) => {
         if (iIndex > -1) {
           treeData.splice(iIndex, 1);
         }
-      } else { // if (masterData.handleType === 'modify') {
+      } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
         const url: string = `${application.urlCommon}/verify/removeModifying`;
         const params = {id: masterData.id, tabId};
@@ -135,6 +136,29 @@ const Route = (props) => {
       }
       dispatchModifyState({...selectRoute, treeData, enabled: false});
 
+    } else if (key === 'delButton') {
+      const { commonModel, dispatch, masterData, dispatchModifyState } = props;
+      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+        return;
+      }
+      const params = { ...masterData };
+      const url: string = `${application.urlPrefix}/module/delRoute`;
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        const returnRoute: any = await getAllRoute({isWait: true});
+        const addState: any = {};
+        if (commonUtils.isNotEmpty(returnRoute.treeData)) {
+          addState.treeSelectedKeys = [returnRoute.treeData[0].id.toString()];
+          addState.masterData = {...returnRoute.treeData[0]};
+          form.resetFields();
+          form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
+        }
+
+        dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
     }
 
   }

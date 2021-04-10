@@ -18,6 +18,21 @@ export function InputComponent(params) {
         <Input.Password {...params.property} visibilityToggle={false} />
       </Form.Item>;
     }
+  } else if (params.search) {
+    if (params.componentType === componentType.Soruce) {
+      return <Input.Search {...params.property} {...params.event} />;
+    } else {
+      return <Form.Item
+        label={params.label}
+        name={params.fieldName}
+        rules={params.rules}
+        shouldUpdate={(prevValues, currentValues) => {
+          return prevValues[params.fieldName] !== currentValues[params.fieldName]
+        }
+        }>
+        <Input.Search {...params.property} {...params.event} />
+      </Form.Item>;
+    }
   } else {
     if (params.componentType === componentType.Soruce) {
       return <Input {...params.property} />;

@@ -1,16 +1,16 @@
 import { connect } from 'dva';
 import React, { useEffect, useMemo } from 'react';
-import { TreeComponent } from '../../components/TreeComponent';
-import * as application from "../application";
-import * as request from "../../utils/request";
+import * as application from "../../application";
+import * as request from "../../../utils/request";
 import {Col, Form, Row} from "antd";
-import commonBase from "../../utils/commonBase";
-import * as commonUtils from "../../utils/commonUtils";
-import {ButtonGroup} from "./ButtonGroup";
-import {InputComponent} from "../../components/InputComponent";
-import {NumberComponent} from "../../components/NumberComponent";
-import {SwitchComponent} from "../../components/SwitchComponent";
-import {DatePickerComponent} from "../../components/DatePickerComponent";
+import commonBase from "../../../utils/commonBase";
+import * as commonUtils from "../../../utils/commonUtils";
+import {ButtonGroup} from "../ButtonGroup";
+import {InputComponent} from "../../../components/InputComponent";
+import {NumberComponent} from "../../../components/NumberComponent";
+import {SwitchComponent} from "../../../components/SwitchComponent";
+import {DatePickerComponent} from "../../../components/DatePickerComponent";
+import TreeModule from "./TreeModule";
 
 // type IRoute = {
 //   id: string,
@@ -258,27 +258,19 @@ const Route = (props) => {
     }
   }
 
-  const onExpand= (expandedKeys) => {
-    const { dispatchModifyState } = props;
-    dispatchModifyState({treeExpandedKeys: expandedKeys });
-  }
+
+  const { treeSelectedKeys, treeData, enabled, masterData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
 
 
-  const { treeSelectedKeys, treeData, enabled, masterData, onMasterChange, treeExpandedKeys } = props;
-
-  const treeParam = {
-    property: { treeData, selectedKeys: treeSelectedKeys, expandedKeys: treeExpandedKeys, height: 500 },
-    event: { onSelect, onExpand },
-  };
 
   const buttonGroup = { onClick, enabled };
+
 
   const createDate = {
     form,
     fieldName: 'createDate',
     label: '创建日期',
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
-    event: { onMasterChange },
   };
   const routeName = {
     form,
@@ -286,7 +278,6 @@ const Route = (props) => {
     label: '路由名称',
     rules: [{ required: true, message: '请输入你的路由名称' }],
     property: { disabled: !enabled },
-    event: { onMasterChange },
   };
   const sortNum = {
     form,
@@ -326,7 +317,8 @@ const Route = (props) => {
     label: '是否显示',
     property: { checkedChildren: '显示', unCheckedChildren: '隐藏', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled }
   };
-  const tree =  useMemo(()=>{ return <TreeComponent {...treeParam} />}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled]);
+  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onSelect} />
+    )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (
     <div>
       <DatePickerComponent {...createDate} />
@@ -340,8 +332,6 @@ const Route = (props) => {
     </div>)}, [masterData, enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
-      <ButtonGroup {...buttonGroup} />
-
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
           {tree}
@@ -350,6 +340,7 @@ const Route = (props) => {
           {component}
         </Col>
       </Row>
+      <ButtonGroup {...buttonGroup} />
     </Form>
   );
 }

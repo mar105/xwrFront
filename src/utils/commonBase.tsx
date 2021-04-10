@@ -33,25 +33,32 @@ const commonBase = (WrapComponent) => {
       }
     }, []);
 
-    const handleAdd = () => {
+    const onAdd = () => {
       const dataRow: any = {};
       dataRow.handleType = 'add';
       dataRow.id = commonUtils.newId().toString();
       dataRow.key = dataRow.id;
       return dataRow;
     }
-    const handleModify = () => {
+    const onModify = () => {
       const dataRow: any = {};
       dataRow.handleType = 'modify';
       return dataRow;
     };
 
-    const handleMasterChange = () =>  {
-      const { masterData }= modifyState;
-      const dataRow: any = {};
-      dataRow.handleType = commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType;
-      return dataRow;
-    };
+    // const handleMasterChange = () =>  {
+    //   const { masterData }= modifyState;
+    //   const dataRow: any = {};
+    //   dataRow.handleType = commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType;
+    //   return dataRow;
+    // };
+
+    const onRowClick = (name, record) => {
+      const addState: any = {};
+      addState[name + 'SelectedRowKeys'] = [record.id];
+      console.log('onRowClick', addState);
+      dispatchModifyState({...addState});
+    }
 
     const gotoError = (dispatch, interfaceData) => {
       dispatch({ type: 'commonModel/gotoError', payload: interfaceData });
@@ -60,9 +67,10 @@ const commonBase = (WrapComponent) => {
       {...props}
       {...modifyState}
       dispatchModifyState={dispatchModifyState}
-      onAdd={handleAdd}
-      onModify={handleModify}
-      onMasterChange={handleMasterChange}
+      onAdd={onAdd}
+      onModify={onModify}
+      onRowClick={onRowClick}
+      // onMasterChange={handleMasterChange}
       gotoError={gotoError}
     />
   };

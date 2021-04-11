@@ -73,10 +73,11 @@ const TreeModule = (props) => {
   )}, [treeSearchValue]);
   const treeComponent =  useMemo(()=>{ return (<TreeComponent {...treeParam} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled]);
-  const modal =  useMemo(()=>{ return (
-    <Modal width={800} visible={treeSearchIsVisible} footer={null}>
-      <TableComponent {...tableParam} />
-    </Modal>
+  const modal =  useMemo(()=>{
+    return (
+      <Modal width={800} visible={treeSearchIsVisible} footer={null}>
+        <TableComponent {...tableParam} />
+      </Modal>
   )}, [treeSearchData, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   return(
     <div>

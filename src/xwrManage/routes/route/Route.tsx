@@ -226,6 +226,10 @@ const Route = (props) => {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
       }
+      if (commonUtils.isNotEmptyArr(masterData.children)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请先删除子节点' });
+        return;
+      }
       const params = { ...masterData };
       const url: string = `${application.urlPrefix}/module/delRoute`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;

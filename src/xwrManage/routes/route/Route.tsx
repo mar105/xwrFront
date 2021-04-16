@@ -152,7 +152,7 @@ const Route = (props) => {
     const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
     if (key === 'addButton') {
       const data = props.onAdd();
-      const masterData = { ...data, key: data.id, allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId : data.id, isVisible: 1 };
+      const masterData = { ...data, key: data.id, superiorId: '', allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId : data.id, isVisible: 1 };
       let treeData = [...treeDataOld];
       const allList = masterDataOld.allId.split(',');
       allList.splice(allList.length - 1, 1);

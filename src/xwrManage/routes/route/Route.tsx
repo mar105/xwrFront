@@ -193,11 +193,6 @@ const Route = (props) => {
 
   const { treeSelectedKeys, treeData, enabled, masterData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
 
-
-
-  const buttonGroup = { onClick, enabled };
-
-
   const createDate = {
     form,
     fieldName: 'createDate',
@@ -243,12 +238,20 @@ const Route = (props) => {
     label: '模块类型',
     property: { disabled: !enabled },
   };
+
   const isVisible = {
     form,
     fieldName: 'isVisible',
     label: '是否显示',
-    property: { checkedChildren: '显示', unCheckedChildren: '隐藏', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled }
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled }
   };
+  const isVirtual = {
+    form,
+    fieldName: 'isVirtual',
+    label: '是否虚拟化',
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtual, disabled: !enabled }
+  };
+  const buttonGroup = { onClick, enabled };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
     )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (
@@ -261,6 +264,7 @@ const Route = (props) => {
       <InputComponent {...englishName} />
       <InputComponent {...modelsType} />
       <SwitchComponent {...isVisible} />
+      <SwitchComponent {...isVirtual} />
     </div>)}, [masterData, enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>

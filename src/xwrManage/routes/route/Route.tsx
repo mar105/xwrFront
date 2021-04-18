@@ -11,6 +11,7 @@ import {NumberComponent} from "../../../components/NumberComponent";
 import {SwitchComponent} from "../../../components/SwitchComponent";
 import {DatePickerComponent} from "../../../components/DatePickerComponent";
 import TreeModule from "./TreeModule";
+import commonManage from "../../commonManage";
 
 // type IRoute = {
 //   id: string,
@@ -28,10 +29,12 @@ import TreeModule from "./TreeModule";
 
 const Route = (props) => {
   const [form] = Form.useForm();
+  props.onSetForm(form);
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
+
   useEffect(() => {
     const fetchData = async () => {
       const {dispatchModifyState} = props;
@@ -50,7 +53,7 @@ const Route = (props) => {
   const getAllRoute = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlPrefix}/module/getAllRoute`;
+    const url: string = `${application.urlPrefix}/route/getAllRoute`;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -70,7 +73,7 @@ const Route = (props) => {
     const { commonModel, dispatch, masterData, dispatchModifyState } = props;
     const params = { ...masterData, ...values };
     const url: string = masterData.handleType === 'add' ?
-      `${application.urlPrefix}/module/saveRoute` : `${application.urlPrefix}/module/modifyRoute`;
+      `${application.urlPrefix}/route/saveRoute` : `${application.urlPrefix}/route/modifyRoute`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
       const returnRoute = await getAllRoute({isWait: true});
@@ -80,73 +83,7 @@ const Route = (props) => {
     }
   }
 
-  // 增加时，树节点增加空行数据
-  // delId不为空时为删除树节点数据。
-  const setNewTreeNode = (treeData, allId, newTreeNode, delId = '') => {
-    let treeNode: any = {};
-    if (allId === '' && commonUtils.isEmpty(delId)) {
-      treeData.push(newTreeNode);
-    } else {
-      allId.split(',').forEach((key, iAllIdIndex) => {
-        if (iAllIdIndex === 0) {
-          const iIndex = treeData.findIndex(item => item.key === key);
-          if (iIndex > -1) {
-            treeNode = treeData[iIndex];
-          }
-        } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
-          treeNode = getChildTreeNode(treeNode.children, key);
-        }
-      });
-      if (commonUtils.isEmpty(delId)) {
-        if (commonUtils.isNotEmptyArr(treeNode.children)) {
-          treeNode.children.push(newTreeNode);
-        } else {
-          treeNode.children = [newTreeNode];
-        }
-      } else {
-        if (commonUtils.isNotEmptyArr(treeNode.children)) {
-          const iIndex = treeNode.children.findIndex(item => item.key === delId);
-          if (iIndex > -1) {
-            treeNode.children.splice(iIndex, 1);
-          }
-        } else {
-          const iIndex = treeData.findIndex(item => item.key === delId);
-          if (iIndex > -1) {
-            treeData.splice(iIndex, 1);
-          }
-        }
-      }
-    }
-    return treeData;
-  }
 
-  const getChildTreeNode = (treeNode, key) => {
-    if (commonUtils.isNotEmptyArr(treeNode)) {
-      const iIndex = treeNode.findIndex(item => item.key === key);
-      if (iIndex > -1) {
-        return treeNode[iIndex];
-      }
-    }
-  }
-
-  const getTreeNode = (treeData, allId) => {
-    let treeNode: any = {};
-    if (allId === '') {
-      treeNode = treeData[0];
-    } else {
-      allId.split(',').forEach((key, iAllIdIndex) => {
-        if (iAllIdIndex === 0) {
-          const iIndex = treeData.findIndex(item => item.key === key);
-          if (iIndex > -1) {
-            treeNode = treeData[iIndex];
-          }
-        } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
-          treeNode = getChildTreeNode(treeNode.children, key);
-        }
-      });
-    }
-    return treeNode;
-  }
 
   const onClick = async (key, e) => {
     const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
@@ -156,7 +93,7 @@ const Route = (props) => {
       let treeData = [...treeDataOld];
       const allList = masterDataOld.allId.split(',');
       allList.splice(allList.length - 1, 1);
-      treeData = setNewTreeNode(treeData, allList.join(), masterData);
+      treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
       dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
@@ -170,7 +107,7 @@ const Route = (props) => {
       const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id, isVisible: 1 };
       let treeData = [...treeDataOld];
       let treeExpandedKeys;
-      treeData = setNewTreeNode(treeData, masterDataOld.allId, masterData);
+      treeData = props.setNewTreeNode(treeData, masterDataOld.allId, masterData);
       if (commonUtils.isNotEmptyArr(treeExpandedKeysOld)) {
         treeExpandedKeys = [...treeExpandedKeysOld];
         treeExpandedKeys.push(masterDataOld.id);
@@ -203,8 +140,8 @@ const Route = (props) => {
       if (masterData.handleType === 'add') {
         const allList = masterDataOld.allId.split(',');
         allList.splice(allList.length - 1, 1);
-        treeData = setNewTreeNode(treeData, allList.join(), masterData, masterData.id);
-        addState.masterData = {...getTreeNode(treeData, allList.join()) };
+        treeData = props.setNewTreeNode(treeData, allList.join(), masterData, masterData.id);
+        addState.masterData = {...props.getTreeNode(treeData, allList.join()) };
         addState.treeSelectedKeys = [addState.masterData.id];
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
@@ -231,7 +168,7 @@ const Route = (props) => {
         return;
       }
       const params = { ...masterData };
-      const url: string = `${application.urlPrefix}/module/delRoute`;
+      const url: string = `${application.urlPrefix}/route/delRoute`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllRoute({isWait: true});
@@ -251,16 +188,7 @@ const Route = (props) => {
 
   }
 
-  const onSelect = (selectedKeys: React.Key[], e) => {
-    const { dispatchModifyState, dispatch, enabled } = props;
-    if (enabled) {
-      props.gotoError(dispatch, { code: '6001', msg: '数据正在编辑，请先保存或取消！' });
-    } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
-      form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(e.node));
-      dispatchModifyState({treeSelectedKeys: selectedKeys, masterData: { ...e.node }, selectNode: e.node });
-    }
-  }
+
 
 
   const { treeSelectedKeys, treeData, enabled, masterData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
@@ -321,7 +249,7 @@ const Route = (props) => {
     label: '是否显示',
     property: { checkedChildren: '显示', unCheckedChildren: '隐藏', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled }
   };
-  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onSelect} />
+  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
     )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (
     <div>
@@ -349,4 +277,4 @@ const Route = (props) => {
   );
 }
 
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(Route));
+export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Route)));

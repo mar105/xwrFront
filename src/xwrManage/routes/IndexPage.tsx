@@ -14,13 +14,13 @@ function IndexPage(props) {
     commonUtils.getWebSocketData(commonModel.token, "", null);
   }, []);
   //
-  const onClick = () => {
+  const onClick = (path) => {
     const {dispatchModifyState, panes: panesOld, panesComponents } = props;
-    const iIndex = routeInfo.findIndex(item => item.path === '/xwrManage/route');
+    const iIndex = routeInfo.findIndex(item => item.path === path);
     if (iIndex > -1) {
       const key = commonUtils.newId().toString();
       const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-      const pane = { key, title: routeInfo[iIndex].title, route: '/xwrManage/route' };
+      const pane = { key, title: routeInfo[iIndex].title, route: path };
       panes.push(pane);
       panesComponents.push(commonUtils.panesComponent(pane, routeInfo[iIndex]));
       localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
@@ -44,7 +44,8 @@ function IndexPage(props) {
       <a href="/xwrManage/login"> login</a>
       <a href="/xwrManage/route"> route</a>
       <button onClick={onExit}> 退出</button>
-      <button onClick={onClick}> add panel</button>
+      <button onClick={onClick.bind(this, '/xwrManage/route')}> add route</button>
+      <button onClick={onClick.bind(this, '/xwrManage/container')}> add container</button>
       <div>{commonModel.userInfo.userName}</div>
     <div><TabPage {...props} /></div>
     </div>

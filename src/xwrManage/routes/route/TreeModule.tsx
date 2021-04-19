@@ -22,7 +22,7 @@ const TreeModule = (props) => {
   const onSearch= async (e) => {
     const { commonModel, dispatch, dispatchModifyState, treeSearchValue } = props;
     if (commonUtils.isNotEmpty(treeSearchValue)) {
-      const url: string = `${application.urlPrefix}/module/getSearchRoute?searchValue=` + treeSearchValue;
+      const url: string = `${application.urlPrefix}/route/getSearchRoute?searchValue=` + treeSearchValue;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         dispatchModifyState({ treeSearchData: interfaceReturn.data, treeSearchIsVisible: true });
@@ -38,15 +38,8 @@ const TreeModule = (props) => {
     dispatchModifyState({ treeSelectedKeys: [record.id], treeExpandedKeys: expandedKeys, masterData: {...record}, treeSearchIsVisible: false });
   }
 
-  const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
-    const { dispatchModifyState } = props;
-    if (commonUtils.isNotEmptyArr(selectedRows)) {
-      dispatchModifyState({ treeSearchSelectedRowKeys: selectedRowKeys });
-    }
-  }
 
-
-  const { form, treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchSelectedKeys, treeSearchSelectedRowKeys, enabled, treeSearchValue } = props;
+  const { form, treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchSelectedRowKeys, enabled, treeSearchValue } = props;
   const searchValue = {
     form,
     search: true,
@@ -62,13 +55,9 @@ const TreeModule = (props) => {
     { title: '中文名称', dataIndex: 'chineseName', width: 150 },
     { title: '路由名称', dataIndex: 'routeName' },
   ];
-  const tableParam ={
-    name: 'treeSearch',
-    property: { columns, dataSource: treeSearchData, selectedKeys: treeSearchSelectedKeys },
-    eventOnRow: { onRowClick: props.onRowClick, onRowDoubleClick },
-    propertySelection: { selectedRowKeys: treeSearchSelectedRowKeys },
-    eventSelection: { onRowSelectChange }
-  }
+  const tableParam: any = commonUtils.getTableProps('treeSearch', props);
+  tableParam.property.columns = columns;
+  tableParam.eventOnRow.onRowDoubleClick = onRowDoubleClick;
   const inputComponent =  useMemo(()=>{ return (<InputComponent {...searchValue} />
   )}, [treeSearchValue]);
   const treeComponent =  useMemo(()=>{ return (<TreeComponent {...treeParam} />

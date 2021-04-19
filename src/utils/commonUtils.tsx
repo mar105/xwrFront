@@ -144,3 +144,15 @@ export function panesComponent(pane, routeData) {
   const Component: any = dynamic({...routeData});
   return {key: pane.key, component: <Component tabId={pane.key} />};
 };
+
+
+export function getTableProps(name, props) {
+  const tableParam ={
+    name,
+    property: { columns: props[name + 'Columns'], dataSource: props[name + 'Data'],  },
+    eventOnRow: { onRowClick: props.onRowClick },
+    propertySelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
+    eventSelection: { onRowSelectChange: props.onRowSelectChange }
+  }
+  return tableParam;
+};

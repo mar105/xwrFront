@@ -12,6 +12,7 @@ import {DatePickerComponent} from "../../../components/DatePickerComponent";
 import {InputComponent} from "../../../components/InputComponent";
 import {NumberComponent} from "../../../components/NumberComponent";
 import {SwitchComponent} from "../../../components/SwitchComponent";
+import SlaveContainer from "./SlaveContainer";
 
 const Container = (props) => {
   const [form] = Form.useForm();
@@ -61,7 +62,7 @@ const Container = (props) => {
 
   }
 
-  const { treeSelectedKeys, treeData, enabled, masterData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
+  const { treeSelectedKeys, treeData, enabled, masterData, slaveData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
 
   const createDate = {
     form,
@@ -182,15 +183,26 @@ const Container = (props) => {
         <Col><SwitchComponent {...isMutiChoise} /></Col>
       </Row>
     </div>)}, [masterData, enabled]);
+
+  const slaveTable = useMemo(()=>{ return (
+    <SlaveContainer {...props} />
+  )}, [slaveData, enabled]);
+
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
-      <Row style={{ height: 'auto', overflow: 'auto' }}>
+      <Row>
         <Col>
           {tree}
         </Col>
+
         <Col>
-          {component}
+          <Row>
+            {component}
+          </Row>
         </Col>
+      </Row>
+      <Row>
+        {slaveTable}
       </Row>
       <ButtonGroup {...buttonGroup} />
     </Form>

@@ -63,6 +63,13 @@ const commonBase = (WrapComponent) => {
     const gotoError = (dispatch, interfaceData) => {
       dispatch({ type: 'commonModel/gotoError', payload: interfaceData });
     };
+
+    const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
+      const { dispatchModifyState } = props;
+      if (commonUtils.isNotEmptyArr(selectedRows)) {
+        dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys });
+      }
+    }
     return <WrapComponent
       {...props}
       {...modifyState}
@@ -72,6 +79,7 @@ const commonBase = (WrapComponent) => {
       onRowClick={onRowClick}
       // onMasterChange={handleMasterChange}
       gotoError={gotoError}
+      onRowSelectChange={onRowSelectChange}
     />
   };
 };

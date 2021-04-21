@@ -69,7 +69,7 @@ const Container = (props) => {
     } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
       const addState = props.onTreeSelect(selectedKeys, e, true);
 
-      const url: string = `${application.urlPrefix}/container/getContainerSlave`;
+      const url: string = `${application.urlPrefix}/container/getContainerSlave?id=` + e.node.id;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         addState.slaveData = interfaceReturn.data;
@@ -157,19 +157,19 @@ const Container = (props) => {
   const isTable = {
     form,
     fieldName: 'isTable',
-    label: '是否显示',
+    label: '是否表格',
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTable, disabled: !enabled }
   };
   const isTableHeadSort = {
     form,
     fieldName: 'isTableHeadSort',
-    label: '是否显示',
+    label: '是否表头排序',
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTableHeadSort, disabled: !enabled }
   };
   const isMutiChoise = {
     form,
     fieldName: 'isMutiChoise',
-    label: '是否显示',
+    label: '是否多选',
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMutiChoise, disabled: !enabled }
   };
 

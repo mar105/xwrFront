@@ -19,6 +19,7 @@ export function TableComponent(params) {
     rowSelection={{type: "radio", fixed: true, ...params.propertySelection,
       onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } }}
     pagination={true}
+    size={'small'}
     {...params.property}
     onRow={record => {
       return {

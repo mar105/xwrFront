@@ -62,6 +62,26 @@ const Container = (props) => {
 
   }
 
+  const onTreeSelect = async (selectedKeys: React.Key[], e) => {
+    const { dispatchModifyState, dispatch, enabled, commonModel } = props;
+    if (enabled) {
+      props.gotoError(dispatch, { code: '6001', msg: '数据正在编辑，请先保存或取消！' });
+    } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
+      const addState = props.onTreeSelect(selectedKeys, e, true);
+
+      const url: string = `${application.urlPrefix}/container/getContainerSlave`;
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        addState.slaveData = interfaceReturn.data;
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+      form.resetFields();
+      form.setFieldsValue(commonUtils.setFieldsValue(e.node));
+      dispatchModifyState(addState);
+    }
+  }
+
   const { treeSelectedKeys, treeData, enabled, masterData, slaveData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
 
   const createDate = {
@@ -154,7 +174,7 @@ const Container = (props) => {
   };
 
   const buttonGroup = { onClick, enabled };
-  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
+  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (
     <div>

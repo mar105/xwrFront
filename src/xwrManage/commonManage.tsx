@@ -72,14 +72,19 @@ const commonManage = (WrapComponent) => {
       return treeNode;
     }
 
-    const onTreeSelect = (selectedKeys: React.Key[], e) => {
+    const onTreeSelect = (selectedKeys: React.Key[], e, isWait) => {
       const { dispatchModifyState, dispatch, enabled } = props;
       if (enabled) {
         props.gotoError(dispatch, { code: '6001', msg: '数据正在编辑，请先保存或取消！' });
       } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
-        form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(e.node));
-        dispatchModifyState({treeSelectedKeys: selectedKeys, masterData: { ...e.node }, selectNode: e.node });
+        const addState = {treeSelectedKeys: selectedKeys, masterData: { ...e.node }, selectNode: e.node };
+        if (isWait) {
+          return addState;
+        } else {
+          form.resetFields();
+          form.setFieldsValue(commonUtils.setFieldsValue(e.node));
+          dispatchModifyState(addState);
+        }
       }
     }
 

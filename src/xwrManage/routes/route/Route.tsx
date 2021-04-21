@@ -70,10 +70,9 @@ const Route = (props) => {
     console.log('Failed:', errorInfo);
   };
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, dispatchModifyState } = props;
-    const params = { ...masterData, ...values };
-    const url: string = masterData.handleType === 'add' ?
-      `${application.urlPrefix}/route/saveRoute` : `${application.urlPrefix}/route/modifyRoute`;
+    const { commonModel, dispatch, masterData, dispatchModifyState, tabId } = props;
+    const params = { ...masterData, ...values, tabId };
+    const url: string = `${application.urlPrefix}/route/saveRoute`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
       const returnRoute = await getAllRoute({isWait: true});
@@ -89,7 +88,7 @@ const Route = (props) => {
     const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
     if (key === 'addButton') {
       const data = props.onAdd();
-      const masterData = { ...data, key: data.id, superiorId: '', allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId : data.id, isVisible: 1 };
+      const masterData = { ...data, key: data.id, superiorId: '', allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId : data.id, isVisible: true };
       let treeData = [...treeDataOld];
       const allList = masterDataOld.allId.split(',');
       allList.splice(allList.length - 1, 1);
@@ -243,13 +242,13 @@ const Route = (props) => {
     form,
     fieldName: 'isVisible',
     label: '是否显示',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled }
+    property: { checkedChildren: '是', unCheckedChildren: '否', disabled: !enabled } // , checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible
   };
   const isVirtual = {
     form,
     fieldName: 'isVirtual',
     label: '是否虚拟化',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtual, disabled: !enabled }
+    property: { checkedChildren: '是', unCheckedChildren: '否', disabled: !enabled } // , checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtual
   };
   const buttonGroup = { onClick, enabled };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />

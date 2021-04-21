@@ -10,10 +10,9 @@ export function SwitchComponent(params) {
       label={params.label}
       name={params.fieldName}
       rules={params.rules}
-      shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]
-      }
-      }>
-      <Switch {...params.property} />
+      shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]}}
+    >
+      <Switch {...params.property} {...params.event}/>
     </Form.Item>;
   }
 

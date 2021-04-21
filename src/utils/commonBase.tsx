@@ -65,11 +65,19 @@ const commonBase = (WrapComponent) => {
     };
 
     const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
-      const { dispatchModifyState } = props;
       if (commonUtils.isNotEmptyArr(selectedRows)) {
         dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys });
       }
     }
+
+    const onSwitchChange = (name, fieldName, checked, e) => {
+      const { masterData: masterDataOld } = modifyState;
+      const masterData = { ...masterDataOld };
+      masterData[fieldName] = checked;
+      console.log('masterData', dispatchModifyState, masterDataOld, masterData);
+      dispatchModifyState({ masterData });
+    }
+
     return <WrapComponent
       {...props}
       {...modifyState}
@@ -80,6 +88,7 @@ const commonBase = (WrapComponent) => {
       // onMasterChange={handleMasterChange}
       gotoError={gotoError}
       onRowSelectChange={onRowSelectChange}
+      onSwitchChange={onSwitchChange}
     />
   };
 };

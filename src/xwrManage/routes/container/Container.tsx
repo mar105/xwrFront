@@ -58,7 +58,18 @@ const Container = (props) => {
   const onFinish = async (values: any) => {
   };
   const onClick = async (key, e) => {
-
+    // const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
+    // if (key === 'addButton') {
+    //   const data = props.onAdd();
+    //   const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId : data.id, isVisible: true };
+    //   let treeData = [...treeDataOld];
+    //   const allList = masterDataOld.allId.split(',');
+    //   allList.splice(allList.length - 1, 1);
+    //   treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
+    //   form.resetFields();
+    //   form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+    //   dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
+    // }
 
   }
 
@@ -145,7 +156,8 @@ const Container = (props) => {
     form,
     fieldName: 'isVisible',
     label: '是否显示',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled }
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled },
+    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isVirtual') }
   };
   const fixColumnCount = {
     form,
@@ -158,19 +170,29 @@ const Container = (props) => {
     form,
     fieldName: 'isTable',
     label: '是否表格',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTable, disabled: !enabled }
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTable, disabled: !enabled },
+    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isTable') }
   };
   const isTableHeadSort = {
     form,
     fieldName: 'isTableHeadSort',
     label: '是否表头排序',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTableHeadSort, disabled: !enabled }
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTableHeadSort, disabled: !enabled },
+    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isTableHeadSort') }
   };
   const isMutiChoise = {
     form,
     fieldName: 'isMutiChoise',
     label: '是否多选',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMutiChoise, disabled: !enabled }
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMutiChoise, disabled: !enabled },
+    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isMutiChoise') }
+  };
+  const isRowNo = {
+    form,
+    fieldName: 'isRowNo',
+    label: '是否显示行号',
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isRowNo, disabled: !enabled },
+    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isRowNo') }
   };
 
   const buttonGroup = { onClick, enabled };
@@ -201,6 +223,7 @@ const Container = (props) => {
       <Row>
         <Col><SwitchComponent {...isTableHeadSort} /></Col>
         <Col><SwitchComponent {...isMutiChoise} /></Col>
+        <Col><SwitchComponent {...isRowNo} /></Col>
       </Row>
     </div>)}, [masterData, enabled]);
 

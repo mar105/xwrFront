@@ -88,10 +88,12 @@ const Route = (props) => {
     const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
     if (key === 'addButton') {
       const data = props.onAdd();
-      const masterData = { ...data, key: data.id, superiorId: '', allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId : data.id, isVisible: true };
-      let treeData = [...treeDataOld];
-      const allList = masterDataOld.allId.split(',');
+      const allList = commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId.split(',') : [''];
       allList.splice(allList.length - 1, 1);
+      const masterData = { ...data, key: data.id, superiorId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.superiorId : '',
+        allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id, isVisible: true };
+      console.log(allList.length, allList.join());
+      let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));

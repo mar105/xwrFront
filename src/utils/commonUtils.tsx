@@ -156,3 +156,14 @@ export function getTableProps(name, props) {
   }
   return tableParam;
 };
+
+/** 处理数据格式
+ * name 名称
+ * saveTmpData 表单数据
+ * delTmpData 表单删除数据*/
+export function mergeData(name, saveTmpData, delTmpData) {
+  const delData = isEmptyArr(delTmpData) ? [] : delTmpData;
+  const savesData = isEmptyArr(saveTmpData) ? [] : saveTmpData;
+  const returnData = savesData.filter(item => item.handleType === 'add' || item.handleType === 'modify');
+  return { name, data: [...returnData, ...delData] };
+}

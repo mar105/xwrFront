@@ -36,5 +36,6 @@ export function TableComponent(params) {
     // 使用VList 即可有虚拟列表的效果
     components={VList({ height: 1000 // 此值和scrollY值相同. 必传. (required).  same value for scrolly
     })}
+    style={{width: 1000}}
   />;
 }

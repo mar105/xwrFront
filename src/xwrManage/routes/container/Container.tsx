@@ -56,20 +56,140 @@ const Container = (props) => {
     console.log('Failed:', errorInfo);
   };
   const onFinish = async (values: any) => {
+    const { commonModel, dispatch, masterData, slaveData, slaveDelData, dispatchModifyState, tabId } = props;
+    const saveData: any = [];
+    saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], []));
+    saveData.push(commonUtils.mergeData('slave', slaveData, slaveDelData));
+    const params = { id: masterData.id, tabId, saveData };
+    const url: string = `${application.urlPrefix}/container/saveContainer`;
+    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+    if (interfaceReturn.code === 1) {
+      const returnRoute = await getAllContainer({isWait: true});
+      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id] });
+    } else {
+      props.gotoError(dispatch, interfaceReturn);
+    }
   };
   const onClick = async (key, e) => {
-    // const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
-    // if (key === 'addButton') {
-    //   const data = props.onAdd();
-    //   const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId : data.id, isVisible: true };
-    //   let treeData = [...treeDataOld];
-    //   const allList = masterDataOld.allId.split(',');
-    //   allList.splice(allList.length - 1, 1);
-    //   treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
-    //   form.resetFields();
-    //   form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-    //   dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
-    // }
+    const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
+    if (key === 'addButton') {
+      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+        return;
+      }
+      if (commonUtils.isEmpty(masterDataOld.containerName)) {
+        props.gotoError(dispatch, { code: '6002', msg: '同级容器界面，才可增加同级' });
+        return;
+      }
+      const data = props.onAdd();
+      const allList = commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId.split(',') : [''];
+      allList.splice(allList.length - 1, 1);
+      const masterData = { ...data, key: data.id, superiorId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.superiorId : '',
+        allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id, isVisible: true };
+      let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
+      treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
+      form.resetFields();
+      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
+    } else if (key === 'addChildButton') {
+      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+        return;
+      }
+      if (commonUtils.isEmpty(masterDataOld.routeName) || masterDataOld.routeName.split('/').length < 2) {
+        props.gotoError(dispatch, { code: '6003', msg: '请选择路由子节点' });
+        return;
+      }
+      const data = props.onAdd();
+      const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id, isVisible: 1 };
+      let treeData = [...treeDataOld];
+      let treeExpandedKeys;
+      treeData = props.setNewTreeNode(treeData, masterDataOld.allId, masterData);
+      if (commonUtils.isNotEmptyArr(treeExpandedKeysOld)) {
+        treeExpandedKeys = [...treeExpandedKeysOld];
+        treeExpandedKeys.push(masterDataOld.id);
+      } else {
+        treeExpandedKeys = [masterDataOld.id];
+      }
+      form.resetFields();
+      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
+
+    } else if (key === 'modifyButton') {
+      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+        return;
+      }
+      if (commonUtils.isEmpty(masterDataOld.containerName)) {
+        props.gotoError(dispatch, { code: '6003', msg: '容器界面才可修改' });
+        return;
+      }
+      const data = props.onModify();
+      const masterData = {...masterDataOld, ...data };
+      const url: string = `${application.urlCommon}/verify/isExistModifying`;
+      const params = {id: masterData.id, tabId};
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        dispatchModifyState({ masterData, enabled: true });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+
+    } else if (key === 'cancelButton') {
+      let treeData = [...treeDataOld];
+      const addState: any = {};
+      if (masterData.handleType === 'add') {
+        const allList = masterDataOld.allId.split(',');
+        allList.splice(allList.length - 1, 1);
+        treeData = props.setNewTreeNode(treeData, allList.join(), masterData, masterData.id);
+        addState.masterData = {...props.getTreeNode(treeData, allList.join()) };
+        addState.treeSelectedKeys = [addState.masterData.id];
+        form.resetFields();
+        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+      } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
+        const {dispatch, commonModel, tabId, masterData} = props;
+        const url: string = `${application.urlCommon}/verify/removeModifying`;
+        const params = {id: masterData.id, tabId};
+        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+        if (interfaceReturn.code === 1) {
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
+        }
+      }
+      dispatchModifyState({...addState, treeData, enabled: false});
+
+    } else if (key === 'delButton') {
+      const { commonModel, dispatch, masterData, dispatchModifyState } = props;
+      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+        return;
+      }
+      if (commonUtils.isNotEmptyArr(masterData.children)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请先删除子节点' });
+        return;
+      }
+      if (commonUtils.isEmpty(masterDataOld.containerName)) {
+        props.gotoError(dispatch, { code: '6003', msg: '容器界面才可删除' });
+        return;
+      }
+      const params = { ...masterData };
+      const url: string = `${application.urlPrefix}/container/delContainer`;
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        const returnRoute: any = await getAllContainer({isWait: true});
+        const addState: any = {};
+        if (commonUtils.isNotEmpty(returnRoute.treeData)) {
+          addState.treeSelectedKeys = [returnRoute.treeData[0].id];
+          addState.masterData = {...returnRoute.treeData[0]};
+          form.resetFields();
+          form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
+        }
+
+        dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+    }
 
   }
 
@@ -216,15 +336,17 @@ const Container = (props) => {
         <Col><InputComponent {...entitySort} /></Col>
       </Row>
       <Row>
-        <Col><NumberComponent {...fixColumnCount} /></Col>
         <Col><SwitchComponent {...isVisible} /></Col>
         <Col><SwitchComponent {...isTable} /></Col>
       </Row>
+      {commonUtils.isNotEmptyObj(masterData) && masterData.isTable ?
       <Row>
+        <Col><NumberComponent {...fixColumnCount} /></Col>
         <Col><SwitchComponent {...isTableHeadSort} /></Col>
         <Col><SwitchComponent {...isMutiChoise} /></Col>
         <Col><SwitchComponent {...isRowNo} /></Col>
       </Row>
+        : ''}
     </div>)}, [masterData, enabled]);
 
   const slaveTable = useMemo(()=>{ return (

@@ -213,7 +213,7 @@ const Container = (props) => {
     }
   }
 
-  const { treeSelectedKeys, treeData, enabled, masterData, slaveData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
+  const { treeSelectedKeys, treeData, enabled, masterData, slaveData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, slaveSelectedRowKeys } = props;
 
   const createDate = {
     form,
@@ -351,7 +351,7 @@ const Container = (props) => {
 
   const slaveTable = useMemo(()=>{ return (
     <SlaveContainer name='slave' {...props} />
-  )}, [slaveData, enabled]);
+  )}, [slaveData, enabled, slaveSelectedRowKeys]);
 
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>

@@ -53,9 +53,9 @@ const commonBase = (WrapComponent) => {
     //   return dataRow;
     // };
 
-    const onRowClick = (name, record) => {
+    const onRowClick = (name, record, rowKey) => {
       const addState: any = {};
-      addState[name + 'SelectedRowKeys'] = [record.id];
+      addState[name + 'SelectedRowKeys'] = [record[rowKey]];
       dispatchModifyState({...addState});
     }
 

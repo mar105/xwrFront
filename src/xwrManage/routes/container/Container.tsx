@@ -6,7 +6,7 @@ import React, {useEffect, useMemo} from "react";
 import * as commonUtils from "../../../utils/commonUtils";
 import * as application from "../../application";
 import * as request from "../../../utils/request";
-import TreeModule from "../route/TreeModule";
+import TreeModule from "../TreeModule";
 import commonManage from "../../commonManage";
 import {DatePickerComponent} from "../../../components/DatePickerComponent";
 import {InputComponent} from "../../../components/InputComponent";
@@ -350,7 +350,7 @@ const Container = (props) => {
     </div>)}, [masterData, enabled]);
 
   const slaveTable = useMemo(()=>{ return (
-    <SlaveContainer {...props} />
+    <SlaveContainer name='slave' {...props} />
   )}, [slaveData, enabled]);
 
   return (

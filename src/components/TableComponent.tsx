@@ -2,17 +2,39 @@ import React from 'react';
 import {Table} from 'antd';
 import * as commonUtils from "../utils/commonUtils";
 import { VList } from 'virtuallist-antd';
+import {InputComponent} from "./InputComponent";
 
 export function TableComponent(params) {
-  let rowKey = 'id';
-  if (commonUtils.isNotEmptyArr(params.property.dataSource)) {
-    rowKey = commonUtils.isNotEmpty(params.property.dataSource[0].slaveId) ? 'slaveId' : rowKey;
-  }
-  const onRowClick = (name, record) => {
-    if (params.eventOnRow) {
-      params.eventOnRow.onRowClick(params.name, record);
+
+  const rowKey = commonUtils.isNotEmptyArr(params.property.dataSource) &&
+    commonUtils.isNotEmpty(params.property.dataSource[0].slaveId) ? 'slaveId' : 'id';
+
+
+  const getColumn = (columnsOld: any) => {
+    const columns: any = [];
+    columns.push({ title: '#', render: (text,record,index)=>`${index + 1}`, width: 30, fixed: 'left' });
+    if (params.enabled) {
+      columnsOld.forEach(columnOld => {
+        const column = {...columnOld};
+        column.render = (text, record, index) => {
+          const property = {
+            value: text,
+          }
+          if (column.fieldType === 'varchar') {
+            return (<InputComponent {...property}  />);
+          } else {
+            return text;
+          }
+        }
+        columns.push(column);
+      });
+    } else {
+      columns.push(...columnsOld);
     }
+    return columns;
   }
+
+
 
   return <Table
     rowKey={rowKey}
@@ -21,10 +43,11 @@ export function TableComponent(params) {
     pagination={true}
     size={'small'}
     {...params.property}
+    columns={getColumn(params.property.columns)}
     onRow={record => {
       return {
-        onClick: () => { onRowClick(params.name, record) }, // 点击行
-        onDoubleClick: () => { params.eventOnRow.onRowDoubleClick(params.name, record) },
+        onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record) : null }, // 点击行
+        onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
         // onContextMenu: event => {},
         // onMouseEnter: event => {}, // 鼠标移入行
         // onMouseLeave: event => {},

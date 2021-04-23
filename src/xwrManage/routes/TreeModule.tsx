@@ -1,11 +1,11 @@
-import {InputComponent} from "../../../components/InputComponent";
-import {TreeComponent} from "../../../components/TreeComponent";
+import {InputComponent} from "../../components/InputComponent";
+import {TreeComponent} from "../../components/TreeComponent";
 import React, {useMemo} from "react";
 import {Modal} from "antd";
-import {TableComponent} from "../../../components/TableComponent";
-import * as commonUtils from "../../../utils/commonUtils";
-import * as application from "../../application";
-import * as request from "../../../utils/request";
+import {TableComponent} from "../../components/TableComponent";
+import * as commonUtils from "../../utils/commonUtils";
+import * as application from "../application";
+import * as request from "../../utils/request";
 
 const TreeModule = (props) => {
   const onExpand= (expandedKeys) => {

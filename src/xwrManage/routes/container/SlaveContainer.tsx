@@ -2,11 +2,14 @@ import {useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
 import React from "react";
 import * as commonUtils from "../../../utils/commonUtils";
+import {ButtonComponent} from "../../../components/ButtonComponent";
+import {componentType} from "../../../utils/commonTypes";
 
 const SlaveContainer = (props) => {
-  const {slaveData, enabled } = props;
+
+  const { name, slaveData, enabled } = props;
   const columns = [
-    { title: '类型', dataIndex: 'type', width: 150 },
+    { title: '类型', dataIndex: 'type', fieldType: 'varchar', dropType: 'const', width: 150 },
     { title: '字段名称', dataIndex: 'fieldName', width: 150 },
     { title: '字段类型', dataIndex: 'fieldType', width: 150 },
     { title: '中文名称', dataIndex: 'chineseName', width: 150 },
@@ -37,10 +40,31 @@ const SlaveContainer = (props) => {
     { title: '是否数字不能为0', dataIndex: 'isNotZero', width: 150 },
     { title: '是否当前数据过滤', dataIndex: 'isFilter', width: 150 },
   ];
-  const tableParam: any = commonUtils.getTableProps('slave', props);
+
+  const onClick = (e) => {
+    const { dispatchModifyState, masterData, slaveData: slaveDataOld } = props;
+    const data = props.onAdd();
+    data.parentId = masterData.id;
+    data.type = 'field';
+    const slaveData = [...slaveDataOld];
+    slaveData.push(data);
+    dispatchModifyState({ slaveData });
+  }
+
+  const button = {
+    caption: '增加',
+    property: { name: name + 'Add', htmlType: 'button', disabled: !enabled },
+    event: { onClick },
+    componentType: componentType.Soruce,
+  };
+
+  const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.property.columns = columns;
   const slaveTable = useMemo(()=>{
-    return (<TableComponent {...tableParam} />)}, [slaveData, enabled]);
+    return (<div>
+      <ButtonComponent {...button} />
+      <TableComponent {...tableParam} />
+    </div>)}, [slaveData, enabled]);
   return (slaveTable);
 }
 export default SlaveContainer;

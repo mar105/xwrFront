@@ -56,7 +56,6 @@ const commonBase = (WrapComponent) => {
     const onRowClick = (name, record) => {
       const addState: any = {};
       addState[name + 'SelectedRowKeys'] = [record.id];
-      console.log('onRowClick', addState);
       dispatchModifyState({...addState});
     }
 
@@ -74,7 +73,6 @@ const commonBase = (WrapComponent) => {
       const { masterData: masterDataOld } = modifyState;
       const masterData = { ...masterDataOld };
       masterData[fieldName] = checked;
-      console.log('masterData', dispatchModifyState, masterDataOld, masterData);
       dispatchModifyState({ masterData });
     }
 

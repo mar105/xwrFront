@@ -10,7 +10,7 @@ import {InputComponent} from "../../../components/InputComponent";
 import {NumberComponent} from "../../../components/NumberComponent";
 import {SwitchComponent} from "../../../components/SwitchComponent";
 import {DatePickerComponent} from "../../../components/DatePickerComponent";
-import TreeModule from "./TreeModule";
+import TreeModule from "../TreeModule";
 import commonManage from "../../commonManage";
 
 // type IRoute = {

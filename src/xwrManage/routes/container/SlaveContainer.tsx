@@ -4,12 +4,14 @@ import React from "react";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonComponent} from "../../../components/ButtonComponent";
 import {componentType} from "../../../utils/commonTypes";
+import * as application from "../../application";
+import * as request from "../../../utils/request";
 
 const SlaveContainer = (props) => {
 
   const { name, slaveData, enabled, slaveSelectedRowKeys } = props;
   const columns = [
-    { title: '类型', dataIndex: 'type', fieldType: 'varchar', dropType: 'const', width: 150 },
+    { title: '类型', dataIndex: 'type', fieldType: 'varchar', dropType: 'const', dropOptions: '{ "field": "字段", "control": "控件" }', defaultValue: 'field', width: 150 },
     { title: '字段名称', dataIndex: 'fieldName', fieldType: 'varchar', width: 150 },
     { title: '字段类型', dataIndex: 'fieldType', fieldType: 'varchar', width: 150 },
     { title: '中文名称', dataIndex: 'chineseName', fieldType: 'varchar', width: 150 },
@@ -41,20 +43,56 @@ const SlaveContainer = (props) => {
     { title: '是否当前数据过滤', dataIndex: 'isFilter', fieldType: 'tinyint', width: 150 },
   ];
 
-  const onClick = (e) => {
-    const { dispatchModifyState, masterData, slaveData: slaveDataOld } = props;
-    const data = props.onAdd();
-    data.parentId = masterData.id;
-    data.type = 'field';
-    const slaveData = [...slaveDataOld];
-    slaveData.push(data);
-    dispatchModifyState({ slaveData });
+  const onClick = async (name, e) => {
+    const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld } = props;
+    if (name === 'slaveAddBtn') {
+      const data = props.onAdd();
+      data.parentId = masterData.id;
+      data.type = 'field';
+      const slaveData = [...slaveDataOld];
+      slaveData.push(data);
+      dispatchModifyState({ slaveData, slaveSelectedRowKeys: [data.id] });
+    } else if (name === 'slaveSyncDataBtn') {
+      console.log('props', props);
+      const url: string = `${application.urlPrefix}/container/getDBFields?tableName=` + masterData.containerName;
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        const slaveData = [...slaveDataOld];
+        if (commonUtils.isNotEmptyArr(interfaceReturn.data)) {
+          interfaceReturn.data.forEach(dataRow => {
+            const index = slaveData.findIndex(item => item.type === 'field' && item.fieldName === dataRow.columnName);
+            if (!(index > -1)) {
+              const data = props.onAdd();
+              data.parentId = masterData.id;
+              data.type = 'field';
+              data.fieldName = dataRow.columnName;
+              data.fieldType = dataRow.dataType;
+              data.chineseName = dataRow.columnComment;
+              slaveData.push(data);
+            }
+          });
+          console.log('slaveData', slaveData);
+          dispatchModifyState({ slaveData, slaveSelectedRowKeys: [slaveData[0].id] });
+        }
+
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+    }
+
   }
 
   const button = {
     caption: '增加',
-    property: { name: name + 'Add', htmlType: 'button', disabled: !enabled },
-    event: { onClick },
+    property: { name: name + 'AddBtn', htmlType: 'button', disabled: !enabled },
+    event: { onClick: onClick.bind(this, name + 'AddBtn') },
+    componentType: componentType.Soruce,
+  };
+
+  const syncDataButton = {
+    caption: '同步字段',
+    property: { name: name + 'SyncDataBtn', htmlType: 'button', disabled: !enabled },
+    event: { onClick: onClick.bind(this, name + 'SyncDataBtn') },
     componentType: componentType.Soruce,
   };
 
@@ -63,6 +101,7 @@ const SlaveContainer = (props) => {
   const slaveTable = useMemo(()=>{
     return (<div>
       <ButtonComponent {...button} />
+      <ButtonComponent {...syncDataButton} />
       <TableComponent {...tableParam} />
     </div>)}, [slaveData, enabled, slaveSelectedRowKeys]);
   return (slaveTable);

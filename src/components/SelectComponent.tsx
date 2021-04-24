@@ -1,10 +1,21 @@
 import React from 'react';
 import { Form, Select } from 'antd';
 import { componentType } from '../utils/commonTypes';
+import * as commonUtils from '../utils/commonUtils';
 
+const { Option } = Select;
 export function SelectComponent(params) {
+  let dropOptions: any = [];
+  if (params.dropType === 'const') {
+    const array: any = commonUtils.objectToArr(commonUtils.stringToObj(params.dropOptions));
+    for (const optionObj of array) {
+      const option: any = (<Option value={optionObj.id}>{optionObj.value}</Option>);
+      dropOptions.push(option);
+    };
+    console.log('ddd', array, dropOptions);
+  }
   if (params.componentType === componentType.Soruce) {
-    return <Select {...params.property} />;
+    return <Select {...params.property}>{dropOptions}</Select>;
   } else {
     return <Form.Item
       label={params.label}
@@ -13,7 +24,7 @@ export function SelectComponent(params) {
     shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]
     }
   }>
-    <Select {...params.property} />
+      <Select {...params.property}>{dropOptions}</Select>
     </Form.Item>;
   }
 

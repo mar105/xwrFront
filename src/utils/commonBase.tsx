@@ -46,13 +46,6 @@ const commonBase = (WrapComponent) => {
       return dataRow;
     };
 
-    // const handleMasterChange = () =>  {
-    //   const { masterData }= modifyState;
-    //   const dataRow: any = {};
-    //   dataRow.handleType = commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType;
-    //   return dataRow;
-    // };
-
     const onRowClick = (name, record, rowKey) => {
       const addState: any = {};
       addState[name + 'SelectedRowKeys'] = [record[rowKey]];
@@ -70,11 +63,26 @@ const commonBase = (WrapComponent) => {
     }
 
     const onSwitchChange = (name, fieldName, checked, e) => {
-      const { masterData: masterDataOld } = modifyState;
-      const masterData = { ...masterDataOld };
-      masterData[fieldName] = checked;
-      dispatchModifyState({ masterData });
+      if (name === 'master') {
+        const { masterData: masterDataOld } = modifyState;
+        const masterData = { ...masterDataOld };
+        masterData[fieldName] = checked;
+        dispatchModifyState({ masterData });
+      }
     }
+
+
+    const onInputChange = (name, fieldName, e) => {
+      if (name === 'master') {
+        const { masterData: masterDataOld } = modifyState;
+        const masterData = { ...masterDataOld };
+        masterData[fieldName] = e.target.value;
+        console.log(name, fieldName, masterData);
+        dispatchModifyState({ masterData });
+      }
+    }
+
+
 
     return <WrapComponent
       {...props}
@@ -87,6 +95,7 @@ const commonBase = (WrapComponent) => {
       gotoError={gotoError}
       onRowSelectChange={onRowSelectChange}
       onSwitchChange={onSwitchChange}
+      onInputChange={onInputChange}
     />
   };
 };

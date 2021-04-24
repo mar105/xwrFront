@@ -7,6 +7,7 @@ import {NumberComponent} from "./NumberComponent";
 import {DatePickerComponent} from "./DatePickerComponent";
 import {CheckboxComponent} from "./CheckboxComponent";
 import {SelectComponent} from "./SelectComponent";
+import {componentType} from "../utils/commonTypes";
 
 export function TableComponent(params) {
 
@@ -24,21 +25,25 @@ export function TableComponent(params) {
       columnsOld.forEach(columnOld => {
         const column = {...columnOld};
         column.render = (text, record, index) => {
-          const property = {
-            value: text,
-          }
+          const params = {
+            componentType: componentType.Soruce,
+            fieldName: column.fieldName,
+            dropType: column.dropType,
+            dropOptions: column.dropOptions,
+            property: {value: text},
+          };
           if (column.fieldType === 'varchar') {
             if (column.dropType === 'sql' || column.dropType === 'const') {
-              return (<SelectComponent {...property}  />);
+              return (<SelectComponent {...params}  />);
             } else {
-              return (<InputComponent {...property}  />);
+              return (<InputComponent {...params}  />);
             }
           } else if (column.fieldType === 'decimal'  || column.fieldType === 'smallint' || column.fieldType === 'int') {
-            return (<NumberComponent {...property}  />);
+            return (<NumberComponent {...params}  />);
           } else if (column.fieldType === 'tinyint') {
-            return (<CheckboxComponent {...property}  />);
+            return (<CheckboxComponent {...params}  />);
           } else if (column.fieldType === 'datetime') {
-            return (<DatePickerComponent {...property}  />);
+            return (<DatePickerComponent {...params}  />);
           } else {
             return text;
           }

@@ -168,3 +168,20 @@ export function mergeData(name, saveTmpData, delTmpData) {
   const returnData = savesData.filter(item => item.handleType === 'add' || item.handleType === 'modify');
   return { name, data: [...returnData, ...delData] };
 }
+
+/**   转换字符串为对象   */
+export function stringToObj(str) {
+  return isEmpty(str) ? {} : JSON.parse(str);
+}
+
+/**   对象转数组   */
+export function objectToArr(obj) {
+  const arr: any = [];
+  if (isNotEmptyObj(obj)) {
+    for (const key of Object.keys(obj)) {
+      const value = obj[key];
+      arr.push({ value, id: key });
+    }
+  }
+  return arr;
+}

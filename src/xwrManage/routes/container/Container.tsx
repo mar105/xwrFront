@@ -216,19 +216,23 @@ const Container = (props) => {
   const { treeSelectedKeys, treeData, enabled, masterData, slaveData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, slaveSelectedRowKeys } = props;
 
   const createDate = {
+    name: 'master',
     form,
     fieldName: 'createDate',
     label: '创建日期',
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
   };
   const containerName = {
+    name: 'master',
     form,
     fieldName: 'containerName',
     label: '容器名称',
     rules: [{ required: true, message: '请输入你的容器名称' }],
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
   const sortNum = {
+    name: 'master',
     form,
     fieldName: 'sortNum',
     label: '排序号',
@@ -236,6 +240,7 @@ const Container = (props) => {
     property: { disabled: !enabled },
   };
   const chineseName = {
+    name: 'master',
     form,
     fieldName: 'chineseName',
     label: '中文名称',
@@ -243,43 +248,50 @@ const Container = (props) => {
     property: { disabled: !enabled },
   };
   const traditionalName = {
+    name: 'master',
     form,
     fieldName: 'traditionalName',
     label: '繁体名称',
     property: { disabled: !enabled },
   };
   const englishName = {
+    name: 'master',
     form,
     fieldName: 'englishName',
     label: '英文名称',
     property: { disabled: !enabled },
   };
   const entitySelect = {
+    name: 'master',
     form,
     fieldName: 'entitySelect',
     label: '实体查询',
     property: { disabled: !enabled },
   };
   const entityWhere = {
+    name: 'master',
     form,
     fieldName: 'entityWhere',
     label: '实体条件',
     property: { disabled: !enabled },
   };
   const entitySort = {
+    name: 'master',
     form,
     fieldName: 'entitySort',
     label: '实体排序',
     property: { disabled: !enabled },
   };
   const isVisible = {
+    name: 'master',
     form,
     fieldName: 'isVisible',
     label: '是否显示',
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled },
-    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isVirtual') }
+    event: { onChange: props.onSwitchChange }
   };
   const fixColumnCount = {
+    name: 'master',
     form,
     fieldName: 'fixColumnCount',
     label: '固定列数',
@@ -287,32 +299,36 @@ const Container = (props) => {
   };
 
   const isTable = {
+    name: 'master',
     form,
     fieldName: 'isTable',
     label: '是否表格',
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTable, disabled: !enabled },
-    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isTable') }
+    event: { onChange: props.onSwitchChange }
   };
   const isTableHeadSort = {
+    name: 'master',
     form,
     fieldName: 'isTableHeadSort',
     label: '是否表头排序',
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTableHeadSort, disabled: !enabled },
-    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isTableHeadSort') }
+    event: { onChange: props.onSwitchChange }
   };
   const isMutiChoise = {
+    name: 'master',
     form,
     fieldName: 'isMutiChoise',
     label: '是否多选',
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMutiChoise, disabled: !enabled },
-    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isMutiChoise') }
+    event: { onChange: props.onSwitchChange }
   };
   const isRowNo = {
+    name: 'master',
     form,
     fieldName: 'isRowNo',
     label: '是否显示行号',
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isRowNo, disabled: !enabled },
-    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isRowNo') }
+    event: { onChange: props.onSwitchChange }
   };
 
   const buttonGroup = { onClick, enabled };
@@ -351,7 +367,7 @@ const Container = (props) => {
 
   const slaveTable = useMemo(()=>{ return (
     <SlaveContainer name='slave' {...props} />
-  )}, [slaveData, enabled, slaveSelectedRowKeys]);
+  )}, [masterData, slaveData, enabled, slaveSelectedRowKeys]);
 
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>

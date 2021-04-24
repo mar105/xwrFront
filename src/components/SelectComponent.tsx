@@ -12,7 +12,6 @@ export function SelectComponent(params) {
       const option: any = (<Option value={optionObj.id}>{optionObj.value}</Option>);
       dropOptions.push(option);
     };
-    console.log('ddd', array, dropOptions);
   }
   if (params.componentType === componentType.Soruce) {
     return <Select {...params.property}>{dropOptions}</Select>;

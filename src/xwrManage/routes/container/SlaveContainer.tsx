@@ -53,7 +53,6 @@ const SlaveContainer = (props) => {
       slaveData.push(data);
       dispatchModifyState({ slaveData, slaveSelectedRowKeys: [data.id] });
     } else if (name === 'slaveSyncDataBtn') {
-      console.log('props', props);
       const url: string = `${application.urlPrefix}/container/getDBFields?tableName=` + masterData.containerName;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {

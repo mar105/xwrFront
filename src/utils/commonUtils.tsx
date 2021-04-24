@@ -5,7 +5,7 @@ import moment from 'moment';
 import dynamic from "dva/dynamic";
 import * as React from "react";
 
-var Snowflake = /** @class */ (function() {
+var Snowflake = (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
     this.twepoch = 1288834974657n;
     //this.twepoch = 0n;
@@ -23,11 +23,11 @@ var Snowflake = /** @class */ (function() {
     this.workerId = 1n;
     this.dataCenterId = 1n;
     this.sequence = 0n;
-    if(this.workerId > this.maxWrokerId || this.workerId < 0) {
-      throw new Error("_workerId must max than 0 and small than maxWrokerId-[" + this.maxWrokerId + "]");
+    if (this.workerId > this.maxWrokerId || this.workerId < 0) {
+      throw new Error('_workerId must max than 0 and small than maxWrokerId-[' + this.maxWrokerId + ']');
     }
-    if(this.dataCenterId > this.maxDataCenterId || this.dataCenterId < 0) {
-      throw new Error("_dataCenterId must max than 0 and small than maxDataCenterId-[" + this.maxDataCenterId + "]");
+    if (this.dataCenterId > this.maxDataCenterId || this.dataCenterId < 0) {
+      throw new Error('_dataCenterId must max than 0 and small than maxDataCenterId-[' + this.maxDataCenterId + ']');
     }
 
     this.workerId = BigInt(_workerId);
@@ -36,7 +36,7 @@ var Snowflake = /** @class */ (function() {
   }
   Snowflake.prototype.tilNextMillis = function(lastTimestamp) {
     var timestamp = this.timeGen();
-    while(timestamp <= lastTimestamp) {
+    while (timestamp <= lastTimestamp) {
       timestamp = this.timeGen();
     }
     return BigInt(timestamp);
@@ -46,26 +46,32 @@ var Snowflake = /** @class */ (function() {
   };
   Snowflake.prototype.nextId = function() {
     var timestamp = this.timeGen();
-    if(timestamp < this.lastTimestamp) {
-      throw new Error("Clock moved backwards. Refusing to generate id for " +
+    if (timestamp < this.lastTimestamp) {
+      throw new Error('Clock moved backwards. Refusing to generate id for ' +
         (this.lastTimestamp - timestamp));
     }
-    if(this.lastTimestamp === timestamp) {
+    if (this.lastTimestamp === timestamp) {
       this.sequence = (this.sequence + 1n) & this.sequenceMask;
-      if(this.sequence === 0n) {
+      if (this.sequence === 0n) {
         timestamp = this.tilNextMillis(this.lastTimestamp);
       }
     } else {
       this.sequence = 0n;
     }
     this.lastTimestamp = timestamp;
-    return((timestamp - this.twepoch) << this.timestampLeftShift) |
+    return ((timestamp - this.twepoch) << this.timestampLeftShift) |
       (this.dataCenterId << this.dataCenterIdShift) |
       (this.workerId << this.workerIdShift) |
       this.sequence;
   };
   return Snowflake;
 }());
+const snowflake = new Snowflake(1n, 1n, 0n);
+
+/**   创建主表id   */
+export function newId() {
+  return snowflake.nextId();
+}
 
 export function isEmpty(value) {
   return value === null || value === undefined || value === '';
@@ -89,11 +95,6 @@ export function isEmptyObj(value) {
 
 export function isNotEmptyObj(value) {
   return !isEmptyObj(value);
-}
-
-/**   创建主表id   */
-export function newId() {
-  return parseInt(new Snowflake(1n, 1n, 0n).nextId());
 }
 
 //  websocket 推送消息

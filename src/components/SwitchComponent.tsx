@@ -3,7 +3,6 @@ import {Form, Switch} from 'antd';
 import { componentType } from '../utils/commonTypes';
 
 export function SwitchComponent(params) {
-  console.log('d', params);
   if (params.componentType === componentType.Soruce) {
     return <SwitchComponent {...params.property} />;
   } else {

@@ -63,26 +63,41 @@ const commonBase = (WrapComponent) => {
     }
 
     const onSwitchChange = (name, fieldName, checked, e) => {
-      if (name === 'master') {
-        const { masterData: masterDataOld } = modifyState;
-        const masterData = { ...masterDataOld };
-        masterData[fieldName] = checked;
-        dispatchModifyState({ masterData });
+      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
+      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+        const data = { ...dataOld };
+        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
+        data[fieldName] = checked;
+        dispatchModifyState({ [name + 'Data']: data });
+      } else {
+        const data = [...dataOld];
+        const index = data.findIndex(item => item.id === dataSelectedRowKeys.toString());
+        if (index > -1) {
+          data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+          data[index][fieldName] = checked;
+          dispatchModifyState({ [name + 'Data']: data });
+        }
       }
     }
 
 
     const onInputChange = (name, fieldName, e) => {
-      if (name === 'master') {
-        const { masterData: masterDataOld } = modifyState;
-        const masterData = { ...masterDataOld };
-        masterData[fieldName] = e.target.value;
-        console.log(name, fieldName, masterData);
-        dispatchModifyState({ masterData });
+      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
+      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+        const data = { ...dataOld };
+        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
+        data[fieldName] = e.target.value;
+        dispatchModifyState({ [name + 'Data']: data });
+      } else {
+        const data = [...dataOld];
+        const index = data.findIndex(item => item.id === dataSelectedRowKeys.toString());
+        if (index > -1) {
+          data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+          data[index][fieldName] = e.target.value;
+          dispatchModifyState({ [name + 'Data']: data });
+        }
       }
     }
-
-
 
     return <WrapComponent
       {...props}

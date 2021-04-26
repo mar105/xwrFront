@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Table} from 'antd';
 import * as commonUtils from "../utils/commonUtils";
 import { VList } from 'virtuallist-antd';
@@ -9,7 +9,7 @@ import {CheckboxComponent} from "./CheckboxComponent";
 import {SelectComponent} from "./SelectComponent";
 import {componentType} from "../utils/commonTypes";
 
-export function TableComponent(params) {
+export function TableComponent(params: any) {
 
   const rowKey = commonUtils.isNotEmptyArr(params.property.dataSource) &&
     commonUtils.isNotEmpty(params.property.dataSource[0].slaveId) ? 'slaveId' : 'id';
@@ -25,25 +25,37 @@ export function TableComponent(params) {
       columnsOld.forEach(columnOld => {
         const column = {...columnOld};
         column.render = (text, record, index) => {
-          const params = {
+          const inputParams = {
+            name: params.name,
             componentType: componentType.Soruce,
-            fieldName: column.fieldName,
+            fieldName: column.dataIndex,
             dropType: column.dropType,
             dropOptions: column.dropOptions,
             property: {value: text},
+            event: { onChange: params.event.onInputChange }
           };
           if (column.fieldType === 'varchar') {
             if (column.dropType === 'sql' || column.dropType === 'const') {
-              return (<SelectComponent {...params}  />);
+              const component = useMemo(()=>{ return (<SelectComponent {...inputParams}  />
+              )}, [text]);
+              return component;
             } else {
-              return (<InputComponent {...params}  />);
+              const component = useMemo(()=>{ return (<InputComponent {...inputParams}  />
+              )}, [text]);
+              return component;
             }
           } else if (column.fieldType === 'decimal'  || column.fieldType === 'smallint' || column.fieldType === 'int') {
-            return (<NumberComponent {...params}  />);
+            const component = useMemo(()=>{ return (<NumberComponent {...params}  />
+            )}, [text]);
+            return component;
           } else if (column.fieldType === 'tinyint') {
-            return (<CheckboxComponent {...params}  />);
+            const component = useMemo(()=>{ return (<CheckboxComponent {...params}  />
+            )}, [text]);
+            return component;
           } else if (column.fieldType === 'datetime') {
-            return (<DatePickerComponent {...params}  />);
+            const component = useMemo(()=>{ return (<DatePickerComponent {...params}  />
+            )}, [text]);
+            return component;
           } else {
             return text;
           }

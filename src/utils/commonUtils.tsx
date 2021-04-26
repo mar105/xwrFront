@@ -154,7 +154,8 @@ export function getTableProps(name, props) {
     property: { columns: props[name + 'Columns'], dataSource: props[name + 'Data'],  },
     eventOnRow: { onRowClick: props.onRowClick },
     propertySelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
-    eventSelection: { onRowSelectChange: props.onRowSelectChange }
+    eventSelection: { onRowSelectChange: props.onRowSelectChange },
+    event: { onInputChange: props.onInputChange }
   }
   return tableParam;
 };

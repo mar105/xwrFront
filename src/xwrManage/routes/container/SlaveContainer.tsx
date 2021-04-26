@@ -11,7 +11,7 @@ const SlaveContainer = (props) => {
 
   const { name, slaveData, enabled, slaveSelectedRowKeys } = props;
   const columns = [
-    { title: '类型', dataIndex: 'type', fieldType: 'varchar', dropType: 'const', dropOptions: '{ "field": "字段", "control": "控件" }', defaultValue: 'field', width: 150 },
+    { title: '类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const', dropOptions: '{ "field": "字段", "relevance":"关联性字段", "control": "控件" }', defaultValue: 'field', width: 150 },
     { title: '字段名称', dataIndex: 'fieldName', fieldType: 'varchar', width: 150 },
     { title: '字段类型', dataIndex: 'fieldType', fieldType: 'varchar', width: 150 },
     { title: '中文名称', dataIndex: 'chineseName', fieldType: 'varchar', width: 150 },
@@ -44,7 +44,7 @@ const SlaveContainer = (props) => {
   ];
 
   const onClick = async (name, e) => {
-    const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld } = props;
+    const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
     if (name === 'slaveAddBtn') {
       const data = props.onAdd();
       data.parentId = masterData.id;
@@ -57,21 +57,37 @@ const SlaveContainer = (props) => {
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         const slaveData = [...slaveDataOld];
+        const slaveDelData = commonUtils.isEmptyArr(slaveDelDataOld) ? [] : [...slaveDelDataOld];
         if (commonUtils.isNotEmptyArr(interfaceReturn.data)) {
-          interfaceReturn.data.forEach(dataRow => {
+          slaveData.filter(item => item.type === 'field').forEach((dataRow, rowIndex) => {
+            const index = interfaceReturn.data.findIndex(item => item.columnName === dataRow.fieldName);
+            if (!(index > -1)) {
+              dataRow.handleType = 'del';
+              slaveDelData.push(dataRow);
+              slaveData.splice(rowIndex, 1);
+            }
+          });
+          let sortNum = 1;
+          if (commonUtils.isNotEmptyArr(slaveDataOld)) {
+            slaveDataOld.sort((a, b) => (a.sortNum > b.sortNum) ? 1 : -1);
+            sortNum = slaveDataOld[0].sortNum;
+          }
+
+          interfaceReturn.data.forEach((dataRow, rowIndex)  => {
             const index = slaveData.findIndex(item => item.type === 'field' && item.fieldName === dataRow.columnName);
             if (!(index > -1)) {
               const data = props.onAdd();
-              data.parentId = masterData.id;
-              data.type = 'field';
+              data.superiorId = masterData.id;
+              data.containerType = 'field';
               data.fieldName = dataRow.columnName;
               data.fieldType = dataRow.dataType;
               data.chineseName = dataRow.columnComment;
+              data.sortNum = sortNum + rowIndex;
+              data.assignField = '';
               slaveData.push(data);
             }
           });
-          console.log('slaveData', slaveData);
-          dispatchModifyState({ slaveData, slaveSelectedRowKeys: [slaveData[0].id] });
+          dispatchModifyState({ slaveData, slaveDelData, slaveSelectedRowKeys: [slaveData[0].id] });
         }
 
       } else {

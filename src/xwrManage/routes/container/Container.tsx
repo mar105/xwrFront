@@ -199,13 +199,14 @@ const Container = (props) => {
       props.gotoError(dispatch, { code: '6001', msg: '数据正在编辑，请先保存或取消！' });
     } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
       const addState = props.onTreeSelect(selectedKeys, e, true);
-
-      const url: string = `${application.urlPrefix}/container/getContainerSlave?id=` + e.node.id;
-      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-      if (interfaceReturn.code === 1) {
-        addState.slaveData = interfaceReturn.data;
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
+      if (commonUtils.isNotEmpty(e.node.containerName)) {
+        const url: string = `${application.urlPrefix}/container/getContainerSlave?id=` + e.node.id;
+        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+        if (interfaceReturn.code === 1) {
+          addState.slaveData = interfaceReturn.data;
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
+        }
       }
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(e.node));

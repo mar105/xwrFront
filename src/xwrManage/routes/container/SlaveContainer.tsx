@@ -10,13 +10,13 @@ const SlaveContainer = (props) => {
 
   const { name, enabled } = props;
   const columns = [
+    { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', width: 80, fixed: 'left' },
     { title: '类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const', dropOptions: '{ "field": "字段", "relevance": "关联性字段", "control": "控件" }', defaultValue: 'field', width: 150 },
     { title: '字段名称', dataIndex: 'fieldName', fieldType: 'varchar', width: 150 },
     { title: '字段类型', dataIndex: 'fieldType', fieldType: 'varchar', dropType: 'const', dropOptions: '{ "varchar": "字符型", "decimal": "数字型", "int": "整型", "smallint": "微整型", "datetime": "日期型", "tinyint": "布尔型", "text": "备注型" }', width: 150 },
     { title: '中文名称', dataIndex: 'chineseName', fieldType: 'varchar', width: 150 },
     { title: '繁体名称', dataIndex: 'traditionalName', fieldType: 'varchar', width: 150 },
     { title: '英文名称', dataIndex: 'englishName', fieldType: 'varchar', width: 150 },
-    { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', width: 150 },
     { title: '是否必填', dataIndex: 'isRequired', fieldType: 'tinyint', width: 150 },
     { title: '是否显示', dataIndex: 'isVisible', fieldType: 'tinyint', width: 150 },
     { title: '是否求和', dataIndex: 'isSum', fieldType: 'tinyint', width: 150 },
@@ -117,6 +117,7 @@ const SlaveContainer = (props) => {
   };
 
   const tableParam: any = commonUtils.getTableProps(name, props);
+  tableParam.isDragRow = false;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
   return (
     <div>

@@ -9,15 +9,15 @@ import {CheckboxComponent} from "./CheckboxComponent";
 import {SelectComponent} from "./SelectComponent";
 import {componentType} from "../utils/commonTypes";
 import { Resizable } from 'react-resizable';
-import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
+import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import "react-resizable/css/styles.css";
 import { MenuOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
 
 // 数据行拖动
-const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
-const SortableItem = sortableElement(props => <tr {...props} />);
-const SortableContainer = sortableContainer(props => <tbody {...props} />);
+const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+const SortableItem = SortableElement(props => <tr {...props} />);
+const SortableContainerA = SortableContainer(props => <tbody {...props} />);
 
 // 标题列宽度拖动
 const ResizeableTitle = (props) => {
@@ -51,7 +51,7 @@ export function TableComponent(params: any) {
   };
 
   const DraggableContainer = props => (
-    <SortableContainer
+    <SortableContainerA
       useDragHandle
       disableAutoscroll
       helperClass="row-dragging"
@@ -72,12 +72,14 @@ export function TableComponent(params: any) {
     ...VList({ height: 500 }),
     header: {
       cell: ResizeableTitle,
-    },
-    body: {
+    }
+  };
+  if (params.isDragRow) {
+    components.body = {
       wrapper: DraggableContainer,
       row: DraggableBodyRow,
-    },
-  };
+    };
+  }
 
 
   // 标题列宽度拖动
@@ -125,7 +127,7 @@ export function TableComponent(params: any) {
             property: {value: text},
             event: { onChange: params.event.onInputChange }
           };
-          if (column.dataIndex === 'sortNum') {
+          if (column.dataIndex === 'sortNum' && params.isDragRow) {
             return <div><DragHandle /> {text}</div>;
           } else if (column.fieldType === 'varchar') {
             if (column.dropType === 'sql' || column.dropType === 'const') {
@@ -163,7 +165,7 @@ export function TableComponent(params: any) {
           onResize: handleResize(columnIndex),
         }),
         column.render = (text, record, index) => {
-          if (column.dataIndex === 'sortNum') {
+          if (column.dataIndex === 'sortNum' && params.isDragRow) {
             return <div><DragHandle /> {text}</div>;
           } else if (column.dropType === 'const') {
             const dropObject: any = commonUtils.stringToObj(column.dropOptions);

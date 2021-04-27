@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Table} from 'antd';
 import * as commonUtils from "../utils/commonUtils";
 import { VList } from 'virtuallist-antd';
@@ -8,21 +8,70 @@ import {DatePickerComponent} from "./DatePickerComponent";
 import {CheckboxComponent} from "./CheckboxComponent";
 import {SelectComponent} from "./SelectComponent";
 import {componentType} from "../utils/commonTypes";
+import { Resizable } from 'react-resizable';
+import "react-resizable/css/styles.css";
+
+
+const ResizeableTitle = (props) => {
+  const { onResize, width, ...restProps } = props;
+  if ( !width ) {
+    return <th {...restProps} />
+  }
+  return (
+    <Resizable width={width} height={0} onResize={onResize}>
+      <th {...restProps} />
+    </ Resizable >
+  )
+}
 
 export function TableComponent(params: any) {
 
+  const [resizeColumn, setResizeColumn] = useState([]);
+  useEffect(() => {
+    setResizeColumn(getColumn(params.property.columns));
+  }, [params.property.columns]);
+  const components = {
+    ...VList({ height: 500 }),
+    header: {
+      cell: ResizeableTitle,
+    },
+  };
+
+  const handleResize = index => (e, { size }) => {
+
+    const nextColumns: any = [...resizeColumn];
+    nextColumns[index] = {
+      ...nextColumns[index],
+      width: size.width,
+    };
+    setResizeColumn((resizeColumn: any) => {
+      const nextColumns: any = [...resizeColumn];
+      nextColumns[index] = {
+        ...nextColumns[index],
+        width: size.width,
+      };
+      return nextColumns;
+    });
+  };
+
   const rowKey = commonUtils.isNotEmptyArr(params.property.dataSource) &&
     commonUtils.isNotEmpty(params.property.dataSource[0].slaveId) ? 'slaveId' : 'id';
-  const getColumn = (columnsOld: any) => {
-    const columns: any = [];
-    columns.push({ title: '#', render: (text,record,index)=>`${index + 1}`, width: commonUtils.isEmptyArr(params.property.dataSource) ? 30 :
+
+  const getColumn = (resizeColumns: any) => {
+    const firstColumn: any = { title: '#', render: (text,record,index)=>`${index + 1}`, width: commonUtils.isEmptyArr(params.property.dataSource) ? 30 :
         params.property.dataSource.length < 10 ? 30 :
           params.property.dataSource.length < 100 ? 40:
             params.property.dataSource.length < 1000 ? 50 :
-              params.property.dataSource.length < 10000 ? 60 : 70 , fixed: 'left' });
+              params.property.dataSource.length < 10000 ? 60 : 70 , fixed: 'left' };
+    const columnsOld: any = [firstColumn, ...resizeColumns];
+    const columns: any = [];
     if (params.enabled) {
-      columnsOld.forEach(columnOld => {
+      columnsOld.forEach((columnOld, columnIndex) => {
         const column = {...columnOld};
+        column.onHeaderCell = columnHeader => ({
+          width: columnHeader.width, // 100 没有设置宽度可以在此写死 例如100试下
+          onResize: handleResize(columnIndex),
+        }),
         column.render = (text, record, index) => {
           const inputParams = {
             name: params.name,
@@ -62,8 +111,12 @@ export function TableComponent(params: any) {
         columns.push(column);
       });
     } else {
-      columnsOld.forEach(columnOld => {
+      columnsOld.forEach((columnOld, columnIndex) => {
         const column = {...columnOld};
+        column.onHeaderCell = columnHeader => ({
+          width: columnHeader.width, // 100 没有设置宽度可以在此写死 例如100试下
+          onResize: handleResize(columnIndex),
+        }),
         column.render = (text, record, index) => {
           if (column.dropType === 'const') {
             const dropObject: any = commonUtils.stringToObj(column.dropOptions);
@@ -87,7 +140,7 @@ export function TableComponent(params: any) {
     pagination={false}
     size={'small'}
     {...params.property}
-    columns={getColumn(params.property.columns)}
+    columns={resizeColumn}
     onRow={record => {
       return {
         onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
@@ -101,7 +154,7 @@ export function TableComponent(params: any) {
     scroll={{ y: 500 }}
     // 使用VList 即可有虚拟列表的效果
     // 此值和scrollY值相同. 必传. (required).  same value for scrolly
-    components={VList({ height: 500 })}
+    components={ components }
     style={{width: 1000}}
   />;
 }

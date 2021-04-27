@@ -1,5 +1,5 @@
 import {TableComponent} from "../../../components/TableComponent";
-import React from "react";
+import React, {useEffect} from "react";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonComponent} from "../../../components/ButtonComponent";
 import {componentType} from "../../../utils/commonTypes";
@@ -41,6 +41,12 @@ const SlaveContainer = (props) => {
     { title: '是否数字不能为0', dataIndex: 'isNotZero', fieldType: 'tinyint', width: 150 },
     { title: '是否当前数据过滤', dataIndex: 'isFilter', fieldType: 'tinyint', width: 150 },
   ];
+
+  useEffect(() => {
+    const { dispatchModifyState } = props;
+    dispatchModifyState({slaveColumns: columns});
+  }, []);
+
 
   const onClick = async (name, e) => {
     const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
@@ -111,7 +117,7 @@ const SlaveContainer = (props) => {
   };
 
   const tableParam: any = commonUtils.getTableProps(name, props);
-  tableParam.property.columns = columns;
+  tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
   return (
     <div>
       <ButtonComponent {...button} />

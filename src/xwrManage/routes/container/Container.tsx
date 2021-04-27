@@ -207,6 +207,8 @@ const Container = (props) => {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
+      } else {
+        addState.slaveData = [];
       }
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(e.node));

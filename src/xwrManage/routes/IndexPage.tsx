@@ -10,10 +10,10 @@ import {useEffect} from "react";
 
 function IndexPage(props) {
   useEffect(() => {
-    const {commonModel} = props;
-    commonUtils.getWebSocketData(commonModel.token, "", null);
+    // const {commonModel} = props;
+    // commonUtils.getWebSocketData(commonModel.token, "", null);
   }, []);
-  //
+
   const onClick = (path) => {
     const {dispatchModifyState, panes: panesOld, panesComponents } = props;
     const iIndex = routeInfo.findIndex(item => item.path === path);

@@ -366,9 +366,10 @@ const Container = (props) => {
         : ''}
     </div>)}, [masterData, enabled]);
 
+  const containerNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.containerName) ? masterData.containerName : '';
   const slaveTable = useMemo(()=>{ return (
-    <SlaveContainer name='slave' {...props} />
-  )}, [masterData, slaveData, enabled, slaveSelectedRowKeys]);
+    <SlaveContainer name='slave' {...props} onClick={onClick} />
+  )}, [containerNameValue, slaveData, enabled, slaveSelectedRowKeys]);
 
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>

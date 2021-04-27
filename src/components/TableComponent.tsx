@@ -13,7 +13,6 @@ export function TableComponent(params: any) {
 
   const rowKey = commonUtils.isNotEmptyArr(params.property.dataSource) &&
     commonUtils.isNotEmpty(params.property.dataSource[0].slaveId) ? 'slaveId' : 'id';
-
   const getColumn = (columnsOld: any) => {
     const columns: any = [];
     columns.push({ title: '#', render: (text,record,index)=>`${index + 1}`, width: commonUtils.isEmptyArr(params.property.dataSource) ? 30 :
@@ -63,7 +62,18 @@ export function TableComponent(params: any) {
         columns.push(column);
       });
     } else {
-      columns.push(...columnsOld);
+      columnsOld.forEach(columnOld => {
+        const column = {...columnOld};
+        column.render = (text, record, index) => {
+          if (column.dropType === 'const') {
+            const dropObject: any = commonUtils.stringToObj(column.dropOptions);
+            return dropObject[text];
+          } else {
+            return text;
+          }
+        }
+        columns.push(column);
+      });
     }
     return columns;
   }
@@ -87,12 +97,11 @@ export function TableComponent(params: any) {
         // onMouseLeave: event => {},
       };
     }}
-    scroll={{
-      y: 500 // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
-    }}
+    // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
+    scroll={{ y: 500 }}
     // 使用VList 即可有虚拟列表的效果
-    components={VList({ height: 500 // 此值和scrollY值相同. 必传. (required).  same value for scrolly
-    })}
+    // 此值和scrollY值相同. 必传. (required).  same value for scrolly
+    components={VList({ height: 500 })}
     style={{width: 1000}}
   />;
 }

@@ -98,7 +98,6 @@ const commonBase = (WrapComponent) => {
         }
       }
     }
-
     return <WrapComponent
       {...props}
       {...modifyState}
@@ -106,7 +105,6 @@ const commonBase = (WrapComponent) => {
       onAdd={onAdd}
       onModify={onModify}
       onRowClick={onRowClick}
-      // onMasterChange={handleMasterChange}
       gotoError={gotoError}
       onRowSelectChange={onRowSelectChange}
       onSwitchChange={onSwitchChange}

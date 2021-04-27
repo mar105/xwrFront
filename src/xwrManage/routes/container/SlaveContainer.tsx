@@ -1,4 +1,3 @@
-import {useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
 import React from "react";
 import * as commonUtils from "../../../utils/commonUtils";
@@ -9,7 +8,7 @@ import * as request from "../../../utils/request";
 
 const SlaveContainer = (props) => {
 
-  const { name, slaveData, enabled, slaveSelectedRowKeys } = props;
+  const { name, enabled } = props;
   const columns = [
     { title: '类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const', dropOptions: '{ "field": "字段", "relevance": "关联性字段", "control": "控件" }', defaultValue: 'field', width: 150 },
     { title: '字段名称', dataIndex: 'fieldName', fieldType: 'varchar', width: 150 },
@@ -113,12 +112,12 @@ const SlaveContainer = (props) => {
 
   const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.property.columns = columns;
-  const slaveTable = useMemo(()=>{
-    return (<div>
+  return (
+    <div>
       <ButtonComponent {...button} />
       <ButtonComponent {...syncDataButton} />
       <TableComponent {...tableParam} />
-    </div>)}, [slaveData, enabled, slaveSelectedRowKeys]);
-  return (slaveTable);
+    </div>
+  );
 }
 export default SlaveContainer;

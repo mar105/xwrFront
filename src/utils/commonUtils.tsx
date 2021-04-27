@@ -151,6 +151,7 @@ export function getTableProps(name, props) {
   const tableParam ={
     name,
     enabled: props.enabled,
+    dispatchModifyState: props.dispatchModifyState,
     property: { columns: props[name + 'Columns'], dataSource: props[name + 'Data'],  },
     eventOnRow: { onRowClick: props.onRowClick },
     propertySelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },

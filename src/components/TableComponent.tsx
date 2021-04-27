@@ -9,9 +9,17 @@ import {CheckboxComponent} from "./CheckboxComponent";
 import {SelectComponent} from "./SelectComponent";
 import {componentType} from "../utils/commonTypes";
 import { Resizable } from 'react-resizable';
+import { sortableContainer, sortableElement, sortableHandle } from 'react-sortable-hoc';
 import "react-resizable/css/styles.css";
+import { MenuOutlined } from '@ant-design/icons';
+import arrayMove from 'array-move';
 
+// 数据行拖动
+const DragHandle = sortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+const SortableItem = sortableElement(props => <tr {...props} />);
+const SortableContainer = sortableContainer(props => <tbody {...props} />);
 
+// 标题列宽度拖动
 const ResizeableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
   if ( !width ) {
@@ -30,13 +38,49 @@ export function TableComponent(params: any) {
   useEffect(() => {
     setResizeColumn(getColumn(params.property.columns));
   }, [params.property.columns]);
+
+  // 数据行拖动
+  const onSortEnd = ({ oldIndex, newIndex }) => {
+    const { dispatchModifyState } = params;
+    const { dataSource } = params.property;
+    if (oldIndex !== newIndex) {
+      const newData = arrayMove([].concat(dataSource), oldIndex, newIndex).filter(el => !!el);
+      newData.forEach((item: any, index) => item.sortNum = index + 1);
+      dispatchModifyState({[params.name + 'Data']: newData});
+    }
+  };
+
+  const DraggableContainer = props => (
+    <SortableContainer
+      useDragHandle
+      disableAutoscroll
+      helperClass="row-dragging"
+      onSortEnd={onSortEnd}
+      {...props}
+    />
+  );
+
+  const DraggableBodyRow = ({ className, style, ...restProps }) => {
+    const { dataSource: dataSourceOld }: any = params.property;
+    // function findIndex base on Table rowKey props and should always be a right array index
+    const dataSource = commonUtils.isEmptyArr(dataSourceOld) ? [] : dataSourceOld;
+    const index = dataSource.findIndex((x: any) => x[rowKey] === restProps['data-row-key']);
+    return <SortableItem index={index} {...restProps} />;
+  };
+
   const components = {
     ...VList({ height: 500 }),
     header: {
       cell: ResizeableTitle,
     },
+    body: {
+      wrapper: DraggableContainer,
+      row: DraggableBodyRow,
+    },
   };
 
+
+  // 标题列宽度拖动
   const handleResize = index => (e, { size }) => {
     const nextColumns: any = [...resizeColumn];
     nextColumns[index] = {
@@ -68,7 +112,7 @@ export function TableComponent(params: any) {
       columnsOld.forEach((columnOld, columnIndex) => {
         const column = {...columnOld};
         column.onHeaderCell = columnHeader => ({
-          width: columnHeader.width, // 100 没有设置宽度可以在此写死 例如100试下
+          width: columnHeader.width,
           onResize: handleResize(columnIndex),
         }),
         column.render = (text, record, index) => {
@@ -81,7 +125,9 @@ export function TableComponent(params: any) {
             property: {value: text},
             event: { onChange: params.event.onInputChange }
           };
-          if (column.fieldType === 'varchar') {
+          if (column.dataIndex === 'sortNum') {
+            return <div><DragHandle /> {text}</div>;
+          } else if (column.fieldType === 'varchar') {
             if (column.dropType === 'sql' || column.dropType === 'const') {
               const component = useMemo(()=>{ return (<SelectComponent {...inputParams}  />
               )}, [text]);
@@ -117,7 +163,9 @@ export function TableComponent(params: any) {
           onResize: handleResize(columnIndex),
         }),
         column.render = (text, record, index) => {
-          if (column.dropType === 'const') {
+          if (column.dataIndex === 'sortNum') {
+            return <div><DragHandle /> {text}</div>;
+          } else if (column.dropType === 'const') {
             const dropObject: any = commonUtils.stringToObj(column.dropOptions);
             return dropObject[text];
           } else {

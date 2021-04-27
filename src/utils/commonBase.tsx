@@ -18,6 +18,7 @@ const commonBase = (WrapComponent) => {
       return ()=> {
         const clearModifying = async () => {
           const {dispatch, commonModel, tabId} = props;
+          //为什么要用stateRef.current？是因为 masterData数据改变后，useEffect使用的是[]不重新更新state，为老数据,使用 useRef来存储变量。
           const { masterData }: any = stateRef.current;
           if (commonUtils.isNotEmpty(masterData.handleType)) {
             const url: string = `${application.urlCommon}/verify/removeModifying`;
@@ -63,7 +64,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onSwitchChange = (name, fieldName, checked, e) => {
-      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = modifyState;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
@@ -80,9 +81,8 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-
     const onInputChange = (name, fieldName, e) => {
-      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = modifyState;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;

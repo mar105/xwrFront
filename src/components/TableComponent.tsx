@@ -190,6 +190,7 @@ export function TableComponent(params: any) {
     size={'small'}
     {...params.property}
     columns={resizeColumn}
+    sticky={true}
     onRow={record => {
       return {
         onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行

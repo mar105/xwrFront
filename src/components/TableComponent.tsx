@@ -38,7 +38,6 @@ export function TableComponent(params: any) {
   };
 
   const handleResize = index => (e, { size }) => {
-
     const nextColumns: any = [...resizeColumn];
     nextColumns[index] = {
       ...nextColumns[index],

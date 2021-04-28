@@ -72,7 +72,7 @@ export function TableComponent(params: any) {
   //标题列拖拽
   const DragTitleColumn = {
     onDragEnd(fromIndex, toIndex) {
-      const  selectionMinus = params.rowSelection === null ? 0 : 1;
+      const  selectionMinus = params.property.rowSelection === null ? 0 : 1;
       const columns = [...resizeColumn];
       const item = columns.splice(fromIndex - selectionMinus, 1)[0];
       columns.splice(toIndex - selectionMinus, 0, item);

@@ -13,6 +13,7 @@ import { SortableContainer, SortableElement, SortableHandle } from 'react-sortab
 import "react-resizable/css/styles.css";
 import { MenuOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
+import ReactDragListView from 'react-drag-listview';
 
 // 数据行拖动
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -67,6 +68,19 @@ export function TableComponent(params: any) {
     const index = dataSource.findIndex((x: any) => x[rowKey] === restProps['data-row-key']);
     return <SortableItem index={index} {...restProps} />;
   };
+
+  //标题列拖拽
+  const DragTitleColumn = {
+    onDragEnd(fromIndex, toIndex) {
+      const  selectionMinus = params.rowSelection === null ? 0 : 1;
+      const columns = [...resizeColumn];
+      const item = columns.splice(fromIndex - selectionMinus, 1)[0];
+      columns.splice(toIndex - selectionMinus, 0, item);
+      setResizeColumn(columns);
+    },
+    nodeSelector: "th"
+  };
+
 
   const components = {
     ...VList({ height: 500 }),
@@ -182,30 +196,34 @@ export function TableComponent(params: any) {
 
 
 
-  return <Table
-    rowKey={rowKey}
-    rowSelection={{type: 'checkbox', fixed: true, ...params.propertySelection,
-      selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
-      onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } }}
-    pagination={false}
-    size={'small'}
-    {...params.property}
-    columns={resizeColumn}
-    sticky={true}
-    onRow={record => {
-      return {
-        onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
-        onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
-        // onContextMenu: event => {},
-        // onMouseEnter: event => {}, // 鼠标移入行
-        // onMouseLeave: event => {},
-      };
-    }}
-    // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
-    scroll={{ y: 500 }}
-    // 使用VList 即可有虚拟列表的效果
-    // 此值和scrollY值相同. 必传. (required).  same value for scrolly
-    components={ components }
-    style={{width: 1000}}
-  />;
+  return <div>
+    <ReactDragListView.DragColumn {...DragTitleColumn}>
+      <Table
+      rowKey={rowKey}
+      rowSelection={{type: 'checkbox', fixed: true, ...params.propertySelection,
+        selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
+        onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } }}
+      pagination={false}
+      size={'small'}
+      {...params.property}
+      columns={resizeColumn}
+      sticky={true}
+      onRow={record => {
+        return {
+          onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
+          onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
+          // onContextMenu: event => {},
+          // onMouseEnter: event => {}, // 鼠标移入行
+          // onMouseLeave: event => {},
+        };
+      }}
+      // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
+      scroll={{ y: 500 }}
+      // 使用VList 即可有虚拟列表的效果
+      // 此值和scrollY值相同. 必传. (required).  same value for scrolly
+      components={ components }
+      style={{width: 1000}}
+      />
+    </ReactDragListView.DragColumn>
+  </div>;
 }

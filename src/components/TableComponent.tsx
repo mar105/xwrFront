@@ -130,7 +130,8 @@ export function TableComponent(params: any) {
         column.onHeaderCell = columnHeader => ({
           width: columnHeader.width,
           onResize: handleResize(columnIndex),
-        }),
+        });
+        column.ellipsis = {showTitle: true};
         column.render = (text, record, index) => {
           const inputParams = {
             name: params.name,
@@ -177,7 +178,8 @@ export function TableComponent(params: any) {
         column.onHeaderCell = columnHeader => ({
           width: columnHeader.width, // 100 没有设置宽度可以在此写死 例如100试下
           onResize: handleResize(columnIndex),
-        }),
+        });
+        column.ellipsis = {showTitle: true};
         column.render = (text, record, index) => {
           if (column.dataIndex === 'sortNum' && params.isDragRow) {
             return <div><DragHandle /> {text}</div>;

@@ -58,9 +58,7 @@ const commonBase = (WrapComponent) => {
     };
 
     const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
-      if (commonUtils.isNotEmptyArr(selectedRows)) {
-        dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys });
-      }
+      dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys });
     }
 
     const onSwitchChange = (name, fieldName, checked, e) => {

@@ -184,7 +184,8 @@ export function TableComponent(params: any) {
 
   return <Table
     rowKey={rowKey}
-    rowSelection={{type: "radio", fixed: true, ...params.propertySelection,
+    rowSelection={{type: 'checkbox', fixed: true, ...params.propertySelection,
+      selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
       onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } }}
     pagination={false}
     size={'small'}

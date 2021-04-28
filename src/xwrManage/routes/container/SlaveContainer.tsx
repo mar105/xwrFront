@@ -117,7 +117,7 @@ const SlaveContainer = (props) => {
   };
 
   const tableParam: any = commonUtils.getTableProps(name, props);
-  tableParam.isDragRow = false;
+  tableParam.isDragRow = true;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
   return (
     <div>

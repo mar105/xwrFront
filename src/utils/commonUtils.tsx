@@ -156,7 +156,7 @@ export function getTableProps(name, props) {
     eventOnRow: { onRowClick: props.onRowClick },
     propertySelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
-    event: { onInputChange: props.onInputChange }
+    event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange }
   }
   return tableParam;
 };

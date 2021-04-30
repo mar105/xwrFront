@@ -48,9 +48,8 @@ const commonBase = (WrapComponent) => {
     };
 
     const onRowClick = (name, record, rowKey) => {
-      const addState: any = {};
-      addState[name + 'SelectedRowKeys'] = [record[rowKey]];
-      dispatchModifyState({...addState});
+      console.log('onRowClick', [record[rowKey]]);
+      dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]] });
     }
 
     const gotoError = (dispatch, interfaceData) => {
@@ -58,11 +57,12 @@ const commonBase = (WrapComponent) => {
     };
 
     const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
+      console.log('onRowSelectChange', selectedRowKeys);
       dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys });
     }
 
     const onSwitchChange = (name, fieldName, checked, e) => {
-      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = modifyState;
+      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
@@ -70,7 +70,7 @@ const commonBase = (WrapComponent) => {
         dispatchModifyState({ [name + 'Data']: data });
       } else {
         const data = [...dataOld];
-        const index = data.findIndex(item => item.id === dataSelectedRowKeys.toString());
+        const index = data.findIndex(item => item.id === commonUtils.isEmptyArr(dataSelectedRowKeys) ? '' : dataSelectedRowKeys.toString());
         if (index > -1) {
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = checked;
@@ -79,8 +79,27 @@ const commonBase = (WrapComponent) => {
       }
     }
 
+    const onCheckboxChange = (name, fieldName, e) => {
+      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
+      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+        const data = { ...dataOld };
+        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
+        data[fieldName] = e.target.checked;
+        dispatchModifyState({ [name + 'Data']: data });
+      } else {
+        const data = [...dataOld];
+        console.log('11111', e, data, dataSelectedRowKeys, name, stateRef.current, e.target.checked, commonUtils.isEmptyArr(dataSelectedRowKeys));
+        const index = data.findIndex(item => item.id === (commonUtils.isEmptyArr(dataSelectedRowKeys) ? '' : dataSelectedRowKeys.toString()));
+        if (index > -1) {
+          data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+          data[index][fieldName] = e.target.checked;
+          dispatchModifyState({ [name + 'Data']: data });
+        }
+      }
+    }
+
     const onInputChange = (name, fieldName, e) => {
-      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = modifyState;
+      const { [name + 'Data']: dataOld, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
@@ -88,7 +107,7 @@ const commonBase = (WrapComponent) => {
         dispatchModifyState({ [name + 'Data']: data });
       } else {
         const data = [...dataOld];
-        const index = data.findIndex(item => item.id === dataSelectedRowKeys.toString());
+        const index = data.findIndex(item => item.id === commonUtils.isEmptyArr(dataSelectedRowKeys) ? '' : dataSelectedRowKeys.toString());
         if (index > -1) {
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = e.target.value;
@@ -107,6 +126,7 @@ const commonBase = (WrapComponent) => {
       onRowSelectChange={onRowSelectChange}
       onSwitchChange={onSwitchChange}
       onInputChange={onInputChange}
+      onCheckboxChange={onCheckboxChange}
     />
   };
 };

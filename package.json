@@ -36,6 +36,7 @@
     "html-webpack-plugin": "^4.5.1",
     "less-loader": "^8.0.0",
     "react-drag-listview": "^0.1.8",
+    "react-highlight-words": "^0.17.0",
     "react-resizable": "^1.11.1",
     "react-scripts": "^4.0.3",
     "react-sortable-hoc": "^2.0.0",

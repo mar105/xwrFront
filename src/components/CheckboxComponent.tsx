@@ -4,7 +4,7 @@ import { componentType } from '../utils/commonTypes';
 
 export function CheckboxComponent(params) {
   if (params.componentType === componentType.Soruce) {
-    return <Checkbox {...params.property} />;
+    return <Checkbox {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName) : null } />;
   } else {
     return <Form.Item
       label={params.label}
@@ -13,7 +13,7 @@ export function CheckboxComponent(params) {
     shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]
     }
   }>
-    <Checkbox {...params.property} />
+    <Checkbox {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName) : null } />
     </Form.Item>;
   }
 

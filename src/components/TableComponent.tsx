@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Table} from 'antd';
+import {Button, Input, Space, Table} from 'antd';
 import * as commonUtils from "../utils/commonUtils";
 import { VList } from 'virtuallist-antd';
 import {InputComponent} from "./InputComponent";
@@ -14,6 +14,9 @@ import "react-resizable/css/styles.css";
 import { MenuOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
 import ReactDragListView from 'react-drag-listview';
+import { SearchOutlined, CheckSquareOutlined, BorderOutlined } from '@ant-design/icons';
+import Highlighter from 'react-highlight-words';
+import {isNotEmptyObj} from "../utils/commonUtils";
 
 // 数据行拖动
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -23,7 +26,7 @@ const SortableContainerA = SortableContainer(props => <tbody {...props} />);
 // 标题列宽度拖动
 const ResizeableTitle = (props) => {
   const { onResize, width, ...restProps } = props;
-  if ( !width ) {
+  if (!width) {
     return <th {...restProps} />
   }
   return (
@@ -34,11 +37,13 @@ const ResizeableTitle = (props) => {
 }
 
 export function TableComponent(params: any) {
-
   const [resizeColumn, setResizeColumn] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  let searchInput;
   useEffect(() => {
     setResizeColumn(getColumn(params.property.columns));
-  }, [params.property.columns]);
+  }, [params.property.columns, params]);
 
   // 数据行拖动
   const onSortEnd = ({ oldIndex, newIndex }) => {
@@ -113,8 +118,81 @@ export function TableComponent(params: any) {
     });
   };
 
+  //获取表格的rowKey
   const rowKey = commonUtils.isNotEmptyArr(params.property.dataSource) &&
     commonUtils.isNotEmpty(params.property.dataSource[0].slaveId) ? 'slaveId' : 'id';
+
+  //搜索常量小面板
+  /**   对象转数组 (过滤使用)  */
+  const objectToArrFilter = (obj) => {
+    const arr: any = [];
+    if (isNotEmptyObj(obj)) {
+      for (const key of Object.keys(obj)) {
+        const value = obj[key];
+        arr.push({ text: value, value: key });
+      }
+    }
+    return arr;
+  }
+  const getColumnSearchConstProps = (column) => ({
+    filters: objectToArrFilter(commonUtils.stringToObj(column.dropOptions)),
+    // filteredValue: commonUtils.isEmpty(stateRef.current) ? '' : stateRef.current[column.dataIndex],
+    // filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilter: (value, record) => record[column.dataIndex].includes(value),
+  });
+
+  //搜索小面板
+  const getColumnSearchProps = column => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={node => {
+            searchInput = node;
+          }}
+          placeholder={column.title}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, column.dataIndex)}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, column.dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilter: (value, record) =>
+      record[column.dataIndex]
+        ? record[column.dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+        : '',
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => searchInput.select(), 100);
+      }
+    },
+  });
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = clearFilters => {
+    clearFilters();
+    setSearchText('');
+  };
 
   const getColumn = (resizeColumns: any) => {
     const firstColumn: any = { title: '#', render: (text,record,index)=>`${index + 1}`, width: commonUtils.isEmptyArr(params.property.dataSource) ? 30 :
@@ -124,14 +202,16 @@ export function TableComponent(params: any) {
               params.property.dataSource.length < 10000 ? 60 : 70 , fixed: 'left' };
     const columnsOld: any = [firstColumn, ...resizeColumns];
     const columns: any = [];
-    if (params.enabled) {
-      columnsOld.forEach((columnOld, columnIndex) => {
-        const column = {...columnOld};
-        column.onHeaderCell = columnHeader => ({
-          width: columnHeader.width,
-          onResize: handleResize(columnIndex),
-        });
-        column.ellipsis = {showTitle: true};
+    columnsOld.forEach((columnOld, columnIndex) => {
+      const column = columnOld.title === '#' ? {...columnOld} : columnOld.dropType === 'const' ?
+        {...columnOld, ...getColumnSearchConstProps(columnOld)} : {...columnOld, ...getColumnSearchProps(columnOld)};
+
+      column.onHeaderCell = columnHeader => ({
+        width: columnHeader.width,
+        onResize: handleResize(columnIndex),
+      });
+      column.ellipsis = {showTitle: true};
+      if (params.enabled) {
         column.render = (text, record, index) => {
           const inputParams = {
             name: params.name,
@@ -140,68 +220,92 @@ export function TableComponent(params: any) {
             dropType: column.dropType,
             dropOptions: column.dropOptions,
             property: {value: text},
-            event: { onChange: params.event.onInputChange }
+            event: {onChange: params.event.onInputChange}
+          };
+          const checkboxParams = {
+            name: params.name,
+            componentType: componentType.Soruce,
+            fieldName: column.dataIndex,
+            property: {checked: text},
+            event: {onChange: params.event.onCheckboxChange}
           };
           if (column.dataIndex === 'sortNum' && params.isDragRow) {
-            return <div><DragHandle /> {text}</div>;
+            return <div><DragHandle/> {text}</div>;
           } else if (column.fieldType === 'varchar') {
             if (column.dropType === 'sql' || column.dropType === 'const') {
-              const component = useMemo(()=>{ return (<SelectComponent {...inputParams}  />
-              )}, [text]);
+              const component = useMemo(() => {
+                return (<SelectComponent {...inputParams}  />
+                )
+              }, [text]);
               return component;
             } else {
-              const component = useMemo(()=>{ return (<InputComponent {...inputParams}  />
-              )}, [text]);
+              const component = useMemo(() => {
+                return (<InputComponent {...inputParams}  />
+                )
+              }, [text]);
               return component;
             }
-          } else if (column.fieldType === 'decimal'  || column.fieldType === 'smallint' || column.fieldType === 'int') {
-            const component = useMemo(()=>{ return (<NumberComponent {...params}  />
-            )}, [text]);
+          } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
+            const component = useMemo(() => {
+              return (<NumberComponent {...params}  />
+              )
+            }, [text]);
             return component;
           } else if (column.fieldType === 'tinyint') {
-            const component = useMemo(()=>{ return (<CheckboxComponent {...params}  />
-            )}, [text]);
+            const component = useMemo(() => {
+              return (<CheckboxComponent {...checkboxParams}  />
+              )
+            }, [text]);
             return component;
           } else if (column.fieldType === 'datetime') {
-            const component = useMemo(()=>{ return (<DatePickerComponent {...params}  />
-            )}, [text]);
+            const component = useMemo(() => {
+              return (<DatePickerComponent {...params}  />
+              )
+            }, [text]);
             return component;
           } else {
             return text;
           }
         }
-        columns.push(column);
-      });
-    } else {
-      columnsOld.forEach((columnOld, columnIndex) => {
-        const column = {...columnOld};
-        column.onHeaderCell = columnHeader => ({
-          width: columnHeader.width, // 100 没有设置宽度可以在此写死 例如100试下
-          onResize: handleResize(columnIndex),
-        });
-        column.ellipsis = {showTitle: true};
+      } else {
         column.render = (text, record, index) => {
           if (column.dataIndex === 'sortNum' && params.isDragRow) {
             return <div><DragHandle /> {text}</div>;
           } else if (column.dropType === 'const') {
             const dropObject: any = commonUtils.stringToObj(column.dropOptions);
             return dropObject[text];
+          } else if (column.fieldType === 'tinyint') {
+            return text ? <CheckSquareOutlined /> : <BorderOutlined />;
           } else {
-            return text;
+            return searchedColumn === columnOld.dataIndex ? (
+              <Highlighter
+                highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                searchWords={[searchText]}
+                autoEscape
+                textToHighlight={text ? text.toString() : ''}
+              />
+            ) : text;
           }
         }
-        columns.push(column);
-      });
-    }
+      }
+      columns.push(column);
+    });
     return columns;
   }
 
-
-
+  const onChange = (pagination, filters, sorter, extra) => {
+    console.log('params', filters);
+  }
   return <div>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
       <Table
       rowKey={rowKey}
+        // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
+      scroll={{ y: 500 }}
+        // 使用VList 即可有虚拟列表的效果
+        // 此值和scrollY值相同. 必传. (required).  same value for scrolly
+      components={ components }
+      style={{width: 1000}}
       rowSelection={{type: 'checkbox', fixed: true, ...params.propertySelection,
         selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
         onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } }}
@@ -219,12 +323,7 @@ export function TableComponent(params: any) {
           // onMouseLeave: event => {},
         };
       }}
-      // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
-      scroll={{ y: 500 }}
-      // 使用VList 即可有虚拟列表的效果
-      // 此值和scrollY值相同. 必传. (required).  same value for scrolly
-      components={ components }
-      style={{width: 1000}}
+      onChange={onChange}
       />
     </ReactDragListView.DragColumn>
   </div>;

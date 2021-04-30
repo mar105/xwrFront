@@ -4,7 +4,7 @@ import { componentType } from '../utils/commonTypes';
 
 export function SwitchComponent(params) {
   if (params.componentType === componentType.Soruce) {
-    return <SwitchComponent {...params.property} />;
+    return <SwitchComponent {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName) : null } />;
   } else {
     return <Form.Item
       label={params.label}

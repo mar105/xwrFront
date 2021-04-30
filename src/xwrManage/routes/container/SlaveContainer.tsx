@@ -56,7 +56,7 @@ const SlaveContainer = (props) => {
       data.type = 'field';
       const slaveData = [...slaveDataOld];
       slaveData.push(data);
-      dispatchModifyState({ slaveData, slaveSelectedRowKeys: [data.id] });
+      dispatchModifyState({ slaveData, slaveSelectedRowKeys: [data.id], slaveScrollToRow: slaveData.length });
     } else if (name === 'slaveSyncDataBtn') {
       const url: string = `${application.urlPrefix}/container/getDBFields?tableName=` + masterData.containerName;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;

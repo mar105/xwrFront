@@ -152,11 +152,13 @@ export function getTableProps(name, props) {
     name,
     enabled: props.enabled,
     dispatchModifyState: props.dispatchModifyState,
+    scrollToRow: props[name + 'ScrollToRow'],
     property: { columns: props[name + 'Columns'], dataSource: props[name + 'Data'],  },
     eventOnRow: { onRowClick: props.onRowClick },
     propertySelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
-    event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange }
+    event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
+      onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange }
   }
   return tableParam;
 };

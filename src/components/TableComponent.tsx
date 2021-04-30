@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Button, Input, Space, Table} from 'antd';
+import {Button, Input, Space, Table } from 'antd';
 import * as commonUtils from "../utils/commonUtils";
-import { VList } from 'virtuallist-antd';
+import { VList, scrollTo } from 'virtuallist-antd';
 import {InputComponent} from "./InputComponent";
 import {NumberComponent} from "./NumberComponent";
 import {DatePickerComponent} from "./DatePickerComponent";
@@ -41,11 +41,12 @@ export function TableComponent(params: any) {
   const [components, setComponents] = useState({});
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
+  const [filteredInfo, setFilteredInfo] = useState([]);
   let searchInput;
   useEffect(() => {
     setColumns(getColumn(params.property.columns));
     setComponents({
-      ...VList({ height: 500 }),
+      ...VList({ height: 500}),
       header: {
         cell: ResizeableTitle,
       },
@@ -54,8 +55,13 @@ export function TableComponent(params: any) {
         row: DraggableBodyRow,
       }: null,
     });
-  }, [params.property.columns, params.enabled]);
+  }, [params.property.columns, params.enabled, params.scrollToRow]);
 
+  useEffect(() => {
+    if (params.scrollToRow) {
+      scrollTo({row: params.scrollToRow});
+    }
+  }, [params.scrollToRow]);
   // 数据行拖动
   const onSortEnd = ({ oldIndex, newIndex }) => {
     const { dispatchModifyState } = params;
@@ -131,7 +137,7 @@ export function TableComponent(params: any) {
   }
   const getColumnSearchConstProps = (column) => ({
     filters: objectToArrFilter(commonUtils.stringToObj(column.dropOptions)),
-    // filteredValue: commonUtils.isEmpty(stateRef.current) ? '' : stateRef.current[column.dataIndex],
+    filteredValue: commonUtils.isEmpty(filteredInfo) ? '' : filteredInfo[column.dataIndex],
     // filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
     onFilter: (value, record) => record[column.dataIndex].includes(value),
   });
@@ -208,6 +214,16 @@ export function TableComponent(params: any) {
       column.ellipsis = {showTitle: true};
       if (params.enabled) {
         column.render = (text, record, index) => {
+          const selectParams = {
+            name: params.name,
+            componentType: componentType.Soruce,
+            fieldName: column.dataIndex,
+            dropType: column.dropType,
+            dropOptions: column.dropOptions,
+            property: {value: text},
+            record,
+            event: {onChange: params.event.onSelectChange}
+          };
           const inputParams = {
             name: params.name,
             componentType: componentType.Soruce,
@@ -226,12 +242,20 @@ export function TableComponent(params: any) {
             record,
             event: {onChange: params.event.onCheckboxChange}
           };
+          const numberParams = {
+            name: params.name,
+            componentType: componentType.Soruce,
+            fieldName: column.dataIndex,
+            property: {checked: text},
+            record,
+            event: {onChange: params.event.onNumberChange}
+          };
           if (column.dataIndex === 'sortNum' && params.isDragRow) {
             return <div><DragHandle/> {text}</div>;
           } else if (column.fieldType === 'varchar') {
             if (column.dropType === 'sql' || column.dropType === 'const') {
               const component = useMemo(() => {
-                return (<SelectComponent {...inputParams}  />
+                return (<SelectComponent {...selectParams}  />
                 )
               }, [text]);
               return component;
@@ -244,7 +268,7 @@ export function TableComponent(params: any) {
             }
           } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
             const component = useMemo(() => {
-              return (<NumberComponent {...params}  />
+              return (<NumberComponent {...numberParams}  />
               )
             }, [text]);
             return component;
@@ -292,6 +316,7 @@ export function TableComponent(params: any) {
 
   const onChange = (pagination, filters, sorter, extra) => {
     console.log('params', filters);
+    setFilteredInfo(filters);
   }
   return <div>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
@@ -311,15 +336,15 @@ export function TableComponent(params: any) {
       {...params.property}
       columns={columns}
       sticky={true}
-      // onRow={record => {
-      //   return {
-      //     onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
-      //     onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
-      //     // onContextMenu: event => {},
-      //     // onMouseEnter: event => {}, // 鼠标移入行
-      //     // onMouseLeave: event => {},
-      //   };
-      // }}
+      onRow={record => {
+        return {
+          // onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
+          onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
+          // onContextMenu: event => {},
+          // onMouseEnter: event => {}, // 鼠标移入行
+          // onMouseLeave: event => {},
+        };
+      }}
       onChange={onChange}
       />
     </ReactDragListView.DragColumn>

@@ -9,12 +9,12 @@ export function SelectComponent(params) {
   if (params.dropType === 'const') {
     const array: any = commonUtils.objectToArr(commonUtils.stringToObj(params.dropOptions));
     for (const optionObj of array) {
-      const option: any = (<Option value={optionObj.id}>{optionObj.value}</Option>);
+      const option: any = (<Option key={optionObj.id} value={optionObj.id}>{optionObj.value}</Option>);
       dropOptions.push(option);
     };
   }
   if (params.componentType === componentType.Soruce) {
-    return <Select {...params.property}>{dropOptions}</Select>;
+    return <Select {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null}>{dropOptions}</Select>;
   } else {
     return <Form.Item
       label={params.label}
@@ -23,7 +23,7 @@ export function SelectComponent(params) {
     shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]
     }
   }>
-      <Select {...params.property}>{dropOptions}</Select>
+      <Select {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null }>{dropOptions}</Select>
     </Form.Item>;
   }
 

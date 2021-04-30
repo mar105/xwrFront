@@ -216,7 +216,8 @@ const Container = (props) => {
     }
   }
 
-  const { treeSelectedKeys, treeData, enabled, masterData, slaveData, slaveColumns, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, slaveSelectedRowKeys } = props;
+  const { enabled, masterData, slaveData, slaveColumns, slaveSelectedRowKeys,
+    treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
 
   const createDate = {
     name: 'master',

@@ -109,6 +109,44 @@ const commonBase = (WrapComponent) => {
         }
       }
     }
+
+    const onNumberChange = (name, fieldName, record, value) => {
+      const { [name + 'Data']: dataOld }: any = stateRef.current;
+      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+        const data = { ...dataOld };
+        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
+        data[fieldName] = value;
+        dispatchModifyState({ [name + 'Data']: data });
+      } else {
+        const data = [...dataOld];
+        const index = data.findIndex(item => item.id === record.id);
+        if (index > -1) {
+          data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+          data[index][fieldName] = value;
+          dispatchModifyState({ [name + 'Data']: data });
+        }
+      }
+    }
+
+    const onSelectChange = (name, fieldName, record, value, option) => {
+      const { [name + 'Data']: dataOld }: any = stateRef.current;
+      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+        const data = { ...dataOld };
+        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
+        data[fieldName] = value;
+        dispatchModifyState({ [name + 'Data']: data });
+      } else {
+        const data = [...dataOld];
+        const index = data.findIndex(item => item.id === record.id);
+        if (index > -1) {
+          data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+          data[index][fieldName] = value;
+          console.log('option', option);
+          dispatchModifyState({ [name + 'Data']: data });
+        }
+      }
+    }
+
     return <WrapComponent
       {...props}
       {...modifyState}
@@ -120,6 +158,8 @@ const commonBase = (WrapComponent) => {
       onSwitchChange={onSwitchChange}
       onInputChange={onInputChange}
       onCheckboxChange={onCheckboxChange}
+      onNumberChange={onNumberChange}
+      onSelectChange={onSelectChange}
     />
   };
 };

@@ -4,7 +4,7 @@ import { componentType } from '../utils/commonTypes';
 
 export function SwitchComponent(params) {
   if (params.componentType === componentType.Soruce) {
-    return <SwitchComponent {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName) : null } />;
+    return <SwitchComponent {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null } />;
   } else {
     return <Form.Item
       label={params.label}
@@ -12,7 +12,7 @@ export function SwitchComponent(params) {
       rules={params.rules}
       shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]}}
     >
-      <Switch {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName) : null } />
+      <Switch {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null } />
     </Form.Item>;
   }
 

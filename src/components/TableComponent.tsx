@@ -37,13 +37,24 @@ const ResizeableTitle = (props) => {
 }
 
 export function TableComponent(params: any) {
-  const [resizeColumn, setResizeColumn] = useState([]);
+  const [columns, setColumns] = useState([]);
+  const [components, setComponents] = useState({});
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   let searchInput;
   useEffect(() => {
-    setResizeColumn(getColumn(params.property.columns));
-  }, [params.property.columns, params]);
+    setColumns(getColumn(params.property.columns));
+    setComponents({
+      ...VList({ height: 500 }),
+      header: {
+        cell: ResizeableTitle,
+      },
+      body: params.isDragRow ? {
+        wrapper: DraggableContainer,
+        row: DraggableBodyRow,
+      }: null,
+    });
+  }, [params.property.columns, params.enabled]);
 
   // 数据行拖动
   const onSortEnd = ({ oldIndex, newIndex }) => {
@@ -77,45 +88,29 @@ export function TableComponent(params: any) {
   //标题列拖拽
   const DragTitleColumn = {
     onDragEnd(fromIndex, toIndex) {
-      const  selectionMinus = params.property.rowSelection === null ? 0 : 1;
-      const columns = [...resizeColumn];
+      // fromIndex 取值包含 选择行列，行号列，列拖拽要减掉
+      const { dispatchModifyState } = params;
+      const  selectionMinus = params.property.rowSelection === null ? 1 : 2;
+      const columns = [...params.property.columns];
       const item = columns.splice(fromIndex - selectionMinus, 1)[0];
       columns.splice(toIndex - selectionMinus, 0, item);
-      setResizeColumn(columns);
+      dispatchModifyState({[params.name + 'Columns']: columns});
     },
     nodeSelector: "th"
   };
 
 
-  const components = {
-    ...VList({ height: 500 }),
-    header: {
-      cell: ResizeableTitle,
-    }
-  };
-  if (params.isDragRow) {
-    components.body = {
-      wrapper: DraggableContainer,
-      row: DraggableBodyRow,
-    };
-  }
-
-
   // 标题列宽度拖动
   const handleResize = index => (e, { size }) => {
-    const nextColumns: any = [...resizeColumn];
-    nextColumns[index] = {
-      ...nextColumns[index],
+    // index 取值包含 行号列，列拖动要减掉
+    const  selectionMinus = params.property.rowSelection === null ? 0 : 1;
+    const columns: any = [...params.property.columns];
+    columns[index - selectionMinus] = {
+      ...columns[index - selectionMinus],
       width: size.width,
     };
-    setResizeColumn((resizeColumn: any) => {
-      const nextColumns: any = [...resizeColumn];
-      nextColumns[index] = {
-        ...nextColumns[index],
-        width: size.width,
-      };
-      return nextColumns;
-    });
+    const { dispatchModifyState } = params;
+    dispatchModifyState({[params.name + 'Columns']: columns});
   };
 
   //获取表格的rowKey
@@ -220,6 +215,7 @@ export function TableComponent(params: any) {
             dropType: column.dropType,
             dropOptions: column.dropOptions,
             property: {value: text},
+            record,
             event: {onChange: params.event.onInputChange}
           };
           const checkboxParams = {
@@ -227,6 +223,7 @@ export function TableComponent(params: any) {
             componentType: componentType.Soruce,
             fieldName: column.dataIndex,
             property: {checked: text},
+            record,
             event: {onChange: params.event.onCheckboxChange}
           };
           if (column.dataIndex === 'sortNum' && params.isDragRow) {
@@ -312,17 +309,17 @@ export function TableComponent(params: any) {
       pagination={false}
       size={'small'}
       {...params.property}
-      columns={resizeColumn}
+      columns={columns}
       sticky={true}
-      onRow={record => {
-        return {
-          onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
-          onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
-          // onContextMenu: event => {},
-          // onMouseEnter: event => {}, // 鼠标移入行
-          // onMouseLeave: event => {},
-        };
-      }}
+      // onRow={record => {
+      //   return {
+      //     onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
+      //     onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
+      //     // onContextMenu: event => {},
+      //     // onMouseEnter: event => {}, // 鼠标移入行
+      //     // onMouseLeave: event => {},
+      //   };
+      // }}
       onChange={onChange}
       />
     </ReactDragListView.DragColumn>

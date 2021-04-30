@@ -216,7 +216,7 @@ const Container = (props) => {
     }
   }
 
-  const { treeSelectedKeys, treeData, enabled, masterData, slaveData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, slaveSelectedRowKeys } = props;
+  const { treeSelectedKeys, treeData, enabled, masterData, slaveData, slaveColumns, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, slaveSelectedRowKeys } = props;
 
   const createDate = {
     name: 'master',
@@ -371,7 +371,7 @@ const Container = (props) => {
   const containerNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.containerName) ? masterData.containerName : '';
   const slaveTable = useMemo(()=>{ return (
     <SlaveContainer name='slave' {...props} onClick={onClick} />
-  )}, [containerNameValue, slaveData, enabled, slaveSelectedRowKeys]);
+  )}, [containerNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
 
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>

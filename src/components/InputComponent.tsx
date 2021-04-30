@@ -35,7 +35,7 @@ export function InputComponent(params) {
     }
   } else {
     if (params.componentType === componentType.Soruce) {
-      return <Input {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName) : null } />;
+      return <Input {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null } />;
     } else {
       return <Form.Item
         label={params.label}
@@ -44,7 +44,7 @@ export function InputComponent(params) {
         shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName]
         }
         }>
-        <Input {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName) : null }/>
+        <Input {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null }/>
       </Form.Item>;
     }
   }

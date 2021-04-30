@@ -88,9 +88,13 @@ const Container = (props) => {
         allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id, isVisible: true };
       let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
+      const addState: any = {};
+      addState.slaveData = [];
+      addState.slaveSelectedRowKeys = [];
+      addState.slaveDelData = [];
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
+      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true, ...addState });
     } else if (key === 'addChildButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
@@ -111,9 +115,13 @@ const Container = (props) => {
       } else {
         treeExpandedKeys = [masterDataOld.id];
       }
+      const addState: any = {};
+      addState.slaveData = [];
+      addState.slaveSelectedRowKeys = [];
+      addState.slaveDelData = [];
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
+      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys, ...addState });
 
     } else if (key === 'modifyButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
@@ -144,14 +152,26 @@ const Container = (props) => {
         treeData = props.setNewTreeNode(treeData, allList.join(), masterData, masterData.id);
         addState.masterData = {...props.getTreeNode(treeData, allList.join()) };
         addState.treeSelectedKeys = [addState.masterData.id];
+        addState.slaveData = [];
+        addState.slaveSelectedRowKeys = [];
+        addState.slaveDelData = [];
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
-        const url: string = `${application.urlCommon}/verify/removeModifying`;
+        let url: string = `${application.urlCommon}/verify/removeModifying`;
         const params = {id: masterData.id, tabId};
-        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+        let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
+        }
+        url = `${application.urlPrefix}/container/getContainerSlave?id=` + masterData.id;
+        interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+        if (interfaceReturn.code === 1) {
+          addState.slaveData = interfaceReturn.data;
+          addState.slaveSelectedRowKeys = [];
+          addState.slaveDelData = [];
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
@@ -184,6 +204,9 @@ const Container = (props) => {
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
         }
+        addState.slaveData = interfaceReturn.data;
+        addState.slaveSelectedRowKeys = [];
+        addState.slaveDelData = [];
 
         dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
       } else {

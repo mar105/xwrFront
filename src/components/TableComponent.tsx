@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Button, Input, Space, Table } from 'antd';
 import * as commonUtils from "../utils/commonUtils";
-import { VList, scrollTo } from 'virtuallist-antd';
+import { VList } from 'virtuallist-antd';
 import {InputComponent} from "./InputComponent";
 import {NumberComponent} from "./NumberComponent";
 import {DatePickerComponent} from "./DatePickerComponent";
@@ -60,12 +60,13 @@ export function TableComponent(params: any) {
     });
   }, [params.property.columns, params.enabled, params.scrollToRow]);
 
-  useEffect(() => {
-    //试过按钮放在render里可以滚动，外面滚动不了。
-    if (params.scrollToRow) {
-      scrollTo({row: params.scrollToRow});
-    }
-  }, [params.scrollToRow]);
+  // useEffect(() => {
+  //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功
+  //   if (params.scrollToRow) {
+  //     console.log('params.scrollToRow', params.scrollToRow);
+  //     scrollTo({row: params.scrollToRow });
+  //   }
+  // }, [params.scrollToRow]);
   // 数据行拖动
   const onSortEnd = ({ oldIndex, newIndex }) => {
     const { dispatchModifyState } = params;

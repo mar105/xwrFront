@@ -54,9 +54,11 @@ const SlaveContainer = (props) => {
       const data = props.onAdd();
       data.parentId = masterData.id;
       data.type = 'field';
+      data.sortNum = slaveDataOld.length;
+      data.assignField = '';
       const slaveData = [...slaveDataOld];
       slaveData.push(data);
-      dispatchModifyState({ slaveData, slaveSelectedRowKeys: [data.id], slaveScrollToRow: slaveData.length });
+      dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
     } else if (name === 'slaveSyncDataBtn') {
       const url: string = `${application.urlPrefix}/container/getDBFields?tableName=` + masterData.containerName;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
@@ -64,7 +66,7 @@ const SlaveContainer = (props) => {
         const slaveData = [...slaveDataOld];
         const slaveDelData = commonUtils.isEmptyArr(slaveDelDataOld) ? [] : [...slaveDelDataOld];
         if (commonUtils.isNotEmptyArr(interfaceReturn.data)) {
-          slaveData.filter(item => item.type === 'field').forEach((dataRow, rowIndex) => {
+          slaveData.filter(item => item.containerType === 'field').forEach((dataRow, rowIndex) => {
             const index = interfaceReturn.data.findIndex(item => item.columnName === dataRow.fieldName);
             if (!(index > -1)) {
               dataRow.handleType = 'del';
@@ -79,7 +81,7 @@ const SlaveContainer = (props) => {
           }
 
           interfaceReturn.data.forEach((dataRow, rowIndex)  => {
-            const index = slaveData.findIndex(item => item.type === 'field' && item.fieldName === dataRow.columnName);
+            const index = slaveData.findIndex(item => item.containerType === 'field' && item.fieldName === dataRow.columnName);
             if (!(index > -1)) {
               const data = props.onAdd();
               data.superiorId = masterData.id;
@@ -92,7 +94,7 @@ const SlaveContainer = (props) => {
               slaveData.push(data);
             }
           });
-          dispatchModifyState({ slaveData, slaveDelData, slaveSelectedRowKeys: [slaveData[0].id] });
+          dispatchModifyState({ slaveData, slaveDelData });
         }
 
       } else {

@@ -17,6 +17,7 @@ import ReactDragListView from 'react-drag-listview';
 import { SearchOutlined, CheckSquareOutlined, BorderOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import {isNotEmptyObj} from "../utils/commonUtils";
+import moment from 'moment';
 
 // 数据行拖动
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -42,6 +43,8 @@ export function TableComponent(params: any) {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const [filteredInfo, setFilteredInfo] = useState([]);
+  const [sorterInfo, setSorterInfo] = useState([]);
+
   let searchInput;
   useEffect(() => {
     setColumns(getColumn(params.property.columns));
@@ -58,6 +61,7 @@ export function TableComponent(params: any) {
   }, [params.property.columns, params.enabled, params.scrollToRow]);
 
   useEffect(() => {
+    //试过按钮放在render里可以滚动，外面滚动不了。
     if (params.scrollToRow) {
       scrollTo({row: params.scrollToRow});
     }
@@ -212,6 +216,18 @@ export function TableComponent(params: any) {
         onResize: handleResize(columnIndex),
       });
       column.ellipsis = {showTitle: true};
+      column.sorter = {
+        compare: (a, b) => {
+          if (column.fieldType === 'decimal' || column.fieldType === 'int' || columns.fieldType === 'smallint' || columns.fieldType === 'tinyint') {
+            return ((commonUtils.isEmpty(a[column.dataIndex]) ? 0 : a[column.dataIndex]) - (commonUtils.isEmpty(b[column.dataIndex]) ? 0 : b[column.dataIndex]));
+          } else if (column.fieldType === 'datetime') {
+            return (moment(commonUtils.isEmpty(a[column.dataIndex]) ? '2000-01-01' : a[column.dataIndex]).diff(moment(commonUtils.isEmpty(b[column.dataIndex]) ? '2000-01-01' : b[column.dataIndex])));
+          } else {
+            return ((commonUtils.isEmpty(a[column.dataIndex]) ? '0' : a[column.dataIndex]).localeCompare((commonUtils.isEmpty(b[column.dataIndex]) ? '1' : b[column.dataIndex])));
+          }
+        },
+        multiple: sorterInfo.findIndex((item: any) => item.field === column.fieldName)
+    }
       if (params.enabled) {
         column.render = (text, record, index) => {
           const selectParams = {
@@ -315,8 +331,20 @@ export function TableComponent(params: any) {
   }
 
   const onChange = (pagination, filters, sorter, extra) => {
-    console.log('params', filters);
     setFilteredInfo(filters);
+    const sortInfoNew: any = [...sorterInfo];
+    const index = sortInfoNew.findIndex(item => item.field === sorter.field);
+    if (index > -1) {
+      if (commonUtils.isEmpty(sorter.column)) {
+        sortInfoNew.splice(index, 1);
+      } else {
+        sortInfoNew.splice(index, 1, sorter);
+      }
+    } else {
+      sortInfoNew.push(sorter)
+    }
+    setSorterInfo(sortInfoNew);
+    console.log('sorterInfo', sorter, sortInfoNew);
   }
   return <div>
     <ReactDragListView.DragColumn {...DragTitleColumn}>

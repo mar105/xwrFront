@@ -20,7 +20,7 @@ const commonBase = (WrapComponent) => {
           const {dispatch, commonModel, tabId} = props;
           //为什么要用stateRef.current？是因为 masterData数据改变后，useEffect使用的是[]不重新更新state，为老数据,使用 useRef来存储变量。
           const { masterData }: any = stateRef.current;
-          if (commonUtils.isNotEmpty(masterData.handleType)) {
+          if (commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.handleType)) {
             const url: string = `${application.urlCommon}/verify/removeModifying`;
             const params = {id: masterData.id, tabId};
             const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;

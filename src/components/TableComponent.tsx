@@ -200,143 +200,148 @@ export function TableComponent(params: any) {
   };
 
   const getColumn = (resizeColumns: any) => {
-    const firstColumn: any = { title: '#', render: (text,record,index)=>`${index + 1}`, width: commonUtils.isEmptyArr(params.property.dataSource) ? 30 :
-        params.property.dataSource.length < 10 ? 30 :
-          params.property.dataSource.length < 100 ? 40:
-            params.property.dataSource.length < 1000 ? 50 :
-              params.property.dataSource.length < 10000 ? 60 : 70 , fixed: 'left' };
+    const firstColumn: any = { title: '#', render: (text,record,index)=>`${index + 1}`, width: commonUtils.isEmptyArr(params.property.dataSource) ? 40 :
+        params.property.dataSource.length < 10 ? 40 :
+          params.property.dataSource.length < 100 ? 50:
+            params.property.dataSource.length < 1000 ? 60 :
+              params.property.dataSource.length < 10000 ? 70 : 80 , fixed: 'left' };
     const columnsOld: any = [firstColumn, ...resizeColumns];
     let columns: any = [];
     columnsOld.forEach((columnOld, columnIndex) => {
-      const column = columnOld.title === '#' ? {...columnOld} : columnOld.dropType === 'const' ?
-        {...columnOld, ...getColumnSearchConstProps(columnOld)} : {...columnOld, ...getColumnSearchProps(columnOld)};
+      if (columnOld.title === '#') {
+        const column = {...columnOld};
+        columns.push(column);
+      } else {
+        const column = columnOld.dropType === 'const' ? {...columnOld, ...getColumnSearchConstProps(columnOld)} : {...columnOld, ...getColumnSearchProps(columnOld)};
 
-      column.onHeaderCell = columnHeader => ({
-        width: columnHeader.width,
-        onResize: handleResize(columnIndex),
-      });
-      column.ellipsis = {showTitle: true};
-      // 多列排序
-      column.sorter = {
-        compare: (a, b) => {
-          if (column.fieldType === 'decimal' || column.fieldType === 'int' || columns.fieldType === 'smallint' || columns.fieldType === 'tinyint') {
-            return ((commonUtils.isEmpty(a[column.dataIndex]) ? 0 : a[column.dataIndex]) - (commonUtils.isEmpty(b[column.dataIndex]) ? 0 : b[column.dataIndex]));
-          } else if (column.fieldType === 'datetime') {
-            return (moment(commonUtils.isEmpty(a[column.dataIndex]) ? '2000-01-01' : a[column.dataIndex]).diff(moment(commonUtils.isEmpty(b[column.dataIndex]) ? '2000-01-01' : b[column.dataIndex])));
-          } else {
-            return ((commonUtils.isEmpty(a[column.dataIndex]) ? '0' : a[column.dataIndex]).localeCompare((commonUtils.isEmpty(b[column.dataIndex]) ? '1' : b[column.dataIndex])));
-          }
-        },
-        multiple: sorterInfo.findIndex((item: any) => item.field === column.fieldName),
-      }
+        column.onHeaderCell = columnHeader => ({
+          width: columnHeader.width,
+          onResize: handleResize(columnIndex),
+        });
+        column.ellipsis = {showTitle: true};
+        // 多列排序
+        column.sorter = {
+          compare: (a, b) => {
+            if (column.fieldType === 'decimal' || column.fieldType === 'int' || columns.fieldType === 'smallint' || columns.fieldType === 'tinyint') {
+              return ((commonUtils.isEmpty(a[column.dataIndex]) ? 0 : a[column.dataIndex]) - (commonUtils.isEmpty(b[column.dataIndex]) ? 0 : b[column.dataIndex]));
+            } else if (column.fieldType === 'datetime') {
+              return (moment(commonUtils.isEmpty(a[column.dataIndex]) ? '2000-01-01' : a[column.dataIndex]).diff(moment(commonUtils.isEmpty(b[column.dataIndex]) ? '2000-01-01' : b[column.dataIndex])));
+            } else {
+              return ((commonUtils.isEmpty(a[column.dataIndex]) ? '0' : a[column.dataIndex]).localeCompare((commonUtils.isEmpty(b[column.dataIndex]) ? '1' : b[column.dataIndex])));
+            }
+          },
+          multiple: sorterInfo.findIndex((item: any) => item.field === column.fieldName),
+        }
 
-      //金额靠右显示
-      if (column.fieldType === 'decimal' && column.dataIndex.indexOf('Money')) {
-        column.className = 'column-money';
-        column.align = 'align';
-      }
-      if (params.enabled) {
-        column.render = (text, record, index) => {
-          const selectParams = {
-            name: params.name,
-            componentType: componentType.Soruce,
-            fieldName: column.dataIndex,
-            dropType: column.dropType,
-            dropOptions: column.dropOptions,
-            property: {value: text},
-            record,
-            event: {onChange: params.event.onSelectChange}
-          };
-          const inputParams = {
-            name: params.name,
-            componentType: componentType.Soruce,
-            fieldName: column.dataIndex,
-            dropType: column.dropType,
-            dropOptions: column.dropOptions,
-            property: {value: text},
-            record,
-            event: {onChange: params.event.onInputChange}
-          };
-          const checkboxParams = {
-            name: params.name,
-            componentType: componentType.Soruce,
-            fieldName: column.dataIndex,
-            property: {checked: text},
-            record,
-            event: {onChange: params.event.onCheckboxChange}
-          };
-          const numberParams = {
-            name: params.name,
-            componentType: componentType.Soruce,
-            fieldName: column.dataIndex,
-            property: {checked: text},
-            record,
-            event: {onChange: params.event.onNumberChange}
-          };
-          if (column.dataIndex === 'sortNum' && params.isDragRow) {
-            return <div><DragHandle/> {text}</div>;
-          } else if (column.fieldType === 'varchar') {
-            if (column.dropType === 'sql' || column.dropType === 'const') {
+        //金额靠右显示
+        if (column.fieldType === 'decimal' && column.dataIndex.indexOf('Money')) {
+          column.className = 'column-money';
+          column.align = 'align';
+        }
+        if (params.enabled) {
+          column.render = (text, record, index) => {
+            const selectParams = {
+              name: params.name,
+              componentType: componentType.Soruce,
+              fieldName: column.dataIndex,
+              dropType: column.dropType,
+              dropOptions: column.dropOptions,
+              property: {value: text},
+              record,
+              event: {onChange: params.event.onSelectChange}
+            };
+            const inputParams = {
+              name: params.name,
+              componentType: componentType.Soruce,
+              fieldName: column.dataIndex,
+              dropType: column.dropType,
+              dropOptions: column.dropOptions,
+              property: {value: text},
+              record,
+              event: {onChange: params.event.onInputChange}
+            };
+            const checkboxParams = {
+              name: params.name,
+              componentType: componentType.Soruce,
+              fieldName: column.dataIndex,
+              property: {checked: text},
+              record,
+              event: {onChange: params.event.onCheckboxChange}
+            };
+            const numberParams = {
+              name: params.name,
+              componentType: componentType.Soruce,
+              fieldName: column.dataIndex,
+              property: {checked: text},
+              record,
+              event: {onChange: params.event.onNumberChange}
+            };
+            if (column.dataIndex === 'sortNum' && params.isDragRow) {
+              return <div><DragHandle/> {text}</div>;
+            } else if (column.fieldType === 'varchar') {
+              if (column.dropType === 'sql' || column.dropType === 'const') {
+                const component = useMemo(() => {
+                  return (<SelectComponent {...selectParams}  />
+                  )
+                }, [text]);
+                return component;
+              } else {
+                const component = useMemo(() => {
+                  return (<InputComponent {...inputParams}  />
+                  )
+                }, [text]);
+                return component;
+              }
+            } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
               const component = useMemo(() => {
-                return (<SelectComponent {...selectParams}  />
+                return (<NumberComponent {...numberParams}  />
+                )
+              }, [text]);
+              return component;
+            } else if (column.fieldType === 'tinyint') {
+              const component = useMemo(() => {
+                return (<CheckboxComponent {...checkboxParams}  />
+                )
+              }, [text]);
+              return component;
+            } else if (column.fieldType === 'datetime') {
+              const component = useMemo(() => {
+                return (<DatePickerComponent {...params}  />
                 )
               }, [text]);
               return component;
             } else {
-              const component = useMemo(() => {
-                return (<InputComponent {...inputParams}  />
-                )
-              }, [text]);
-              return component;
+              return text;
             }
-          } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
-            const component = useMemo(() => {
-              return (<NumberComponent {...numberParams}  />
-              )
-            }, [text]);
-            return component;
-          } else if (column.fieldType === 'tinyint') {
-            const component = useMemo(() => {
-              return (<CheckboxComponent {...checkboxParams}  />
-              )
-            }, [text]);
-            return component;
-          } else if (column.fieldType === 'datetime') {
-            const component = useMemo(() => {
-              return (<DatePickerComponent {...params}  />
-              )
-            }, [text]);
-            return component;
-          } else {
-            return text;
+          }
+        } else {
+          column.render = (text, record, index) => {
+            if (column.dataIndex === 'sortNum' && params.isDragRow) {
+              return <div><DragHandle /> {text}</div>;
+            } else if (column.dropType === 'const') {
+              const dropObject: any = commonUtils.stringToObj(column.dropOptions);
+              return dropObject[text];
+            } else if (column.fieldType === 'tinyint') {
+              return text ? <CheckSquareOutlined /> : <BorderOutlined />;
+            } else {
+              return searchedColumn === columnOld.dataIndex ? (
+                <Highlighter
+                  highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                  searchWords={[searchText]}
+                  autoEscape
+                  textToHighlight={text ? text.toString() : ''}
+                />
+              ) : text;
+            }
           }
         }
-      } else {
-        column.render = (text, record, index) => {
-          if (column.dataIndex === 'sortNum' && params.isDragRow) {
-            return <div><DragHandle /> {text}</div>;
-          } else if (column.dropType === 'const') {
-            const dropObject: any = commonUtils.stringToObj(column.dropOptions);
-            return dropObject[text];
-          } else if (column.fieldType === 'tinyint') {
-            return text ? <CheckSquareOutlined /> : <BorderOutlined />;
-          } else {
-            return searchedColumn === columnOld.dataIndex ? (
-              <Highlighter
-                highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                searchWords={[searchText]}
-                autoEscape
-                textToHighlight={text ? text.toString() : ''}
-              />
-            ) : text;
-          }
+
+        if (column.title.indexOf('|') > -1) {
+          //合并列头
+          setNewColumn(columns, column);
+        } else {
+          columns.push(column);
         }
-      }
-      if (column.title.indexOf('|') > -1) {
-        //合并列头
-        setNewColumn(columns, column);
-      } else {
-        columns.push(column);
       }
     });
     return columns;

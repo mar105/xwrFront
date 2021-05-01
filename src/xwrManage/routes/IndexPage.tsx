@@ -47,6 +47,7 @@ function IndexPage(props) {
       <button onClick={onClick.bind(this, '/xwrManage/route')}> add route</button>
       <button onClick={onClick.bind(this, '/xwrManage/container')}> add container</button>
       <button onClick={onClick.bind(this, '/xwrManage/permission')}> add permission</button>
+      <button onClick={onClick.bind(this, '/xwrManage/constant')}> add constant</button>
       <div>{commonModel.userInfo.userName}</div>
     <div><TabPage {...props} /></div>
     </div>

@@ -74,12 +74,15 @@ const Route = (props) => {
     const saveData: any = [];
     saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
     const params = { id: masterData.id, tabId, saveData };
-    console.log('sss', saveData);
     const url: string = `${application.urlPrefix}/route/saveRoute`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
-      const returnRoute = await getAllRoute({isWait: true});
-      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id] });
+      const returnRoute: any = await getAllRoute({isWait: true});
+      const addState: any = {};
+      addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
+      form.resetFields();
+      form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }

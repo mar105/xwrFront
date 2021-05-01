@@ -64,8 +64,12 @@ const Container = (props) => {
     const url: string = `${application.urlPrefix}/container/saveContainer`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
-      const returnRoute = await getAllContainer({isWait: true});
-      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id] });
+      const returnRoute: any = await getAllContainer({isWait: true});
+      const addState: any = {};
+      addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
+      form.resetFields();
+      form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }

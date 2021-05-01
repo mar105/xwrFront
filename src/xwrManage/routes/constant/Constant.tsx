@@ -12,7 +12,7 @@ import {DatePickerComponent} from "../../../components/DatePickerComponent";
 import {InputComponent} from "../../../components/InputComponent";
 import {NumberComponent} from "../../../components/NumberComponent";
 
-const Permission = (props) => {
+const Constant = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
@@ -22,7 +22,7 @@ const Permission = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       const {dispatchModifyState} = props;
-      const returnRoute: any = await getAllPermission({isWait: true});
+      const returnRoute: any = await getAllConstant({isWait: true});
       if (commonUtils.isNotEmptyObj(returnRoute) && commonUtils.isNotEmptyArr(returnRoute.treeData)) {
         const {treeData} = returnRoute;
         const selectedKeys = [treeData[0].id];
@@ -34,10 +34,10 @@ const Permission = (props) => {
     fetchData();
   }, []);
 
-  const getAllPermission = async (params) => {
+  const getAllConstant = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlPrefix}/permission/getAllPermission`;
+    const url: string = `${application.urlPrefix}/constant/getAllConstant`;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -58,10 +58,10 @@ const Permission = (props) => {
     const saveData: any = [];
     saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], []));
     const params = { id: masterData.id, tabId, saveData };
-    const url: string = `${application.urlPrefix}/permission/savePermission`;
+    const url: string = `${application.urlPrefix}/constant/saveConstant`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
-      const returnRoute: any = await getAllPermission({isWait: true});
+      const returnRoute: any = await getAllConstant({isWait: true});
       const addState: any = {};
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
       form.resetFields();
@@ -78,7 +78,7 @@ const Permission = (props) => {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
       }
-      if (commonUtils.isEmpty(masterDataOld.permissionName)) {
+      if (commonUtils.isEmpty(masterDataOld.constantName)) {
         props.gotoError(dispatch, { code: '6002', msg: '同级权限界面，才可增加同级' });
         return;
       }
@@ -121,7 +121,7 @@ const Permission = (props) => {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
       }
-      if (commonUtils.isEmpty(masterDataOld.permissionName)) {
+      if (commonUtils.isEmpty(masterDataOld.constantName)) {
         props.gotoError(dispatch, { code: '6003', msg: '权限界面才可修改' });
         return;
       }
@@ -169,17 +169,17 @@ const Permission = (props) => {
         props.gotoError(dispatch, { code: '6001', msg: '请先删除子节点' });
         return;
       }
-      if (commonUtils.isEmpty(masterDataOld.permissionName)) {
+      if (commonUtils.isEmpty(masterDataOld.constantName)) {
         props.gotoError(dispatch, { code: '6003', msg: '权限界面才可删除' });
         return;
       }
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [masterData], [], true));
       const params = { id: masterData.id, tabId, saveData, handleType: 'del' };
-      const url: string = `${application.urlPrefix}/permission/savePermission`;
+      const url: string = `${application.urlPrefix}/constant/saveConstant`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        const returnRoute: any = await getAllPermission({isWait: true});
+        const returnRoute: any = await getAllConstant({isWait: true});
         const addState: any = {};
         if (commonUtils.isNotEmpty(returnRoute.treeData)) {
           addState.treeSelectedKeys = [returnRoute.treeData[0].id];
@@ -205,11 +205,11 @@ const Permission = (props) => {
     label: '创建日期',
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
   };
-  const permissionName = {
+  const constantName = {
     name: 'master',
     form,
-    fieldName: 'permissionName',
-    label: '权限名称',
+    fieldName: 'constantName',
+    label: '常量名称',
     rules: [{ required: true, message: '请输入你的权限名称' }],
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange }
@@ -252,7 +252,7 @@ const Permission = (props) => {
   const component = useMemo(()=>{ return (
     <div>
       <DatePickerComponent {...createDate} />
-      <InputComponent {...permissionName} />
+      <InputComponent {...constantName} />
       <NumberComponent {...sortNum} />
       <InputComponent {...chineseName} />
       <InputComponent {...traditionalName} />
@@ -276,4 +276,4 @@ const Permission = (props) => {
     </Form>
   );
 }
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Permission)));
+export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Constant)));

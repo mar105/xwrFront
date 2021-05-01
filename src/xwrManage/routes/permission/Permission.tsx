@@ -11,10 +11,8 @@ import commonManage from "../../commonManage";
 import {DatePickerComponent} from "../../../components/DatePickerComponent";
 import {InputComponent} from "../../../components/InputComponent";
 import {NumberComponent} from "../../../components/NumberComponent";
-import {SwitchComponent} from "../../../components/SwitchComponent";
-import SlaveContainer from "./SlaveContainer";
 
-const Container = (props) => {
+const Permission = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
@@ -24,7 +22,7 @@ const Container = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       const {dispatchModifyState} = props;
-      const returnRoute: any = await getAllContainer({isWait: true});
+      const returnRoute: any = await getAllPermission({isWait: true});
       if (commonUtils.isNotEmptyObj(returnRoute) && commonUtils.isNotEmptyArr(returnRoute.treeData)) {
         const {treeData} = returnRoute;
         const selectedKeys = [treeData[0].id];
@@ -36,10 +34,10 @@ const Container = (props) => {
     fetchData();
   }, []);
 
-  const getAllContainer = async (params) => {
+  const getAllPermission = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlPrefix}/container/getAllContainer`;
+    const url: string = `${application.urlPrefix}/permission/getAllPermission`;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -56,15 +54,14 @@ const Container = (props) => {
     console.log('Failed:', errorInfo);
   };
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, slaveData, slaveDelData, dispatchModifyState, tabId } = props;
+    const { commonModel, dispatch, masterData, dispatchModifyState, tabId } = props;
     const saveData: any = [];
-    saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], [], false));
-    saveData.push(commonUtils.mergeData('slave', slaveData, slaveDelData, false));
+    saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], []));
     const params = { id: masterData.id, tabId, saveData };
-    const url: string = `${application.urlPrefix}/container/saveContainer`;
+    const url: string = `${application.urlPrefix}/permission/savePermission`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
-      const returnRoute = await getAllContainer({isWait: true});
+      const returnRoute = await getAllPermission({isWait: true});
       dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id] });
     } else {
       props.gotoError(dispatch, interfaceReturn);
@@ -77,24 +74,20 @@ const Container = (props) => {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
       }
-      if (commonUtils.isEmpty(masterDataOld.containerName)) {
-        props.gotoError(dispatch, { code: '6002', msg: '同级容器界面，才可增加同级' });
+      if (commonUtils.isEmpty(masterDataOld.permissionName)) {
+        props.gotoError(dispatch, { code: '6002', msg: '同级权限界面，才可增加同级' });
         return;
       }
       const data = props.onAdd();
       const allList = commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId.split(',') : [''];
       allList.splice(allList.length - 1, 1);
       const masterData = { ...data, key: data.id, superiorId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.superiorId : '',
-        allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id, isVisible: true };
+        allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id };
       let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
-      const addState: any = {};
-      addState.slaveData = [];
-      addState.slaveSelectedRowKeys = [];
-      addState.slaveDelData = [];
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true, ...addState });
+      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
     } else if (key === 'addChildButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
@@ -105,7 +98,7 @@ const Container = (props) => {
         return;
       }
       const data = props.onAdd();
-      const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id, isVisible: 1 };
+      const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id };
       let treeData = [...treeDataOld];
       let treeExpandedKeys;
       treeData = props.setNewTreeNode(treeData, masterDataOld.allId, masterData);
@@ -115,21 +108,17 @@ const Container = (props) => {
       } else {
         treeExpandedKeys = [masterDataOld.id];
       }
-      const addState: any = {};
-      addState.slaveData = [];
-      addState.slaveSelectedRowKeys = [];
-      addState.slaveDelData = [];
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys, ...addState });
+      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
 
     } else if (key === 'modifyButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
       }
-      if (commonUtils.isEmpty(masterDataOld.containerName)) {
-        props.gotoError(dispatch, { code: '6003', msg: '容器界面才可修改' });
+      if (commonUtils.isEmpty(masterDataOld.permissionName)) {
+        props.gotoError(dispatch, { code: '6003', msg: '权限界面才可修改' });
         return;
       }
       const data = props.onModify();
@@ -152,9 +141,6 @@ const Container = (props) => {
         treeData = props.setNewTreeNode(treeData, allList.join(), masterData, masterData.id);
         addState.masterData = {...props.getTreeNode(treeData, allList.join()) };
         addState.treeSelectedKeys = [addState.masterData.id];
-        addState.slaveData = [];
-        addState.slaveSelectedRowKeys = [];
-        addState.slaveDelData = [];
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
@@ -166,20 +152,11 @@ const Container = (props) => {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
-        url = `${application.urlPrefix}/container/getContainerSlave?id=` + masterData.id;
-        interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-        if (interfaceReturn.code === 1) {
-          addState.slaveData = interfaceReturn.data;
-          addState.slaveSelectedRowKeys = [];
-          addState.slaveDelData = [];
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-        }
       }
       dispatchModifyState({...addState, treeData, enabled: false});
 
     } else if (key === 'delButton') {
-      const { commonModel, dispatch, masterData, slaveData, slaveDelData, dispatchModifyState } = props;
+      const { commonModel, dispatch, masterData, dispatchModifyState } = props;
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
@@ -188,18 +165,17 @@ const Container = (props) => {
         props.gotoError(dispatch, { code: '6001', msg: '请先删除子节点' });
         return;
       }
-      if (commonUtils.isEmpty(masterDataOld.containerName)) {
-        props.gotoError(dispatch, { code: '6003', msg: '容器界面才可删除' });
+      if (commonUtils.isEmpty(masterDataOld.permissionName)) {
+        props.gotoError(dispatch, { code: '6003', msg: '权限界面才可删除' });
         return;
       }
-      const url: string = `${application.urlPrefix}/container/saveContainer`;
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [masterData], [], true));
-      saveData.push(commonUtils.mergeData('slave', slaveData, slaveDelData, true));
       const params = { id: masterData.id, tabId, saveData, handleType: 'del' };
+      const url: string = `${application.urlPrefix}/permission/savePermission`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        const returnRoute: any = await getAllContainer({isWait: true});
+        const returnRoute: any = await getAllPermission({isWait: true});
         const addState: any = {};
         if (commonUtils.isNotEmpty(returnRoute.treeData)) {
           addState.treeSelectedKeys = [returnRoute.treeData[0].id];
@@ -207,9 +183,6 @@ const Container = (props) => {
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
         }
-        addState.slaveData = [];
-        addState.slaveSelectedRowKeys = [];
-        addState.slaveDelData = [];
         dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
       } else {
         props.gotoError(dispatch, interfaceReturn);
@@ -218,30 +191,7 @@ const Container = (props) => {
 
   }
 
-  const onTreeSelect = async (selectedKeys: React.Key[], e) => {
-    const { dispatchModifyState, dispatch, enabled, commonModel } = props;
-    if (enabled) {
-      props.gotoError(dispatch, { code: '6001', msg: '数据正在编辑，请先保存或取消！' });
-    } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
-      const addState = props.onTreeSelect(selectedKeys, e, true);
-      if (commonUtils.isNotEmpty(e.node.containerName)) {
-        const url: string = `${application.urlPrefix}/container/getContainerSlave?id=` + e.node.id;
-        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-        if (interfaceReturn.code === 1) {
-          addState.slaveData = interfaceReturn.data;
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-        }
-      } else {
-        addState.slaveData = [];
-      }
-      form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(e.node));
-      dispatchModifyState(addState);
-    }
-  }
-
-  const { enabled, masterData, slaveData, slaveColumns, slaveSelectedRowKeys,
+  const { enabled, masterData,
     treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
 
   const createDate = {
@@ -251,12 +201,12 @@ const Container = (props) => {
     label: '创建日期',
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
   };
-  const containerName = {
+  const permissionName = {
     name: 'master',
     form,
-    fieldName: 'containerName',
-    label: '容器名称',
-    rules: [{ required: true, message: '请输入你的容器名称' }],
+    fieldName: 'permissionName',
+    label: '权限名称',
+    rules: [{ required: true, message: '请输入你的权限名称' }],
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange }
   };
@@ -290,114 +240,20 @@ const Container = (props) => {
     label: '英文名称',
     property: { disabled: !enabled },
   };
-  const entitySelect = {
-    name: 'master',
-    form,
-    fieldName: 'entitySelect',
-    label: '实体查询',
-    property: { disabled: !enabled },
-  };
-  const entityWhere = {
-    name: 'master',
-    form,
-    fieldName: 'entityWhere',
-    label: '实体条件',
-    property: { disabled: !enabled },
-  };
-  const entitySort = {
-    name: 'master',
-    form,
-    fieldName: 'entitySort',
-    label: '实体排序',
-    property: { disabled: !enabled },
-  };
-  const isVisible = {
-    name: 'master',
-    form,
-    fieldName: 'isVisible',
-    label: '是否显示',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
-  };
-  const fixColumnCount = {
-    name: 'master',
-    form,
-    fieldName: 'fixColumnCount',
-    label: '固定列数',
-    property: { disabled: !enabled },
-  };
 
-  const isTable = {
-    name: 'master',
-    form,
-    fieldName: 'isTable',
-    label: '是否表格',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTable, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
-  };
-  const isTableHeadSort = {
-    name: 'master',
-    form,
-    fieldName: 'isTableHeadSort',
-    label: '是否表头排序',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTableHeadSort, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
-  };
-  const isMutiChoise = {
-    name: 'master',
-    form,
-    fieldName: 'isMutiChoise',
-    label: '是否多选',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMutiChoise, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
-  };
-  const isRowNo = {
-    name: 'master',
-    form,
-    fieldName: 'isRowNo',
-    label: '是否显示行号',
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isRowNo, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
-  };
 
   const buttonGroup = { onClick, enabled };
-  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
+  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (
     <div>
-      <Row>
-        <Col><DatePickerComponent {...createDate} /></Col>
-        <Col><InputComponent {...containerName} /></Col>
-        <Col><NumberComponent {...sortNum} /></Col>
-      </Row>
-      <Row>
-        <Col><InputComponent {...chineseName} /></Col>
-        <Col><InputComponent {...traditionalName} /></Col>
-        <Col><InputComponent {...englishName} /></Col>
-      </Row>
-      <Row>
-        <Col><InputComponent {...entitySelect} /></Col>
-        <Col><InputComponent {...entityWhere} /></Col>
-        <Col><InputComponent {...entitySort} /></Col>
-      </Row>
-      <Row>
-        <Col><SwitchComponent {...isVisible} /></Col>
-        <Col><SwitchComponent {...isTable} /></Col>
-      </Row>
-      {commonUtils.isNotEmptyObj(masterData) && masterData.isTable ?
-      <Row>
-        <Col><NumberComponent {...fixColumnCount} /></Col>
-        <Col><SwitchComponent {...isTableHeadSort} /></Col>
-        <Col><SwitchComponent {...isMutiChoise} /></Col>
-        <Col><SwitchComponent {...isRowNo} /></Col>
-      </Row>
-        : ''}
+      <DatePickerComponent {...createDate} />
+      <InputComponent {...permissionName} />
+      <NumberComponent {...sortNum} />
+      <InputComponent {...chineseName} />
+      <InputComponent {...traditionalName} />
+      <InputComponent {...englishName} />
     </div>)}, [masterData, enabled]);
-
-  const containerNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.containerName) ? masterData.containerName : '';
-  const slaveTable = useMemo(()=>{ return (
-    <SlaveContainer name='slave' {...props} onClick={onClick} />
-  )}, [containerNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
 
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
@@ -412,11 +268,8 @@ const Container = (props) => {
           </Row>
         </Col>
       </Row>
-      <Row>
-        {slaveTable}
-      </Row>
       <ButtonGroup {...buttonGroup} />
     </Form>
   );
 }
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Container)));
+export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Permission)));

@@ -167,10 +167,10 @@ export function getTableProps(name, props) {
  * name 名称
  * saveTmpData 表单数据
  * delTmpData 表单删除数据*/
-export function mergeData(name, saveTmpData, delTmpData) {
+export function mergeData(name, saveTmpData, delTmpData, isAll = false) {
   const delData = isEmptyArr(delTmpData) ? [] : delTmpData;
   const savesData = isEmptyArr(saveTmpData) ? [] : saveTmpData;
-  const returnData = savesData.filter(item => item.handleType === 'add' || item.handleType === 'modify');
+  const returnData = isAll ? savesData : savesData.filter(item => item.handleType === 'add' || item.handleType === 'modify');
   return { name, data: [...returnData, ...delData] };
 }
 

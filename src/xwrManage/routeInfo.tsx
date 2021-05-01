@@ -10,5 +10,7 @@ export const routeInfo: any[] = [{
     path: '/xwrManage/route', title: '路由信息', name: 'module', component: () => import('./routes/route/Route'),
   }, {
     path: '/xwrManage/container', title: '容器信息', name: 'container', component: () => import('./routes/container/Container'),
+  }, {
+    path: '/xwrManage/permission', title: '权限信息', name: 'permission', component: () => import('./routes/permission/Permission'),
   },
 ];

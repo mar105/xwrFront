@@ -206,7 +206,7 @@ export function TableComponent(params: any) {
             params.property.dataSource.length < 1000 ? 50 :
               params.property.dataSource.length < 10000 ? 60 : 70 , fixed: 'left' };
     const columnsOld: any = [firstColumn, ...resizeColumns];
-    const columns: any = [];
+    let columns: any = [];
     columnsOld.forEach((columnOld, columnIndex) => {
       const column = columnOld.title === '#' ? {...columnOld} : columnOld.dropType === 'const' ?
         {...columnOld, ...getColumnSearchConstProps(columnOld)} : {...columnOld, ...getColumnSearchProps(columnOld)};
@@ -216,6 +216,7 @@ export function TableComponent(params: any) {
         onResize: handleResize(columnIndex),
       });
       column.ellipsis = {showTitle: true};
+      // 多列排序
       column.sorter = {
         compare: (a, b) => {
           if (column.fieldType === 'decimal' || column.fieldType === 'int' || columns.fieldType === 'smallint' || columns.fieldType === 'tinyint') {
@@ -226,8 +227,14 @@ export function TableComponent(params: any) {
             return ((commonUtils.isEmpty(a[column.dataIndex]) ? '0' : a[column.dataIndex]).localeCompare((commonUtils.isEmpty(b[column.dataIndex]) ? '1' : b[column.dataIndex])));
           }
         },
-        multiple: sorterInfo.findIndex((item: any) => item.field === column.fieldName)
-    }
+        multiple: sorterInfo.findIndex((item: any) => item.field === column.fieldName),
+      }
+
+      //金额靠右显示
+      if (column.fieldType === 'decimal' && column.dataIndex.indexOf('Money')) {
+        column.className = 'column-money';
+        column.align = 'align';
+      }
       if (params.enabled) {
         column.render = (text, record, index) => {
           const selectParams = {
@@ -325,10 +332,50 @@ export function TableComponent(params: any) {
           }
         }
       }
-      columns.push(column);
+      if (column.title.indexOf('|') > -1) {
+        //合并列头
+        setNewColumn(columns, column);
+      } else {
+        columns.push(column);
+      }
     });
     return columns;
   }
+
+  const setNewColumn = (columns, newColumn) => {
+    let column: any = {};
+    const splitTitle = newColumn.title.split('|');
+    splitTitle.forEach((title, index) => {
+      if (index === 0) {
+        const iIndex = columns.findIndex(item => item.title === title);
+        if (iIndex > -1) {
+          column = columns[iIndex];
+        } else {
+          column = {title, children: []};
+          columns.push(column);
+        }
+      } else if (index === splitTitle.length - 1) {
+        newColumn.title = title;
+        if (commonUtils.isEmptyArr(column.children)) {
+          column.children = [newColumn];
+        } else {
+          column.children.push(newColumn);
+        }
+      } else {
+        const iIndex = column.children.findIndex(item => item.title === title);
+        if (iIndex > -1) {
+          column = column.children[iIndex];
+        } else {
+          const columnTitle = {title, children: []};
+          column.children.push(columnTitle);
+          column = column.children[column.children.length - 1];
+        }
+      }
+
+    });
+    return columns;
+  }
+
 
   const onChange = (pagination, filters, sorter, extra) => {
     setFilteredInfo(filters);
@@ -344,7 +391,6 @@ export function TableComponent(params: any) {
       sortInfoNew.push(sorter)
     }
     setSorterInfo(sortInfoNew);
-    console.log('sorterInfo', sorter, sortInfoNew);
   }
   return <div>
     <ReactDragListView.DragColumn {...DragTitleColumn}>

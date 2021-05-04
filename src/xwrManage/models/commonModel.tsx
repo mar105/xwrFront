@@ -35,5 +35,11 @@ export default {
       message.destroy();
       message.error(msg);
     },
+
+    * gotoSuccess({ payload }, { put }) {
+      const { msg } = payload;
+      message.destroy();
+      message.success(msg);
+    },
   },
 };

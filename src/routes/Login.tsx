@@ -6,7 +6,7 @@ import * as application from '../application';
 import * as request from '../utils/request';
 import { Md5 } from 'ts-md5';
 
-const Login = () => {
+const Login = ({ dispatch }) => {
   const [form] = Form.useForm();
   const layout = {
     labelCol: { span: 8 },
@@ -33,22 +33,30 @@ const Login = () => {
       console.log('Failed:', errorInfo);
   };
   const onFinish = async (values: any) => {
-    try {
-      const params = await form.validateFields();
-      const url: string = `${application.urlPrefix}/login/loginVerify`;
-      values.userName = values.userName;
-      values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
-      const interfaceReturn = (await request.postRequest(url, null, values)).data;
-      // if (interfaceReturn.code === 'success') {
-      //
-      // }
-      console.log('Success:', params, interfaceReturn);
+    const url: string = `${application.urlPrefix}/login/loginVerify`;
+    values.userName = values.userName;
+    values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
+    const interfaceReturn = (await request.postRequest(url, null, application.paramInit(values))).data;
+    if (interfaceReturn.code === 1) {
+      localStorage.clear();
+      dispatch({
+        type: 'commonModel/saveToken',
+        payload: interfaceReturn.data.token,
+      });
+      dispatch({
+        type: 'commonModel/saveUserInfo',
+        payload: { userName: values.userName },
+      });
+      dispatch({
+        type: 'commonModel/gotoNewPage',
+        payload: { newPage: '/' },
+      });
+    } else {
+      dispatch({
+        type: 'commonModel/gotoError',
+        payload: { ...interfaceReturn },
+      });
     }
-    catch(errorInfo) {
-      console.log(222222222222, errorInfo);
-    }
-
-
   };
   return (
       <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>

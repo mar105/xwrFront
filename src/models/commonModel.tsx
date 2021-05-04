@@ -27,18 +27,18 @@ export default {
     * gotoNewPage({ payload }, { put }) {
       yield put(routerRedux.push(payload.newPage));
     },
-    effects: {
-      * gotoNewPage({ payload }, { put }) {
-        yield put(routerRedux.push(payload.newPage));
-      },
-      * gotoError({ payload }, { put }) {
-        const { code, msg } = payload;
-        if (code === 'login') {
-          yield put(routerRedux.push('login'));
-        }
-        message.destroy();
-        message.error(msg);
-      },
+    * gotoError({ payload }, { put }) {
+      const { code, msg } = payload;
+      if (code === '5001') {
+        yield put(routerRedux.push('/login'));
+      }
+      message.destroy();
+      message.error(msg);
+    },
+    * gotoSuccess({ payload }, { put }) {
+      const { msg } = payload;
+      message.destroy();
+      message.success(msg);
     },
   },
 };

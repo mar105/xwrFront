@@ -51,6 +51,10 @@ const commonBase = (WrapComponent) => {
       dispatch({ type: 'commonModel/gotoError', payload: interfaceData });
     };
 
+    const gotoSuccess = (dispatch, interfaceData) => {
+      dispatch({ type: 'commonModel/gotoSuccess', payload: interfaceData });
+    };
+
     const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
       console.log('onRowSelectChange', selectedRowKeys);
       dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys });
@@ -154,6 +158,7 @@ const commonBase = (WrapComponent) => {
       onAdd={onAdd}
       onModify={onModify}
       gotoError={gotoError}
+      gotoSuccess={gotoSuccess}
       onRowSelectChange={onRowSelectChange}
       onSwitchChange={onSwitchChange}
       onInputChange={onInputChange}

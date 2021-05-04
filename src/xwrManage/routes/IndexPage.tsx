@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'dva';
-import TabPage from './TabPage';
+import TabPage from '../TabPage';
 import commonBase from "../../utils/commonBase";
 import * as commonUtils from "../../utils/commonUtils";
 import {routeInfo} from '../routeInfo';
@@ -39,6 +39,7 @@ function IndexPage(props) {
   const { commonModel } = props;
   return (
     <div>
+      <a href="/">主页</a>
       <a href="/xwrManage">管理主页</a>
       <a href="/xwrManage/register"> register</a>
       <a href="/xwrManage/login"> login</a>

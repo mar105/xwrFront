@@ -1,8 +1,8 @@
 import React, {useEffect} from 'react';
 import {Tabs} from 'antd';
-import * as commonUtils from "../../utils/commonUtils";
-import * as application from "../application";
-import {routeInfo} from "../routeInfo";
+import * as commonUtils from "./utils/commonUtils";
+import * as application from "./application";
+import {routeInfo} from "./routeInfo";
 
 const { TabPane } = Tabs;
 const TabPage = (props) => {

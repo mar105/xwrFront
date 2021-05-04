@@ -25,7 +25,6 @@ export default {
   },
   effects: {
     * gotoNewPage({ payload }, { put }) {
-      console.log('11111', payload.newPage);
       yield put(routerRedux.push(payload.newPage));
     },
     * gotoError({ payload }, { put }) {

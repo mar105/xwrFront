@@ -30,6 +30,12 @@ const  Register = (props) => {
     const interfaceReturn = (await request.postRequest(url, '', application.paramInit(values))).data;
     if (interfaceReturn.code === 1) {
       props.gotoSuccess(dispatch, interfaceReturn);
+      setTimeout(() => {
+        dispatch({
+          type: 'commonModel/gotoNewPage',
+          payload: { newPage: '/login' },
+        });
+      }, 500);
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }
@@ -53,7 +59,6 @@ const  Register = (props) => {
     const interfaceReturn = await request.postRequest(url, '', application.paramInit(params)).data;
     if (interfaceReturn.code === 1) {
       props.gotoSuccess(dispatch, interfaceReturn);
-
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }

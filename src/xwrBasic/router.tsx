@@ -1,31 +1,13 @@
 import * as React from 'react';
-import { Route, Switch, routerRedux } from 'dva/router';
+import { Route, Switch, routerRedux, Redirect } from 'dva/router';
 import dynamic from 'dva/dynamic';
 import { Layout } from 'antd';
+import {routeInfo} from "./routeInfo";
 
 const { ConnectedRouter } = routerRedux;
 
 function RouterConfig({ history, app }) {
-  const routeInfo: any[] = [{
-      path: '/xwrBasic', name: 'index', component: () => import('./routes/IndexPage'),
-  }, {
-      path: '/xwrBasic/register', name: 'register', component: () => import('./routes/Register'),
-  }, {
-    path: '/login', name: 'login', component: () => import('./routes/Login'),
-  // }, {
-  //   path: '/loginManage', name: 'loginManage', component: () => import('./routes/manage/LoginManage'),
-  // }, {
-  //   path: '/indexManage', name: 'indexManage', component: () => import('./routes/manage/IndexManage'),
-  //   children: {
-  //     path: '/config', name: 'config', component: () => import('./routes/manage/LoginManage'),
-  //   }
-  },
 
-  ];
-  // const routeIndex = {
-  //     path: '/', name: 'index', layout: Layout, components: () => import('./routes/IndexPage'),
-  // };
-  // routeInfo.push(routeIndex);
 
   return (
     <ConnectedRouter history={history}>
@@ -49,6 +31,7 @@ function RouterConfig({ history, app }) {
           );
         })
       }
+      <Redirect to="/xwrManage"/>
       </Switch>
     </ConnectedRouter>
   );

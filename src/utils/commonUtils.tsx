@@ -1,5 +1,5 @@
 import { Stomp } from "@stomp/stompjs";
-import {urlSockJs, urlWs} from "../xwrManage/application";
+import {urlSockJs, urlWs} from "../application";
 import SockJS from 'sockjs-client';
 import moment from 'moment';
 import dynamic from "dva/dynamic";

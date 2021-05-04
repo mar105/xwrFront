@@ -1,6 +1,9 @@
-export const prefix: string = 'xwrManage';
-export const pageSize: number = 20;
-export const urlPrefix: string = 'http://127.0.0.1:8202/xwrBasic';
+import * as application from '../application';
+
+export const prefix: string = 'xwrBasic';
+export const pageSize: number = application.pageSize;
+export const urlPrefix: string = application.urlPrefix + '/xwrBasic';
+export const urlCommon: string = application.urlCommon;
 
 export function paramInit(param) {
   param.type = 'computerBasic';

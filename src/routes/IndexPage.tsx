@@ -15,16 +15,22 @@ function IndexPage(props) {
   }, []);
 
   const onClick = (path) => {
-    const {dispatchModifyState, panes: panesOld, panesComponents } = props;
-    const iIndex = routeInfo.findIndex(item => item.path === path);
-    if (iIndex > -1) {
-      const key = commonUtils.newId().toString();
-      const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-      const pane = { key, title: routeInfo[iIndex].title, route: path };
-      panes.push(pane);
-      panesComponents.push(commonUtils.panesComponent(pane, routeInfo[iIndex]));
-      localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
-      dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
+    const {dispatch, dispatchModifyState, panes: panesOld, panesComponents } = props;
+    const key = commonUtils.newId().toString();
+    const route: any = commonUtils.getRouteComponent(routeInfo, path);
+    if (commonUtils.isNotEmptyObj(route)) {
+      if (route.title) {
+        const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
+        const pane = { key, title: route.title, route: path };
+        panes.push(pane);
+        panesComponents.push(commonUtils.panesComponent(pane, route));
+        localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
+        dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
+      }
+      dispatch({
+        type: 'commonModel/gotoNewPage',
+        payload: { newPage: path },
+      });
     }
   };
   const onExit = async () => {
@@ -45,6 +51,7 @@ function IndexPage(props) {
       <a href="/login"> login</a>
       <button onClick={onExit}> 退出</button>
       <button onClick={onClick.bind(this, '/register')}> add register</button>
+      <button onClick={onClick.bind(this, '/xwrBasic/customer')}> add customer</button>
       <div>{commonModel.userInfo.userName}</div>
       <div><TabPage {...props} /></div>
     </div>

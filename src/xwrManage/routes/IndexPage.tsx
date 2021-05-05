@@ -19,12 +19,14 @@ function IndexPage(props) {
     const key = commonUtils.newId().toString();
     const route: any = commonUtils.getRouteComponent(routeInfo, path);
     if (commonUtils.isNotEmptyObj(route)) {
-      const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-      const pane = { key, title: route.title, route: path };
-      panes.push(pane);
-      panesComponents.push(commonUtils.panesComponent(pane, route));
-      localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
-      dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
+      if (route.title) {
+        const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
+        const pane = { key, title: route.title, route: path };
+        panes.push(pane);
+        panesComponents.push(commonUtils.panesComponent(pane, route));
+        localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
+        dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
+      }
       dispatch({
         type: 'commonModel/gotoNewPage',
         payload: { newPage: path },

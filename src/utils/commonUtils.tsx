@@ -196,17 +196,9 @@ export function getRouteComponent(routeInfo, path) {
   for(const route of routeInfo) {
     if (route.path === path) {
       routeReturn = route;
-    } else if (route.children) {
-      const childInfo = route.children;
-      for(const child of childInfo) {
-        if (child.path === path) {
-          routeReturn = child;
-          break;
-        }
-      }
-    }
-    if (isNotEmptyObj(routeReturn)) {
       break;
+    } else if (route.children) {
+      return getRouteComponent(route.children, path);
     }
   }
   return routeReturn;

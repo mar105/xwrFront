@@ -3,7 +3,6 @@ import {Tabs} from 'antd';
 import * as commonUtils from "./utils/commonUtils";
 import * as application from "./application";
 import {routeInfo} from "./routeInfo";
-import * as routeInfoBasic from "./xwrBasic/routeInfo";
 
 const { TabPane } = Tabs;
 const TabPage = (props) => {
@@ -16,15 +15,6 @@ const TabPage = (props) => {
       const iIndex = routeInfo.findIndex(item => item.path === pane.route);
       if (iIndex > -1) {
         panesComponents.push(commonUtils.panesComponent(pane, routeInfo[iIndex]));
-      }
-    });
-
-    console.log('TabPage', panes);
-    panes.forEach(pane => {
-      const iIndex = routeInfoBasic.routeInfo.findIndex(item => item.path === pane.route);
-      if (iIndex > -1) {
-        console.log('TabPage', panes);
-        panesComponents.push(commonUtils.panesComponent(pane, routeInfoBasic.routeInfo[iIndex]));
       }
     });
     dispatchModifyState({ panes, panesComponents });
@@ -63,17 +53,7 @@ const TabPage = (props) => {
   };
   const tabPane= (pane) => {
     const { panesComponents } = props;
-    let iIndex = routeInfo.findIndex(item => item.path === pane.route);
-    if (iIndex > -1) {
-      const iComponentIndex = panesComponents.findIndex(item => item.key === pane.key);
-      if (iComponentIndex > -1) {
-        return(<TabPane tab={pane.title} key={pane.key}>
-          {panesComponents[iComponentIndex].component}
-        </TabPane>)
-      }
-    }
-
-    iIndex = routeInfoBasic.routeInfo.findIndex(item => item.path === pane.route);
+    const iIndex = routeInfo.findIndex(item => item.path === pane.route);
     if (iIndex > -1) {
       const iComponentIndex = panesComponents.findIndex(item => item.key === pane.key);
       if (iComponentIndex > -1) {

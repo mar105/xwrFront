@@ -2,7 +2,6 @@ import * as React from 'react';
 import { connect } from 'dva';
 import {useEffect} from "react";
 import {routeInfo} from "../routeInfo";
-import * as routeInfoBasic from "../xwrBasic/routeInfo";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
@@ -17,7 +16,7 @@ function IndexPage(props) {
 
   const onClick = (path) => {
     const {dispatchModifyState, panes: panesOld, panesComponents } = props;
-    let iIndex = routeInfo.findIndex(item => item.path === path);
+    const iIndex = routeInfo.findIndex(item => item.path === path);
     if (iIndex > -1) {
       const key = commonUtils.newId().toString();
       const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
@@ -27,21 +26,6 @@ function IndexPage(props) {
       localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
       dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
     }
-
-    iIndex = routeInfoBasic.routeInfo.findIndex(item => item.path === path);
-    if (iIndex > -1) {
-      const key = commonUtils.newId().toString();
-      const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-      const pane = { key, title: routeInfoBasic.routeInfo[iIndex].title, route: path };
-      panes.push(pane);
-      panesComponents.push(commonUtils.panesComponent(pane, routeInfoBasic.routeInfo[iIndex]));
-      localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
-
-      console.log('2222', iIndex, panes);
-      dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
-    }
-
-
   };
   const onExit = async () => {
     const {dispatch, commonModel} = props;
@@ -61,7 +45,6 @@ function IndexPage(props) {
       <a href="/login"> login</a>
       <button onClick={onExit}> 退出</button>
       <button onClick={onClick.bind(this, '/register')}> add register</button>
-      <button onClick={onClick.bind(this, '/xwrBasic/customer')}> add customer</button>
       <div>{commonModel.userInfo.userName}</div>
       <div><TabPage {...props} /></div>
     </div>

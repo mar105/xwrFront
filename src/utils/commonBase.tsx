@@ -1,6 +1,6 @@
 import React, {useEffect, useReducer, useRef} from 'react';
 import * as commonUtils from "./commonUtils";
-import * as application from "../xwrManage/application";
+import * as application from "../application";
 import * as request from "./request";
 
 

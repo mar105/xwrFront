@@ -52,7 +52,6 @@ const TabPage = (props) => {
     }
   };
   const tabPane= (pane) => {
-    console.log('tabPane', props.panes, pane, props.panesComponents);
     const { panesComponents } = props;
     const iComponentIndex = panesComponents.findIndex(item => item.key === pane.key);
     if (iComponentIndex > -1) {

@@ -209,6 +209,5 @@ export function getRouteComponent(routeInfo, path) {
       break;
     }
   }
-  console.log('1111', routeReturn);
   return routeReturn;
 };

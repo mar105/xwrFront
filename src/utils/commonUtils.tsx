@@ -190,3 +190,25 @@ export function objectToArr(obj) {
   }
   return arr;
 }
+
+export function getRouteComponent(routeInfo, path) {
+  let routeReturn;
+  for(const route of routeInfo) {
+    if (route.path === path) {
+      routeReturn = route;
+    } else if (route.children) {
+      const childInfo = route.children;
+      for(const child of childInfo) {
+        if (child.path === path) {
+          routeReturn = child;
+          break;
+        }
+      }
+    }
+    if (isNotEmptyObj(routeReturn)) {
+      break;
+    }
+  }
+  console.log('1111', routeReturn);
+  return routeReturn;
+};

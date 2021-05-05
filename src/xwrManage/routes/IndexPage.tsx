@@ -15,18 +15,24 @@ function IndexPage(props) {
   }, []);
 
   const onClick = (path) => {
-    const {dispatchModifyState, panes: panesOld, panesComponents } = props;
-    const iIndex = routeInfo.findIndex(item => item.path === path);
-    if (iIndex > -1) {
-      const key = commonUtils.newId().toString();
+    const {dispatch, dispatchModifyState, panes: panesOld, panesComponents } = props;
+    const key = commonUtils.newId().toString();
+    const route: any = commonUtils.getRouteComponent(routeInfo, path);
+    if (commonUtils.isNotEmptyObj(route)) {
       const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-      const pane = { key, title: routeInfo[iIndex].title, route: path };
+      const pane = { key, title: route.title, route: path };
       panes.push(pane);
-      panesComponents.push(commonUtils.panesComponent(pane, routeInfo[iIndex]));
+      panesComponents.push(commonUtils.panesComponent(pane, route));
       localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
       dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
+      dispatch({
+        type: 'commonModel/gotoNewPage',
+        payload: { newPage: path },
+      });
     }
   };
+
+
   const onExit = async () => {
     const {dispatch, commonModel} = props;
     const url: string = `${application.urlCommon}/verify/clearAllModifying`;

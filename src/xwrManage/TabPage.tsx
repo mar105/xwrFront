@@ -12,9 +12,9 @@ const TabPage = (props) => {
     const panes = JSON.parse(localStorage.getItem(`${application.prefix}panes`) || '[]');
     const panesComponents: any = [];
     panes.forEach(pane => {
-      const iIndex = routeInfo.findIndex(item => item.path === pane.route);
-      if (iIndex > -1) {
-        panesComponents.push(commonUtils.panesComponent(pane, routeInfo[iIndex]));
+      const route: any = commonUtils.getRouteComponent(routeInfo, pane.route);
+      if (commonUtils.isNotEmptyObj(route)) {
+        panesComponents.push(commonUtils.panesComponent(pane, route));
       }
     });
     dispatchModifyState({ panes, panesComponents });
@@ -52,15 +52,13 @@ const TabPage = (props) => {
     }
   };
   const tabPane= (pane) => {
+    console.log('tabPane', props.panes, pane, props.panesComponents);
     const { panesComponents } = props;
-    const iIndex = routeInfo.findIndex(item => item.path === pane.route);
-    if (iIndex > -1) {
-      const iComponentIndex = panesComponents.findIndex(item => item.key === pane.key);
-      if (iComponentIndex > -1) {
-        return(<TabPane tab={pane.title} key={pane.key}>
-          {panesComponents[iComponentIndex].component}
-        </TabPane>)
-      }
+    const iComponentIndex = panesComponents.findIndex(item => item.key === pane.key);
+    if (iComponentIndex > -1) {
+      return(<TabPane tab={pane.title} key={pane.key}>
+        {panesComponents[iComponentIndex].component}
+      </TabPane>)
     }
   };
 

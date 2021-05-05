@@ -1,36 +1,29 @@
 import * as React from 'react';
 import { Route, Switch, routerRedux, Redirect } from 'dva/router';
 import dynamic from 'dva/dynamic';
-import { Layout } from 'antd';
 import {routeInfo} from "./routeInfo";
 
 const { ConnectedRouter } = routerRedux;
 
 function RouterConfig({ history, app }) {
-
-
+  // 递归实现路由的方法
+  const mapRouteMethod = (routeArr) => {
+    return routeArr.map(({ path, children, ...dynamics }, index) => {
+      // @ts-ignore
+      const Component: any = dynamic({ app, ...dynamics });
+      if (children) {
+        return <Route key={index} path={path} render={(props) => {
+          return (<Component {...props}> {mapRouteMethod(children)} </Component>)
+        }} />
+      } else {
+        return <Route key={index} path={path} exact render={(props) => {return <Component {...props} /> } } />
+      }
+    })
+  }
   return (
     <ConnectedRouter history={history}>
       <Switch>
-        {
-        routeInfo.map(({ path, name, layout, ...dynamics }) => {
-          const Component: any = dynamic({ app, ...dynamics });
-          return (
-            <Route
-              path={path}
-              key={name}
-              exact
-              render={(props) => {
-                if (layout) {
-                  return <Layout><Component {...props} /></Layout>;
-                }
-                return <Component {...props} />;
-              }}
-              // components={Component}
-            />
-          );
-        })
-      }
+        {mapRouteMethod(routeInfo)}
       <Redirect to="/xwrManage"/>
       </Switch>
     </ConnectedRouter>

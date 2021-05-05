@@ -56,7 +56,6 @@ const commonBase = (WrapComponent) => {
     };
 
     const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
-      console.log('onRowSelectChange', selectedRowKeys);
       dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys });
     }
 

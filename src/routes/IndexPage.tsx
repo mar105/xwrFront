@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import {useEffect} from "react";
-import {routeInfo} from "../routeInfo";
+import {replacePath, routeInfo} from "../routeInfo";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
@@ -14,8 +14,9 @@ function IndexPage(props) {
     // commonUtils.getWebSocketData(commonModel.token, "", null);
   }, []);
 
-  const onClick = (path) => {
+  const onClick = (pathOld) => {
     const {dispatch, dispatchModifyState, panes: panesOld, panesComponents } = props;
+    const path = replacePath(pathOld);
     const key = commonUtils.newId().toString();
     const route: any = commonUtils.getRouteComponent(routeInfo, path);
     if (commonUtils.isNotEmptyObj(route)) {

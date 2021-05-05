@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Route, Switch, routerRedux, Redirect } from 'dva/router';
 import dynamic from 'dva/dynamic';
-import {routeInfo} from "./routeInfo";
+import { routeInfo } from "./routeInfo";
 
 const { ConnectedRouter } = routerRedux;
 

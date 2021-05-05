@@ -8,7 +8,6 @@ import 'antd/dist/antd.less';
 const app = dva({
   history: createBrowserHistory(),
   onError(err) {
-    console.log('dva', err);
     message.destroy();
     message.error(err.message);
   },

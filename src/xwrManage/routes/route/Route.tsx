@@ -3,7 +3,7 @@ import React, { useEffect, useMemo } from 'react';
 import * as application from "../../application";
 import * as request from "../../../utils/request";
 import {Col, Form, Row} from "antd";
-import commonBase from "../../../utils/commonBase";
+import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../ButtonGroup";
 import {InputComponent} from "../../../components/InputComponent";

@@ -1,7 +1,7 @@
 import React, {useEffect, useReducer, useRef} from 'react';
-import * as commonUtils from "./commonUtils";
+import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
-import * as request from "./request";
+import * as request from "../utils/request";
 
 
 
@@ -14,7 +14,67 @@ const commonBase = (WrapComponent) => {
     useEffect(() => {
       stateRef.current = modifyState;
     }, [modifyState]);
+
     useEffect(() => {
+      if (commonUtils.isNotEmpty(props.routeId)) {
+        const fetchData = async () => {
+          const { containerData } = props;
+          if (commonUtils.isNotEmptyArr(containerData)) {
+            console.log('containerData', containerData);
+            let addState = {};
+            containerData.forEach(async container => {
+              if (commonUtils.isNotEmpty(container.dataSetName)) {
+                addState[container.dataSetName + 'Container'] = container;
+              }
+              if (commonUtils.isNotEmpty(props.dataId)) {
+                const returnData: any = await getDataOne({ routeId: props.routeId, containerId: container.id, dataId: props.dataId, isWait: true });
+                addState = {...addState, ...returnData};
+              }
+            });
+            getDataList({ routeId: props.routeId, containerId: containerData[0].id, isWait: true });
+            console.log('addState', addState);
+            dispatchModifyState({...addState});
+          }
+        }
+        fetchData();
+      }
+    }, []);
+
+    const getDataOne = async (params) => {
+      const { commonModel, dispatch, dispatchModifyState } = props;
+      const { isWait } = params;
+      const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + params.routeId + '&containerId=' + params.containerId + '&dataId=' + params.dataId;
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        if (isWait) {
+          return { data: interfaceReturn.data };
+        } else {
+          dispatchModifyState({ data: interfaceReturn.data });
+        }
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+    }
+
+    const getDataList = async (params) => {
+      const { commonModel, dispatch, dispatchModifyState } = props;
+      const { isWait } = params;
+      const url: string = `${application.urlPrefix}/getData/getDataList?routeId=` +
+        params.routeId + '&containerId=' + params.containerId + '&pageNum=1' + '&pageSize=' + application.pageSize;
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        if (isWait) {
+          return { data: interfaceReturn.data };
+        } else {
+          dispatchModifyState({ data: interfaceReturn.data });
+        }
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+    }
+
+    useEffect(() => {
+      //刷新走两次这方法原因：一次是主路由，第二次子路由。
       return ()=> {
         const clearModifying = async () => {
           const {dispatch, commonModel, tabId} = props;
@@ -154,6 +214,7 @@ const commonBase = (WrapComponent) => {
       {...props}
       {...modifyState}
       dispatchModifyState={dispatchModifyState}
+      getDataOne={getDataOne}
       onAdd={onAdd}
       onModify={onModify}
       gotoError={gotoError}

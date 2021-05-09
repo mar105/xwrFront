@@ -3,14 +3,12 @@ import React, { useEffect, useMemo } from 'react';
 import * as application from "../../application";
 import * as request from "../../../utils/request";
 import {Col, Form, Row} from "antd";
-import commonBase from "../../../utils/commonBase";
+import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../ButtonGroup";
-import {InputComponent} from "../../../components/InputComponent";
-import {NumberComponent} from "../../../components/NumberComponent";
-import {SwitchComponent} from "../../../components/SwitchComponent";
-import {DatePickerComponent} from "../../../components/DatePickerComponent";
 import commonBasic from "../../commonBasic";
+// @ts-ignore
+import { CommonExhibit } from "../../../common/CommonExhibit";
 
 const Customer = (props) => {
   const [form] = Form.useForm();
@@ -182,81 +180,10 @@ const Customer = (props) => {
 
 
 
-  const { enabled, masterData } = props;
-
-  const createDate = {
-    form,
-    fieldName: 'createDate',
-    label: '创建日期',
-    property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
-  };
-  const routeName = {
-    form,
-    fieldName: 'routeName',
-    label: '路由名称',
-    rules: [{ required: true, message: '请输入你的路由名称' }],
-    property: { disabled: !enabled },
-  };
-  const sortNum = {
-    form,
-    fieldName: 'sortNum',
-    label: '排序号',
-    rules: [{ required: true, message: '请输入你的排序号' }],
-    property: { disabled: !enabled },
-  };
-  const chineseName = {
-    form,
-    fieldName: 'chineseName',
-    label: '中文名称',
-    rules: [{ required: true, message: '请输入你的中文名称' }],
-    property: { disabled: !enabled },
-  };
-  const traditionalName = {
-    form,
-    fieldName: 'traditionalName',
-    label: '繁体名称',
-    property: { disabled: !enabled },
-  };
-  const englishName = {
-    form,
-    fieldName: 'englishName',
-    label: '英文名称',
-    property: { disabled: !enabled },
-  };
-  const modelsType = {
-    form,
-    fieldName: 'modelsType',
-    label: '模块类型',
-    property: { disabled: !enabled },
-  };
-
-  const isVisible = {
-    form,
-    fieldName: 'isVisible',
-    label: '是否显示',
-    property: { checkedChildren: '是', unCheckedChildren: '否', disabled: !enabled, checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible },
-    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isVisible') }
-  };
-  const isVirtual = {
-    form,
-    fieldName: 'isVirtual',
-    label: '是否虚拟化',
-    property: { checkedChildren: '是', unCheckedChildren: '否', disabled: !enabled, checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtual },
-    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isVirtual') }
-  };
+  const { enabled, masterContainer, masterData } = props;
   const buttonGroup = { onClick, enabled };
   const component = useMemo(()=>{ return (
-    <div>
-      <DatePickerComponent {...createDate} />
-      <InputComponent {...routeName} />
-      <NumberComponent {...sortNum} />
-      <InputComponent {...chineseName} />
-      <InputComponent {...traditionalName} />
-      <InputComponent {...englishName} />
-      <InputComponent {...modelsType} />
-      <SwitchComponent {...isVisible} />
-      <SwitchComponent {...isVirtual} />
-    </div>)}, [masterData, enabled]);
+    <CommonExhibit {...props} />)}, [masterContainer, masterData, enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
@@ -269,4 +196,4 @@ const Customer = (props) => {
   );
 }
 
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonBasic(Customer)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonBasic(Customer)));

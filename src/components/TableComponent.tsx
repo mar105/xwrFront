@@ -141,7 +141,7 @@ export function TableComponent(params: any) {
     return arr;
   }
   const getColumnSearchConstProps = (column) => ({
-    filters: objectToArrFilter(commonUtils.stringToObj(column.dropOptions)),
+    filters: objectToArrFilter(commonUtils.stringToObj(column.viewDrop)),
     filteredValue: commonUtils.isEmpty(filteredInfo) ? '' : filteredInfo[column.dataIndex],
     // filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
     onFilter: (value, record) => record[column.dataIndex].includes(value),
@@ -246,7 +246,7 @@ export function TableComponent(params: any) {
               componentType: componentType.Soruce,
               fieldName: column.dataIndex,
               dropType: column.dropType,
-              dropOptions: column.dropOptions,
+              viewDrop: column.viewDrop,
               property: {value: text},
               record,
               event: {onChange: params.event.onSelectChange}
@@ -256,7 +256,7 @@ export function TableComponent(params: any) {
               componentType: componentType.Soruce,
               fieldName: column.dataIndex,
               dropType: column.dropType,
-              dropOptions: column.dropOptions,
+              viewDrop: column.viewDrop,
               property: {value: text},
               record,
               event: {onChange: params.event.onInputChange}
@@ -320,7 +320,7 @@ export function TableComponent(params: any) {
             if (column.dataIndex === 'sortNum' && params.isDragRow) {
               return <div><DragHandle /> {text}</div>;
             } else if (column.dropType === 'const') {
-              const dropObject: any = commonUtils.stringToObj(column.dropOptions);
+              const dropObject: any = commonUtils.stringToObj(column.viewDrop);
               return dropObject[text];
             } else if (column.fieldType === 'tinyint') {
               return text ? <CheckSquareOutlined /> : <BorderOutlined />;
@@ -353,7 +353,7 @@ export function TableComponent(params: any) {
     const splitTitle = newColumn.title.split('|');
     splitTitle.forEach((title, index) => {
       if (index === 0) {
-        const iIndex = columns.findIndex(item => item.title === title);
+        const iIndex = columns.findIndex(item => item.title === title && commonUtils.isEmpty(item.dataIndex));
         if (iIndex > -1) {
           column = columns[iIndex];
         } else {
@@ -368,7 +368,7 @@ export function TableComponent(params: any) {
           column.children.push(newColumn);
         }
       } else {
-        const iIndex = column.children.findIndex(item => item.title === title);
+        const iIndex = column.children.findIndex(item => item.title === title && commonUtils.isEmpty(item.dataIndex));
         if (iIndex > -1) {
           column = column.children[iIndex];
         } else {

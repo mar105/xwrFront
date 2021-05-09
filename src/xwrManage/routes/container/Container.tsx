@@ -1,5 +1,5 @@
 import {connect} from "react-redux";
-import commonBase from "../../../utils/commonBase";
+import commonBase from "../../../common/commonBase";
 import {Col, Form, Row} from "antd";
 import {ButtonGroup} from "../ButtonGroup";
 import React, {useEffect, useMemo} from "react";
@@ -66,6 +66,13 @@ const Container = (props) => {
     if (interfaceReturn.code === 1) {
       const returnRoute: any = await getAllContainer({isWait: true});
       const addState: any = {};
+      const url: string = `${application.urlPrefix}/container/getContainerSlave?id=` + masterData.id;
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        addState.slaveData = interfaceReturn.data;
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
@@ -264,6 +271,15 @@ const Container = (props) => {
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange }
   };
+  const dataSetName = {
+    name: 'master',
+    form,
+    fieldName: 'dataSetName',
+    label: '数据集名称',
+    rules: [{ required: true, message: '请输入你的数据集名称' }],
+    property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
+  };
   const sortNum = {
     name: 'master',
     form,
@@ -372,7 +388,7 @@ const Container = (props) => {
       <Row>
         <Col><DatePickerComponent {...createDate} /></Col>
         <Col><InputComponent {...containerName} /></Col>
-        <Col><NumberComponent {...sortNum} /></Col>
+        <Col><InputComponent {...dataSetName} /></Col>
       </Row>
       <Row>
         <Col><InputComponent {...chineseName} /></Col>
@@ -385,6 +401,7 @@ const Container = (props) => {
         <Col><InputComponent {...entitySort} /></Col>
       </Row>
       <Row>
+        <Col><NumberComponent {...sortNum} /></Col>
         <Col><SwitchComponent {...isVisible} /></Col>
         <Col><SwitchComponent {...isTable} /></Col>
       </Row>

@@ -25,7 +25,7 @@ export default {
   },
   effects: {
     * gotoNewPage({ payload }, { put }) {
-      yield put(routerRedux.push(payload.newPage));
+      yield put(routerRedux.push({pathname: payload.newPage, state: payload.state, search: payload.search}));
     },
     * gotoError({ payload }, { put }) {
       const { code, msg } = payload;

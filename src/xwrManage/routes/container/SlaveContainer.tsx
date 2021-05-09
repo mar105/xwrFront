@@ -11,9 +11,9 @@ const SlaveContainer = (props) => {
   const { name, enabled } = props;
   const columns = [
     { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 1, width: 80, fixed: 'left' },
-    { title: '类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const', dropOptions: '{ "field": "字段", "relevance": "关联性字段", "control": "控件" }', defaultValue: 'field', sortNum: 2, width: 150 },
-    { title: '字段|名称', dataIndex: 'fieldName', fieldType: 'varchar', sortNum: 3, width: 150 },
-    { title: '字段|类型', dataIndex: 'fieldType', fieldType: 'varchar', dropType: 'const', dropOptions: '{ "varchar": "字符型", "decimal": "数字型", "int": "整型", "smallint": "微整型", "datetime": "日期型", "tinyint": "布尔型", "text": "备注型" }', sortNum: 4, width: 150 },
+    { title: '名称', dataIndex: 'fieldName', fieldType: 'varchar', sortNum: 3, width: 150, fixed: 'left' },
+    { title: '字段|类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const', viewDrop: '{ "field": "字段", "relevance": "关联性字段", "control": "控件" }', defaultValue: 'field', sortNum: 2, width: 150 },
+    { title: '字段|类型', dataIndex: 'fieldType', fieldType: 'varchar', dropType: 'const', viewDrop: '{ "varchar": "字符型", "decimal": "数字型", "int": "整型", "smallint": "微整型", "datetime": "日期型", "tinyint": "布尔型", "text": "备注型" }', sortNum: 4, width: 150 },
     { title: '名称|中文', dataIndex: 'chineseName', fieldType: 'varchar', sortNum: 5, width: 150 },
     { title: '名称|繁体', dataIndex: 'traditionalName', fieldType: 'varchar', sortNum: 6, width: 150 },
     { title: '名称|英文', dataIndex: 'englishName', fieldType: 'varchar', sortNum: 7, width: 150 },
@@ -21,8 +21,11 @@ const SlaveContainer = (props) => {
     { title: '是否显示', dataIndex: 'isVisible', fieldType: 'tinyint', sortNum: 9, width: 150 },
     { title: '是否求和', dataIndex: 'isSum', fieldType: 'tinyint', sortNum: 10, width: 150 },
     { title: '宽度', dataIndex: 'width', fieldType: 'decimal', sortNum: 11, width: 150 },
-    { title: '弹出界面', dataIndex: 'activeName', fieldType: 'varchar', sortNum: 12, width: 150 },
-    { title: '下拉类型', dataIndex: 'dropType', fieldType: 'varchar', sortNum: 13, width: 150 },
+    { title: '弹出界面', dataIndex: 'popupActiveName', fieldType: 'varchar', sortNum: 12, width: 150, dropType: 'sql',
+      viewDrop: 'Select routeName, id From manRoute Where isDel = 0 and (char_length(routeName) - char_length(REPLACE(routeName, \'/\', \'\'))) >= 2 Order By sortNum ' },
+    { title: '查询界面', dataIndex: 'popupSelectName', fieldType: 'varchar', sortNum: 12, width: 150, dropType: 'sql',
+      viewDrop: 'Select routeName, id From manRoute Where isDel = 0 and (char_length(routeName) - char_length(REPLACE(routeName, \'/\', \'\'))) >= 2 Order By sortNum ' },
+    { title: '下拉类型', dataIndex: 'dropType', fieldType: 'varchar', dropType: 'const', viewDrop: '{ "sql": "sql语句", "const": "常量", "popupActive": "选择框", "popupSelect": "定位", "popupActiveSelect": "选择框与定位" }', sortNum: 13, width: 150 },
     { title: '中文下拉', dataIndex: 'chineseDrop', fieldType: 'varchar', sortNum: 14, width: 150 },
     { title: '繁体下拉', dataIndex: 'traditionalDrop', fieldType: 'varchar', sortNum: 15, width: 150 },
     { title: '英文下拉', dataIndex: 'englishDrop', fieldType: 'varchar', sortNum: 16, width: 150 },
@@ -52,7 +55,7 @@ const SlaveContainer = (props) => {
     const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
     if (name === 'slaveAddBtn') {
       const data = props.onAdd();
-      data.parentId = masterData.id;
+      data.superiorId = masterData.id;
       data.type = 'field';
       data.sortNum = slaveDataOld.length;
       data.assignField = '';

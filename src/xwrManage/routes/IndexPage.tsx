@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'dva';
 import TabPage from '../TabPage';
-import commonBase from "../../utils/commonBase";
+import commonBase from "../../common/commonBase";
 import * as commonUtils from "../../utils/commonUtils";
 import {routeInfo} from '../routeInfo';
 import * as application from "../application";

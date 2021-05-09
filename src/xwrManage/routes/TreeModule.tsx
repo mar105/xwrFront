@@ -52,7 +52,7 @@ const TreeModule = (props) => {
     event: { onSelect: props.onSelect, onExpand },
   };
   const columns = [
-    { title: '中文名称', dataIndex: 'chineseName', width: 150 },
+    { title: '名称', dataIndex: 'viewName', width: 150 },
     { title: '路由名称', dataIndex: 'routeName' },
   ];
   const tableParam: any = commonUtils.getTableProps('treeSearch', props);

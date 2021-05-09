@@ -203,3 +203,9 @@ export function getRouteComponent(routeInfo, path) {
   }
   return routeReturn;
 };
+
+export function mapStateToProps(state) {
+  const { commonModel, router } = state;
+  const returnProps = {commonModel, ...router.location.state };
+  return returnProps;
+}

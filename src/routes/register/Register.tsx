@@ -6,7 +6,7 @@ import {ButtonComponent} from "../../components/ButtonComponent";
 import * as request from "../../utils/request";
 import * as application from '../../application';
 import * as commonUtils from "../../utils/commonUtils";
-import commonBase from "../../utils/commonBase";
+import commonBase from "../../common/commonBase";
 import {Md5} from "ts-md5";
 
 const FormItem = Form.Item;

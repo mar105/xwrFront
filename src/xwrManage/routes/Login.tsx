@@ -43,7 +43,10 @@ const Login = ({ dispatch }) => {
     values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
     const interfaceReturn = (await request.postRequest(url, null, application.paramInit(values))).data;
     if (interfaceReturn.code === 1) {
-      localStorage.clear();
+      localStorage.setItem(`${application.prefix}token`, '');
+      localStorage.setItem(`${application.prefix}userInfo`, '');
+      localStorage.setItem(`${application.prefix}provinceCityArea`, '[]');
+      localStorage.setItem(`${application.prefix}panes`, '[]');
       dispatch({
         type: 'commonModel/saveToken',
         payload: interfaceReturn.data.token,

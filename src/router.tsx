@@ -16,7 +16,7 @@ function RouterConfig({ history, app }) {
           return (<Component {...props}> {mapRouteMethod(children)} </Component>)
         }} />
       } else {
-        return <Route key={index} path={path} exact render={(props) => {return <Component {...props} /> } } />
+        return <Route key={index} path={path} exact render={(props) => { return <Component {...props} /> } } />
       }
     })
   }

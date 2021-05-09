@@ -6,7 +6,7 @@ import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
 import TabPage from "../TabPage";
-import commonBase from "../utils/commonBase";
+import commonBase from "../common/commonBase";
 
 function IndexPage(props) {
   useEffect(() => {
@@ -14,13 +14,19 @@ function IndexPage(props) {
     // commonUtils.getWebSocketData(commonModel.token, "", null);
   }, []);
 
-  const onClick = (pathOld) => {
-    const {dispatch, dispatchModifyState, panes: panesOld, panesComponents } = props;
+  const onClick = async (pathOld, stateOld) => {
+    const {dispatch, dispatchModifyState, panes: panesOld, panesComponents, commonModel } = props;
     const path = replacePath(pathOld);
     const key = commonUtils.newId().toString();
     const route: any = commonUtils.getRouteComponent(routeInfo, path);
     if (commonUtils.isNotEmptyObj(route)) {
+      let state = {}
       if (route.title) {
+        const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + stateOld.routeId;
+        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+        if (interfaceReturn.code === 1) {
+          state = { ...stateOld, ... interfaceReturn.data};
+        }
         const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
         const pane = { key, title: route.title, route: path };
         panes.push(pane);
@@ -30,7 +36,7 @@ function IndexPage(props) {
       }
       dispatch({
         type: 'commonModel/gotoNewPage',
-        payload: { newPage: path },
+        payload: { newPage: path, state },
       });
     }
   };
@@ -52,11 +58,11 @@ function IndexPage(props) {
       <a href="/login"> login</a>
       <button onClick={onExit}> 退出</button>
       <button onClick={onClick.bind(this, '/register')}> add register</button>
-      <button onClick={onClick.bind(this, '/xwrBasic/customer')}> add customer</button>
+      <button onClick={onClick.bind(this, '/xwrBasic/customer', { routeId: '1390238196331319296' })}> add customer</button>
       <div>{commonModel.userInfo.userName}</div>
       <div><TabPage {...props} /></div>
     </div>
   );
 }
 
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(IndexPage));
+export default connect(commonUtils.mapStateToProps)(commonBase(IndexPage));

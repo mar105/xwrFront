@@ -1,5 +1,5 @@
 import {connect} from "react-redux";
-import commonBase from "../../../utils/commonBase";
+import commonBase from "../../../common/commonBase";
 import {Col, Form, Row} from "antd";
 import {ButtonGroup} from "../ButtonGroup";
 import React, {useEffect, useMemo} from "react";

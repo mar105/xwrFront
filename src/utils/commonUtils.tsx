@@ -1,5 +1,5 @@
 import { Stomp } from "@stomp/stompjs";
-import {urlSockJs, urlWs} from "../application";
+import {urlSockJs, urlWebSocket} from "../application";
 import SockJS from 'sockjs-client';
 import moment from 'moment';
 import dynamic from "dva/dynamic";
@@ -102,7 +102,7 @@ export function getWebSocketData(token, subscribeName: string, callBack: any) {
   // 下面的url是本地运行的jar包的websocket地址
   let socket;
   if ('WebSocket' in window) {
-    socket = new WebSocket(urlWs);
+    socket = new WebSocket(urlWebSocket);
   } else {
     socket = new SockJS(urlSockJs);
   }

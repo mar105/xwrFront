@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Select } from 'antd';
+import {Form, message, Select} from 'antd';
 import { componentType } from '../utils/commonTypes';
 import * as commonUtils from '../utils/commonUtils';
 
@@ -18,12 +18,18 @@ export function SelectComponent(params) {
     addProperty.filterOption = (input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
   }
 
-  // const onDropdownVisibleChange = (open) => {
-  //
-  // };
+  const onKeyUp = (e) => {
+    if (e.key === 'F2') {
+      message.info(params.fieldName);
+    }
+  }
+  const event = {
+    onChange: params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null,
+    onKeyUp,
+  }
 
   if (params.componentType === componentType.Soruce) {
-    return <Select {...params.property} {...addProperty} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null}>{dropOptions}</Select>;
+    return <Select {...params.property} {...addProperty} { ...event }>{dropOptions}</Select>;
   } else {
     return <Form.Item
       label={params.label}
@@ -31,7 +37,7 @@ export function SelectComponent(params) {
       rules={params.rules}
       shouldUpdate={(prevValues, currentValues) => { return prevValues[params.fieldName] !== currentValues[params.fieldName] }
   }>
-      <Select {...params.property} {...addProperty} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.fieldName, params.record) : null }>{dropOptions}</Select>
+      <Select {...params.property} {...addProperty} { ...event }>{dropOptions}</Select>
     </Form.Item>;
   }
 

@@ -199,6 +199,7 @@ const commonBase = (WrapComponent) => {
       const { [name + 'Data']: dataOld }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
+
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
         dispatchModifyState({ [name + 'Data']: data });

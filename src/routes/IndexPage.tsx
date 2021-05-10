@@ -10,8 +10,8 @@ import commonBase from "../common/commonBase";
 
 function IndexPage(props) {
   useEffect(() => {
-    // const {commonModel} = props;
-    // commonUtils.getWebSocketData(commonModel.token, "", null);
+    const {commonModel} = props;
+    commonUtils.getWebSocketData(commonModel.token, "", null);
   }, []);
 
   const onClick = async (pathOld, stateOld) => {
@@ -26,18 +26,20 @@ function IndexPage(props) {
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           state = { ...stateOld, ... interfaceReturn.data};
+          const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
+          const pane = { key, title: route.title, route: path };
+          panes.push(pane);
+          panesComponents.push(commonUtils.panesComponent(pane, route));
+          localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
+          dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
+          dispatch({
+            type: 'commonModel/gotoNewPage',
+            payload: { newPage: path, state },
+          });
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
         }
-        const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-        const pane = { key, title: route.title, route: path };
-        panes.push(pane);
-        panesComponents.push(commonUtils.panesComponent(pane, route));
-        localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
-        dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
       }
-      dispatch({
-        type: 'commonModel/gotoNewPage',
-        payload: { newPage: path, state },
-      });
     }
   };
   const onExit = async () => {

@@ -113,7 +113,7 @@ const Customer = (props) => {
   const { enabled, masterContainer, masterData } = props;
   const buttonGroup = { onClick, enabled };
   const component = useMemo(()=>{ return (
-    <CommonExhibit {...props} />)}, [masterContainer, masterData, enabled]);
+    <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>

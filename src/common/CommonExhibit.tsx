@@ -8,7 +8,7 @@ import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
 
 export const CommonExhibit = (props) => {
-  const { [props.name + 'Data']: masterDataOld, masterContainer } = props;
+  const { [props.name + 'Data']: masterDataOld, masterContainer, enabled } = props;
   const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
   const masterComponent = commonUtils.isEmptyObj(masterContainer) ? '' :
     masterContainer.slaveData.filter(item => item.isVisible).map(item => {
@@ -18,7 +18,7 @@ export const CommonExhibit = (props) => {
         label: item.viewName,
         dropType: item.dropType,
         viewDrop: item.viewDrop,
-        property: {value: masterData[item.fieldName] },
+        property: {value: masterData[item.fieldName], disabled: !enabled },
         masterData,
         event: {onChange: props.onSelectChange}
       };
@@ -28,7 +28,7 @@ export const CommonExhibit = (props) => {
         label: item.viewName,
         dropType: item.dropType,
         viewDrop: item.viewDrop,
-        property: {value: masterData[item.fieldName]},
+        property: {value: masterData[item.fieldName], disabled: !enabled },
         masterData,
         event: {onChange: props.onInputChange}
       };
@@ -36,7 +36,7 @@ export const CommonExhibit = (props) => {
         name: props.name,
         fieldName: item.fieldName,
         label: item.viewName,
-        property: {checked: masterData[item.fieldName]},
+        property: {checked: masterData[item.fieldName], disabled: !enabled },
         masterData,
         event: {onChange: props.onCheckboxChange}
       };
@@ -44,7 +44,7 @@ export const CommonExhibit = (props) => {
         name: props.name,
         fieldName: item.fieldName,
         label: item.viewName,
-        property: {checked: masterData[item.fieldName]},
+        property: {checked: masterData[item.fieldName], disabled: !enabled },
         masterData,
         event: {onChange: props.onNumberChange}
       };
@@ -52,51 +52,32 @@ export const CommonExhibit = (props) => {
         name: props.name,
         fieldName: item.fieldName,
         label: item.viewName,
-        property: {checked: masterData[item.fieldName]},
+        property: {checked: masterData[item.fieldName], disabled: !enabled },
         masterData,
         event: {onChange: props.onNumberChange}
       };
+      let component;
       if (item.fieldType === 'varchar') {
         if (item.dropType === 'sql' || item.dropType === 'const') {
-          const component = useMemo(() => {
-            return (<SelectComponent {...selectParams}  />
-            )
-          }, [masterData[item.fieldName]]);
-          return component;
+          component = <SelectComponent {...selectParams}  />;
         } else {
-          const component = useMemo(() => {
-            return (<InputComponent {...inputParams}  />
-            )
-          }, [masterData[item.fieldName]]);
-          return component;
+          component = <InputComponent {...inputParams}  />;
         }
       } else if (item.fieldType === 'decimal' || item.fieldType === 'smallint' || item.fieldType === 'int') {
-        const component = useMemo(() => {
-          return (<NumberComponent {...numberParams}  />
-          )
-        }, [masterData[item.fieldName]]);
-        return component;
+        component = <NumberComponent {...numberParams} />
       } else if (item.fieldType === 'tinyint') {
-        const component = useMemo(() => {
-          return (<CheckboxComponent {...checkboxParams}  />
-          )
-        }, [masterData[item.fieldName]]);
-        return component;
+        component = <CheckboxComponent {...checkboxParams}  />
       } else if (item.fieldType === 'datetime') {
-        const component = useMemo(() => {
-          return (<DatePickerComponent {...dateParams}  />
-          )
-        }, [masterData[item.fieldName]]);
-        return component;
+        component = <DatePickerComponent {...dateParams}  />
       }
+      component = useMemo(()=>{ return (component)}, [masterData[item.fieldName], enabled]);
+      return <Col span={8}>{component}</Col>;
     });
-  console.log('masterComponent', masterContainer, masterComponent);
+
   return (
     <Form name="basic" onFinishFailed={props.onFinishFailed} onFinish={props.onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
-        <Col>
-          {masterComponent}
-        </Col>
+        {masterComponent}
       </Row>
     </Form>
   );

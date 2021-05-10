@@ -17,29 +17,52 @@ const commonBase = (WrapComponent) => {
 
     useEffect(() => {
       if (commonUtils.isNotEmpty(props.routeId)) {
-        const fetchData = async () => {
-          const { containerData } = props;
-          if (commonUtils.isNotEmptyArr(containerData)) {
-            console.log('containerData', containerData);
-            let addState = {};
-            containerData.forEach(async container => {
-              if (commonUtils.isNotEmpty(container.dataSetName)) {
-                addState[container.dataSetName + 'Container'] = container;
-              }
-              if (commonUtils.isNotEmpty(props.dataId)) {
-                const returnData: any = await getDataOne({ routeId: props.routeId, containerId: container.id, dataId: props.dataId, isWait: true });
-                addState = {...addState, ...returnData};
-              }
-            });
-            getDataList({ routeId: props.routeId, containerId: containerData[0].id, isWait: true });
-            console.log('addState', addState);
-            dispatchModifyState({...addState});
-          }
-        }
-        fetchData();
+        getAllData({ dataId: props.dataId });
       }
     }, []);
 
+    useEffect(() => {
+      //刷新走两次这方法原因：一次是主路由，第二次子路由。
+      return ()=> {
+        const clearModifying = async () => {
+          const {dispatch, commonModel, tabId} = props;
+          //为什么要用stateRef.current？是因为 masterData数据改变后，useEffect使用的是[]不重新更新state，为老数据,使用 useRef来存储变量。
+          const { masterData }: any = stateRef.current;
+          if (commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.handleType)) {
+            const url: string = `${application.urlCommon}/verify/removeModifying`;
+            const params = {id: masterData.id, tabId};
+            const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+            if (interfaceReturn.code === 1) {
+            } else {
+              props.gotoError(dispatch, interfaceReturn);
+            }
+          }
+        }
+        clearModifying();
+      }
+    }, []);
+
+    const getAllData = async (params) => {
+      const { containerData } = props;
+      if (commonUtils.isNotEmptyArr(containerData)) {
+        let addState = { enabled: false };
+        containerData.forEach(async container => {
+          if (commonUtils.isNotEmpty(container.dataSetName)) {
+            addState[container.dataSetName + 'Container'] = container;
+          }
+          if (commonUtils.isNotEmpty(params.dataId)) {
+            if (container.isTable) {
+              const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, condition: { dataCondition: { dataId: params.dataId } }, isWait: true });
+              addState = {...addState, ...returnData};
+            } else {
+              const returnData: any = await getDataOne({ routeId: props.routeId, containerId: container.id, condition: { dataCondition: { dataId: params.dataId } }, isWait: true });
+              addState = {...addState, ...returnData};
+            }
+          }
+        });
+        dispatchModifyState({...addState});
+      }
+    }
     const getDataOne = async (params) => {
       const { commonModel, dispatch, dispatchModifyState } = props;
       const { isWait } = params;
@@ -73,26 +96,7 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    useEffect(() => {
-      //刷新走两次这方法原因：一次是主路由，第二次子路由。
-      return ()=> {
-        const clearModifying = async () => {
-          const {dispatch, commonModel, tabId} = props;
-          //为什么要用stateRef.current？是因为 masterData数据改变后，useEffect使用的是[]不重新更新state，为老数据,使用 useRef来存储变量。
-          const { masterData }: any = stateRef.current;
-          if (commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.handleType)) {
-            const url: string = `${application.urlCommon}/verify/removeModifying`;
-            const params = {id: masterData.id, tabId};
-            const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-            if (interfaceReturn.code === 1) {
-            } else {
-              props.gotoError(dispatch, interfaceReturn);
-            }
-          }
-        }
-        clearModifying();
-      }
-    }, []);
+
 
     const onAdd = () => {
       const dataRow: any = {};
@@ -204,7 +208,6 @@ const commonBase = (WrapComponent) => {
         if (index > -1) {
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = value;
-          console.log('option', option);
           dispatchModifyState({ [name + 'Data']: data });
         }
       }
@@ -214,7 +217,9 @@ const commonBase = (WrapComponent) => {
       {...props}
       {...modifyState}
       dispatchModifyState={dispatchModifyState}
+      getAllData={getAllData}
       getDataOne={getDataOne}
+      getDataList={getDataList}
       onAdd={onAdd}
       onModify={onModify}
       gotoError={gotoError}

@@ -252,13 +252,7 @@ const Route = (props) => {
     property: { checkedChildren: '是', unCheckedChildren: '否', disabled: !enabled, checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible },
   event: { onChange: props.onSwitchChange.bind(this, 'master', 'isVisible') }
   };
-  const isVirtual = {
-    form,
-    fieldName: 'isVirtual',
-    label: '是否虚拟化',
-    property: { checkedChildren: '是', unCheckedChildren: '否', disabled: !enabled, checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtual },
-    event: { onChange: props.onSwitchChange.bind(this, 'master', 'isVirtual') }
-  };
+
   const buttonGroup = { onClick, enabled };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
     )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
@@ -272,7 +266,6 @@ const Route = (props) => {
       <InputComponent {...englishName} />
       <InputComponent {...modelsType} />
       <SwitchComponent {...isVisible} />
-      <SwitchComponent {...isVirtual} />
     </div>)}, [masterData, enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>

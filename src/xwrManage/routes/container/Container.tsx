@@ -66,7 +66,7 @@ const Container = (props) => {
     if (interfaceReturn.code === 1) {
       const returnRoute: any = await getAllContainer({isWait: true});
       const addState: any = {};
-      const url: string = `${application.urlPrefix}/container/getContainerSlave?id=` + masterData.id;
+      const url: string = `${application.urlPrefix}/container/getContainerSlaveList?id=` + masterData.id;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         addState.slaveData = interfaceReturn.data;
@@ -177,7 +177,7 @@ const Container = (props) => {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
-        url = `${application.urlPrefix}/container/getContainerSlave?id=` + masterData.id;
+        url = `${application.urlPrefix}/container/getContainerSlaveList?id=` + masterData.id;
         interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           addState.slaveData = interfaceReturn.data;
@@ -236,7 +236,7 @@ const Container = (props) => {
     } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
       const addState = props.onTreeSelect(selectedKeys, e, true);
       if (commonUtils.isNotEmpty(e.node.containerName)) {
-        const url: string = `${application.urlPrefix}/container/getContainerSlave?id=` + e.node.id;
+        const url: string = `${application.urlPrefix}/container/getContainerSlaveList?id=` + e.node.id;
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           addState.slaveData = interfaceReturn.data;
@@ -380,6 +380,15 @@ const Container = (props) => {
     event: { onChange: props.onSwitchChange }
   };
 
+  const virtualName = {
+    name: 'master',
+    form,
+    fieldName: 'virtualName',
+    label: '虚拟名称',
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtual, disabled: !enabled },
+    event: { onChange: props.onSwitchChange }
+  };
+
   const buttonGroup = { onClick, enabled };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
@@ -401,6 +410,7 @@ const Container = (props) => {
         <Col><InputComponent {...entitySort} /></Col>
       </Row>
       <Row>
+        <Col><InputComponent {...virtualName} /></Col>
         <Col><NumberComponent {...sortNum} /></Col>
         <Col><SwitchComponent {...isVisible} /></Col>
         <Col><SwitchComponent {...isTable} /></Col>

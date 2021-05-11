@@ -75,12 +75,12 @@ const commonBase = (WrapComponent) => {
           dispatchModifyState({ data: interfaceReturn.data });
         }
       } else {
-        props.gotoError(dispatch, interfaceReturn);
+        gotoError(dispatch, interfaceReturn);
       }
     }
 
     const getDataList = async (params) => {
-      const { commonModel, dispatch, dispatchModifyState } = props;
+      const { commonModel, dispatch } = props;
       const { isWait } = params;
       const url: string = `${application.urlPrefix}/getData/getDataList?routeId=` +
         params.routeId + '&containerId=' + params.containerId + '&pageNum=1' + '&pageSize=' + application.pageSize;
@@ -92,11 +92,26 @@ const commonBase = (WrapComponent) => {
           dispatchModifyState({ data: interfaceReturn.data });
         }
       } else {
-        props.gotoError(dispatch, interfaceReturn);
+        gotoError(dispatch, interfaceReturn);
       }
     }
 
-
+    const getSelectList = async (params) => {
+      const { commonModel, dispatch } = props;
+      const { isWait } = params;
+      const url: string = `${application.urlPrefix}/getData/getSelectList?routeId=` +
+        params.routeId + '&containerSlaveId=' + params.containerSlaveId + '&pageNum=' + params.pageNum + '&pageSize=' + application.pageSize;
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        if (isWait) {
+          return { ...interfaceReturn.data.data };
+        } else {
+          dispatchModifyState({ ...interfaceReturn.data.data });
+        }
+      } else {
+        gotoError(dispatch, interfaceReturn);
+      }
+    }
 
     const onAdd = () => {
       const dataRow: any = {};
@@ -221,6 +236,7 @@ const commonBase = (WrapComponent) => {
       getAllData={getAllData}
       getDataOne={getDataOne}
       getDataList={getDataList}
+      getSelectList={getSelectList}
       onAdd={onAdd}
       onModify={onModify}
       gotoError={gotoError}

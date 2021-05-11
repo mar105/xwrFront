@@ -18,9 +18,10 @@ export const CommonExhibit = (props) => {
         label: item.viewName,
         dropType: item.dropType,
         viewDrop: item.viewDrop,
+        containerSlaveId: item.id,
         property: {value: masterData[item.fieldName], disabled: !enabled },
         masterData,
-        event: {onChange: props.onSelectChange}
+        event: {onChange: props.onSelectChange, getSelectList: props.getSelectList}
       };
       const inputParams = {
         name: props.name,

@@ -16,18 +16,13 @@ const Login = ({ dispatch }) => {
     wrapperCol: { offset: 8, span: 16 },
   };
   const userName = {
-    form,
-    fieldName: 'userName',
-    rules: [{ required: true, message: '请输入你的用户名' }],
+    config: { fieldName: 'userName', isRequired: true },
     property: { placeholder: '请输入你的用户名' },
   };
   const userPwd = {
-    form,
-    fieldName: 'userPwd',
+    config: { fieldName: 'userPwd', isRequired: true },
     password: true,
-    rules: [{ required: true, message: '请输入你的密码' }],
     property: { placeholder: '请输入你的密码' },
-
   };
   const onFinishFailed = (errorInfo: any) => {
       console.log('Failed:', errorInfo);

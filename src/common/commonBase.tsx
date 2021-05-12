@@ -99,9 +99,15 @@ const commonBase = (WrapComponent) => {
     const getSelectList = async (params) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
-      const url: string = `${application.urlPrefix}/getData/getSelectList?routeId=` +
-        params.routeId + '&containerSlaveId=' + params.containerSlaveId + '&pageNum=' + params.pageNum + '&pageSize=' + application.pageSize;
-      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      const url: string = `${application.urlPrefix}/getData/getSelectList`;
+      const requestParam = {
+        routeId: props.routeId,
+        containerSlaveId: params.containerSlaveId,
+        pageNum: params.pageNum,
+        pageSize: application.pageSize,
+        condition: params.condition,
+      }
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;
       if (interfaceReturn.code === 1) {
         if (isWait) {
           return { ...interfaceReturn.data.data };
@@ -217,6 +223,7 @@ const commonBase = (WrapComponent) => {
 
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
+        console.log('onSelectChange', data);
         dispatchModifyState({ [name + 'Data']: data });
       } else {
         const data = [...dataOld];
@@ -228,6 +235,10 @@ const commonBase = (WrapComponent) => {
         }
       }
     }
+
+    // const getAssignFieldValue = (assignField, option) => {
+    //
+    // }
 
     return <WrapComponent
       {...props}

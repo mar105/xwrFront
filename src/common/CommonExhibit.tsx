@@ -14,47 +14,37 @@ export const CommonExhibit = (props) => {
     masterContainer.slaveData.filter(item => item.isVisible).map(item => {
       const selectParams = {
         name: props.name,
-        fieldName: item.fieldName,
-        label: item.viewName,
-        dropType: item.dropType,
-        viewDrop: item.viewDrop,
-        containerSlaveId: item.id,
+        config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
-        masterData,
+        record: masterData,
         event: {onChange: props.onSelectChange, getSelectList: props.getSelectList}
       };
       const inputParams = {
         name: props.name,
-        fieldName: item.fieldName,
-        label: item.viewName,
-        dropType: item.dropType,
-        viewDrop: item.viewDrop,
+        config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
-        masterData,
+        record: masterData,
         event: {onChange: props.onInputChange}
       };
       const checkboxParams = {
         name: props.name,
-        fieldName: item.fieldName,
-        label: item.viewName,
+        config: item,
         property: {checked: masterData[item.fieldName], disabled: !enabled },
-        masterData,
+        record: masterData,
         event: {onChange: props.onCheckboxChange}
       };
       const numberParams = {
         name: props.name,
-        fieldName: item.fieldName,
-        label: item.viewName,
+        config: item,
         property: {checked: masterData[item.fieldName], disabled: !enabled },
-        masterData,
+        record: masterData,
         event: {onChange: props.onNumberChange}
       };
       const dateParams = {
         name: props.name,
-        fieldName: item.fieldName,
-        label: item.viewName,
+        config: item,
         property: {checked: masterData[item.fieldName], disabled: !enabled },
-        masterData,
+        record: masterData,
         event: {onChange: props.onNumberChange}
       };
       let component;

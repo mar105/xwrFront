@@ -200,61 +200,50 @@ const Route = (props) => {
   const { treeSelectedKeys, treeData, enabled, masterData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
 
   const createDate = {
-    form,
-    fieldName: 'createDate',
-    label: '创建日期',
+    name: 'master',
+    config: { fieldName: 'createDate', viewName: '创建日期' },
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
   };
   const routeName = {
-    form,
-    fieldName: 'routeName',
-    label: '路由名称',
-    rules: [{ required: true, message: '请输入你的路由名称' }],
+    name: 'master',
+    config: { fieldName: 'routeName', isRequired: true, viewName: '路由名称' },
     property: { disabled: !enabled },
   };
   const sortNum = {
-    form,
-    fieldName: 'sortNum',
-    label: '排序号',
-    rules: [{ required: true, message: '请输入你的排序号' }],
+    name: 'master',
+    config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
   };
   const chineseName = {
-    form,
-    fieldName: 'chineseName',
-    label: '中文名称',
-    rules: [{ required: true, message: '请输入你的中文名称' }],
+    name: 'master',
+    config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
   };
   const traditionalName = {
-    form,
-    fieldName: 'traditionalName',
-    label: '繁体名称',
+    name: 'master',
+    config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
   };
   const englishName = {
-    form,
-    fieldName: 'englishName',
-    label: '英文名称',
+    name: 'master',
+    config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
   };
   const modelsType = {
-    form,
-    fieldName: 'modelsType',
-    label: '模块类型',
+    name: 'master',
+    config: { fieldName: 'modelsType', viewName: '模块类型' },
     property: { disabled: !enabled },
   };
 
   const isVisible = {
-    form,
-    fieldName: 'isVisible',
-    label: '是否显示',
+    name: 'master',
+    config: { fieldName: 'isVisible', viewName: '是否显示' },
     property: { checkedChildren: '是', unCheckedChildren: '否', disabled: !enabled, checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible },
-  event: { onChange: props.onSwitchChange.bind(this, 'master', 'isVisible') }
+    event: { onChange: props.onSwitchChange }
   };
 
   const buttonGroup = { onClick, enabled };
-  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
+  const tree =  useMemo(()=>{ return (<TreeModule {...props} onSelect={props.onTreeSelect} />
     )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (
     <div>

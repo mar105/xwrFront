@@ -200,48 +200,33 @@ const Permission = (props) => {
 
   const createDate = {
     name: 'master',
-    form,
-    fieldName: 'createDate',
-    label: '创建日期',
+    config: { fieldName: 'createDate', viewName: '创建日期' },
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
   };
   const permissionName = {
     name: 'master',
-    form,
-    fieldName: 'permissionName',
-    label: '权限名称',
-    rules: [{ required: true, message: '请输入你的权限名称' }],
+    config: { fieldName: 'permissionName', isRequired: true, viewName: '权限名称' },
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange }
   };
   const sortNum = {
     name: 'master',
-    form,
-    fieldName: 'sortNum',
-    label: '排序号',
-    rules: [{ required: true, message: '请输入你的排序号' }],
+    config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
   };
   const chineseName = {
     name: 'master',
-    form,
-    fieldName: 'chineseName',
-    label: '中文名称',
-    rules: [{ required: true, message: '请输入你的中文名称' }],
+    config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
   };
   const traditionalName = {
     name: 'master',
-    form,
-    fieldName: 'traditionalName',
-    label: '繁体名称',
+    config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
   };
   const englishName = {
     name: 'master',
-    form,
-    fieldName: 'englishName',
-    label: '英文名称',
+    config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
   };
 

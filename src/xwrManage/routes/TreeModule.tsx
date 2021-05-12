@@ -39,11 +39,11 @@ const TreeModule = (props) => {
   }
 
 
-  const { form, treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchSelectedRowKeys, enabled, treeSearchValue } = props;
+  const { treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchSelectedRowKeys, enabled, treeSearchValue } = props;
   const searchValue = {
-    form,
+    name: 'master',
+    config: { fieldName: 'searchValue' },
     search: true,
-    fieldName: 'searchValue',
     property: { placeholder: '请输入查找内容' },
     event: { onChange, onSearch }
   };

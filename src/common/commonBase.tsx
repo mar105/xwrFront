@@ -216,10 +216,10 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    const onSelectChange = (name, fieldName, record, value, option) => {
+    const onSelectChange = (name, fieldName, record, assignField, value, option) => {
       const { [name + 'Data']: dataOld }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld };
+        const data = { ...dataOld, ...getAssignFieldValue(assignField, option) };
 
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
@@ -235,9 +235,16 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    // const getAssignFieldValue = (assignField, option) => {
-    //
-    // }
+    const getAssignFieldValue = (assignField, option) => {
+      const returnField = {};
+      if (commonUtils.isNotEmptyObj(option.optionObj)) {
+        assignField.split(',').forEach(item => {
+          const arrAssign = item.split('=');
+          returnField[arrAssign[0]] = option.optionObj[arrAssign[1]];
+        });
+      }
+      return returnField;
+    }
 
     return <WrapComponent
       {...props}

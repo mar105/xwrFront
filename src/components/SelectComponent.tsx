@@ -23,7 +23,8 @@ export function SelectComponent(params) {
   } else {
     const array: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
     for (const optionObj of array) {
-      const option: any = (<Option key={optionObj.id} value={optionObj.id}>{optionObj.value}</Option>);
+      const viewOption = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? optionObj.id : optionObj[params.config.keyUpFieldDrop];
+      const option: any = (<Option key={optionObj.id} value={optionObj.id} optionObj={optionObj}>{viewOption}</Option>);
       dropOptions.push(option);
     };
     addProperty.filterOption = (input, option) => {
@@ -68,7 +69,7 @@ export function SelectComponent(params) {
 
   const onChange = (value, option) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange(params.name, params.config.fieldName, params.record, value, option);
+      params.event.onChange(params.name, params.config.fieldName, params.record, params.config.assignField, value, option);
     }
     dispatchModifySelfState({ searchValue: '' });
   }

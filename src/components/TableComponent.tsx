@@ -140,8 +140,8 @@ export function TableComponent(params: any) {
     }
     return arr;
   }
-  const getColumnSearchConstProps = (column) => ({
-    filters: objectToArrFilter(commonUtils.stringToObj(column.viewDrop)),
+  const getColumnSearchConstProps = (column, config) => ({
+    filters: objectToArrFilter(commonUtils.stringToObj(config.viewDrop)),
     filteredValue: commonUtils.isEmpty(filteredInfo) ? '' : filteredInfo[column.dataIndex],
     // filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
     onFilter: (value, record) => record[column.dataIndex].includes(value),
@@ -213,7 +213,11 @@ export function TableComponent(params: any) {
         const column = {...columnOld};
         columns.push(column);
       } else {
-        const column = columnOld.dropType === 'const' ? {...columnOld, ...getColumnSearchConstProps(columnOld)} : {...columnOld, ...getColumnSearchProps(columnOld)};
+        const index = params.config.slaveData.findIndex(item => item.fieldName === columnOld.dataIndex);
+        const config = index > -1 ? params.config.slaveData[index] : {};
+        const column = config.dropType === 'const' ? {...columnOld, ...getColumnSearchConstProps(columnOld, config)} : {...columnOld, ...getColumnSearchProps(columnOld)};
+
+
 
         column.onHeaderCell = columnHeader => ({
           width: columnHeader.width,
@@ -244,9 +248,7 @@ export function TableComponent(params: any) {
             const selectParams = {
               name: params.name,
               componentType: componentType.Soruce,
-              fieldName: column.dataIndex,
-              dropType: column.dropType,
-              viewDrop: column.viewDrop,
+              config,
               property: {value: text},
               record,
               event: {onChange: params.event.onSelectChange}
@@ -254,9 +256,7 @@ export function TableComponent(params: any) {
             const inputParams = {
               name: params.name,
               componentType: componentType.Soruce,
-              fieldName: column.dataIndex,
-              dropType: column.dropType,
-              viewDrop: column.viewDrop,
+              config,
               property: {value: text},
               record,
               event: {onChange: params.event.onInputChange}
@@ -264,7 +264,7 @@ export function TableComponent(params: any) {
             const checkboxParams = {
               name: params.name,
               componentType: componentType.Soruce,
-              fieldName: column.dataIndex,
+              config,
               property: {checked: text},
               record,
               event: {onChange: params.event.onCheckboxChange}
@@ -272,7 +272,7 @@ export function TableComponent(params: any) {
             const numberParams = {
               name: params.name,
               componentType: componentType.Soruce,
-              fieldName: column.dataIndex,
+              config,
               property: {checked: text},
               record,
               event: {onChange: params.event.onNumberChange}
@@ -280,7 +280,7 @@ export function TableComponent(params: any) {
             if (column.dataIndex === 'sortNum' && params.isDragRow) {
               return <div><DragHandle/> {text}</div>;
             } else if (column.fieldType === 'varchar') {
-              if (column.dropType === 'sql' || column.dropType === 'const') {
+              if (config.dropType === 'sql' || config.dropType === 'const') {
                 const component = useMemo(() => {
                   return (<SelectComponent {...selectParams}  />
                   )
@@ -319,10 +319,10 @@ export function TableComponent(params: any) {
           column.render = (text, record, index) => {
             if (column.dataIndex === 'sortNum' && params.isDragRow) {
               return <div><DragHandle /> {text}</div>;
-            } else if (column.dropType === 'const') {
-              const dropObject: any = commonUtils.stringToObj(column.viewDrop);
+            } else if (config.dropType === 'const') {
+              const dropObject: any = commonUtils.stringToObj(config.viewDrop);
               return dropObject[text];
-            } else if (column.fieldType === 'tinyint') {
+            } else if (config.fieldType === 'tinyint') {
               return text ? <CheckSquareOutlined /> : <BorderOutlined />;
             } else {
               return searchedColumn === columnOld.dataIndex ? (

@@ -257,134 +257,97 @@ const Container = (props) => {
 
   const createDate = {
     name: 'master',
-    form,
-    fieldName: 'createDate',
-    label: '创建日期',
+    config: { fieldName: 'createDate', viewName: '创建日期' },
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
   };
   const containerName = {
     name: 'master',
-    form,
-    fieldName: 'containerName',
-    label: '容器名称',
-    rules: [{ required: true, message: '请输入你的容器名称' }],
+    config: { fieldName: 'containerName', isRequired: true, viewName: '容器名称' },
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange }
   };
   const dataSetName = {
     name: 'master',
-    form,
-    fieldName: 'dataSetName',
-    label: '数据集名称',
-    rules: [{ required: true, message: '请输入你的数据集名称' }],
+    config: { fieldName: 'dataSetName', isRequired: true, viewName: '数据集名称' },
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange }
   };
   const sortNum = {
     name: 'master',
-    form,
-    fieldName: 'sortNum',
-    label: '排序号',
-    rules: [{ required: true, message: '请输入你的排序号' }],
+    config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
   };
   const chineseName = {
     name: 'master',
     form,
-    fieldName: 'chineseName',
-    label: '中文名称',
-    rules: [{ required: true, message: '请输入你的中文名称' }],
+    config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
   };
   const traditionalName = {
     name: 'master',
-    form,
-    fieldName: 'traditionalName',
-    label: '繁体名称',
+    config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
   };
   const englishName = {
     name: 'master',
-    form,
-    fieldName: 'englishName',
-    label: '英文名称',
+    config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
   };
   const entitySelect = {
     name: 'master',
-    form,
-    fieldName: 'entitySelect',
-    label: '实体查询',
+    config: { fieldName: 'englishName', viewName: '实体查询' },
     property: { disabled: !enabled },
   };
   const entityWhere = {
     name: 'master',
-    form,
-    fieldName: 'entityWhere',
-    label: '实体条件',
+    config: { fieldName: 'entityWhere', viewName: '实体条件' },
     property: { disabled: !enabled },
   };
   const entitySort = {
     name: 'master',
-    form,
-    fieldName: 'entitySort',
-    label: '实体排序',
+    config: { fieldName: 'entitySort', viewName: '实体排序' },
     property: { disabled: !enabled },
   };
   const isVisible = {
     name: 'master',
-    form,
-    fieldName: 'isVisible',
-    label: '是否显示',
+    config: { fieldName: 'isVisible', viewName: '是否显示' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
   const fixColumnCount = {
     name: 'master',
-    form,
-    fieldName: 'fixColumnCount',
-    label: '固定列数',
+    config: { fieldName: 'fixColumnCount', viewName: '固定列数' },
     property: { disabled: !enabled },
   };
 
   const isTable = {
     name: 'master',
-    form,
-    fieldName: 'isTable',
-    label: '是否表格',
+    config: { fieldName: 'isTable', viewName: '是否表格' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTable, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
   const isTableHeadSort = {
     name: 'master',
-    form,
-    fieldName: 'isTableHeadSort',
-    label: '是否表头排序',
+    config: { fieldName: 'isTableHeadSort', viewName: '是否表头排序' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTableHeadSort, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
   const isMutiChoise = {
     name: 'master',
-    form,
-    fieldName: 'isMutiChoise',
-    label: '是否多选',
+    config: { fieldName: 'isMutiChoise', viewName: '是否多选' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMutiChoise, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
   const isRowNo = {
     name: 'master',
-    form,
-    fieldName: 'isRowNo',
-    label: '是否显示行号',
+    config: { fieldName: 'isRowNo', viewName: '是否显示行号' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isRowNo, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
 
   const virtualName = {
     name: 'master',
-    form,
-    fieldName: 'virtualName',
-    label: '虚拟名称',
+    config: { fieldName: 'virtualName', viewName: '虚拟名称' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtual, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };

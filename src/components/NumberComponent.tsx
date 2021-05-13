@@ -14,7 +14,6 @@ export function NumberComponent(params) {
     onKeyUp,
   }
   const rules: any = [];
-  console.log(params.config.fieldName, params.config);
   if (params.config.isRequired) {
     rules.push({ required: params.config.isRequired, message: commonUtils.isEmpty(params.property.placeholder) ? '请输入' + params.config.viewName : params.property.placeholder })
   }

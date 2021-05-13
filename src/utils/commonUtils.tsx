@@ -157,6 +157,7 @@ export function getTableProps(name, props) {
     eventOnRow: { onRowClick: props.onRowClick },
     propertySelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
+    config: props[name + 'Container'],
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
       onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange }
   }

@@ -223,7 +223,6 @@ const commonBase = (WrapComponent) => {
 
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
-        console.log('onSelectChange', data);
         dispatchModifyState({ [name + 'Data']: data });
       } else {
         const data = [...dataOld];

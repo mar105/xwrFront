@@ -51,7 +51,14 @@ const SlaveContainer = (props) => {
 
   useEffect(() => {
     const { dispatchModifyState } = props;
-    dispatchModifyState({slaveColumns: columns});
+    const slaveContainer: any = {};
+    const slaveConfig: any = [];
+    columns.forEach(item => {
+      const config = {...item, viewName: item.title, fieldName: item.dataIndex };
+      slaveConfig.push(config);
+    });
+    slaveContainer.slaveData = slaveConfig;
+    dispatchModifyState({slaveColumns: columns, slaveContainer});
   }, []);
 
 
@@ -132,7 +139,7 @@ const SlaveContainer = (props) => {
     <div>
       <ButtonComponent {...button} />
       <ButtonComponent {...syncDataButton} />
-      <TableComponent {...tableParam} />
+      {props.slaveContainer ? <TableComponent {...tableParam} /> : ''}
     </div>
   );
 }

@@ -7,7 +7,6 @@ import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../ButtonGroup";
 import commonBasic from "../../commonBasic";
-// @ts-ignore
 import { CommonExhibit } from "../../../common/CommonExhibit";
 
 const Customer = (props) => {

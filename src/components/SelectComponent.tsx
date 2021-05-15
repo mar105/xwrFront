@@ -28,11 +28,6 @@ export function SelectComponent(params) {
       const option: any = (<Option key={optionObj.id} value={optionObj.id} optionObj={optionObj}>{viewOption}</Option>);
       dropOptions.push(option);
     };
-    /*   下拉空处理   */
-    // if (params.config.isDropEmpty) {
-    //   const option: any = (<Option key={""} value={""}>{""}</Option>);
-    //   dropOptions.push(option);
-    // }
     addProperty.filterOption = (input, option) => {
       return !modifySelfState.isLastPage || commonUtils.isEmpty(option.children) ? true : option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     }
@@ -122,7 +117,7 @@ export function SelectComponent(params) {
   }
 
   params.property.loading = modifySelfState.loading;
-  params.property.allowClear = true;//params.config.isDropEmpty;
+  params.property.allowClear = params.config.isDropEmpty;
   params.property.dropdownRender = params.config.isDropAdd ? dropdownRender : null;
 
   if (params.componentType === componentType.Soruce) {

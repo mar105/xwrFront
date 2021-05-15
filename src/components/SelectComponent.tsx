@@ -65,7 +65,9 @@ export function SelectComponent(params) {
 
   const callDebounceSearch = debounce(debounceSearch, 500);
   const onSearch = (value) => {
-    callDebounceSearch(value);
+    if (params.config.dropType === 'sql') {
+      callDebounceSearch(value);
+    }
   }
 
   const onChange = (value, option) => {

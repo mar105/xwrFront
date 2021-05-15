@@ -22,6 +22,7 @@ function checkStatus(response): any {
  * @return {object}           An object containing either "data" or "err"
  */
 function request(url, options): any {
+  // @ts-ignore
   return fetch(url, options)
     .then(checkStatus)
     .then(parseJSON)

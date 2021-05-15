@@ -159,7 +159,7 @@ export function getTableProps(name, props) {
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
     config: props[name + 'Container'],
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
-      onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange }
+      onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList  }
   }
   return tableParam;
 };
@@ -210,3 +210,12 @@ export function mapStateToProps(state) {
   const returnProps = {commonModel, ...router.location.state };
   return returnProps;
 }
+
+export function paramGet(param) {
+  let returnStr = '';
+  Object.keys(param).forEach(key => {
+    returnStr = returnStr === '' ? '?' + key + '=' + param[key] : returnStr + '&' + key + '=' + param[key];
+  });
+  return returnStr;
+}
+

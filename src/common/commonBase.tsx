@@ -116,6 +116,7 @@ const commonBase = (WrapComponent) => {
         }
       } else {
         gotoError(dispatch, interfaceReturn);
+        return {};
       }
     }
 
@@ -218,8 +219,10 @@ const commonBase = (WrapComponent) => {
 
     const onSelectChange = (name, fieldName, record, assignField, value, option) => {
       const { [name + 'Data']: dataOld }: any = stateRef.current;
+      const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld, ...getAssignFieldValue(assignField, option) };
+
+        const data = { ...dataOld, ...getAssignFieldValue(assignField, assignOption ) };
 
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
@@ -228,7 +231,7 @@ const commonBase = (WrapComponent) => {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
         if (index > -1) {
-          data[index] = { ...data[index], ...getAssignFieldValue(assignField, option) };
+          data[index] = { ...data[index], ...getAssignFieldValue(assignField, assignOption) };
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = value;
           dispatchModifyState({ [name + 'Data']: data });
@@ -268,10 +271,10 @@ const commonBase = (WrapComponent) => {
 
     const getAssignFieldValue = (assignField, option) => {
       const returnField = {};
-      if (commonUtils.isNotEmptyObj(option.optionObj)) {
+      if (commonUtils.isNotEmptyObj(option) && commonUtils.isNotEmpty(assignField)) {
         assignField.split(',').forEach(item => {
           const arrAssign = item.split('=');
-          returnField[arrAssign[0]] = option.optionObj[arrAssign[1]];
+          returnField[arrAssign[0]] = option[arrAssign[1]];
         });
       }
       return returnField;

@@ -252,6 +252,33 @@ const Container = (props) => {
     }
   }
 
+  const getSelectList = async (params) => {
+    const { commonModel, dispatch, dispatchModifyState } = props;
+    const { isWait } = params;
+    if (params.fieldName === 'popupActiveName' || params.fieldName === 'popupSelectName') {
+      const requestParam = {
+        routeId: props.routeId,
+        pageNum: params.pageNum,
+        pageSize: application.pageSize,
+        searchValue: params.condition ? params.condition.searchValue : '',
+      }
+      const url: string = `${application.urlPrefix}/route/getSelectRoute` + commonUtils.paramGet(requestParam);
+
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        if (isWait) {
+          return { ...interfaceReturn.data.data };
+        } else {
+          dispatchModifyState({ ...interfaceReturn.data.data });
+        }
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+        return {};
+      }
+    }
+    return {};
+  }
+
   const { enabled, masterData, slaveData, slaveColumns, slaveSelectedRowKeys,
     treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
 
@@ -390,7 +417,7 @@ const Container = (props) => {
 
   const containerNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.containerName) ? masterData.containerName : '';
   const slaveTable = useMemo(()=>{ return (
-    <SlaveContainer name='slave' {...props} onClick={onClick} />
+    <SlaveContainer name='slave' {...props} getSelectList={getSelectList} onClick={onClick} />
   )}, [containerNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
 
   return (

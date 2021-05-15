@@ -1,4 +1,4 @@
-import {Col, Form, Row} from "antd";
+import {Col, Row} from "antd";
 import React, {useMemo} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import {SelectComponent} from "../components/SelectComponent";
@@ -6,6 +6,7 @@ import {InputComponent} from "../components/InputComponent";
 import {NumberComponent} from "../components/NumberComponent";
 import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
+import ProvinceCityArea from "./ProvinceCityArea";
 
 export const CommonExhibit = (props) => {
   const { [props.name + 'Data']: masterDataOld, masterContainer, enabled } = props;
@@ -47,9 +48,19 @@ export const CommonExhibit = (props) => {
         record: masterData,
         event: {onChange: props.onNumberChange}
       };
+      const provinceCityAreaParams = {
+        name: props.name,
+        config: item,
+        property: {value: masterData[item.fieldName], disabled: !enabled },
+        record: masterData,
+        event: {onChange: props.onCascaderChange}
+      };
+
       let component;
       if (item.fieldType === 'varchar') {
-        if (item.dropType === 'sql' || item.dropType === 'const') {
+        if (item.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
+          component = <ProvinceCityArea {...provinceCityAreaParams}  />;
+        } else if (item.dropType === 'sql' || item.dropType === 'const') {
           component = <SelectComponent {...selectParams}  />;
         } else {
           component = <InputComponent {...inputParams}  />;
@@ -66,10 +77,8 @@ export const CommonExhibit = (props) => {
     });
 
   return (
-    <Form name="basic" onFinishFailed={props.onFinishFailed} onFinish={props.onFinish}>
-      <Row style={{ height: 'auto', overflow: 'auto' }}>
-        {masterComponent}
-      </Row>
-    </Form>
+    <Row style={{ height: 'auto', overflow: 'auto' }}>
+      {masterComponent}
+    </Row>
   );
 }

@@ -73,7 +73,10 @@ export function TableComponent(params: any) {
     const { dataSource } = params.property;
     if (oldIndex !== newIndex) {
       const newData = arrayMove([].concat(dataSource), oldIndex, newIndex).filter(el => !!el);
-      newData.forEach((item: any, index) => item.sortNum = index + 1);
+      newData.forEach((item: any, index) => {
+        item.handleType = commonUtils.isEmpty(item.handleType) ? 'modify' : item.handleType;
+        item.sortNum = index + 1;
+      });
       dispatchModifyState({[params.name + 'Data']: newData});
     }
   };

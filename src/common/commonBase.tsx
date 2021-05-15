@@ -228,6 +228,37 @@ const commonBase = (WrapComponent) => {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
         if (index > -1) {
+          data[index] = { ...data[index], ...getAssignFieldValue(assignField, option) };
+          data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+          data[index][fieldName] = value;
+          dispatchModifyState({ [name + 'Data']: data });
+        }
+      }
+    }
+
+    const onCascaderChange = (name, fieldName, record, fieldRelevance, value, selectedOptions) => {
+      const { [name + 'Data']: dataOld }: any = stateRef.current;
+      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+        const data = { ...dataOld };
+        if (commonUtils.isNotEmpty(fieldRelevance)) {
+          const assignField = fieldRelevance.split(',');
+          assignField.forEach((field, fieldIndex) => {
+            data[field] = value[fieldIndex];
+          });
+        }
+        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
+        data[fieldName] = value;
+        dispatchModifyState({ [name + 'Data']: data });
+      } else {
+        const data = [...dataOld];
+        const index = data.findIndex(item => item.id === record.id);
+        if (index > -1) {
+          if (commonUtils.isNotEmpty(fieldRelevance)) {
+            const assignField = fieldRelevance.split(',');
+            assignField.forEach((field, fieldIndex) => {
+              data[index][field] = value[fieldIndex];
+            });
+          }
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = value;
           dispatchModifyState({ [name + 'Data']: data });
@@ -264,6 +295,7 @@ const commonBase = (WrapComponent) => {
       onCheckboxChange={onCheckboxChange}
       onNumberChange={onNumberChange}
       onSelectChange={onSelectChange}
+      onCascaderChange={onCascaderChange}
     />
   };
 };

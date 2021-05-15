@@ -23,19 +23,14 @@ const Customer = (props) => {
     console.log('Failed:', errorInfo);
   };
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, dispatchModifyState, tabId } = props;
+    const { commonModel, dispatch, masterData, tabId } = props;
     const saveData: any = [];
     saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
-    const params = { id: masterData.id, tabId, saveData };
-    const url: string = `${application.urlPrefix}/route/saveRoute`;
+    const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
+    const url: string = `${application.urlMain}/getData/saveData`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
-      const returnRoute: any = await props.getDataOne({isWait: true});
-      const addState: any = {};
-      addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
-      form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
-      dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
+      props.getAllData({ dataId: masterData.id });
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }

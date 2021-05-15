@@ -42,8 +42,9 @@ export function SelectComponent(params) {
     if (open) {
       const dropParam = { pageNum: 1, isWait: true, containerSlaveId: params.config.id };
       if (params.config.dropType === 'sql') {
+        dispatchModifySelfState({ loading: true });
         const selectList = await params.event.getSelectList(dropParam);
-        dispatchModifySelfState({ ...selectList, viewDrop: selectList.list});
+        dispatchModifySelfState({ ...selectList, viewDrop: selectList.list, loading: false });
       }
     }
   }
@@ -85,6 +86,7 @@ export function SelectComponent(params) {
   if (params.config.isRequired) {
     rules.push({ required: params.config.isRequired, message: commonUtils.isEmpty(params.property.placeholder) ? '请输入' + params.config.viewName : params.property.placeholder })
   }
+  params.property.loading = modifySelfState.loading;
   if (params.componentType === componentType.Soruce) {
     return <Select {...params.property} {...addProperty} { ...event }>{dropOptions}</Select>;
   } else {

@@ -1,6 +1,6 @@
 import {InputComponent} from "../../components/InputComponent";
 import {TreeComponent} from "../../components/TreeComponent";
-import React, {useMemo} from "react";
+import React, {useEffect, useMemo} from "react";
 import {Modal} from "antd";
 import {TableComponent} from "../../components/TableComponent";
 import * as commonUtils from "../../utils/commonUtils";
@@ -8,6 +8,18 @@ import * as application from "../application";
 import * as request from "../../utils/request";
 
 const TreeModule = (props) => {
+  useEffect(() => {
+    const { dispatchModifyState } = props;
+    const treeSearchContainer: any = {};
+    const treeSearchConfig: any = [];
+    columns.forEach(item => {
+      const config = {...item, viewName: item.title, fieldName: item.dataIndex };
+      treeSearchConfig.push(config);
+    });
+    treeSearchContainer.slaveData = treeSearchConfig;
+    dispatchModifyState({treeSearchColumns: columns, treeSearchContainer});
+  }, []);
+
   const onExpand= (expandedKeys) => {
     const { dispatchModifyState } = props;
     dispatchModifyState({treeExpandedKeys: expandedKeys });
@@ -19,13 +31,18 @@ const TreeModule = (props) => {
     dispatchModifyState({ treeSearchValue: value });
   }
 
+  const onModalCancel= (e) => {
+    const { dispatchModifyState } = props;
+    dispatchModifyState({ treeSearchIsVisible: false });
+  }
+
   const onSearch= async (e) => {
     const { commonModel, dispatch, dispatchModifyState, treeSearchValue } = props;
     if (commonUtils.isNotEmpty(treeSearchValue)) {
       const url: string = `${application.urlPrefix}/route/getSearchRoute?searchValue=` + treeSearchValue;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
-        dispatchModifyState({ treeSearchData: interfaceReturn.data, treeSearchIsVisible: true });
+        dispatchModifyState({ treeSearchData: interfaceReturn.data.data.list, treeSearchIsVisible: true });
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
@@ -57,6 +74,7 @@ const TreeModule = (props) => {
   ];
   const tableParam: any = commonUtils.getTableProps('treeSearch', props);
   tableParam.property.columns = columns;
+  tableParam.rowSelection.type = "radio";
   tableParam.eventOnRow.onRowDoubleClick = onRowDoubleClick;
   const inputComponent =  useMemo(()=>{ return (<InputComponent {...searchValue} />
   )}, [treeSearchValue]);
@@ -64,7 +82,7 @@ const TreeModule = (props) => {
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled]);
   const modal =  useMemo(()=>{
     return (
-      <Modal width={800} visible={treeSearchIsVisible} footer={null}>
+      <Modal width={800} visible={treeSearchIsVisible} maskClosable={false} footer={null} onCancel={onModalCancel}>
         <TableComponent {...tableParam} />
       </Modal>
   )}, [treeSearchData, treeSearchIsVisible, treeSearchSelectedRowKeys]);

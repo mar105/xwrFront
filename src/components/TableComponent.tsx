@@ -411,7 +411,7 @@ export function TableComponent(params: any) {
         // 此值和scrollY值相同. 必传. (required).  same value for scrolly
       components={ components }
       style={{width: 1000}}
-      rowSelection={{type: 'checkbox', fixed: true, ...params.propertySelection,
+      rowSelection={{type: 'checkbox', fixed: true, ...params.rowSelection,
         selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
         onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } }}
       pagination={false}

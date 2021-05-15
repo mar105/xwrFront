@@ -261,8 +261,9 @@ const Container = (props) => {
         pageNum: params.pageNum,
         pageSize: application.pageSize,
         searchValue: params.condition ? params.condition.searchValue : '',
+        onlySearchRouteName: true,
       }
-      const url: string = `${application.urlPrefix}/route/getSelectRoute` + commonUtils.paramGet(requestParam);
+      const url: string = `${application.urlPrefix}/route/getSearchRoute` + commonUtils.paramGet(requestParam);
 
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {

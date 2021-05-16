@@ -96,7 +96,7 @@ const Container = (props) => {
       const allList = commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId.split(',') : [''];
       allList.splice(allList.length - 1, 1);
       const masterData = { ...data, key: data.id, superiorId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.superiorId : '',
-        allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id, isVisible: true };
+        allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id, isVisible: 1, isRowNo: 1, isSelect: 1 };
       let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       const addState: any = {};
@@ -116,7 +116,7 @@ const Container = (props) => {
         return;
       }
       const data = props.onAdd();
-      const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id, isVisible: 1 };
+      const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id, isVisible: 1, isRowNo: 1, isSelect: 1 };
       let treeData = [...treeDataOld];
       let treeExpandedKeys;
       treeData = props.setNewTreeNode(treeData, masterDataOld.allId, masterData);
@@ -323,7 +323,7 @@ const Container = (props) => {
   };
   const entitySelect = {
     name: 'master',
-    config: { fieldName: 'englishName', viewName: '实体查询' },
+    config: { fieldName: 'entitySelect', viewName: '实体查询' },
     property: { disabled: !enabled },
   };
   const entityWhere = {
@@ -380,6 +380,21 @@ const Container = (props) => {
     event: { onChange: props.onSwitchChange }
   };
 
+  const treeKey = {
+    name: 'master',
+    config: { fieldName: 'treeKey', viewName: '树型展示Key' },
+    property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
+  };
+
+  const isSelect = {
+    name: 'master',
+    config: { fieldName: 'isSelect', viewName: '是否查询' },
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isSelect, disabled: !enabled },
+    event: { onChange: props.onSwitchChange }
+  };
+
+
   const buttonGroup = { onClick, enabled };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
@@ -404,15 +419,23 @@ const Container = (props) => {
         <Col><InputComponent {...virtualName} /></Col>
         <Col><NumberComponent {...sortNum} /></Col>
         <Col><SwitchComponent {...isVisible} /></Col>
+      </Row>
+      <Row>
+        <Col><SwitchComponent {...isSelect} /></Col>
         <Col><SwitchComponent {...isTable} /></Col>
       </Row>
       {commonUtils.isNotEmptyObj(masterData) && masterData.isTable ?
-      <Row>
-        <Col><NumberComponent {...fixColumnCount} /></Col>
-        <Col><SwitchComponent {...isTableHeadSort} /></Col>
-        <Col><SwitchComponent {...isMutiChoise} /></Col>
-        <Col><SwitchComponent {...isRowNo} /></Col>
-      </Row>
+        <div>
+          <Row>
+            <Col><NumberComponent {...fixColumnCount} /></Col>
+            <Col><SwitchComponent {...isTableHeadSort} /></Col>
+            <Col><SwitchComponent {...isMutiChoise} /></Col>
+          </Row>
+          <Row>
+            <Col><SwitchComponent {...isRowNo} /></Col>
+            <Col><InputComponent {...treeKey} /></Col>
+          </Row>
+        </div>
         : ''}
     </div>)}, [masterData, enabled]);
 

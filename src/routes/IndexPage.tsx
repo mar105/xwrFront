@@ -61,6 +61,7 @@ function IndexPage(props) {
       <button onClick={onExit}> 退出</button>
       <button onClick={onClick.bind(this, '/register')}> add register</button>
       <button onClick={onClick.bind(this, '/xwrBasic/customer', { routeId: '1390238196331319296' })}> add customer</button>
+      <button onClick={onClick.bind(this, '/xwrBasic/commonList', { routeId: '1393774997310410752' })}> add customer</button>
       <div>{commonModel.userInfo.userName}</div>
       <div><TabPage {...props} /></div>
     </div>

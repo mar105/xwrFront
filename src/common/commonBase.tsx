@@ -17,7 +17,11 @@ const commonBase = (WrapComponent) => {
 
     useEffect(() => {
       if (commonUtils.isNotEmpty(props.routeId)) {
-        getAllData({ dataId: props.dataId });
+        const fetchData = async () => {
+          const returnState: any = await getAllData({ pageNum: 1, dataId: props.dataId });
+          dispatchModifyState({...returnState});
+        }
+        fetchData();
       }
     }, []);
 
@@ -46,21 +50,37 @@ const commonBase = (WrapComponent) => {
       const { containerData } = props;
       if (commonUtils.isNotEmptyArr(containerData)) {
         let addState = { enabled: false };
-        containerData.forEach(async container => {
+        for(const container of containerData) {
+        // containerData.forEach(async container => { //foreach不能使用await
           if (commonUtils.isNotEmpty(container.dataSetName)) {
             addState[container.dataSetName + 'Container'] = container;
-          }
-          if (commonUtils.isNotEmpty(params.dataId)) {
-            if (container.isTable) {
-              const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, condition: { dataCondition: { dataId: params.dataId } }, isWait: true });
-              addState = {...addState, ...returnData};
-            } else {
-              const returnData: any = await getDataOne({ routeId: props.routeId, containerId: container.id, condition: { dataCondition: { dataId: params.dataId } }, isWait: true });
-              addState = {...addState, ...returnData};
+            if (container.isTable && commonUtils.isEmptyArr(modifyState[container.dataSetName + 'Columns'])) {
+              const columns: any = [];
+              container.slaveData.filter(item => item.isVisible).forEach(item => {
+                const column = { title: item.viewName, dataIndex: item.fieldName, fieldType: item.fieldType, sortNum: item.sortNum, width: item.width };
+                columns.push(column);
+              });
+              addState[container.dataSetName + 'Columns'] = columns;
             }
           }
-        });
-        dispatchModifyState({...addState});
+          if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
+            if (container.isTable) {
+              const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
+              addState = {...addState, ...returnData};
+            } else {
+              const returnData: any = await getDataOne({ routeId: props.routeId, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
+              addState = {...addState, ...returnData};
+            }
+          } else if (params.handleType !== 'add' && container.isSelect) {
+            if (container.isTable) {
+              const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, pageNum: params.pageNum, condition: {}, isWait: true });
+              addState[container.dataSetName + 'Data'] = returnData.list;
+              addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
+              addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
+            }
+          }
+        };
+        return addState;
       }
     }
     const getDataOne = async (params) => {
@@ -82,14 +102,21 @@ const commonBase = (WrapComponent) => {
     const getDataList = async (params) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
-      const url: string = `${application.urlPrefix}/getData/getDataList?routeId=` +
-        params.routeId + '&containerId=' + params.containerId + '&pageNum=1' + '&pageSize=' + application.pageSize;
-      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      const url: string = `${application.urlPrefix}/getData/getDataList`;
+      const requestParam = {
+        routeId: props.routeId,
+        containerId: params.containerId,
+        pageNum: params.pageNum,
+        pageSize: application.pageSize,
+        condition: params.condition,
+      }
+
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;
       if (interfaceReturn.code === 1) {
         if (isWait) {
-          return { data: interfaceReturn.data };
+          return { ...interfaceReturn.data.data };
         } else {
-          dispatchModifyState({ data: interfaceReturn.data });
+          dispatchModifyState({ ...interfaceReturn.data.data });
         }
       } else {
         gotoError(dispatch, interfaceReturn);
@@ -280,6 +307,20 @@ const commonBase = (WrapComponent) => {
       return returnField;
     }
 
+    const onReachEnd = async (name) => {
+      const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage }: any = stateRef.current;
+      if (!isLastPage) {
+        const addState = {};
+        dispatchModifyState({[name + 'Loading']: true });
+        const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true });
+        addState[name + 'Data'] = [...data, ...returnData.list];
+        addState[name + 'PageNum'] = returnData.pageNum;
+        addState[name + 'IsLastPage'] = returnData.isLastPage;
+        addState[name + 'Loading'] = false;
+        dispatchModifyState({...addState});
+      }
+    }
+
     return <WrapComponent
       {...props}
       {...modifyState}
@@ -299,6 +340,7 @@ const commonBase = (WrapComponent) => {
       onNumberChange={onNumberChange}
       onSelectChange={onSelectChange}
       onCascaderChange={onCascaderChange}
+      onReachEnd={onReachEnd}
     />
   };
 };

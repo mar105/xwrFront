@@ -153,11 +153,12 @@ export function getTableProps(name, props) {
     enabled: props.enabled,
     dispatchModifyState: props.dispatchModifyState,
     scrollToRow: props[name + 'ScrollToRow'],
-    property: { columns: props[name + 'Columns'], dataSource: props[name + 'Data'],  },
+    property: { columns: props[name + 'Columns'], dataSource: props[name + 'Data'], loading: props[name + 'Loading'] },
     eventOnRow: { onRowClick: props.onRowClick },
     rowSelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
     config: props[name + 'Container'],
+    onReachEnd: props.onReachEnd,
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
       onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList  }
   }

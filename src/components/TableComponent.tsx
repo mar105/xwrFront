@@ -46,17 +46,25 @@ export function TableComponent(params: any) {
   const [sorterInfo, setSorterInfo] = useState([]);
 
   let searchInput;
+  const onReachEnd = () => {
+    params.onReachEnd(params.name);
+  }
   useEffect(() => {
     setColumns(getColumn(params.property.columns));
+    const addState: any = {};
+    if (params.isDragRow) {
+      addState.body = {
+        wrapper: DraggableContainer,
+        row: DraggableBodyRow,
+      };
+    }
+
     setComponents({
-      ...VList({ height: 500}),
+      ...VList({ height: 500, onReachEnd: onReachEnd }),
       header: {
         cell: ResizeableTitle,
       },
-      body: params.isDragRow ? {
-        wrapper: DraggableContainer,
-        row: DraggableBodyRow,
-      }: null,
+      ...addState
     });
   }, [params.property.columns, params.enabled, params.scrollToRow]);
 
@@ -418,7 +426,7 @@ export function TableComponent(params: any) {
       size={'small'}
       {...params.property}
       columns={columns}
-      sticky={true}
+      // sticky={true} //暂时影响虚拟列表
       onRow={record => {
         return {
           // onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行

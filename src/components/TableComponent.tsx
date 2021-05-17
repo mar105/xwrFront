@@ -409,16 +409,17 @@ export function TableComponent(params: any) {
     }
     setSorterInfo(sortInfoNew);
   }
-  return <div>
+  return <div style={{width: 800}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
       <Table
+        bordered={true}
       rowKey={rowKey}
         // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
-      scroll={{ y: 500 }}
+      scroll={{ x: "100%", y: 500 }}
         // 使用VList 即可有虚拟列表的效果
         // 此值和scrollY值相同. 必传. (required).  same value for scrolly
       components={ components }
-      style={{width: 1000}}
+      // style={{width: 1000}}
       rowSelection={{type: 'checkbox', fixed: true, ...params.rowSelection,
         selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
         onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } }}
@@ -426,7 +427,7 @@ export function TableComponent(params: any) {
       size={'small'}
       {...params.property}
       columns={columns}
-      // sticky={true} //暂时影响虚拟列表
+      // sticky={true}  //影响渲染，虚拟列表官方没问题。
       onRow={record => {
         return {
           // onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行

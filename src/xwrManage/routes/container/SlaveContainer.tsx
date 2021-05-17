@@ -57,7 +57,7 @@ const SlaveContainer = (props) => {
       slaveConfig.push(config);
     });
     slaveContainer.slaveData = slaveConfig;
-    dispatchModifyState({slaveColumns: columns, slaveContainer});
+    dispatchModifyState({slaveColumns: columns, slaveContainer, slaveIsLastPage: true });
   }, []);
 
 

@@ -5,7 +5,7 @@ import {replacePath, routeInfo} from "../routeInfo";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
-import TabPage from "../TabPage";
+import TabsPages from "../TabsPages";
 import commonBase from "../common/commonBase";
 
 function IndexPage(props) {
@@ -63,7 +63,7 @@ function IndexPage(props) {
       <button onClick={onClick.bind(this, '/xwrBasic/customer', { routeId: '1390238196331319296' })}> add customer</button>
       <button onClick={onClick.bind(this, '/xwrBasic/commonList', { routeId: '1393774997310410752' })}> add customer</button>
       <div>{commonModel.userInfo.userName}</div>
-      <div><TabPage {...props} /></div>
+      <div><TabsPages {...props} /></div>
     </div>
   );
 }

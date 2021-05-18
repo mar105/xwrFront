@@ -5,7 +5,7 @@ import * as application from "./application";
 import {routeInfo} from "./routeInfo";
 
 const { TabPane } = Tabs;
-const TabPage = (props) => {
+const TabsPages = (props) => {
 
   useEffect(() => {
     const {dispatchModifyState} = props;
@@ -69,4 +69,4 @@ const TabPage = (props) => {
   );
 }
 
-export default TabPage;
+export default TabsPages;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'dva';
-import TabPage from '../TabPage';
+import TabPages from '../TabPages';
 import commonBase from "../../common/commonBase";
 import * as commonUtils from "../../utils/commonUtils";
 import {routeInfo} from '../routeInfo';
@@ -58,7 +58,7 @@ function IndexPage(props) {
       <button onClick={onClick.bind(this, '/xwrManage/permission')}> add permission</button>
       <button onClick={onClick.bind(this, '/xwrManage/constant')}> add constant</button>
       <div>{commonModel.userInfo.userName}</div>
-    <div><TabPage {...props} /></div>
+    <div><TabPages {...props} /></div>
     </div>
   );
 }

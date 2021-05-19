@@ -86,7 +86,7 @@ const commonBase = (WrapComponent) => {
     const getDataOne = async (params) => {
       const { commonModel, dispatch, dispatchModifyState } = props;
       const { isWait } = params;
-      const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + params.routeId + '&containerId=' + params.containerId + '&dataId=' + params.dataId;
+      const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + params.routeId + '&containerId=' + params.containerId + '&dataId=' + params.condition.dataId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         if (isWait) {
@@ -95,6 +95,7 @@ const commonBase = (WrapComponent) => {
           dispatchModifyState({ data: interfaceReturn.data });
         }
       } else {
+        return {};
         gotoError(dispatch, interfaceReturn);
       }
     }
@@ -119,6 +120,7 @@ const commonBase = (WrapComponent) => {
           dispatchModifyState({ ...interfaceReturn.data.data });
         }
       } else {
+        return {};
         gotoError(dispatch, interfaceReturn);
       }
     }

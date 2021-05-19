@@ -22,14 +22,15 @@ const Customer = (props) => {
     console.log('Failed:', errorInfo);
   };
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, tabId } = props;
+    const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
     const saveData: any = [];
     saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
     const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
     const url: string = `${application.urlMain}/getData/saveData`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
-      props.getAllData({ dataId: masterData.id });
+      const returnState: any = await props.getAllData({ dataId: masterData.id });
+      dispatchModifyState({...returnState});
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }

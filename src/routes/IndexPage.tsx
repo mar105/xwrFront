@@ -39,6 +39,19 @@ function IndexPage(props) {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
+      } else {
+        const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + stateOld.routeId;
+        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+        if (interfaceReturn.code === 1) {
+          state = {...stateOld, ...interfaceReturn.data};
+          console.log(state);
+          dispatch({
+            type: 'commonModel/gotoNewPage',
+            payload: {newPage: path, state},
+          });
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
+        }
       }
     }
   };
@@ -51,6 +64,7 @@ function IndexPage(props) {
       props.gotoError(dispatch, interfaceReturn);
     }
   }
+
   const { commonModel } = props;
   return (
     <div>
@@ -60,8 +74,9 @@ function IndexPage(props) {
       <a href="/login"> login</a>
       <button onClick={onExit}> 退出</button>
       <button onClick={onClick.bind(this, '/register')}> add register</button>
-      <button onClick={onClick.bind(this, '/xwrBasic/customer', { routeId: '1390238196331319296' })}> add customer</button>
-      <button onClick={onClick.bind(this, '/xwrBasic/commonList', { routeId: '1393774997310410752' })}> add customer</button>
+      <button onClick={onClick.bind(this, '/xwrBasic/customer', { routeId: '1390238196331319296' })}> 客户</button>
+      <button onClick={onClick.bind(this, '/xwrBasic/commonList', { routeId: '1393774997310410752' })}> 客户分类</button>
+      <button onClick={onClick.bind(this, '/shop', { routeId: '1394810844327579648' })}> shop</button>
       <div>{commonModel.userInfo.userName}</div>
       <div><TabsPages {...props} /></div>
     </div>

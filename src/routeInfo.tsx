@@ -5,7 +5,10 @@ const xwrMainRouteInfo: any[] = [{
   }, {
     path: '/register', name: 'register', component: () => import('./routes/register/Register'),
   }, {
-    path: '/', name: 'index', component: () => import('./routes/IndexPage'), children: []
+    path: '/', name: 'index', component: () => import('./routes/IndexPage'),
+    children: [{
+      path: '/shop', name: 'shop', title: '公司信息', component: () => import('./routes/shop/Shop'),
+    }]
   },
 ];
 

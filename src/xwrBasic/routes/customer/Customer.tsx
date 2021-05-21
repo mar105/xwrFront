@@ -17,10 +17,6 @@ const Customer = (props) => {
     wrapperCol: { span: 16 },
   };
 
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
   const onFinish = async (values: any) => {
     const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
     const saveData: any = [];
@@ -110,7 +106,7 @@ const Customer = (props) => {
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
-    <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
+    <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
           {component}

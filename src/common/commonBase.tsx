@@ -66,10 +66,12 @@ const commonBase = (WrapComponent) => {
           if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
             if (container.isTable) {
               const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
-              addState = {...addState, ...returnData};
+              addState[container.dataSetName + 'Data'] = returnData.list;
+              addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
+              addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
             } else {
               const returnData: any = await getDataOne({ routeId: props.routeId, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
-              addState = {...addState, ...returnData};
+              addState[container.dataSetName + 'Data'] = returnData;
             }
           } else if (params.handleType !== 'add' && container.isSelect) {
             if (container.isTable) {
@@ -90,13 +92,13 @@ const commonBase = (WrapComponent) => {
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         if (isWait) {
-          return { data: interfaceReturn.data };
+          return { ...interfaceReturn.data };
         } else {
-          dispatchModifyState({ data: interfaceReturn.data });
+          dispatchModifyState({ ...interfaceReturn.data });
         }
       } else {
-        return {};
         gotoError(dispatch, interfaceReturn);
+        return {};
       }
     }
 
@@ -120,8 +122,8 @@ const commonBase = (WrapComponent) => {
           dispatchModifyState({ ...interfaceReturn.data.data });
         }
       } else {
-        return {};
         gotoError(dispatch, interfaceReturn);
+        return {};
       }
     }
 
@@ -150,10 +152,14 @@ const commonBase = (WrapComponent) => {
     }
 
     const onAdd = () => {
+      const { commonModel } = props;
       const dataRow: any = {};
       dataRow.handleType = 'add';
       dataRow.id = commonUtils.newId().toString();
       dataRow.key = dataRow.id;
+      dataRow.groupId = commonModel.userInfo.groupId;
+      dataRow.shopId = commonModel.userInfo.shopId;
+      dataRow.routeId = props.routeId;
       return dataRow;
     }
     const onModify = () => {

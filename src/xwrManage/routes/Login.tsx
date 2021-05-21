@@ -29,9 +29,7 @@ const Login = ({ dispatch }) => {
     caption: '登录',
     property: { htmlType: 'submit' },
   };
-  const onFinishFailed = (errorInfo: any) => {
-      console.log('Failed:', errorInfo);
-  };
+
   const onFinish = async (values: any) => {
     const url: string = `${application.urlPrefix}/login/loginVerify`;
     values.userName = values.userName;
@@ -40,7 +38,6 @@ const Login = ({ dispatch }) => {
     if (interfaceReturn.code === 1) {
       localStorage.setItem(`${application.prefix}token`, '');
       localStorage.setItem(`${application.prefix}userInfo`, '');
-      localStorage.setItem(`${application.prefix}provinceCityArea`, '[]');
       localStorage.setItem(`${application.prefix}panes`, '[]');
       dispatch({
         type: 'commonModel/saveToken',
@@ -62,7 +59,7 @@ const Login = ({ dispatch }) => {
     }
   };
   return (
-      <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
+      <Form {...layout} name="basic" form={form} onFinish={onFinish}>
           <InputComponent {...userName} />
           <InputComponent {...userPwd} />
         <ButtonComponent {...loginButton} />

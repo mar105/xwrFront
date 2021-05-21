@@ -11,7 +11,7 @@ const commonMasterEvent = (WrapComponent) => {
       form = formNew;
     }
 
-    const onFinish = async (values: any) => {
+    const onFinish = async (values: any, isWait) => {
       const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
@@ -20,9 +20,14 @@ const commonMasterEvent = (WrapComponent) => {
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnState: any = await props.getAllData({ dataId: masterData.id });
-        dispatchModifyState({...returnState});
+        if (isWait) {
+          return {...returnState};
+        } else {
+          dispatchModifyState({...returnState});
+        }
       } else {
         props.gotoError(dispatch, interfaceReturn);
+        return {};
       }
     }
 
@@ -48,14 +53,16 @@ const commonMasterEvent = (WrapComponent) => {
 
       } else if (key === 'cancelButton') {
         if (masterDataOld.handleType === 'add') {
-          props.getAllData({dataId: masterDataOld.id });
+          const returnState: any = await props.getAllData({ dataId: masterDataOld.id });
+          dispatchModifyState({...returnState});
         } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
           const {dispatch, commonModel, tabId, masterData} = props;
           const url: string = `${application.urlCommon}/verify/removeModifying`;
           const params = {id: masterData.id, tabId};
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
-            props.getAllData({dataId: masterDataOld.id });
+            const returnState: any = await props.getAllData({ dataId: masterDataOld.id });
+            dispatchModifyState({...returnState});
           } else {
             props.gotoError(dispatch, interfaceReturn);
           }

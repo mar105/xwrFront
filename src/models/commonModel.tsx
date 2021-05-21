@@ -6,8 +6,8 @@ export default {
   namespace: 'commonModel',
   state: {
     token: localStorage.getItem(`${application.prefix}token`) || '',
-    userInfo: localStorage.getItem(`${application.prefix}userInfo`) || '',
-    provinceCityArea: localStorage.getItem(`${application.prefix}provinceCityArea`) || [],
+    userInfo: JSON.parse(localStorage.getItem(`${application.prefix}userInfo`) || '{}'),
+    userShop: JSON.parse(localStorage.getItem(`${application.prefix}userShop`) || '[]'),
   },
   reducers: {
     saveToken(state, { payload: token }) {
@@ -15,12 +15,12 @@ export default {
       return { ...state, token };
     },
     saveUserInfo(state, { payload: userInfo }) {
-      localStorage.setItem(`${application.prefix}userInfo`, userInfo);
+      localStorage.setItem(`${application.prefix}userInfo`, JSON.stringify(userInfo));
       return { ...state, userInfo };
     },
-    saveProvinceCityArea(state, { payload: provinceCityArea }) {
-      localStorage.setItem(`${application.prefix}provinceCityArea`, provinceCityArea);
-      return { ...state, provinceCityArea };
+    saveUserShop(state, { payload: userShop }) {
+      localStorage.setItem(`${application.prefix}userInfo`, JSON.stringify(userShop));
+      return { ...state, userShop };
     },
   },
   effects: {

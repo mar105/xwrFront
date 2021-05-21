@@ -77,7 +77,7 @@ function IndexPage(props) {
       <button onClick={onClick.bind(this, '/xwrBasic/customer', { routeId: '1390238196331319296' })}> 客户</button>
       <button onClick={onClick.bind(this, '/xwrBasic/commonList', { routeId: '1393774997310410752' })}> 客户分类</button>
       <button onClick={onClick.bind(this, '/shop', { routeId: '1394810844327579648' })}> shop</button>
-      <div>{commonModel.userInfo.userName}</div>
+      <div>{commonModel.userInfo.userName} {commonModel.userInfo.shopName}</div>
       <div><TabsPages {...props} /></div>
     </div>
   );

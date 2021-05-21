@@ -66,9 +66,6 @@ const Route = (props) => {
     }
   }
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
   const onFinish = async (values: any) => {
     const { commonModel, dispatch, masterData, dispatchModifyState, tabId } = props;
     const saveData: any = [];
@@ -257,7 +254,7 @@ const Route = (props) => {
       <SwitchComponent {...isVisible} />
     </div>)}, [masterData, enabled]);
   return (
-    <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
+    <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
           {tree}

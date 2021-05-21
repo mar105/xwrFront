@@ -24,14 +24,12 @@ const  Register = () => {
     rules: [{ required: true, message: '请输入你的密码' }],
     property: { placeholder: '请输入你的用户名' },
   };
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
+
   const onFinish = (values: any) => {
     console.log('Success:', values);
   };
   return (
-      <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
+      <Form {...layout} name="basic" form={form} onFinish={onFinish}>
         <InputComponent {...userName} />
         <InputComponent {...userName1} />
         <Form.Item {...tailLayout}>

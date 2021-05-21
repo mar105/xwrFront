@@ -18,9 +18,6 @@ const  Register = (props) => {
     wrapperCol: { span: 16 },
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
   const onFinish = async (values: any) => {
     const { dispatch } = props;
     const url = `${application.urlPrefix}/login/registerUser`;
@@ -120,7 +117,7 @@ const  Register = (props) => {
   };
 
   return (
-      <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
+      <Form {...layout} name="basic" form={form} onFinish={onFinish}>
         <InputComponent {...userName} />
         <InputComponent {...userPwd} />
         <InputComponent {...userPwdTwo} />

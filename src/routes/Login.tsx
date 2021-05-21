@@ -3,6 +3,7 @@ import { InputComponent } from '../components/InputComponent';
 import { Form, Button } from 'antd';
 import React from 'react';
 import * as application from '../application';
+import * as commonUtils from '../utils/commonUtils';
 import * as request from '../utils/request';
 import { Md5 } from 'ts-md5';
 
@@ -24,9 +25,7 @@ const Login = ({ dispatch }) => {
     password: true,
     property: { placeholder: '请输入你的密码' },
   };
-  const onFinishFailed = (errorInfo: any) => {
-      console.log('Failed:', errorInfo);
-  };
+
   const onFinish = async (values: any) => {
     const url: string = `${application.urlPrefix}/login/loginVerify`;
     values.userName = values.userName;
@@ -35,15 +34,25 @@ const Login = ({ dispatch }) => {
     if (interfaceReturn.code === 1) {
       localStorage.setItem(`${application.prefix}token`, '');
       localStorage.setItem(`${application.prefix}userInfo`, '');
-      localStorage.setItem(`${application.prefix}provinceCityArea`, '[]');
       localStorage.setItem(`${application.prefix}panes`, '[]');
+      const userInfo: any = { userName: values.userName };
+      if (commonUtils.isNotEmptyArr(interfaceReturn.data.userShop)) {
+        userInfo.groupId = interfaceReturn.data.userShop[0].groupId;
+        userInfo.groupName = interfaceReturn.data.userShop[0].groupName;
+        userInfo.shopId = interfaceReturn.data.userShop[0].shopId;
+        userInfo.shopName = interfaceReturn.data.userShop[0].shopName;
+      }
       dispatch({
         type: 'commonModel/saveToken',
         payload: interfaceReturn.data.token,
       });
       dispatch({
         type: 'commonModel/saveUserInfo',
-        payload: { userName: values.userName },
+        payload: userInfo,
+      });
+      dispatch({
+        type: 'commonModel/saveUserShop',
+        payload: interfaceReturn.data.userShop,
       });
       dispatch({
         type: 'commonModel/gotoNewPage',
@@ -57,7 +66,7 @@ const Login = ({ dispatch }) => {
     }
   };
   return (
-      <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
+      <Form {...layout} name="basic" form={form} onFinish={onFinish}>
           <InputComponent {...userName} />
           <InputComponent {...userPwd} />
           <Form.Item {...tailLayout}>

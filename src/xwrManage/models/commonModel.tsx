@@ -7,7 +7,6 @@ export default {
   state: {
     token: localStorage.getItem(`${application.prefix}token`) || '',
     userInfo: JSON.parse(localStorage.getItem(`${application.prefix}userInfo`) || '{}'),
-    provinceCityArea: JSON.parse(localStorage.getItem(`${application.prefix}provinceCityArea`) || '[]'),
   },
   reducers: {
     saveToken(state, { payload: token }) {
@@ -17,10 +16,6 @@ export default {
     saveUserInfo(state, { payload: userInfo }) {
       localStorage.setItem(`${application.prefix}userInfo`, JSON.stringify(userInfo));
       return { ...state, userInfo };
-    },
-    saveProvinceCityArea(state, { payload: provinceCityArea }) {
-      localStorage.setItem(`${application.prefix}provinceCityArea`, JSON.stringify(provinceCityArea));
-      return { ...state, provinceCityArea };
     },
   },
   effects: {

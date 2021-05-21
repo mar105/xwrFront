@@ -52,9 +52,6 @@ const Container = (props) => {
     }
   }
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-  };
   const onFinish = async (values: any) => {
     const { commonModel, dispatch, masterData, slaveData, slaveDelData, dispatchModifyState, tabId } = props;
     const saveData: any = [];
@@ -376,8 +373,7 @@ const Container = (props) => {
   const virtualName = {
     name: 'master',
     config: { fieldName: 'virtualName', viewName: '虚拟名称' },
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtual, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
+    property: { disabled: !enabled },
   };
 
   const treeKey = {
@@ -392,6 +388,24 @@ const Container = (props) => {
     config: { fieldName: 'isSelect', viewName: '是否查询' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isSelect, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
+  };
+
+  const saveCallMessage = {
+    name: 'master',
+    config: { fieldName: 'saveCallMessage', viewName: '保存调用消息' },
+    property: { disabled: !enabled },
+  };
+
+  const saveAfterMessage = {
+    name: 'master',
+    config: { fieldName: 'saveAfterMessage', viewName: '保存后调用消息' },
+    property: { disabled: !enabled },
+  };
+
+  const examineAfterMessage = {
+    name: 'master',
+    config: { fieldName: 'examineAfterMessage', viewName: '审核后调用消息' },
+    property: { disabled: !enabled },
   };
 
 
@@ -414,6 +428,11 @@ const Container = (props) => {
         <Col><InputComponent {...entitySelect} /></Col>
         <Col><InputComponent {...entityWhere} /></Col>
         <Col><InputComponent {...entitySort} /></Col>
+      </Row>
+      <Row>
+        <Col><InputComponent {...saveCallMessage} /></Col>
+        <Col><InputComponent {...saveAfterMessage} /></Col>
+        <Col><InputComponent {...examineAfterMessage} /></Col>
       </Row>
       <Row>
         <Col><InputComponent {...virtualName} /></Col>
@@ -445,7 +464,7 @@ const Container = (props) => {
   )}, [containerNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
 
   return (
-    <Form {...layout} name="basic" form={form} onFinishFailed={onFinishFailed} onFinish={onFinish}>
+    <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row>
         <Col>
           {tree}

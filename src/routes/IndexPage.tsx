@@ -44,7 +44,6 @@ function IndexPage(props) {
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           state = {...stateOld, ...interfaceReturn.data};
-          console.log(state);
           dispatch({
             type: 'commonModel/gotoNewPage',
             payload: {newPage: path, state},

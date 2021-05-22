@@ -11,8 +11,8 @@ import categoryListEvent from "./categoryListEvent";
 const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
-  const { enabled, masterIsVisible } = props;
-  const buttonGroup = { onClick: props.onButtonClick, enabled };
+  const { enabled, masterIsVisible, slaveContainer } = props;
+  const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.enabled = false;
   return (

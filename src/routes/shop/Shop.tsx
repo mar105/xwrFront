@@ -16,7 +16,6 @@ const Shop = (props) => {
     if (commonUtils.isNotEmptyObj(returnState)) {
       dispatchModifyState({...returnState});
       const { userInfo } = commonModel;
-      console.log('returnState', returnState);
       userInfo.groupId = returnState.masterData.superiorId;
       userInfo.groupName = returnState.masterData.superiorName;
       userInfo.shopId = returnState.masterData.id;

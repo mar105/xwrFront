@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useReducer} from 'react';
 import {Button, Input, Space, Table } from 'antd';
 import * as commonUtils from "../utils/commonUtils";
 import { VList } from 'virtuallist-antd';
@@ -38,40 +38,49 @@ const ResizeableTitle = (props) => {
 }
 
 export function TableComponent(params: any) {
-  const [columns, setColumns] = useState([]);
-  const [components, setComponents] = useState({});
-  const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
-  const [filteredInfo, setFilteredInfo] = useState([]);
-  const [sorterInfo, setSorterInfo] = useState([]);
+  const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
+    return {...state, ...action };
+  },{columns: [], components: {}, sorterInfo: [], searchText: '', filteredInfo: [], searchedColumn: ''});
 
   let searchInput;
   const onReachEnd = () => {
     params.onReachEnd(params.name);
   }
   useEffect(() => {
-    setColumns(getColumn(params.property.columns));
-    const addState: any = {};
+    const addState: any = { columns: getColumn(params.property.columns) };
+    let addComponents: any = {};
     if (params.isDragRow) {
-      addState.body = {
+      addComponents.body = {
         wrapper: DraggableContainer,
         row: DraggableBodyRow,
       };
     }
 
-    setComponents({
-      ...VList({ height: 500, onReachEnd: onReachEnd }),
+    // 树形结构不支持虚拟列表 后续支持后放开
+    if (commonUtils.isEmpty(params.config.treeKey)) {
+      addComponents = { ...addComponents, ...VList({ height: 500, onReachEnd: onReachEnd })}
+    } else {
+      const treeKey = JSON.parse(params.config.treeKey);
+      if (commonUtils.isNotEmptyObj(treeKey) && commonUtils.isNotEmpty(treeKey.columnName)) {
+        const  selectionMinus = params.property.rowSelection === null ? 1 : 2;
+        const index = addState.columns.findIndex(item => item.dataIndex === treeKey.columnName);
+        addState.expandable = { expandIconColumnIndex: index + selectionMinus };
+      }
+
+    }
+
+    const components = {
       header: {
         cell: ResizeableTitle,
       },
-      ...addState
-    });
+      ...addComponents
+    }
+    dispatchModifySelfState({components, ...addState });
   }, [params.property.columns, params.enabled, params.scrollToRow]);
 
   // useEffect(() => {
   //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功
   //   if (params.scrollToRow) {
-  //     console.log('params.scrollToRow', params.scrollToRow);
   //     scrollTo({row: params.scrollToRow });
   //   }
   // }, [params.scrollToRow]);
@@ -153,7 +162,7 @@ export function TableComponent(params: any) {
   }
   const getColumnSearchConstProps = (column, config) => ({
     filters: objectToArrFilter(commonUtils.stringToObj(config.viewDrop)),
-    filteredValue: commonUtils.isEmpty(filteredInfo) ? '' : filteredInfo[column.dataIndex],
+    filteredValue: commonUtils.isEmpty(modifySelfState.filteredInfo) ? '' : modifySelfState.filteredInfo[column.dataIndex],
     // filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
     onFilter: (value, record) => record[column.dataIndex].includes(value),
   });
@@ -202,13 +211,12 @@ export function TableComponent(params: any) {
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
+    modifySelfState({searchText: selectedKeys[0], searchedColumn: dataIndex});
   };
 
   const handleReset = clearFilters => {
     clearFilters();
-    setSearchText('');
+    modifySelfState({searchText: ''});
   };
 
   const getColumn = (resizeColumns: any) => {
@@ -217,7 +225,7 @@ export function TableComponent(params: any) {
           params.property.dataSource.length < 100 ? 50:
             params.property.dataSource.length < 1000 ? 60 :
               params.property.dataSource.length < 10000 ? 70 : 80 , fixed: 'left' };
-    const columnsOld: any = [firstColumn, ...resizeColumns];
+    const columnsOld: any = params.config.isRowNo ? [firstColumn, ...resizeColumns] : [ ...resizeColumns];
     let columns: any = [];
     columnsOld.forEach((columnOld, columnIndex) => {
       if (columnOld.title === '#') {
@@ -246,7 +254,7 @@ export function TableComponent(params: any) {
               return ((commonUtils.isEmpty(a[column.dataIndex]) ? '0' : a[column.dataIndex]).localeCompare((commonUtils.isEmpty(b[column.dataIndex]) ? '1' : b[column.dataIndex])));
             }
           },
-          multiple: sorterInfo.findIndex((item: any) => item.field === column.fieldName),
+          multiple: modifySelfState.sorterInfo.findIndex((item: any) => item.field === column.fieldName),
         }
 
         //金额靠右显示
@@ -336,10 +344,10 @@ export function TableComponent(params: any) {
             } else if (config.fieldType === 'tinyint') {
               return text ? <CheckSquareOutlined /> : <BorderOutlined />;
             } else {
-              return searchedColumn === columnOld.dataIndex ? (
+              return modifySelfState.searchedColumn === columnOld.dataIndex ? (
                 <Highlighter
                   highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                  searchWords={[searchText]}
+                  searchWords={[modifySelfState.searchText]}
                   autoEscape
                   textToHighlight={text ? text.toString() : ''}
                 />
@@ -395,49 +403,55 @@ export function TableComponent(params: any) {
 
 
   const onChange = (pagination, filters, sorter, extra) => {
-    setFilteredInfo(filters);
-    const sortInfoNew: any = [...sorterInfo];
-    const index = sortInfoNew.findIndex(item => item.field === sorter.field);
+    const sorterInfo: any = [...modifySelfState.sorterInfo];
+    const index = sorterInfo.findIndex(item => item.field === sorter.field);
     if (index > -1) {
       if (commonUtils.isEmpty(sorter.column)) {
-        sortInfoNew.splice(index, 1);
+        sorterInfo.splice(index, 1);
       } else {
-        sortInfoNew.splice(index, 1, sorter);
+        sorterInfo.splice(index, 1, sorter);
       }
     } else {
-      sortInfoNew.push(sorter)
+      sorterInfo.push(sorter)
     }
-    setSorterInfo(sortInfoNew);
+    dispatchModifySelfState({filteredInfo: filters, sorterInfo});
+  }
+
+  const tableParams = {
+    bordered: true,
+    rowKey,
+    // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
+    scroll: { x: "100%", y: 500 },
+  // 使用VList 即可有虚拟列表的效果
+  // 此值和scrollY值相同. 必传. (required).  same value for scrolly
+    components: modifySelfState.components,
+  // style={{width: 1000}}
+    rowSelection: {type: 'checkbox', fixed: true, ...params.rowSelection,
+      selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
+      onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } },
+    pagination: false,
+    size: 'small',
+    ...params.property,
+    columns: modifySelfState.columns,
+    // sticky={true}  //影响渲染，虚拟列表官方没问题。
+    onRow: record => {
+      return {
+        // onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
+        onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
+        // onContextMenu: event => {},
+        // onMouseEnter: event => {}, // 鼠标移入行
+        // onMouseLeave: event => {},
+      };
+    },
+    onChange
+  }
+  if (commonUtils.isNotEmptyObj(modifySelfState.expandable)) {
+    tableParams.expandable = modifySelfState.expandable;
   }
   return <div style={{width: 800}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
       <Table
-        bordered={true}
-      rowKey={rowKey}
-        // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
-      scroll={{ x: "100%", y: 500 }}
-        // 使用VList 即可有虚拟列表的效果
-        // 此值和scrollY值相同. 必传. (required).  same value for scrolly
-      components={ components }
-      // style={{width: 1000}}
-      rowSelection={{type: 'checkbox', fixed: true, ...params.rowSelection,
-        selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
-        onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } }}
-      pagination={false}
-      size={'small'}
-      {...params.property}
-      columns={columns}
-      // sticky={true}  //影响渲染，虚拟列表官方没问题。
-      onRow={record => {
-        return {
-          // onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
-          onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
-          // onContextMenu: event => {},
-          // onMouseEnter: event => {}, // 鼠标移入行
-          // onMouseLeave: event => {},
-        };
-      }}
-      onChange={onChange}
+        {...tableParams}
       />
     </ReactDragListView.DragColumn>
   </div>;

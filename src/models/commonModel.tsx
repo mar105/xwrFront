@@ -19,7 +19,7 @@ export default {
       return { ...state, userInfo };
     },
     saveUserShop(state, { payload: userShop }) {
-      localStorage.setItem(`${application.prefix}userInfo`, JSON.stringify(userShop));
+      localStorage.setItem(`${application.prefix}userShop`, JSON.stringify(userShop));
       return { ...state, userShop };
     },
   },

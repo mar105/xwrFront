@@ -46,17 +46,18 @@ const commonBase = (WrapComponent) => {
       }
     }, []);
 
-    const getAllData = async (params) => {
+    const getAllData = async (paramsOld) => {
       const { containerData } = props;
+      const params = commonUtils.isEmptyObj(paramsOld) ? {} : paramsOld;
       if (commonUtils.isNotEmptyArr(containerData)) {
         let addState = { enabled: false };
         for(const container of containerData) {
         // containerData.forEach(async container => { //foreach不能使用await
-          if (commonUtils.isNotEmpty(container.dataSetName)) {
+          if (commonUtils.isNotEmpty(container.dataSetName) && commonUtils.isEmptyObj(modifyState[container.dataSetName + 'Columns'])) {
             addState[container.dataSetName + 'Container'] = container;
             if (container.isTable && commonUtils.isEmptyArr(modifyState[container.dataSetName + 'Columns'])) {
               const columns: any = [];
-              container.slaveData.filter(item => item.isVisible).forEach(item => {
+              container.slaveData.filter(item => item.containerType === 'field' && item.isVisible).forEach(item => {
                 const column = { title: item.viewName, dataIndex: item.fieldName, fieldType: item.fieldType, sortNum: item.sortNum, width: item.width };
                 columns.push(column);
               });
@@ -64,6 +65,7 @@ const commonBase = (WrapComponent) => {
             }
           }
           if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
+            //单据获取
             if (container.isTable) {
               const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData.list;
@@ -74,8 +76,9 @@ const commonBase = (WrapComponent) => {
               addState[container.dataSetName + 'Data'] = returnData;
             }
           } else if (params.handleType !== 'add' && container.isSelect) {
+            //列表获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, pageNum: params.pageNum, condition: {}, isWait: true });
+              const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, pageNum: commonUtils.isNotEmpty(container.treeKey) ? undefined : params.pageNum, condition: {}, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData.list;
               addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
               addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
@@ -177,7 +180,7 @@ const commonBase = (WrapComponent) => {
     };
 
     const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
-      dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys });
+      dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys, [name + 'SelectedRows']: selectedRows });
     }
 
     const onSwitchChange = (name, fieldName, record, checked, e) => {
@@ -257,7 +260,7 @@ const commonBase = (WrapComponent) => {
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
 
-        const data = { ...dataOld, ...getAssignFieldValue(assignField, assignOption ) };
+        const data = { ...dataOld, ...getAssignFieldValue(assignField, assignOption) };
 
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
@@ -317,7 +320,7 @@ const commonBase = (WrapComponent) => {
 
     const onReachEnd = async (name) => {
       const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage }: any = stateRef.current;
-      if (!isLastPage) {
+      if (!isLastPage && commonUtils.isEmpty(container.treeKey)) {
         const addState = {};
         dispatchModifyState({[name + 'Loading']: true });
         const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true });
@@ -337,6 +340,7 @@ const commonBase = (WrapComponent) => {
       getDataOne={getDataOne}
       getDataList={getDataList}
       getSelectList={getSelectList}
+      getAssignFieldValue={getAssignFieldValue}
       onAdd={onAdd}
       onModify={onModify}
       gotoError={gotoError}

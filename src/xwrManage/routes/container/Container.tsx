@@ -408,6 +408,12 @@ const Container = (props) => {
     property: { disabled: !enabled },
   };
 
+  const delAfterMessage = {
+    name: 'master',
+    config: { fieldName: 'delAfterMessage', viewName: '删除后调用消息' },
+    property: { disabled: !enabled },
+  };
+
 
   const buttonGroup = { onClick, enabled };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
@@ -435,6 +441,7 @@ const Container = (props) => {
         <Col><InputComponent {...examineAfterMessage} /></Col>
       </Row>
       <Row>
+        <Col><InputComponent {...delAfterMessage} /></Col>
         <Col><InputComponent {...virtualName} /></Col>
         <Col><NumberComponent {...sortNum} /></Col>
         <Col><SwitchComponent {...isVisible} /></Col>

@@ -38,8 +38,7 @@ const categoryListEvent = (WrapComponent) => {
         if (commonUtils.isEmptyArr(slaveSelectedRows)) {
           props.gotoError(dispatch, { code: '6001', msg: '请先选择数据！' });
           return;
-        }
-        else if (slaveSelectedRows.length > 1) {
+        } else if (slaveSelectedRows.length > 1) {
           props.gotoError(dispatch, { code: '6001', msg: '只能选择一条数据！' });
           return;
         }
@@ -56,8 +55,7 @@ const categoryListEvent = (WrapComponent) => {
         if (commonUtils.isEmptyArr(slaveSelectedRows)) {
           props.gotoError(dispatch, { code: '6001', msg: '请先选择数据！' });
           return;
-        }
-        else if (slaveSelectedRows.length > 1) {
+        } else if (slaveSelectedRows.length > 1) {
           props.gotoError(dispatch, { code: '6001', msg: '只能选择一条数据！' });
           return;
         }
@@ -76,6 +74,29 @@ const categoryListEvent = (WrapComponent) => {
           props.gotoError(dispatch, interfaceReturn);
         }
 
+      } else if (key === 'delButton') {
+        const { commonModel, dispatch, dispatchModifyState } = props;
+        if (commonUtils.isEmptyArr(slaveSelectedRows)) {
+          props.gotoError(dispatch, { code: '6001', msg: '请先选择数据！' });
+          return;
+        } else if (slaveSelectedRows.length > 1) {
+          props.gotoError(dispatch, { code: '6001', msg: '只能选择一条数据！' });
+          return;
+        } else if (commonUtils.isNotEmptyArr(slaveSelectedRows[0].children)) {
+          props.gotoError(dispatch, { code: '6001', msg: '请选择删除子级数据！' });
+          return;
+        }
+        const saveData: any = [];
+        saveData.push(commonUtils.mergeData('master', [slaveSelectedRows[0]], [], true));
+        const params = { id: slaveSelectedRows[0].id, routeId: props.routeId, tabId, saveData, handleType: 'del' };
+        const url: string = `${application.urlMain}/getData/saveData`;
+        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+        if (interfaceReturn.code === 1) {
+          const returnState = await props.getAllData();
+          dispatchModifyState({ ...returnState });
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
+        }
       }
     }
     const onModalCancel = async (e) => {

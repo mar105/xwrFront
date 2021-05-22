@@ -14,6 +14,7 @@ const CategoryList = (props) => {
   const { enabled, masterIsVisible, slaveContainer } = props;
   const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer };
   const tableParam: any = commonUtils.getTableProps('slave', props);
+  tableParam.rowSelection.checkStrictly = true;
   tableParam.enabled = false;
   return (
     <div>

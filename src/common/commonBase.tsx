@@ -69,8 +69,10 @@ const commonBase = (WrapComponent) => {
             if (container.isTable) {
               const returnData: any = await getDataList({ containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData.list;
+              addState[container.dataSetName + 'Sum'] = returnData.sum;
               addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
               addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
+
             } else {
               const returnData: any = await getDataOne({ containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData;
@@ -78,8 +80,9 @@ const commonBase = (WrapComponent) => {
           } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ containerId: container.id, pageNum: commonUtils.isNotEmpty(container.treeKey) ? undefined : params.pageNum, condition: {}, isWait: true });
+              const returnData: any = await getDataList({ containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum, condition: {}, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData.list;
+              addState[container.dataSetName + 'Sum'] = returnData.sum;
               addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
               addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
             }
@@ -123,9 +126,9 @@ const commonBase = (WrapComponent) => {
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;
       if (interfaceReturn.code === 1) {
         if (isWait) {
-          return { ...interfaceReturn.data.data };
+          return { ...interfaceReturn.data.data, sum: interfaceReturn.data.sum };
         } else {
-          dispatchModifyState({ ...interfaceReturn.data.data });
+          dispatchModifyState({ ...interfaceReturn.data.data, sum: interfaceReturn.data.sum });
         }
       } else {
         gotoError(dispatch, interfaceReturn);

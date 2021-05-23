@@ -19,6 +19,8 @@ import Highlighter from 'react-highlight-words';
 import {isNotEmptyObj} from "../utils/commonUtils";
 import moment from 'moment';
 
+const SumCell: any = Table.Summary.Cell;
+
 // 数据行拖动
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 const SortableItem = SortableElement(props => <tr {...props} />);
@@ -416,6 +418,18 @@ export function TableComponent(params: any) {
     dispatchModifySelfState({filteredInfo: filters, sorterInfo});
   }
 
+  const summary = () => {
+    const div = commonUtils.isEmptyObj(params.sum) ? undefined : (
+      <Table.Summary.Row>
+        <SumCell>Total</SumCell>
+        {modifySelfState.columns.map(item => {
+          return <SumCell>{params.sum[item.dataIndex]}</SumCell>
+        })}
+      </Table.Summary.Row>
+    );
+    return div;
+  }
+
   const tableParams = {
     bordered: true,
     rowKey,
@@ -428,6 +442,7 @@ export function TableComponent(params: any) {
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
       onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } },
     pagination: false,
+    summary,
     size: 'small',
     ...params.property,
     columns: modifySelfState.columns,

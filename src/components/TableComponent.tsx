@@ -57,13 +57,12 @@ export function TableComponent(params: any) {
     }
 
     // 树形结构不支持虚拟列表 后续支持后放开
-    if (commonUtils.isEmpty(params.config.treeKey)) {
+    if (!params.config.isTree) {
       addComponents = { ...addComponents, ...VList({ height: 500, onReachEnd: onReachEnd })}
     } else {
-      const treeKey = JSON.parse(params.config.treeKey);
-      if (commonUtils.isNotEmptyObj(treeKey) && commonUtils.isNotEmpty(treeKey.columnName)) {
+      if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
         const  selectionMinus = params.property.rowSelection === null ? 1 : 2;
-        const index = addState.columns.findIndex(item => item.dataIndex === treeKey.columnName);
+        const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
         addState.expandable = { expandIconColumnIndex: index + selectionMinus };
       }
 

@@ -57,7 +57,7 @@ const commonBase = (WrapComponent) => {
             addState[container.dataSetName + 'Container'] = container;
             if (container.isTable && commonUtils.isEmptyArr(modifyState[container.dataSetName + 'Columns'])) {
               const columns: any = [];
-              container.slaveData.filter(item => item.containerType === 'field' && item.isVisible).forEach(item => {
+              container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance') && item.isVisible).forEach(item => {
                 const column = { title: item.viewName, dataIndex: item.fieldName, fieldType: item.fieldType, sortNum: item.sortNum, width: item.width };
                 columns.push(column);
               });
@@ -67,18 +67,18 @@ const commonBase = (WrapComponent) => {
           if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
             //单据获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
+              const returnData: any = await getDataList({ containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData.list;
               addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
               addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
             } else {
-              const returnData: any = await getDataOne({ routeId: props.routeId, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
+              const returnData: any = await getDataOne({ containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData;
             }
           } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, pageNum: commonUtils.isNotEmpty(container.treeKey) ? undefined : params.pageNum, condition: {}, isWait: true });
+              const returnData: any = await getDataList({ containerId: container.id, pageNum: commonUtils.isNotEmpty(container.treeKey) ? undefined : params.pageNum, condition: {}, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData.list;
               addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
               addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
@@ -91,7 +91,8 @@ const commonBase = (WrapComponent) => {
     const getDataOne = async (params) => {
       const { commonModel, dispatch, dispatchModifyState } = props;
       const { isWait } = params;
-      const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + params.routeId + '&containerId=' + params.containerId + '&dataId=' + params.condition.dataId;
+      const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + props.routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId +
+        '&containerId=' + params.containerId + '&dataId=' + params.condition.dataId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         if (isWait) {
@@ -111,6 +112,8 @@ const commonBase = (WrapComponent) => {
       const url: string = `${application.urlPrefix}/getData/getDataList`;
       const requestParam = {
         routeId: props.routeId,
+        groupId: commonModel.userInfo.groupId,
+        shopId: commonModel.userInfo.shopId,
         containerId: params.containerId,
         pageNum: params.pageNum,
         pageSize: application.pageSize,
@@ -136,6 +139,8 @@ const commonBase = (WrapComponent) => {
       const url: string = `${application.urlPrefix}/getData/getSelectList`;
       const requestParam = {
         routeId: props.routeId,
+        groupId: commonModel.userInfo.groupId,
+        shopId: commonModel.userInfo.shopId,
         containerSlaveId: params.containerSlaveId,
         pageNum: params.pageNum,
         pageSize: application.pageSize,
@@ -320,10 +325,10 @@ const commonBase = (WrapComponent) => {
 
     const onReachEnd = async (name) => {
       const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage }: any = stateRef.current;
-      if (!isLastPage && commonUtils.isEmpty(container.treeKey)) {
+      if (!isLastPage && !container.isTree) {
         const addState = {};
         dispatchModifyState({[name + 'Loading']: true });
-        const returnData: any = await getDataList({ routeId: props.routeId, containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true });
+        const returnData: any = await getDataList({ containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true });
         addState[name + 'Data'] = [...data, ...returnData.list];
         addState[name + 'PageNum'] = returnData.pageNum;
         addState[name + 'IsLastPage'] = returnData.isLastPage;

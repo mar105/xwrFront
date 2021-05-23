@@ -15,6 +15,7 @@ const SlaveContainer = (props) => {
     { title: '字段|类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const', viewDrop: '{ "field": "字段", "relevance": "关联性字段", "control": "控件", "cascader": "级联" }', defaultValue: 'field', sortNum: 3, width: 150 },
     { title: '字段|类型', dataIndex: 'fieldType', fieldType: 'varchar', dropType: 'const', viewDrop: '{ "varchar": "字符型", "decimal": "数字型", "int": "整型", "smallint": "微整型", "datetime": "日期型", "tinyint": "布尔型", "text": "备注型" }', isDropEmpty: true, sortNum: 4, width: 150 },
     { title: '字段|关联性', dataIndex: 'fieldRelevance', fieldType: 'varchar', sortNum: 5, width: 150 },
+    { title: '字段|关联性条件', dataIndex: 'conditionRelevance', fieldType: 'varchar', sortNum: 5, width: 150 },
     { title: '字段|关联性赋值', dataIndex: 'assignFieldRelevance', fieldType: 'varchar', sortNum: 5, width: 150 },
     { title: '字段|虚拟名称', dataIndex: 'virtualRelevance', fieldType: 'varchar', sortNum: 5, width: 150 },
     { title: '名称|中文', dataIndex: 'chineseName', fieldType: 'varchar', sortNum: 6, width: 150 },

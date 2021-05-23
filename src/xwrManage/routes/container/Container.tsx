@@ -376,9 +376,30 @@ const Container = (props) => {
     property: { disabled: !enabled },
   };
 
+  const isTree = {
+    name: 'master',
+    config: { fieldName: 'isTree', viewName: '是否展现树型' },
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTree, disabled: !enabled },
+    event: { onChange: props.onSwitchChange }
+  };
+
   const treeKey = {
     name: 'master',
-    config: { fieldName: 'treeKey', viewName: '树型展示Key' },
+    config: { fieldName: 'treeKey', viewName: '树型主Key' },
+    property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
+  };
+
+  const treeSlaveKey = {
+    name: 'master',
+    config: { fieldName: 'treeSlaveKey', viewName: '树型从Key' },
+    property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
+  };
+
+  const treeColumnName = {
+    name: 'master',
+    config: { fieldName: 'treeColumnName', viewName: '树型展示列' },
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange }
   };
@@ -459,8 +480,17 @@ const Container = (props) => {
           </Row>
           <Row>
             <Col><SwitchComponent {...isRowNo} /></Col>
-            <Col><InputComponent {...treeKey} /></Col>
+            <Col><SwitchComponent {...isTree} /></Col>
           </Row>
+          {commonUtils.isNotEmptyObj(masterData) && masterData.isTree ?
+            <div>
+              <Row>
+                <Col><InputComponent {...treeKey} /></Col>
+                <Col><InputComponent {...treeSlaveKey} /></Col>
+                <Col><InputComponent {...treeColumnName} /></Col>
+              </Row>
+            </div>: ''
+          }
         </div>
         : ''}
     </div>)}, [masterData, enabled]);

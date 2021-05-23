@@ -65,7 +65,7 @@ const categoryListEvent = (WrapComponent) => {
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
           const data = props.onModify();
-          let masterData = await props.getDataOne({ routeId: props.routeId, containerId: masterContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
+          let masterData = await props.getDataOne({ containerId: masterContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
           masterData = {...masterData, ...data };
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(masterData));

@@ -511,11 +511,12 @@ const Container = (props) => {
           <Row>
             {component}
           </Row>
+          <Row>
+            {slaveTable}
+          </Row>
         </Col>
       </Row>
-      <Row>
-        {slaveTable}
-      </Row>
+
       <ButtonGroup {...buttonGroup} />
     </Form>
   );

@@ -16,7 +16,6 @@ import arrayMove from 'array-move';
 import ReactDragListView from 'react-drag-listview';
 import { SearchOutlined, CheckSquareOutlined, BorderOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
-import {isNotEmptyObj} from "../utils/commonUtils";
 import moment from 'moment';
 
 const SumCell: any = Table.Summary.Cell;
@@ -163,7 +162,7 @@ export function TableComponent(params: any) {
   /**   对象转数组 (过滤使用)  */
   const objectToArrFilter = (obj) => {
     const arr: any = [];
-    if (isNotEmptyObj(obj)) {
+    if (commonUtils.isNotEmptyObj(obj)) {
       for (const key of Object.keys(obj)) {
         const value = obj[key];
         arr.push({ text: value, value: key });

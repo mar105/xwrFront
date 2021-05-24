@@ -23,8 +23,6 @@ const SumCell: any = Table.Summary.Cell;
 
 // 数据行拖动
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
-const SortableItem = SortableElement(props => <tr {...props} />);
-const SortableContainerA = SortableContainer(props => <tbody {...props} />);
 
 // 标题列宽度拖动
 const ResizeableTitle = (props) => {
@@ -51,12 +49,6 @@ export function TableComponent(params: any) {
   useEffect(() => {
     const addState: any = { columns: getColumn(params.property.columns) };
     let addComponents: any = {};
-    if (params.isDragRow) {
-      addComponents.body = {
-        wrapper: DraggableContainer,
-        row: DraggableBodyRow,
-      };
-    }
 
     // 树形结构不支持虚拟列表 后续支持后放开
     if (!params.config.isTree) {
@@ -68,6 +60,37 @@ export function TableComponent(params: any) {
         addState.expandable = { expandIconColumnIndex: index + selectionMinus };
       }
 
+    }
+
+    const VRow: any = addComponents.body.row;
+    const VWapper: any = addComponents.body.wrapper;
+    const SortableItem = SortableElement(props => <VRow {...props} />);
+    const SortableContainerA = SortableContainer(props => <VWapper {...props} />);
+
+    const DraggableContainer = props => (
+      <SortableContainerA
+        useDragHandle
+        disableAutoscroll
+        helperClass="row-dragging"
+        onSortEnd={onSortEnd}
+        {...props}
+      />
+    );
+
+    const DraggableBodyRow = ({ className, style, ...restProps }) => {
+      const { dataSource: dataSourceOld }: any = params.property;
+      // function findIndex base on Table rowKey props and should always be a right array index
+      const dataSource = commonUtils.isEmptyArr(dataSourceOld) ? [] : dataSourceOld;
+      const index = dataSource.findIndex((x: any) => x[rowKey] === restProps['data-row-key']);
+      return <SortableItem index={index} {...restProps} />;
+    };
+
+    if (params.isDragRow) {
+      addComponents.body = {
+        // ...addComponents.body,
+        wrapper: DraggableContainer,
+        row: DraggableBodyRow,
+      };
     }
 
     const components = {
@@ -99,23 +122,6 @@ export function TableComponent(params: any) {
     }
   };
 
-  const DraggableContainer = props => (
-    <SortableContainerA
-      useDragHandle
-      disableAutoscroll
-      helperClass="row-dragging"
-      onSortEnd={onSortEnd}
-      {...props}
-    />
-  );
-
-  const DraggableBodyRow = ({ className, style, ...restProps }) => {
-    const { dataSource: dataSourceOld }: any = params.property;
-    // function findIndex base on Table rowKey props and should always be a right array index
-    const dataSource = commonUtils.isEmptyArr(dataSourceOld) ? [] : dataSourceOld;
-    const index = dataSource.findIndex((x: any) => x[rowKey] === restProps['data-row-key']);
-    return <SortableItem index={index} {...restProps} />;
-  };
 
   //标题列拖拽
   const DragTitleColumn = {

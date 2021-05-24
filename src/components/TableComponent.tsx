@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useReducer} from 'react';
 import {Button, Input, Space, Table } from 'antd';
 import * as commonUtils from "../utils/commonUtils";
-import { VList } from 'virtuallist-antd';
+import { VList, scrollTo } from 'virtuallist-antd';
 import {InputComponent} from "./InputComponent";
 import {NumberComponent} from "./NumberComponent";
 import {DatePickerComponent} from "./DatePickerComponent";
@@ -48,20 +48,16 @@ export function TableComponent(params: any) {
   }
   useEffect(() => {
     const addState: any = { columns: getColumn(params.property.columns) };
-    let addComponents: any = {};
+    const addComponents: any = { ...VList({ height: 500, onReachEnd: onReachEnd })};
 
-    // 树形结构不支持虚拟列表 后续支持后放开
-    if (!params.config.isTree) {
-      addComponents = { ...addComponents, ...VList({ height: 500, onReachEnd: onReachEnd })}
-    } else {
-      if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
-        const  selectionMinus = params.property.rowSelection === null ? 1 : 2;
-        const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
-        addState.expandable = { expandIconColumnIndex: index + selectionMinus };
-      }
-
+    // 树形通过配置展开列名找到展开列
+    if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
+      const  selectionMinus = params.property.rowSelection === null ? 1 : 2;
+      const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
+      addState.expandable = { expandIconColumnIndex: index + selectionMinus };
     }
 
+    //-----增加行拖拽------------------------------
     const VRow: any = addComponents.body.row;
     const VWapper: any = addComponents.body.wrapper;
     const SortableItem = SortableElement(props => <VRow {...props} />);
@@ -87,18 +83,26 @@ export function TableComponent(params: any) {
 
     if (params.isDragRow) {
       addComponents.body = {
-        // ...addComponents.body,
         wrapper: DraggableContainer,
         row: DraggableBodyRow,
       };
     }
+    //-----行拖拽结束--------------------------------------
 
+
+    //-----增加列宽拖拽------------------------------
     const components = {
       header: {
         cell: ResizeableTitle,
       },
       ...addComponents
     }
+
+    if (params.scrollToRow) {
+      scrollTo({row: params.scrollToRow });
+    }
+
+    //-----列宽拖拽结束------------------------------
     dispatchModifySelfState({components, ...addState });
   }, [params.property.columns, params.enabled, params.scrollToRow]);
 

@@ -98,7 +98,9 @@ export function TableComponent(params: any) {
     }
 
     if (params.scrollToRow) {
-      scrollTo({row: params.scrollToRow });
+      setTimeout(() => {
+        scrollTo({row: params.scrollToRow });
+      });
     }
 
     //-----列宽拖拽结束------------------------------
@@ -455,7 +457,7 @@ export function TableComponent(params: any) {
     size: 'small',
     ...params.property,
     columns: modifySelfState.columns,
-    // sticky: true,  //影响渲染，虚拟列表官方没问题。
+    sticky: true,
     onRow: record => {
       return {
         // onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行

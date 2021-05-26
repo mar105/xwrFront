@@ -7,6 +7,7 @@ import {ButtonGroup} from "../ButtonGroup";
 import {Form, Modal} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import categoryListEvent from "./categoryListEvent";
+import Search from "../../../common/Search";
 
 const CategoryList = (props) => {
   const [form] = Form.useForm();
@@ -18,7 +19,11 @@ const CategoryList = (props) => {
   tableParam.enabled = false;
   return (
     <div>
-      {props.slaveContainer ? <TableComponent {...tableParam} /> : ''}
+      {props.slaveContainer ?
+        <div>
+          <Search {...props} />
+          <TableComponent {...tableParam} />
+        </div>: ''}
       <ButtonGroup {...buttonGroup} />
       <Modal width={800} visible={masterIsVisible} maskClosable={false} onCancel={props.onModalCancel} onOk={props.onModalOk}>
         <Form form={form} >

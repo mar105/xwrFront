@@ -166,7 +166,7 @@ const commonBase = (WrapComponent) => {
       const { commonModel } = props;
       const dataRow: any = {};
       dataRow.handleType = 'add';
-      dataRow.id = commonUtils.newId().toString();
+      dataRow.id = commonUtils.newId();
       dataRow.key = dataRow.id;
       dataRow.groupId = commonModel.userInfo.groupId;
       dataRow.shopId = commonModel.userInfo.shopId;
@@ -265,9 +265,10 @@ const commonBase = (WrapComponent) => {
 
     const onSelectChange = (name, fieldName, record, assignField, value, option) => {
       const { [name + 'Data']: dataOld }: any = stateRef.current;
+      console.log('111', name, fieldName, record, assignField, value, option);
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
+      console.log('assignOption', dataOld);
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-
         const data = { ...dataOld, ...getAssignFieldValue(assignField, assignOption) };
 
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;

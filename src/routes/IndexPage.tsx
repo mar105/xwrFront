@@ -17,7 +17,7 @@ function IndexPage(props) {
   const onClick = async (pathOld, stateOld) => {
     const {dispatch, dispatchModifyState, panes: panesOld, panesComponents, commonModel } = props;
     const path = replacePath(pathOld);
-    const key = commonUtils.newId().toString();
+    const key = commonUtils.newId();
     const route: any = commonUtils.getRouteComponent(routeInfo, path);
     if (commonUtils.isNotEmptyObj(route)) {
       let state = {}

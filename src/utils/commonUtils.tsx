@@ -70,7 +70,7 @@ const snowflake = new Snowflake(1n, 1n, 0n);
 
 /**   创建主表id   */
 export function newId() {
-  return snowflake.nextId();
+  return snowflake.nextId().toString();
 }
 
 export function isEmpty(value) {

@@ -15,7 +15,8 @@ export function SelectComponent(params) {
   addProperty.showSearch = true;
   addProperty.optionFilterProp = 'children';
   if (params.config.dropType === 'const') {
-    const array: any = commonUtils.objectToArr(commonUtils.stringToObj(params.config.viewDrop));
+    const array: any = typeof params.config.viewDrop === 'string' ?
+      commonUtils.objectToArr(commonUtils.stringToObj(params.config.viewDrop)) : params.config.viewDrop;
     for (const optionObj of array) {
       const option: any = (<Option key={optionObj.id} value={optionObj.id}>{optionObj.value}</Option>);
       dropOptions.push(option);

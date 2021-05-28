@@ -16,7 +16,7 @@ function IndexPage(props) {
 
   const onClick = (path) => {
     const {dispatch, dispatchModifyState, panes: panesOld, panesComponents } = props;
-    const key = commonUtils.newId().toString();
+    const key = commonUtils.newId();
     const route: any = commonUtils.getRouteComponent(routeInfo, path);
     if (commonUtils.isNotEmptyObj(route)) {
       if (route.title) {

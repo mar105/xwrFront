@@ -7,32 +7,79 @@ import {InputComponent} from "../components/InputComponent";
 import {NumberComponent} from "../components/NumberComponent";
 import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
-const Search = (params) => {
+import {ButtonComponent} from "../components/ButtonComponent";
+const Search = (props) => {
   useEffect(() => {
-    const { slaveContainer, dispatchModifyState } = params;
+    const { slaveContainer, dispatchModifyState } = props;
     const searchConfig = slaveContainer.slaveData.filter(item => item.isSearch === 1);
     const searchRowKeys: any = [];
     const searchData = {};
     const firstViewDrop: any = [];
-    const secondViewDrop = searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
-      searchConfig[0].fieldType === 'datetime' ? searchType.datetime :
-        searchConfig[0].fieldType === 'tinyint' ? searchType.tinyint :
-          searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
-            searchConfig[0].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
+
     if (commonUtils.isNotEmptyArr(searchConfig)) {
       const key = commonUtils.newId();
       searchRowKeys.push(key);
       searchData['first' + key] = searchConfig[0].fieldName;
-      searchData['second' + key] = secondViewDrop[0].value;
+      const secondViewDrop = searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+        searchConfig[0].fieldType === 'datetime' ? searchType.datetime :
+          searchConfig[0].fieldType === 'tinyint' ? searchType.tinyint :
+            searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+              searchConfig[0].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
+      searchData['second' + key] = secondViewDrop[0].id;
       searchConfig.forEach(item => {
         firstViewDrop.push({id: item.fieldName, value: item.viewName});
       });
 
     }
-    dispatchModifyState({ searchConfig, searchRowKeys, searchData, firstViewDrop, secondViewDrop });
+    dispatchModifyState({ searchConfig, searchRowKeys, searchData, firstViewDrop });
   }, []);
 
-  const { searchData: searchDataOld, searchRowKeys: searchRowKeysOld, firstViewDrop, secondViewDrop, searchConfig } = params;
+  // const onSelectChange = (name, fieldName, record, assignField, value, option) => {
+  //   const { dispatchModifyState }: any = props;
+  //   const returnData = props.onSelectChange(name, fieldName, record, assignField, value, option, true);
+  //   if (fieldName.indexOf('first') > -1) {
+  //     returnData.secondViewDrop = searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+  //       searchConfig[0].fieldType === 'datetime' ? searchType.datetime :
+  //         searchConfig[0].fieldType === 'tinyint' ? searchType.tinyint :
+  //           searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+  //             searchConfig[0].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
+  //     dispatchModifyState({ secondViewDrop });
+  //   }
+  // }
+
+  const onButtonClick = async (key, e) => {
+    const name = 'slave';
+    const { searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState, [name + 'Container']: container } = props;
+    const searchData = {...searchDataOld};
+    const searchRowKeys = [...searchRowKeysOld];
+    const addState = {};
+    if (key === 'addConditionButton') {
+      const key = commonUtils.newId();
+      searchRowKeys.push(key);
+      searchData['first' + key] = searchConfig[0].fieldName;
+      const secondViewDrop = searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+        searchConfig[0].fieldType === 'datetime' ? searchType.datetime :
+          searchConfig[0].fieldType === 'tinyint' ? searchType.tinyint :
+            searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+              searchConfig[0].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
+      searchData['second' + key] = secondViewDrop[0].id;
+      dispatchModifyState({ searchRowKeys, searchData });
+    } else if (key === 'searchButton') {
+      const searchCondition: any = [];
+      searchRowKeys.forEach(key => {
+        searchCondition.push({ fieldName: searchData['first' + key], condition: searchData['second' + key], fieldValue: searchData['third' + key] });
+      });
+      dispatchModifyState({[name + 'Loading']: true });
+      const returnData: any = await props.getDataList({ containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition }, isWait: true });
+      addState[name + 'Data'] = returnData.list;
+      addState[name + 'PageNum'] = returnData.pageNum;
+      addState[name + 'IsLastPage'] = returnData.isLastPage;
+      addState[name + 'Loading'] = false;
+      dispatchModifyState({...addState});
+    }
+  }
+
+  const { searchData: searchDataOld, searchRowKeys: searchRowKeysOld, firstViewDrop, searchConfig } = props;
   const searchData = commonUtils.isEmptyObj(searchDataOld) ? {} : searchDataOld;
   const searchRowKeys = commonUtils.isEmptyArr(searchRowKeysOld) ? [] : searchRowKeysOld;
   const searchComponent = searchRowKeys.map(key => {
@@ -44,13 +91,21 @@ const Search = (params) => {
     };
 
     const firstParams = {
-      name: params.name,
+      name: props.name,
       componentType: componentType.Soruce,
       config: firstConfig,
       property: {value: searchData['first' + key]},
       record: searchData,
-      event: {onChange: params.onSelectChange, getSelectList: params.getSelectList }
+      event: {onChange: props.onSelectChange, getSelectList: props.getSelectList }
     };
+
+    const index = searchConfig.findIndex(item => item.fieldName === searchData['first' + key]);
+    const secondContainerConfig = index > -1 ? searchConfig[index] : {};
+    const secondViewDrop = secondContainerConfig.fieldType === 'varchar' ? searchType.varchar :
+      secondContainerConfig.fieldType === 'datetime' ? searchType.datetime :
+        secondContainerConfig.fieldType === 'tinyint' ? searchType.tinyint :
+          secondContainerConfig.fieldType === 'varchar' ? searchType.varchar :
+            secondContainerConfig.fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
 
     const secondConfig = {
       id: commonUtils.newId(),
@@ -60,16 +115,14 @@ const Search = (params) => {
     };
 
     const secondParams = {
-      name: params.name,
+      name: props.name,
       componentType: componentType.Soruce,
       config: secondConfig,
       property: {value: searchData['second' + key]},
       record: searchData,
-      event: {onChange: params.onSelectChange, getSelectList: params.getSelectList }
+      event: {onChange: props.onSelectChange, getSelectList: props.getSelectList }
     };
 
-
-    const index = searchConfig.findIndex(item => item.fieldName === searchData['first' + key]);
     const thirdConfig = index > -1 ? {
       ...searchConfig[index],
       id: commonUtils.newId(),
@@ -80,23 +133,24 @@ const Search = (params) => {
     };
 
     const thirdParams = {
-      name: params.name,
+      name: props.name,
       componentType: componentType.Soruce,
       config: thirdConfig,
       property: {value: searchData['third' + key]},
       record: searchData,
-      event: {onChange: params.onSelectChange, getSelectList: params.getSelectList }
+      event: {onChange: props.onSelectChange, getSelectList: props.getSelectList }
     };
 
-    const thirdInputParams = {
-      name: params.name,
+    const thirdInputprops = {
+      name: props.name,
       componentType: componentType.Soruce,
       config: thirdConfig,
       property: {value: searchData['third' + key]},
       record: searchData,
-      event: {onChange: params.onInputChange}
+      event: {onChange: props.onInputChange}
     };
 
+    console.log('dsss', secondParams);
     const firstComponent = <SelectComponent {...firstParams} />;
     const secondComponent = <SelectComponent {...secondParams}  />;
     let thirdComponent;
@@ -104,16 +158,33 @@ const Search = (params) => {
       if (thirdConfig.dropType === 'sql' || thirdConfig.dropType === 'const') {
         thirdComponent = <SelectComponent {...thirdParams}  />;
       } else {
-        thirdComponent = <InputComponent {...thirdInputParams}  />;
+        thirdComponent = <div style={{width: 200}}><InputComponent {...thirdInputprops}  /> </div>;
       }
     } else if (thirdConfig.fieldType === 'decimal' || thirdConfig.fieldType === 'smallint' || thirdConfig.fieldType === 'int') {
       thirdComponent = <NumberComponent {...thirdParams}  />;
     } else if (thirdConfig.fieldType === 'tinyint') {
       thirdComponent = <CheckboxComponent {...thirdParams}  />;
     } else if (thirdConfig.fieldType === 'datetime') {
-      thirdComponent = <DatePickerComponent {...params}  />;
+      thirdComponent = <DatePickerComponent {...props}  />;
     }
-    return <div>{firstComponent} {secondComponent} {thirdComponent}</div>;
+    const addConditionButton = {
+      caption: '添加条件',
+      property: { name: 'addConditionButton', htmlType: 'button' },
+      event: { onClick: onButtonClick.bind(this, 'addConditionButton') },
+      componentType: componentType.Soruce,
+    };
+
+    const searchButton = {
+      caption: '搜索',
+      property: { name: 'searchButton', htmlType: 'button' },
+      event: { onClick: onButtonClick.bind(this, 'searchButton') },
+      componentType: componentType.Soruce,
+    };
+
+    return <div>{firstComponent} {secondComponent} {thirdComponent}
+      <ButtonComponent {...addConditionButton} />
+      <ButtonComponent {...searchButton} />
+    </div>;
   });
   return (<Form>{searchComponent}</Form>);
 }

@@ -115,6 +115,17 @@ const SlaveContainer = (props) => {
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
+    } else if (name === 'slaveSyncToMongoBtn') {
+      if (commonUtils.isEmpty(masterData.virtualName)) {
+        props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
+        return;
+      }
+      // const url: string = `${application.urlPrefix}/container/syncToMongo`;
+      // const params = { containerId: masterData.id };
+      // const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      // if (interfaceReturn.code === 1) {
+      //
+      // }
     }
 
   }
@@ -133,6 +144,13 @@ const SlaveContainer = (props) => {
     componentType: componentType.Soruce,
   };
 
+  const syncToMongoButton = {
+    caption: '同步到mongo',
+    property: { name: name + 'SyncToMongoBtn', htmlType: 'button', disabled: !enabled },
+    event: { onClick: onClick.bind(this, name + 'SyncToMongoBtn') },
+    componentType: componentType.Soruce,
+  };
+
   const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.isDragRow = true;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
@@ -140,6 +158,7 @@ const SlaveContainer = (props) => {
     <div>
       <ButtonComponent {...button} />
       <ButtonComponent {...syncDataButton} />
+      <ButtonComponent {...syncToMongoButton} />
       {props.slaveContainer ? <TableComponent {...tableParam} /> : ''}
     </div>
   );

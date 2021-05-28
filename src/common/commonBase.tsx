@@ -263,9 +263,8 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    const onSelectChange = (name, fieldName, record, assignField, value, option) => {
+    const onSelectChange = (name, fieldName, record, assignField, value, option, isWait = false) => {
       const { [name + 'Data']: dataOld }: any = stateRef.current;
-      console.log('111', name, fieldName, record, assignField, value, option);
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
       console.log('assignOption', dataOld);
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
@@ -273,7 +272,11 @@ const commonBase = (WrapComponent) => {
 
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
-        dispatchModifyState({ [name + 'Data']: data });
+        if (isWait) {
+          return { [name + 'Data']: data };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data });
+        }
       } else {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
@@ -281,7 +284,11 @@ const commonBase = (WrapComponent) => {
           data[index] = { ...data[index], ...getAssignFieldValue(assignField, assignOption) };
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = value;
-          dispatchModifyState({ [name + 'Data']: data });
+          if (isWait) {
+            return { [name + 'Data']: data };
+          } else {
+            dispatchModifyState({ [name + 'Data']: data });
+          }
         }
       }
     }

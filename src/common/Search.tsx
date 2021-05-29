@@ -150,7 +150,6 @@ const Search = (props) => {
       event: {onChange: props.onInputChange}
     };
 
-    console.log('dsss', secondParams);
     const firstComponent = <SelectComponent {...firstParams} />;
     const secondComponent = <SelectComponent {...secondParams}  />;
     let thirdComponent;

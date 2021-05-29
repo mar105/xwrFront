@@ -62,6 +62,10 @@ const SlaveContainer = (props) => {
     dispatchModifyState({slaveColumns: columns, slaveContainer, slaveIsLastPage: true });
   }, []);
 
+  useEffect(() => {
+    props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongo', syncToMongoResult);
+  }, [props.commonModel.stompClient]);
+
 
   const onClick = async (name, e) => {
     const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
@@ -120,14 +124,18 @@ const SlaveContainer = (props) => {
         props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
         return;
       }
-      // const url: string = `${application.urlPrefix}/container/syncToMongo`;
-      // const params = { containerId: masterData.id };
-      // const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-      // if (interfaceReturn.code === 1) {
-      //
-      // }
+      const { stompClient } = commonModel;
+      const params = { containerId: masterData.id };
+      stompClient.send('/websocket/container/syncToMongo', {}, JSON.stringify(application.paramInit(params)));
     }
+  }
 
+  const syncToMongoResult = (data) => {
+    const { dispatch } = props;
+    const returnBody = JSON.parse(data.body);
+    if (returnBody.code === 1) {
+      props.gotoSuccess(dispatch, returnBody);
+    }
   }
 
   const button = {

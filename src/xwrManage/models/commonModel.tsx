@@ -7,6 +7,7 @@ export default {
   state: {
     token: localStorage.getItem(`${application.prefix}token`) || '',
     userInfo: JSON.parse(localStorage.getItem(`${application.prefix}userInfo`) || '{}'),
+    stompClient: null,
   },
   reducers: {
     saveToken(state, { payload: token }) {
@@ -16,6 +17,10 @@ export default {
     saveUserInfo(state, { payload: userInfo }) {
       localStorage.setItem(`${application.prefix}userInfo`, JSON.stringify(userInfo));
       return { ...state, userInfo };
+    },
+
+    saveStompClient(state, { payload: stompClient }) {
+      return { ...state, stompClient };
     },
   },
   effects: {

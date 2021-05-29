@@ -11,7 +11,7 @@ import commonBase from "../common/commonBase";
 function IndexPage(props) {
   useEffect(() => {
     const {commonModel} = props;
-    commonUtils.getWebSocketData(commonModel.token, "", null);
+    commonUtils.getWebSocketData(commonModel.token, "", "");
   }, []);
 
   const onClick = async (pathOld, stateOld) => {

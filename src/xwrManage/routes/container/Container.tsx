@@ -374,6 +374,7 @@ const Container = (props) => {
     name: 'master',
     config: { fieldName: 'virtualName', viewName: '虚拟名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
 
   const isTree = {
@@ -496,9 +497,10 @@ const Container = (props) => {
     </div>)}, [masterData, enabled]);
 
   const containerNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.containerName) ? masterData.containerName : '';
+  const virtualNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.virtualName) ? masterData.virtualName : '';
   const slaveTable = useMemo(()=>{ return (
     <SlaveContainer name='slave' {...props} getSelectList={getSelectList} onClick={onClick} />
-  )}, [containerNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
+  )}, [props.commonModel.stompClient, containerNameValue, virtualNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
 
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>

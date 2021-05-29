@@ -10,8 +10,12 @@ import {useEffect} from "react";
 
 function IndexPage(props) {
   useEffect(() => {
-    // const {commonModel} = props;
-    // commonUtils.getWebSocketData(commonModel.token, "", null);
+    const {dispatch, commonModel} = props;
+    const stompClient = commonUtils.getWebSocketData(commonModel.token);
+    dispatch({
+      type: 'commonModel/saveStompClient',
+      payload: stompClient,
+    });
   }, []);
 
   const onClick = (path) => {

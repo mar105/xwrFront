@@ -62,11 +62,6 @@ const SlaveContainer = (props) => {
     dispatchModifyState({slaveColumns: columns, slaveContainer, slaveIsLastPage: true });
   }, []);
 
-  useEffect(() => {
-    props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongo', syncToMongoResult);
-  }, [props.commonModel.stompClient]);
-
-
   const onClick = async (name, e) => {
     const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
     if (name === 'slaveAddBtn') {
@@ -119,22 +114,6 @@ const SlaveContainer = (props) => {
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
-    } else if (name === 'slaveSyncToMongoBtn') {
-      if (commonUtils.isEmpty(masterData.virtualName)) {
-        props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
-        return;
-      }
-      const { stompClient } = commonModel;
-      const params = { containerId: masterData.id };
-      stompClient.send('/websocket/container/syncToMongo', {}, JSON.stringify(application.paramInit(params)));
-    }
-  }
-
-  const syncToMongoResult = (data) => {
-    const { dispatch } = props;
-    const returnBody = JSON.parse(data.body);
-    if (returnBody.code === 1) {
-      props.gotoSuccess(dispatch, returnBody);
     }
   }
 
@@ -152,13 +131,6 @@ const SlaveContainer = (props) => {
     componentType: componentType.Soruce,
   };
 
-  const syncToMongoButton = {
-    caption: '同步到mongo',
-    property: { name: name + 'SyncToMongoBtn', htmlType: 'button', disabled: !enabled },
-    event: { onClick: onClick.bind(this, name + 'SyncToMongoBtn') },
-    componentType: componentType.Soruce,
-  };
-
   const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.isDragRow = true;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
@@ -166,7 +138,6 @@ const SlaveContainer = (props) => {
     <div>
       <ButtonComponent {...button} />
       <ButtonComponent {...syncDataButton} />
-      <ButtonComponent {...syncToMongoButton} />
       {props.slaveContainer ? <TableComponent {...tableParam} /> : ''}
     </div>
   );

@@ -36,6 +36,21 @@ const Container = (props) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (props.commonModel !== null) {
+      props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongo', syncToMongoResult);
+      props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongoIndex', syncToMongoResult);
+    }
+  }, [props.commonModel.stompClient]);
+
+  const syncToMongoResult = (data) => {
+    const { dispatch } = props;
+    const returnBody = JSON.parse(data.body);
+    if (returnBody.code === 1) {
+      props.gotoSuccess(dispatch, returnBody);
+    }
+  }
+
   const getAllContainer = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
@@ -222,6 +237,26 @@ const Container = (props) => {
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
+    } else if (key === 'syncToMongoButton') {
+      if (commonUtils.isEmpty(masterData.virtualName)) {
+        props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
+        return;
+      }
+      const { stompClient } = commonModel;
+      const params = { routeId: masterData.superiorId, containerId: masterData.id };
+      stompClient.send('/websocket/container/syncToMongo', {}, JSON.stringify(application.paramInit(params)));
+    } else if (key === 'syncToMongoIndexButton') {
+      if (commonUtils.isEmpty(masterData.virtualName)) {
+        props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
+        return;
+      }
+      if (commonUtils.isEmpty(masterData.virtualIndex)) {
+        props.gotoError(dispatch, { code: '6003', msg: '虚拟索引不能为空！' });
+        return;
+      }
+      const { stompClient } = commonModel;
+      const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName, virtualIndex: masterData.virtualIndex  };
+      stompClient.send('/websocket/container/syncToMongoIndex', {}, JSON.stringify(application.paramInit(params)));
     }
 
   }
@@ -377,6 +412,12 @@ const Container = (props) => {
     event: { onChange: props.onInputChange }
   };
 
+  const virtualIndex = {
+    name: 'master',
+    config: { fieldName: 'virtualIndex', viewName: '虚拟索引' },
+    property: { disabled: !enabled },
+  };
+
   const isTree = {
     name: 'master',
     config: { fieldName: 'isTree', viewName: '是否展现树型' },
@@ -436,8 +477,10 @@ const Container = (props) => {
     property: { disabled: !enabled },
   };
 
-
-  const buttonGroup = { onClick, enabled };
+  const buttonAddGroup: any = [];
+  buttonAddGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
+  buttonAddGroup.push({ key: 'syncToMongoIndexButton', caption: '同步到mongo索引', htmlType: 'button', onClick, sortNum: 101, disabled: props.enabled });
+  const buttonGroup = { onClick, enabled, buttonGroup: buttonAddGroup };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (
@@ -465,10 +508,12 @@ const Container = (props) => {
       <Row>
         <Col><InputComponent {...delAfterMessage} /></Col>
         <Col><InputComponent {...virtualName} /></Col>
+        <Col><InputComponent {...virtualIndex} /></Col>
         <Col><NumberComponent {...sortNum} /></Col>
-        <Col><SwitchComponent {...isVisible} /></Col>
+
       </Row>
       <Row>
+        <Col><SwitchComponent {...isVisible} /></Col>
         <Col><SwitchComponent {...isSelect} /></Col>
         <Col><SwitchComponent {...isTable} /></Col>
       </Row>
@@ -497,11 +542,12 @@ const Container = (props) => {
     </div>)}, [masterData, enabled]);
 
   const containerNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.containerName) ? masterData.containerName : '';
-  const virtualNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.virtualName) ? masterData.virtualName : '';
   const slaveTable = useMemo(()=>{ return (
     <SlaveContainer name='slave' {...props} getSelectList={getSelectList} onClick={onClick} />
-  )}, [props.commonModel.stompClient, containerNameValue, virtualNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
-
+  )}, [containerNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
+  const button = useMemo(()=>{ return (
+    <ButtonGroup {...buttonGroup} />
+  )}, [props.enabled, props.masterData]);
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row>
@@ -518,8 +564,7 @@ const Container = (props) => {
           </Row>
         </Col>
       </Row>
-
-      <ButtonGroup {...buttonGroup} />
+      {button}
     </Form>
   );
 }

@@ -37,7 +37,7 @@ const Container = (props) => {
   }, []);
 
   useEffect(() => {
-    if (props.commonModel !== null) {
+    if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)) {
       props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongo', syncToMongoResult);
       props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongoIndex', syncToMongoResult);
     }
@@ -255,8 +255,9 @@ const Container = (props) => {
         return;
       }
       const { stompClient } = commonModel;
-      const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName, virtualIndex: masterData.virtualIndex  };
+      const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName, virtualIndex: masterData.virtualIndex, tableKey: masterData.tableKey };
       stompClient.send('/websocket/container/syncToMongoIndex', {}, JSON.stringify(application.paramInit(params)));
+
     }
 
   }
@@ -418,6 +419,12 @@ const Container = (props) => {
     property: { disabled: !enabled },
   };
 
+  const tableKey = {
+    name: 'master',
+    config: { fieldName: 'tableKey', viewName: '表格Key' },
+    property: { disabled: !enabled },
+  };
+
   const isTree = {
     name: 'master',
     config: { fieldName: 'isTree', viewName: '是否展现树型' },
@@ -525,6 +532,7 @@ const Container = (props) => {
             <Col><SwitchComponent {...isMutiChoise} /></Col>
           </Row>
           <Row>
+            <Col><InputComponent {...tableKey} /></Col>
             <Col><SwitchComponent {...isRowNo} /></Col>
             <Col><SwitchComponent {...isTree} /></Col>
           </Row>

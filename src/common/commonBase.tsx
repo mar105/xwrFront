@@ -53,6 +53,11 @@ const commonBase = (WrapComponent) => {
         let addState = { enabled: false };
         for(const container of containerData) {
         // containerData.forEach(async container => { //foreach不能使用await
+          if (params.testMongo) {
+            if (commonUtils.isNotEmpty(container.virtualName)) {
+              continue;
+            }
+          }
           if (commonUtils.isNotEmpty(container.dataSetName) && commonUtils.isEmptyObj(modifyState[container.dataSetName + 'Columns'])) {
             addState[container.dataSetName + 'Container'] = container;
             if (container.isTable && commonUtils.isEmptyArr(modifyState[container.dataSetName + 'Columns'])) {
@@ -64,7 +69,7 @@ const commonBase = (WrapComponent) => {
               addState[container.dataSetName + 'Columns'] = columns;
             }
           }
-          if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
+            if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
             //单据获取
             if (container.isTable) {
               const returnData: any = await getDataList({ containerId: container.id, condition: { dataId: params.dataId }, isWait: true });

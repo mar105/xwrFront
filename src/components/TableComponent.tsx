@@ -157,8 +157,7 @@ export function TableComponent(params: any) {
   };
 
   //获取表格的rowKey
-  const rowKey = commonUtils.isNotEmptyArr(params.property.dataSource) &&
-    commonUtils.isNotEmpty(params.property.dataSource[0].slaveId) ? 'slaveId' : 'id';
+  const rowKey = commonUtils.isNotEmpty(params.config.tableKey) ? params.config.tableKey : 'id';
 
   //搜索常量小面板
   /**   对象转数组 (过滤使用)  */

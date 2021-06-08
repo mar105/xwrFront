@@ -22,6 +22,9 @@ export default {
       localStorage.setItem(`${application.prefix}userShop`, JSON.stringify(userShop));
       return { ...state, userShop };
     },
+    saveStompClient(state, { payload: stompClient }) {
+      return { ...state, stompClient };
+    },
   },
   effects: {
     * gotoNewPage({ payload }, { put }) {

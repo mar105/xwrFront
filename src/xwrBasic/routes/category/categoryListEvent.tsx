@@ -2,12 +2,28 @@ import * as React from "react";
 import * as commonUtils from "../../../utils/commonUtils";
 import * as application from "../../application";
 import * as request from "../../../utils/request";
+import {useEffect} from "react";
 
 const categoryListEvent = (WrapComponent) => {
   return function ChildComponent(props) {
     let form;
     const onSetForm = (formNew) => {
       form = formNew;
+    }
+    useEffect(() => {
+      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)) {
+        props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveAfterSyncToMongo', saveAfterSyncToMongoResult);
+      }
+    }, [props.commonModel.stompClient]);
+
+    const saveAfterSyncToMongoResult = async (data) => {
+      const { dispatch, dispatchModifyState } = props;
+      const returnBody = JSON.parse(data.body);
+      if (returnBody.code === 1) {
+        const returnState = await props.getAllData();
+        dispatchModifyState({ ...returnState });
+        props.gotoSuccess(dispatch, returnBody);
+      }
     }
 
     const onButtonClick = async (key, config, e) => {
@@ -124,8 +140,9 @@ const categoryListEvent = (WrapComponent) => {
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
-          const returnState = await props.getAllData();
+          const returnState = await props.getAllData({ testMongo: true });
           dispatchModifyState({ masterIsVisible: false, enabled: false, ...returnState });
+          props.gotoSuccess(dispatch, interfaceReturn);
         } else {
           props.gotoError(dispatch, interfaceReturn);
           return;

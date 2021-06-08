@@ -10,8 +10,12 @@ import commonBase from "../common/commonBase";
 
 function IndexPage(props) {
   useEffect(() => {
-    const {commonModel} = props;
-    commonUtils.getWebSocketData(commonModel.token, "", "");
+    const {dispatch, commonModel} = props;
+    const stompClient = commonUtils.getWebSocketData(commonModel.token);
+    dispatch({
+      type: 'commonModel/saveStompClient',
+      payload: stompClient,
+    });
   }, []);
 
   const onClick = async (pathOld, stateOld) => {

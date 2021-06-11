@@ -8,6 +8,7 @@ import {NumberComponent} from "../components/NumberComponent";
 import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
 import {ButtonComponent} from "../components/ButtonComponent";
+import { DeleteOutlined } from '@ant-design/icons';
 const Search = (props) => {
   useEffect(() => {
     const { slaveContainer, dispatchModifyState } = props;
@@ -76,6 +77,16 @@ const Search = (props) => {
       addState[name + 'IsLastPage'] = returnData.isLastPage;
       addState[name + 'Loading'] = false;
       dispatchModifyState({...addState});
+    }
+  }
+
+  const onRemoveSearch = (key) => {
+    const { searchRowKeys: searchRowKeysOld, dispatchModifyState } = props;
+    const searchRowKeys = [...searchRowKeysOld];
+    const index = searchRowKeys.findIndex(item => item === key);
+    if (index > -1) {
+      searchRowKeys.splice(index, 1);
+      dispatchModifyState({ searchRowKeys });
     }
   }
 
@@ -166,26 +177,29 @@ const Search = (props) => {
     } else if (thirdConfig.fieldType === 'datetime') {
       thirdComponent = <DatePickerComponent {...props}  />;
     }
-    const addConditionButton = {
-      caption: '添加条件',
-      property: { name: 'addConditionButton', htmlType: 'button' },
-      event: { onClick: onButtonClick.bind(this, 'addConditionButton') },
-      componentType: componentType.Soruce,
-    };
-
-    const searchButton = {
-      caption: '搜索',
-      property: { name: 'searchButton', htmlType: 'button' },
-      event: { onClick: onButtonClick.bind(this, 'searchButton') },
-      componentType: componentType.Soruce,
-    };
 
     return <div>{firstComponent} {secondComponent} {thirdComponent}
-      <ButtonComponent {...addConditionButton} />
-      <ButtonComponent {...searchButton} />
+      {searchRowKeys.length === 1 ? '' : <a onClick={onRemoveSearch.bind(this, key)}><DeleteOutlined /></a>}
     </div>;
   });
-  return (<Form>{searchComponent}</Form>);
+  const addConditionButton = {
+    caption: '添加条件',
+    property: { name: 'addConditionButton', htmlType: 'button' },
+    event: { onClick: onButtonClick.bind(this, 'addConditionButton') },
+    componentType: componentType.Soruce,
+  };
+
+  const searchButton = {
+    caption: '搜索',
+    property: { name: 'searchButton', htmlType: 'button' },
+    event: { onClick: onButtonClick.bind(this, 'searchButton') },
+    componentType: componentType.Soruce,
+  };
+  return (<Form>
+    {searchComponent}
+    <ButtonComponent {...addConditionButton} />
+    <ButtonComponent {...searchButton} />
+  </Form>);
 }
 
 export default Search;

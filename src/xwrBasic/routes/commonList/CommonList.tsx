@@ -10,13 +10,13 @@ import commonListEvent from "../../../common/commonListEvent";
 const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
-  const { enabled, slaveContainer, searchData } = props;
+  const { enabled, slaveContainer, searchRowKeys, searchData } = props;
   const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.rowSelection.checkStrictly = true;
   tableParam.enabled = false;
   const search = useMemo(() => {
-    return (<Search name="search" {...props} /> ) }, [slaveContainer, searchData]);
+    return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 
   return (
     <div>

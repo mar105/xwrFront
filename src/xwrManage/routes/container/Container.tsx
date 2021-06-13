@@ -78,7 +78,7 @@ const Container = (props) => {
     if (interfaceReturn.code === 1) {
       const returnRoute: any = await getAllContainer({isWait: true});
       const addState: any = {};
-      const url: string = `${application.urlPrefix}/container/getContainerSlaveList?id=` + masterData.id;
+      const url: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         addState.slaveData = interfaceReturn.data;
@@ -108,7 +108,8 @@ const Container = (props) => {
       const allList = commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.allId.split(',') : [''];
       allList.splice(allList.length - 1, 1);
       const masterData = { ...data, key: data.id, superiorId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.superiorId : '',
-        allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id, isVisible: 1, isRowNo: 1, isSelect: 1 };
+        allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id,
+        isVisible: 1, isRowNo: 1, isSelect: 1, virtualIndex: '' };
       let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       const addState: any = {};
@@ -128,7 +129,8 @@ const Container = (props) => {
         return;
       }
       const data = props.onAdd();
-      const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id, isVisible: 1, isRowNo: 1, isSelect: 1 };
+      const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id,
+        isVisible: 1, isRowNo: 1, isSelect: 1, virtualIndex: '' };
       let treeData = [...treeDataOld];
       let treeExpandedKeys;
       treeData = props.setNewTreeNode(treeData, masterDataOld.allId, masterData);
@@ -189,7 +191,7 @@ const Container = (props) => {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
-        url = `${application.urlPrefix}/container/getContainerSlaveList?id=` + masterData.id;
+        url = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
         interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           addState.slaveData = interfaceReturn.data;
@@ -269,7 +271,7 @@ const Container = (props) => {
     } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
       const addState = props.onTreeSelect(selectedKeys, e, true);
       if (commonUtils.isNotEmpty(e.node.containerName)) {
-        const url: string = `${application.urlPrefix}/container/getContainerSlaveList?id=` + e.node.id;
+        const url: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + e.node.id;
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           addState.slaveData = interfaceReturn.data;

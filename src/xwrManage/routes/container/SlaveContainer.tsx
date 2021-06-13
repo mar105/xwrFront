@@ -67,9 +67,10 @@ const SlaveContainer = (props) => {
     if (name === 'slaveAddBtn') {
       const data = props.onAdd();
       data.superiorId = masterData.id;
-      data.type = 'field';
+      data.containerType = 'field';
       data.sortNum = slaveDataOld.length;
       data.assignField = '';
+      data.fieldRelevance = '';
       const slaveData = [...slaveDataOld];
       slaveData.push(data);
       dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
@@ -105,6 +106,7 @@ const SlaveContainer = (props) => {
               data.chineseName = dataRow.columnComment;
               data.sortNum = sortNum + rowIndex;
               data.assignField = '';
+              data.fieldRelevance = '';
               slaveData.push(data);
             }
           });

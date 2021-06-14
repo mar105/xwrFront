@@ -95,7 +95,7 @@ export function TableComponent(params: any) {
       header: {
         cell: ResizeableTitle,
       },
-      // ...addComponents
+      ...addComponents
     }
 
     if (params.scrollToRow) {

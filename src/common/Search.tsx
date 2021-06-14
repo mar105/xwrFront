@@ -73,6 +73,7 @@ const Search = (props) => {
       dispatchModifyState({[name + 'Loading']: true });
       const returnData: any = await props.getDataList({ containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition }, isWait: true });
       addState[name + 'Data'] = returnData.list;
+      addState[name + 'Sum'] = returnData.sum;
       addState[name + 'PageNum'] = returnData.pageNum;
       addState[name + 'IsLastPage'] = returnData.isLastPage;
       addState[name + 'Loading'] = false;
@@ -196,9 +197,13 @@ const Search = (props) => {
     componentType: componentType.Soruce,
   };
   return (<Form>
-    {searchComponent}
-    <ButtonComponent {...addConditionButton} />
-    <ButtonComponent {...searchButton} />
+    {commonUtils.isEmptyArr(searchRowKeys) ? '' :
+      <div>
+        {searchComponent}
+        <ButtonComponent {...addConditionButton} />
+        <ButtonComponent {...searchButton} />
+      </div>
+    }
   </Form>);
 }
 

@@ -19,7 +19,7 @@ import Highlighter from 'react-highlight-words';
 import moment from 'moment';
 import { DeleteOutlined } from '@ant-design/icons';
 
-const SumCell: any = Table.Summary.Cell;
+const TableSummaryCell: any = Table.Summary.Cell;
 
 // 数据行拖动
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -95,7 +95,7 @@ export function TableComponent(params: any) {
       header: {
         cell: ResizeableTitle,
       },
-      ...addComponents
+      // ...addComponents
     }
 
     if (params.scrollToRow) {
@@ -440,12 +440,14 @@ export function TableComponent(params: any) {
 
   const summary = () => {
     const div = commonUtils.isEmptyObj(params.sum) ? undefined : (
-      <Table.Summary.Row>
-        <SumCell>Total</SumCell>
-        {modifySelfState.columns.map(item => {
-          return <SumCell>{params.sum[item.dataIndex]}</SumCell>
-        })}
-      </Table.Summary.Row>
+      <Table.Summary fixed>
+        <Table.Summary.Row>
+          <TableSummaryCell>Total</TableSummaryCell>
+          {modifySelfState.columns.map(item => {
+            return <TableSummaryCell>{params.sum[item.dataIndex]}</TableSummaryCell>
+          })}
+        </Table.Summary.Row>
+      </Table.Summary>
     );
     return div;
   }

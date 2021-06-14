@@ -14,7 +14,8 @@ const CategoryList = (props) => {
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData } = props;
   const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer };
   const tableParam: any = commonUtils.getTableProps('slave', props);
-  tableParam.rowSelection.checkStrictly = true;
+  tableParam.rowSelection.checkStrictly = false;
+  tableParam.isLastColumn = false;
   tableParam.enabled = false;
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);

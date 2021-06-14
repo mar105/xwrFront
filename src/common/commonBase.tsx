@@ -184,6 +184,29 @@ const commonBase = (WrapComponent) => {
       return dataRow;
     };
 
+    const onDel = () => {
+      const dataRow: any = {};
+      dataRow.handleType = 'del';
+      return dataRow;
+    };
+
+    const onTableClick = (name, record, e, isWait = false) => {
+      const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld }: any = stateRef.current;
+      const data = [...dataOld];
+      const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...dataOld];
+      const index = data.findIndex(item => item.id === record.id);
+      if (index > -1) {
+        data[index].handleType = 'del';
+        delData.push(data[index]);
+        data.splice(index, 1);
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'DelData']: delData };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'DelData']: delData });
+        }
+      }
+    };
+
     const gotoError = (dispatch, interfaceData) => {
       dispatch({ type: 'commonModel/gotoError', payload: interfaceData });
     };
@@ -364,6 +387,8 @@ const commonBase = (WrapComponent) => {
       getAssignFieldValue={getAssignFieldValue}
       onAdd={onAdd}
       onModify={onModify}
+      onDel={onDel}
+      onTableClick={onTableClick}
       gotoError={gotoError}
       gotoSuccess={gotoSuccess}
       onRowSelectChange={onRowSelectChange}

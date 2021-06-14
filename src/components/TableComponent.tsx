@@ -17,6 +17,7 @@ import ReactDragListView from 'react-drag-listview';
 import { SearchOutlined, CheckSquareOutlined, BorderOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import moment from 'moment';
+import { DeleteOutlined } from '@ant-design/icons';
 
 const SumCell: any = Table.Summary.Cell;
 
@@ -237,9 +238,18 @@ export function TableComponent(params: any) {
             params.property.dataSource.length < 1000 ? 60 :
               params.property.dataSource.length < 10000 ? 70 : 80 , fixed: 'left' };
     const columnsOld: any = params.config.isRowNo ? [firstColumn, ...resizeColumns] : [ ...resizeColumns];
+    const lastColumn: any = { title: 'o', render: (text,record, index)=>
+        <a onClick={params.onTableClick ? params.onTableClick.bind(this, params.name, record) : null}><DeleteOutlined /></a>, width: 50 , fixed: 'right' };
+    if (params.isLastColumn && params.enabled) {
+      columnsOld.push(lastColumn);
+    }
+
     let columns: any = [];
     columnsOld.forEach((columnOld, columnIndex) => {
       if (columnOld.title === '#') {
+        const column = {...columnOld};
+        columns.push(column);
+      } else if (columnOld.title === 'o') {
         const column = {...columnOld};
         columns.push(column);
       } else {
@@ -448,7 +458,7 @@ export function TableComponent(params: any) {
   // 使用VList 即可有虚拟列表的效果
   // 此值和scrollY值相同. 必传. (required).  same value for scrolly
     components: modifySelfState.components,
-    rowSelection: { checkStrictly: false, type: 'checkbox', fixed: true, ...params.rowSelection,
+    rowSelection: { checkStrictly: true, type: 'checkbox', fixed: true, ...params.rowSelection,
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
       onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } },
     pagination: false,

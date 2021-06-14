@@ -21,8 +21,8 @@ const SlaveContainer = (props) => {
     { title: '名称|中文', dataIndex: 'chineseName', fieldType: 'varchar', sortNum: 6, width: 150 },
     { title: '名称|繁体', dataIndex: 'traditionalName', fieldType: 'varchar', sortNum: 7, width: 150 },
     { title: '名称|英文', dataIndex: 'englishName', fieldType: 'varchar', sortNum: 8, width: 150 },
-    { title: '是否必填', dataIndex: 'isRequired', fieldType: 'tinyint', sortNum: 9, width: 150 },
-    { title: '是否显示', dataIndex: 'isVisible', fieldType: 'tinyint', sortNum: 10, width: 150 },
+    { title: '是否显示', dataIndex: 'isVisible', fieldType: 'tinyint', sortNum: 9, width: 150 },
+    { title: '是否必填', dataIndex: 'isRequired', fieldType: 'tinyint', sortNum: 10, width: 150 },
     { title: '是否求和', dataIndex: 'isSum', fieldType: 'tinyint', sortNum: 11, width: 150 },
     { title: '宽度', dataIndex: 'width', fieldType: 'decimal', sortNum: 12, width: 150 },
     { title: '弹出界面', dataIndex: 'popupActiveName', fieldType: 'varchar', sortNum: 13, width: 150, dropType: 'sql', keyUpFieldDrop: 'viewName', assignField: 'popupActiveId=id' },
@@ -64,7 +64,7 @@ const SlaveContainer = (props) => {
 
   const onClick = async (name, e) => {
     const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
-    if (name === 'slaveAddBtn') {
+    if (name === 'slaveAddButton') {
       const data = props.onAdd();
       data.superiorId = masterData.id;
       data.containerType = 'field';
@@ -74,7 +74,7 @@ const SlaveContainer = (props) => {
       const slaveData = [...slaveDataOld];
       slaveData.push(data);
       dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
-    } else if (name === 'slaveSyncDataBtn') {
+    } else if (name === 'slaveSyncDataButton') {
       const url: string = `${application.urlPrefix}/container/getDBFields?tableName=` + masterData.containerName;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
@@ -100,14 +100,19 @@ const SlaveContainer = (props) => {
             if (!(index > -1)) {
               const data = props.onAdd();
               data.superiorId = masterData.id;
-              data.containerType = 'field';
               data.fieldName = dataRow.columnName;
+              data.containerType = 'field';
               data.fieldType = dataRow.dataType;
               data.chineseName = dataRow.columnComment;
               data.sortNum = sortNum + rowIndex;
               data.assignField = '';
               data.fieldRelevance = '';
               slaveData.push(data);
+            } else {
+              const data = { ...props.onModify(), ...slaveData[index] };
+              data.chineseName = dataRow.columnComment;
+              data.containerType = 'field';
+              slaveData[index] = data;
             }
           });
           dispatchModifyState({ slaveData, slaveDelData });
@@ -121,15 +126,15 @@ const SlaveContainer = (props) => {
 
   const button = {
     caption: '增加',
-    property: { name: name + 'AddBtn', htmlType: 'button', disabled: !enabled },
-    event: { onClick: onClick.bind(this, name + 'AddBtn') },
+    property: { name: name + 'AddButton', htmlType: 'button', disabled: !enabled },
+    event: { onClick: onClick.bind(this, name + 'AddButton') },
     componentType: componentType.Soruce,
   };
 
   const syncDataButton = {
     caption: '同步字段',
-    property: { name: name + 'SyncDataBtn', htmlType: 'button', disabled: !enabled },
-    event: { onClick: onClick.bind(this, name + 'SyncDataBtn') },
+    property: { name: name + 'SyncDataButton', htmlType: 'button', disabled: !enabled },
+    event: { onClick: onClick.bind(this, name + 'SyncDataButton') },
     componentType: componentType.Soruce,
   };
 

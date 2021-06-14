@@ -11,22 +11,12 @@ import {Row} from "antd";
 
 function IndexPage(props) {
   useEffect(() => {
-    const {dispatch, commonModel, dispatchModifyState } = props;
+    const {dispatch, commonModel } = props;
     const stompClient = commonUtils.getWebSocketData(commonModel.token);
     dispatch({
       type: 'commonModel/saveStompClient',
       payload: stompClient,
     });
-    const fetchData = async () => {
-      const url: string = `${application.urlManage}/route/getAllRoute`;
-      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-      if (interfaceReturn.code === 1) {
-        dispatchModifyState({ menuData: interfaceReturn.data });
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
-      }
-    }
-    fetchData();
   }, []);
 
   const onExit = async () => {

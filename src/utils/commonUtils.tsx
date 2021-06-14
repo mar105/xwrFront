@@ -156,6 +156,8 @@ export function getTableProps(name, props) {
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
     config: props[name + 'Container'],
     onReachEnd: props.onReachEnd,
+    isLastColumn: true,
+    onTableClick: props.onTableClick,
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
       onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList  }
   }

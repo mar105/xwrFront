@@ -50,14 +50,14 @@ const IndexMenu = (props) => {
     const key = commonUtils.newId();
     const route: any = commonUtils.getRouteComponent(routeInfo, path);
     if (commonUtils.isNotEmptyObj(route)) {
-      let state = {};
+      let state: any = {};
       if (route.title) {
         const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + e.key;
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           state = { routeId: e.key, ... interfaceReturn.data};
           const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-          const pane = { key, title: route.title, route: path };
+          const pane = { key, title: state.routeData.viewName, route: path };
           panes.push(pane);
           panesComponents.push(commonUtils.panesComponent(pane, route));
           localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));

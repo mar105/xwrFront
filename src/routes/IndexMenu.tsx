@@ -95,7 +95,7 @@ const IndexMenu = (props) => {
         {modifySelfState.collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       </Button>
       {!modifySelfState.collapsed ? '' :
-        <Menu onClick={onClick} mode="vertical" subMenuCloseDelay={1}>
+        <Menu onClick={onClick} mode="vertical">
           <SubMenu key="1" icon={<AppstoreOutlined />} title="产品与服务">
             {modifySelfState.menusData}
           </SubMenu>

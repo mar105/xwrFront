@@ -55,7 +55,8 @@ const Customer = (props) => {
 
     } else if (key === 'cancelButton') {
       if (masterData.handleType === 'add') {
-        props.getAllData({dataId: masterDataOld.id });
+        const returnState = await props.getAllData({dataId: masterDataOld.id });
+        dispatchModifyState({ ...returnState, enabled: false });
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
         const url: string = `${application.urlCommon}/verify/removeModifying`;
@@ -63,7 +64,8 @@ const Customer = (props) => {
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
           const returnState = await props.getAllData({dataId: masterDataOld.id });
-          dispatchModifyState({ ...returnState });
+          console.log('sss', returnState);
+          dispatchModifyState({ ...returnState, enabled: false });
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }

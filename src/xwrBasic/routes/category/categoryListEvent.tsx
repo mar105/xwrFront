@@ -11,7 +11,8 @@ const categoryListEvent = (WrapComponent) => {
       form = formNew;
     }
     useEffect(() => {
-      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)) {
+      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+        && props.commonModel.stompClient.connected) {
         props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveAfterSyncToMongo', saveAfterSyncToMongoResult);
       }
     }, [props.commonModel.stompClient]);

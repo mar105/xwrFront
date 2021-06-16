@@ -64,7 +64,6 @@ const Customer = (props) => {
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
           const returnState = await props.getAllData({dataId: masterDataOld.id });
-          console.log('sss', returnState);
           dispatchModifyState({ ...returnState, enabled: false });
         } else {
           props.gotoError(dispatch, interfaceReturn);

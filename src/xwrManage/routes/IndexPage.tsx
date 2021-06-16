@@ -11,11 +11,26 @@ import {useEffect} from "react";
 function IndexPage(props) {
   useEffect(() => {
     const {dispatch, commonModel} = props;
-    const stompClient = commonUtils.getWebSocketData(commonModel.token);
-    dispatch({
-      type: 'commonModel/saveStompClient',
-      payload: stompClient,
-    });
+    if (commonUtils.isEmpty(props.commonModel.stompClient) || !props.commonModel.stompClient.connected) {
+      const stompClient = commonUtils.getWebSocketData(commonModel.token);
+      if (stompClient.connected) {
+        dispatch({
+          type: 'commonModel/saveStompClient',
+          payload: stompClient,
+        });
+      }
+    }
+    setInterval(() => {
+      if (commonUtils.isEmpty(props.commonModel.stompClient) || !props.commonModel.stompClient.connected) {
+        const stompClient = commonUtils.getWebSocketData(commonModel.token);
+        if (stompClient.connected) {
+          dispatch({
+            type: 'commonModel/saveStompClient',
+            payload: stompClient,
+          });
+        }
+      }
+    }, 10000);
   }, []);
 
   const onClick = (path) => {

@@ -8,6 +8,8 @@ export default {
     token: localStorage.getItem(`${application.prefix}token`) || '',
     userInfo: JSON.parse(localStorage.getItem(`${application.prefix}userInfo`) || '{}'),
     userShop: JSON.parse(localStorage.getItem(`${application.prefix}userShop`) || '[]'),
+    panes: JSON.parse(localStorage.getItem(`${application.prefix}panes`) || '[]'),
+    activePane: JSON.parse(localStorage.getItem(`${application.prefix}activePane`) || '{}'),
   },
   reducers: {
     saveToken(state, { payload: token }) {
@@ -25,9 +27,18 @@ export default {
     saveStompClient(state, { payload: stompClient }) {
       return { ...state, stompClient };
     },
+    savePanes(state, { payload: panes }) {
+      localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
+      return { ...state, panes };
+    },
+    saveActivePane(state, { payload: activePane }) {
+      localStorage.setItem(`${application.prefix}activePane`, JSON.stringify(activePane));
+      return { ...state, activePane };
+    },
   },
   effects: {
     * gotoNewPage({ payload }, { put }) {
+      //state与search不能传，原因是刷新后为空了，现在存入activePane中。
       yield put(routerRedux.push({pathname: payload.newPage, state: payload.state, search: payload.search}));
     },
     * gotoError({ payload }, { put }) {

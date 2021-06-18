@@ -35,6 +35,7 @@ const Login = ({ dispatch }) => {
       localStorage.setItem(`${application.prefix}token`, '');
       localStorage.setItem(`${application.prefix}userInfo`, '');
       localStorage.setItem(`${application.prefix}panes`, '[]');
+      localStorage.setItem(`${application.prefix}activePane`, '{}');
       const userInfo: any = { userName: values.userName };
       if (commonUtils.isNotEmptyArr(interfaceReturn.data.userShop)) {
         userInfo.groupId = interfaceReturn.data.userShop[0].groupId;

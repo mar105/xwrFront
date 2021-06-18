@@ -45,7 +45,7 @@ const IndexMenu = (props) => {
   }
 
   const onClick = async (e) => {
-    const {dispatch, dispatchModifyState, panes: panesOld, panesComponents, commonModel } = props;
+    const {dispatch, dispatchModifyState, panesComponents, commonModel } = props;
     const path = replacePath(e.item.props.menuData.routeName);
     const key = commonUtils.newId();
     const route: any = commonUtils.getRouteComponent(routeInfo, path);
@@ -55,13 +55,20 @@ const IndexMenu = (props) => {
         const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + e.key;
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
-          state = { routeId: e.key, ... interfaceReturn.data};
-          const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
-          const pane = { key, title: state.routeData.viewName, route: path };
+          state = { routeId: e.key, ...interfaceReturn.data };
+          const panes = commonModel.panes;
+          const pane = { key, title: state.routeData.viewName, route: path, ...state };
           panes.push(pane);
           panesComponents.push(commonUtils.panesComponent(pane, route));
-          localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
-          dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
+          dispatchModifyState({ panesComponents });
+          dispatch({
+            type: 'commonModel/saveActivePane',
+            payload: { ...pane },
+          });
+          dispatch({
+            type: 'commonModel/savePanes',
+            payload: panes,
+          });
           dispatch({
             type: 'commonModel/gotoNewPage',
             payload: { newPage: path, state },

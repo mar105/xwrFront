@@ -1,49 +1,62 @@
 import React, {useEffect} from 'react';
 import {Tabs} from 'antd';
 import * as commonUtils from "../utils/commonUtils";
-import * as application from "./application";
 import {routeInfo} from "./routeInfo";
 
 const { TabPane } = Tabs;
-const TabPages = (props) => {
+const TabsPages = (props) => {
 
   useEffect(() => {
-    const {dispatchModifyState} = props;
-    const panes = JSON.parse(localStorage.getItem(`${application.prefix}panes`) || '[]');
+    const {commonModel, dispatchModifyState} = props;
     const panesComponents: any = [];
-    panes.forEach(pane => {
+    commonModel.panes.forEach(pane => {
       const route: any = commonUtils.getRouteComponent(routeInfo, pane.route);
       if (commonUtils.isNotEmptyObj(route)) {
         panesComponents.push(commonUtils.panesComponent(pane, route));
       }
     });
-    dispatchModifyState({ panes, panesComponents });
+    dispatchModifyState({ panesComponents });
   }, []);
+
   const onChange = activeKey => {
-    const {dispatchModifyState} = props;
-    dispatchModifyState({ activeKey });
+    const { dispatch, commonModel } = props;
+    const index = commonModel.panes.findIndex(item => item.key === activeKey);
+    if (index > -1) {
+      const activePane = panes[index];
+      dispatch({
+        type: 'commonModel/saveActivePane',
+        payload: activePane,
+      });
+    }
   };
 
   const onRemove = targetKey => {
-    const { activeKey: activeKeyOld, panes: panesOld, panesComponents: panesComponentsOld, dispatchModifyState } = props;
+    const { dispatch, commonModel, panesComponents: panesComponentsOld, dispatchModifyState } = props;
     let lastIndex = -1;
-    panesOld.forEach((pane, i) => {
+    commonModel.panes.forEach((pane, i) => {
       if (pane.key === targetKey) {
         lastIndex = i - 1;
       }
     });
     const panesComponents = panesComponentsOld.filter(pane => pane.key.toString() !== targetKey);
-    const panes = panesOld.filter(pane => pane.key.toString() !== targetKey);
-    let activeKey = '';
-    if (panes.length && activeKeyOld === targetKey) {
+    const panes = commonModel.panes.filter(pane => pane.key.toString() !== targetKey);
+    let activePane = {};
+    if (panes.length && commonModel.activePane.key === targetKey) {
       if (lastIndex > -1) {
-        activeKey = panes[lastIndex].key;
+        activePane = panes[lastIndex];
       } else {
-        activeKey = panes[0].key;
+        activePane = panes[0];
       }
     }
-    localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
-    dispatchModifyState({ panes, panesComponents, activeKey });
+    dispatch({
+      type: 'commonModel/saveActivePane',
+      payload: activePane,
+    });
+    dispatch({
+      type: 'commonModel/savePanes',
+      payload: panes,
+    });
+    dispatchModifyState({ panesComponents });
   };
 
   const onEdit = (targetKey, action) => {
@@ -52,7 +65,8 @@ const TabPages = (props) => {
     }
   };
   const tabPane= (pane) => {
-    const { panesComponents } = props;
+    const { panesComponents: panesComponentsOld } = props;
+    const panesComponents = commonUtils.isEmptyArr(panesComponentsOld) ? [] : panesComponentsOld;
     const iComponentIndex = panesComponents.findIndex(item => item.key === pane.key);
     if (iComponentIndex > -1) {
       return(<TabPane tab={pane.title} key={pane.key}>
@@ -61,12 +75,12 @@ const TabPages = (props) => {
     }
   };
 
-  const panes = commonUtils.isEmptyArr(props.panes) ? [] : props.panes;
+  const panes = props.commonModel.panes;
   return (
-    <Tabs hideAdd type="editable-card" activeKey={props.activeKey} onEdit={onEdit} onChange={onChange}>
+    <Tabs hideAdd type="editable-card" animated activeKey={props.commonModel.activePane.key} onEdit={onEdit} onChange={onChange}>
       { panes.map(pane => tabPane(pane)) }
     </Tabs>
   );
 }
 
-export default TabPages;
+export default TabsPages;

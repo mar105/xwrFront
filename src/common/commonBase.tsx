@@ -10,15 +10,15 @@ const commonBase = (WrapComponent) => {
     const stateRef = useRef();
     const [modifyState, dispatchModifyState] = useReducer((state, action) => {
       return {...state, ...action };
-    },{});
+    },{ ...props.commonModel.activePane });
     useEffect(() => {
       stateRef.current = modifyState;
     }, [modifyState]);
 
     useEffect(() => {
-      if (commonUtils.isNotEmpty(props.routeId)) {
+      if (commonUtils.isNotEmpty(modifyState.routeId)) {
         const fetchData = async () => {
-          const returnState: any = await getAllData({ pageNum: 1, dataId: props.dataId });
+          const returnState: any = await getAllData({ pageNum: 1, dataId: modifyState.dataId });
           dispatchModifyState({...returnState});
         }
         fetchData();
@@ -38,7 +38,7 @@ const commonBase = (WrapComponent) => {
             const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
             if (interfaceReturn.code === 1) {
             } else {
-              props.gotoError(dispatch, interfaceReturn);
+              gotoError(dispatch, interfaceReturn);
             }
           }
         }
@@ -47,7 +47,7 @@ const commonBase = (WrapComponent) => {
     }, []);
 
     const getAllData = async (paramsOld) => {
-      const { containerData } = props;
+      const { containerData } = modifyState;
       const params = commonUtils.isEmptyObj(paramsOld) ? {} : paramsOld;
       if (commonUtils.isNotEmptyArr(containerData)) {
         let addState = { enabled: false };
@@ -102,7 +102,7 @@ const commonBase = (WrapComponent) => {
     const getDataOne = async (params) => {
       const { commonModel, dispatch, dispatchModifyState } = props;
       const { isWait } = params;
-      const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + props.routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId +
+      const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + modifyState.routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId +
         '&containerId=' + params.containerId + '&dataId=' + params.condition.dataId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
@@ -122,7 +122,7 @@ const commonBase = (WrapComponent) => {
       const { isWait } = params;
       const url: string = `${application.urlPrefix}/getData/getDataList`;
       const requestParam = {
-        routeId: props.routeId,
+        routeId: modifyState.routeId,
         groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId,
         containerId: params.containerId,
@@ -150,7 +150,7 @@ const commonBase = (WrapComponent) => {
       const { isWait } = params;
       const url: string = `${application.urlPrefix}/getData/getSelectList`;
       const requestParam = {
-        routeId: props.routeId,
+        routeId: modifyState.routeId,
         groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId,
         containerSlaveId: params.containerSlaveId,
@@ -179,7 +179,7 @@ const commonBase = (WrapComponent) => {
       dataRow.key = dataRow.id;
       dataRow.groupId = commonModel.userInfo.groupId;
       dataRow.shopId = commonModel.userInfo.shopId;
-      dataRow.routeId = props.routeId;
+      dataRow.routeId = modifyState.routeId;
       return dataRow;
     }
     const onModify = () => {

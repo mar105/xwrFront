@@ -39,6 +39,7 @@ const Login = ({ dispatch }) => {
       localStorage.setItem(`${application.prefix}token`, '');
       localStorage.setItem(`${application.prefix}userInfo`, '');
       localStorage.setItem(`${application.prefix}panes`, '[]');
+      localStorage.setItem(`${application.prefix}activePane`, '{}');
       dispatch({
         type: 'commonModel/saveToken',
         payload: interfaceReturn.data.token,

@@ -44,7 +44,7 @@ function IndexPage(props) {
         panes.push(pane);
         panesComponents.push(commonUtils.panesComponent(pane, route));
         localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
-        dispatchModifyState({ panes, panesComponents, activeKey: key.toString() });
+        dispatchModifyState({ panes, panesComponents });
       }
       dispatch({
         type: 'commonModel/gotoNewPage',

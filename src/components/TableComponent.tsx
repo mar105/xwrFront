@@ -11,13 +11,11 @@ import {componentType} from "../utils/commonTypes";
 import { Resizable } from 'react-resizable';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import "react-resizable/css/styles.css";
-import { MenuOutlined } from '@ant-design/icons';
+import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined, DeleteOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
 import ReactDragListView from 'react-drag-listview';
-import { SearchOutlined, CheckSquareOutlined, BorderOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import moment from 'moment';
-import { DeleteOutlined } from '@ant-design/icons';
 
 const TableSummaryCell: any = Table.Summary.Cell;
 

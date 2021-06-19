@@ -289,4 +289,4 @@ const Route = (props) => {
   );
 }
 
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Route)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonManage(Route)));

@@ -134,4 +134,4 @@ const  Register = (props) => {
   );
 }
 
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(Register));
+export default connect(commonUtils.mapStateToProps)(commonBase(Register));

@@ -116,8 +116,6 @@ const TabsPages = (props) => {
   };
 
   const moveTabNode = (dragKey, hoverKey) => {
-    console.log(dragKey, hoverKey);
-
     const { dispatch, commonModel } = props;
     const panes = [...commonModel.panes];
     const fromIndex = panes.findIndex(item => item.key === dragKey);

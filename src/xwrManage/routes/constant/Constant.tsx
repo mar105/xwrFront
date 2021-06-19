@@ -258,4 +258,4 @@ const Constant = (props) => {
     </Form>
   );
 }
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Constant)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonManage(Constant)));

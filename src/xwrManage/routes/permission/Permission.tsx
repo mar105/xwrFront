@@ -258,4 +258,4 @@ const Permission = (props) => {
     </Form>
   );
 }
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Permission)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonManage(Permission)));

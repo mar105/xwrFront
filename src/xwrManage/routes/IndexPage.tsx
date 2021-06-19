@@ -46,8 +46,15 @@ function IndexPage(props) {
         const pane = { key, title: route.title, route: path };
         panes.push(pane);
         panesComponents.push(commonUtils.panesComponent(pane, route));
-        localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
-        dispatchModifyState({ panes, panesComponents });
+        dispatch({
+          type: 'commonModel/saveActivePane',
+          payload: { ...pane },
+        });
+        dispatch({
+          type: 'commonModel/savePanes',
+          payload: panes,
+        });
+        dispatchModifyState({ panesComponents });
       }
       dispatch({
         type: 'commonModel/gotoNewPage',
@@ -85,4 +92,4 @@ function IndexPage(props) {
   );
 }
 
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(IndexPage));
+export default connect(commonUtils.mapStateToProps)(commonBase(IndexPage));

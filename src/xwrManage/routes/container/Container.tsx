@@ -579,4 +579,4 @@ const Container = (props) => {
     </Form>
   );
 }
-export default connect(({ commonModel } : { commonModel: any }) => ({ commonModel }))(commonBase(commonManage(Container)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonManage(Container)));

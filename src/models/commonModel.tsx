@@ -8,6 +8,7 @@ export default {
     token: localStorage.getItem(`${application.prefix}token`) || '',
     userInfo: JSON.parse(localStorage.getItem(`${application.prefix}userInfo`) || '{}'),
     userShop: JSON.parse(localStorage.getItem(`${application.prefix}userShop`) || '[]'),
+    stompClient: null,
     panes: JSON.parse(localStorage.getItem(`${application.prefix}panes`) || '[]'),
     activePane: JSON.parse(localStorage.getItem(`${application.prefix}activePane`) || '{}'),
   },

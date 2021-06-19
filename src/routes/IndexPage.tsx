@@ -8,11 +8,25 @@ import TabsPages from "../TabsPages";
 import commonBase from "../common/commonBase";
 import IndexMenu from "./IndexMenu";
 import {Row} from "antd";
+import {useRef} from "react";
 
 function IndexPage(props) {
+  const stompClientRef: any = useRef();
   useEffect(() => {
+    stompClientRef.current = props.commonModel.stompClient;
+  }, [props.commonModel.stompClient]);
+
+  useEffect(() => {
+    connectionWebsocket();
+    const websocket = setInterval(() => {
+      connectionWebsocket();
+    }, 10000);
+    return () => clearInterval(websocket);
+  }, []);
+
+  const connectionWebsocket = () => {
     const {dispatch, commonModel } = props;
-    if (commonUtils.isEmpty(props.commonModel.stompClient) || !props.commonModel.stompClient.connected) {
+    if (commonUtils.isEmpty(stompClientRef.current) || !stompClientRef.current.connected) {
       const stompClient = commonUtils.getWebSocketData(commonModel.token);
       if (stompClient.connected) {
         dispatch({
@@ -21,18 +35,8 @@ function IndexPage(props) {
         });
       }
     }
-    setInterval(() => {
-      if (commonUtils.isEmpty(props.commonModel.stompClient) || !props.commonModel.stompClient.connected) {
-        const stompClient = commonUtils.getWebSocketData(commonModel.token);
-        if (stompClient.connected) {
-          dispatch({
-            type: 'commonModel/saveStompClient',
-            payload: stompClient,
-          });
-        }
-      }
-    }, 10000);
-  }, []);
+  }
+
 
   const onExit = async () => {
     const {dispatch, commonModel} = props;

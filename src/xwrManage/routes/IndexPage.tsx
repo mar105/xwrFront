@@ -7,11 +7,25 @@ import {routeInfo} from '../routeInfo';
 import * as application from "../application";
 import * as request from "../../utils/request";
 import {useEffect} from "react";
+import {useRef} from "react";
 
 function IndexPage(props) {
+  const stompClientRef: any = useRef();
   useEffect(() => {
-    const {dispatch, commonModel} = props;
-    if (commonUtils.isEmpty(props.commonModel.stompClient) || !props.commonModel.stompClient.connected) {
+    stompClientRef.current = props.commonModel.stompClient;
+  }, [props.commonModel.stompClient]);
+
+  useEffect(() => {
+    connectionWebsocket();
+    const websocket = setInterval(() => {
+      connectionWebsocket();
+    }, 10000);
+    return () => clearInterval(websocket);
+  }, []);
+
+  const connectionWebsocket = () => {
+    const {dispatch, commonModel } = props;
+    if (commonUtils.isEmpty(stompClientRef.current) || !stompClientRef.current.connected) {
       const stompClient = commonUtils.getWebSocketData(commonModel.token);
       if (stompClient.connected) {
         dispatch({
@@ -20,18 +34,7 @@ function IndexPage(props) {
         });
       }
     }
-    setInterval(() => {
-      if (commonUtils.isEmpty(props.commonModel.stompClient) || !props.commonModel.stompClient.connected) {
-        const stompClient = commonUtils.getWebSocketData(commonModel.token);
-        if (stompClient.connected) {
-          dispatch({
-            type: 'commonModel/saveStompClient',
-            payload: stompClient,
-          });
-        }
-      }
-    }, 10000);
-  }, []);
+  }
 
   const onClick = (path) => {
     const {dispatch, dispatchModifyState, panes: panesOld, panesComponents } = props;

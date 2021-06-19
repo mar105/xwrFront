@@ -81,14 +81,17 @@ const SlaveContainer = (props) => {
         const slaveData = [...slaveDataOld];
         const slaveDelData = commonUtils.isEmptyArr(slaveDelDataOld) ? [] : [...slaveDelDataOld];
         if (commonUtils.isNotEmptyArr(interfaceReturn.data)) {
-          slaveData.filter(item => item.containerType === 'field').forEach((dataRow, rowIndex) => {
+          for(const dataRow of slaveData.filter(item => item.containerType === 'field')) {
             const index = interfaceReturn.data.findIndex(item => item.columnName === dataRow.fieldName);
             if (!(index > -1)) {
               dataRow.handleType = 'del';
               slaveDelData.push(dataRow);
-              slaveData.splice(rowIndex, 1);
+              const rowIndex = slaveData.indexOf(item => item.fieldName === dataRow.fieldName);
+              if (rowIndex > -1) {
+                slaveData.splice(rowIndex, 1);
+              }
             }
-          });
+          }
           let sortNum = 1;
           if (commonUtils.isNotEmptyArr(slaveDataOld)) {
             slaveDataOld.sort((a, b) => (a.sortNum > b.sortNum) ? 1 : -1);

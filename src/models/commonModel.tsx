@@ -45,7 +45,8 @@ export default {
     * gotoError({ payload }, { put }) {
       const { code, msg } = payload;
       if (code === '5001') {
-        yield put(routerRedux.push('/login'));
+        const prefix = application.prefix === 'xwrMain' ? '' : '/' + application.prefix;
+        yield put(routerRedux.push(prefix + '/login'));
       }
       message.destroy();
       message.error(msg);

@@ -10,7 +10,6 @@ import commonBasic from "../../commonBasic";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 
 const Customer = (props) => {
-  console.log(222, props);
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {

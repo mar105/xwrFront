@@ -9,7 +9,6 @@ import {CommonExhibit} from "../../../common/CommonExhibit";
 import categoryListEvent from "./categoryListEvent";
 import Search from "../../../common/Search";
 const CategoryList = (props) => {
-  console.log(111, props);
   const [form] = Form.useForm();
   props.onSetForm(form);
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData } = props;

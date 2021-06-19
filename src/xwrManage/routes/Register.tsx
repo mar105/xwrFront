@@ -26,7 +26,6 @@ const  Register = () => {
   };
 
   const onFinish = (values: any) => {
-    console.log('Success:', values);
   };
   return (
       <Form {...layout} name="basic" form={form} onFinish={onFinish}>

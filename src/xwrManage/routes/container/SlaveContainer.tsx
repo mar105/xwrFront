@@ -86,7 +86,7 @@ const SlaveContainer = (props) => {
             if (!(index > -1)) {
               dataRow.handleType = 'del';
               slaveDelData.push(dataRow);
-              const rowIndex = slaveData.indexOf(item => item.fieldName === dataRow.fieldName);
+              const rowIndex = slaveData.findIndex(item => item.fieldName === dataRow.fieldName);
               if (rowIndex > -1) {
                 slaveData.splice(rowIndex, 1);
               }

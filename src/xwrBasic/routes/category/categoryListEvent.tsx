@@ -149,7 +149,6 @@ const categoryListEvent = (WrapComponent) => {
           return;
         }
       } catch (errorInfo) {
-        console.log('Failed:', errorInfo);
       }
     }
 

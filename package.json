@@ -37,6 +37,7 @@
     "less-loader": "^8.0.0",
     "lodash": "^4.17.21",
     "react-dnd": "^14.0.2",
+    "react-dnd-html5-backend": "^14.0.0",
     "react-drag-listview": "^0.1.8",
     "react-highlight-words": "^0.17.0",
     "react-resizable": "^1.11.1",

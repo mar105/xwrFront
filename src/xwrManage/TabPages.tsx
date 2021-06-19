@@ -2,8 +2,48 @@ import React, {useEffect} from 'react';
 import {Tabs} from 'antd';
 import * as commonUtils from "../utils/commonUtils";
 import {routeInfo} from "./routeInfo";
+import { DndProvider, DragSource, DropTarget } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const { TabPane } = Tabs;
+
+const TabNode = (props) => {
+  const { connectDragSource, connectDropTarget, children } = props;
+  return connectDragSource(connectDropTarget(children));
+}
+
+const cardTarget = {
+  drop(props, monitor) {
+    const dragKey = monitor.getItem().index;
+    const hoverKey = props.index;
+
+    if (dragKey === hoverKey) {
+      return;
+    }
+
+    props.moveTabNode(dragKey, hoverKey);
+    monitor.getItem().index = hoverKey;
+  },
+};
+
+const cardSource = {
+  beginDrag(props) {
+    return {
+      id: props.id,
+      index: props.index,
+    };
+  },
+};
+
+const WrapTabNode = DropTarget('DND_NODE', cardTarget, connect => ({
+  connectDropTarget: connect.dropTarget(),
+}))(
+  DragSource('DND_NODE', cardSource, (connect, monitor) => ({
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging(),
+  }))(TabNode),
+);
+
 const TabsPages = (props) => {
 
   useEffect(() => {
@@ -75,11 +115,40 @@ const TabsPages = (props) => {
     }
   };
 
+  const moveTabNode = (dragKey, hoverKey) => {
+    console.log(dragKey, hoverKey);
+
+    const { dispatch, commonModel } = props;
+    const panes = [...commonModel.panes];
+    const fromIndex = panes.findIndex(item => item.key === dragKey);
+    const toIndex = panes.findIndex(item => item.key === hoverKey);
+    if (fromIndex > -1 && toIndex > -1) {
+      const item = panes.splice(fromIndex, 1)[0];
+      panes.splice(toIndex, 0, item);
+      dispatch({
+        type: 'commonModel/savePanes',
+        payload: panes,
+      });
+    }
+  };
+
+  const renderTabBar = (props, DefaultTabBar) => (
+    <DefaultTabBar {...props}>
+      {node => (
+        <WrapTabNode key={node.key} index={node.key} moveTabNode={moveTabNode}>
+          {node}
+        </WrapTabNode>
+      )}
+    </DefaultTabBar>
+  );
+
   const panes = props.commonModel.panes;
   return (
-    <Tabs hideAdd type="editable-card" animated activeKey={props.commonModel.activePane.key} onEdit={onEdit} onChange={onChange}>
-      { panes.map(pane => tabPane(pane)) }
-    </Tabs>
+    <DndProvider backend={HTML5Backend}>
+      <Tabs hideAdd type="editable-card" animated renderTabBar={renderTabBar} activeKey={props.commonModel.activePane.key} onEdit={onEdit} onChange={onChange}>
+        { panes.map(pane => tabPane(pane)) }
+      </Tabs>
+    </DndProvider>
   );
 }
 

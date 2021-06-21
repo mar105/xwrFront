@@ -27,6 +27,8 @@ const Customer = (props) => {
     if (interfaceReturn.code === 1) {
       const returnState: any = await props.getAllData({ dataId: masterData.id });
       dispatchModifyState({...returnState});
+    } else if (interfaceReturn.code === 10) {
+      dispatchModifyState({ pageLoading: true });
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }

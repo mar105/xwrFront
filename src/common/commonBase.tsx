@@ -2,6 +2,7 @@ import React, {useEffect, useReducer, useRef} from 'react';
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
+import {Spin} from "antd";
 
 
 
@@ -50,7 +51,7 @@ const commonBase = (WrapComponent) => {
       const { containerData } = modifyState;
       const params = commonUtils.isEmptyObj(paramsOld) ? {} : paramsOld;
       if (commonUtils.isNotEmptyArr(containerData)) {
-        let addState = { enabled: false };
+        let addState = { enabled: false, pageLoading: false };
         for(const container of containerData) {
         // containerData.forEach(async container => { //foreach不能使用await
           if (params.testMongo) {
@@ -379,8 +380,8 @@ const commonBase = (WrapComponent) => {
         dispatchModifyState({...addState});
       }
     }
-
-    return <WrapComponent
+    return <Spin spinning={modifyState.pageLoading ? true : false}>
+      <WrapComponent
       {...props}
       {...modifyState}
       dispatchModifyState={dispatchModifyState}
@@ -404,6 +405,7 @@ const commonBase = (WrapComponent) => {
       onCascaderChange={onCascaderChange}
       onReachEnd={onReachEnd}
     />
+    </Spin>
   };
 };
 

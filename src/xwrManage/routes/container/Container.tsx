@@ -42,6 +42,13 @@ const Container = (props) => {
       props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongo', syncToMongoResult);
       props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongoIndex', syncToMongoResult);
     }
+    return () => {
+      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+        && props.commonModel.stompClient.connected) {
+        props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/syncToMongo');
+        props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/syncToMongoIndex');
+      }
+    };
   }, [props.commonModel.stompClient]);
 
   const syncToMongoResult = (data) => {
@@ -422,6 +429,12 @@ const Container = (props) => {
     property: { disabled: !enabled },
   };
 
+  const billNumField = {
+    name: 'master',
+    config: { fieldName: 'billNumField', viewName: '单据号字段' },
+    property: { disabled: !enabled },
+  };
+
   const tableKey = {
     name: 'master',
     config: { fieldName: 'tableKey', viewName: '表格Key' },
@@ -519,8 +532,10 @@ const Container = (props) => {
         <Col><InputComponent {...delAfterMessage} /></Col>
         <Col><InputComponent {...virtualName} /></Col>
         <Col><InputComponent {...virtualIndex} /></Col>
+      </Row>
+      <Row>
         <Col><NumberComponent {...sortNum} /></Col>
-
+        <Col><InputComponent {...billNumField} /></Col>
       </Row>
       <Row>
         <Col><SwitchComponent {...isVisible} /></Col>

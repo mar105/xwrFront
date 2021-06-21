@@ -4,7 +4,7 @@ import commonBase from "../../../common/commonBase";
 import React, {useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
 import {ButtonGroup} from "../ButtonGroup";
-import {Form, Modal} from "antd";
+import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import categoryListEvent from "./categoryListEvent";
 import Search from "../../../common/Search";
@@ -28,11 +28,16 @@ const CategoryList = (props) => {
           <TableComponent {...tableParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} />
-      <Modal width={800} visible={masterIsVisible} maskClosable={false} onCancel={props.onModalCancel} onOk={props.onModalOk}>
+      <Drawer width={600} visible={masterIsVisible} maskClosable={false} onClose={props.onModalCancel} footer={
+        <div>
+          <Button onClick={props.onModalOk} type="primary">Submit</Button>
+          <Button onClick={props.onModalCancel} style={{ marginRight: 8 }}>Cancel</Button>
+        </div>}
+      >
         <Form form={form} >
           <CommonExhibit name="master" {...props} />
         </Form>
-      </Modal>
+      </Drawer>
     </div>
 
   );

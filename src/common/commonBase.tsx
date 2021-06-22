@@ -55,6 +55,7 @@ const commonBase = (WrapComponent) => {
         for(const container of containerData) {
         // containerData.forEach(async container => { //foreach不能使用await
           if (params.testMongo) {
+            // 如果有虚拟名称时，保存后不获取数据，等待任务推送数据。
             if (commonUtils.isNotEmpty(container.virtualName)) {
               continue;
             }

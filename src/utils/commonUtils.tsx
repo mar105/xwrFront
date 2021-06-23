@@ -155,9 +155,10 @@ export function getTableProps(name, props) {
     rowSelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
     config: props[name + 'Container'],
-    onReachEnd: props.onReachEnd,
+    onReachEnd: props.onReachEnd, //分页滚动 拖动到最后调用接口
     isLastColumn: true,
     onTableClick: props.onTableClick,
+    pagination: true, // 是否分页
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
       onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList  }
   }

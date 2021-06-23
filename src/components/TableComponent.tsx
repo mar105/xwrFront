@@ -42,7 +42,9 @@ export function TableComponent(params: any) {
 
   let searchInput;
   const onReachEnd = () => {
-    params.onReachEnd(params.name);
+    if (params.pagination) {
+      params.onReachEnd(params.name);
+    }
   }
   useEffect(() => {
     const addState: any = { columns: getColumn(params.property.columns) };
@@ -281,7 +283,7 @@ export function TableComponent(params: any) {
           column.className = 'column-money';
           column.align = 'align';
         }
-        if (params.enabled) {
+        if (params.enabled && !config.isReadOnly) {
           column.render = (text, record, index) => {
             const selectParams = {
               name: params.name,

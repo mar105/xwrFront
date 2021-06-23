@@ -71,30 +71,32 @@ const commonBase = (WrapComponent) => {
               addState[container.dataSetName + 'Columns'] = columns;
             }
           }
-            if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
+          if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
             //单据获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
-              addState[container.dataSetName + 'Data'] = returnData.list;
-              addState[container.dataSetName + 'Sum'] = returnData.sum;
-              addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
-              addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
+              const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
+              addState = {...addState, ...returnData, [container.dataSetName + 'DelData']: []};
+              // addState[container.dataSetName + 'Data'] = returnData.list;
+              // addState[container.dataSetName + 'Sum'] = returnData.sum;
+              // addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
+              // addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
 
             } else {
-              const returnData: any = await getDataOne({ containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
+              const returnData: any = await getDataOne({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData;
             }
           } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum, condition: {}, isWait: true });
-              addState[container.dataSetName + 'Data'] = returnData.list;
-              addState[container.dataSetName + 'Sum'] = returnData.sum;
-              addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
-              addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
-              if (commonUtils.isNotEmpty(returnData.createDate)) {
-                addState[container.dataSetName + 'CreateDate'] = returnData.createDate;
-              }
+              const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum, condition: {}, isWait: true });
+              addState = {...addState, ...returnData, [container.dataSetName + 'DelData']: []};
+              // addState[container.dataSetName + 'Data'] = returnData.list;
+              // addState[container.dataSetName + 'Sum'] = returnData.sum;
+              // addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
+              // addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
+              // if (commonUtils.isNotEmpty(returnData.createDate)) {
+              //   addState[container.dataSetName + 'CreateDate'] = returnData.createDate;
+              // }
             }
           }
         };
@@ -123,6 +125,7 @@ const commonBase = (WrapComponent) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
       const url: string = `${application.urlPrefix}/getData/getDataList`;
+      const addState = {};
       const requestParam = {
         routeId: modifyState.routeId,
         groupId: commonModel.userInfo.groupId,
@@ -137,9 +140,19 @@ const commonBase = (WrapComponent) => {
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;
       if (interfaceReturn.code === 1) {
         if (isWait) {
-          return { ...interfaceReturn.data.data, sum: interfaceReturn.data.sum, createDate: interfaceReturn.data.createDate };
+          addState[params.name + 'Data'] = interfaceReturn.data.data.list;
+          if (params.pageNum === 1) {
+            addState[params.name + 'Sum'] = interfaceReturn.data.sum;
+          }
+          addState[params.name + 'PageNum'] = interfaceReturn.data.data.pageNum;
+          addState[params.name + 'IsLastPage'] = interfaceReturn.data.data.isLastPage;
+          if (commonUtils.isNotEmpty(interfaceReturn.data.createDate)) {
+            addState[params.name + 'CreateDate'] = interfaceReturn.data.createDate;
+          }
+          addState[params.name + 'Loading'] = false;
+          return { ...addState } //{ ...interfaceReturn.data.data, sum: interfaceReturn.data.sum, createDate: interfaceReturn.data.createDate };
         } else {
-          dispatchModifyState({ ...interfaceReturn.data.data, sum: interfaceReturn.data.sum, createDate: interfaceReturn.data.createDate });
+          dispatchModifyState({ ...addState });
         }
       } else {
         gotoError(dispatch, interfaceReturn);
@@ -371,13 +384,14 @@ const commonBase = (WrapComponent) => {
     const onReachEnd = async (name) => {
       const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage, [name + 'CreateDate']: createDate }: any = stateRef.current;
       if (!isLastPage && !container.isTree) {
-        const addState = {};
         dispatchModifyState({[name + 'Loading']: true });
         const returnData: any = await getDataList({ containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true, createDate });
-        addState[name + 'Data'] = [...data, ...returnData.list];
-        addState[name + 'PageNum'] = returnData.pageNum;
-        addState[name + 'IsLastPage'] = returnData.isLastPage;
-        addState[name + 'Loading'] = false;
+        const addState = {...returnData};
+        addState[name + 'Data'] = [...data, ...returnData[name + 'Data']];
+        // addState[name + 'Data'] = [...data, ...returnData.list];
+        // addState[name + 'PageNum'] = returnData.pageNum;
+        // addState[name + 'IsLastPage'] = returnData.isLastPage;
+        // addState[name + 'Loading'] = false;
         dispatchModifyState({...addState});
       }
     }

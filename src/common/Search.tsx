@@ -53,7 +53,7 @@ const Search = (props) => {
     const { searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState, [name + 'Container']: container } = props;
     const searchData = {...searchDataOld};
     const searchRowKeys = [...searchRowKeysOld];
-    const addState = {};
+    let addState = {};
     if (key === 'addConditionButton') {
       const key = commonUtils.newId();
       searchRowKeys.push(key);
@@ -72,11 +72,12 @@ const Search = (props) => {
       });
       dispatchModifyState({[name + 'Loading']: true });
       const returnData: any = await props.getDataList({ containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition }, isWait: true });
-      addState[name + 'Data'] = returnData.list;
-      addState[name + 'Sum'] = returnData.sum;
-      addState[name + 'PageNum'] = returnData.pageNum;
-      addState[name + 'IsLastPage'] = returnData.isLastPage;
-      addState[name + 'Loading'] = false;
+      addState = {...addState, ...returnData};
+      // addState[name + 'Data'] = returnData.list;
+      // addState[name + 'Sum'] = returnData.sum;
+      // addState[name + 'PageNum'] = returnData.pageNum;
+      // addState[name + 'IsLastPage'] = returnData.isLastPage;
+      // addState[name + 'Loading'] = false;
       dispatchModifyState({...addState});
     }
   }

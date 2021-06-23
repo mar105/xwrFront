@@ -71,6 +71,9 @@ const SlaveContainer = (props) => {
       data.sortNum = slaveDataOld.length;
       data.assignField = '';
       data.fieldRelevance = '';
+      data.chineseDrop = '';
+      data.traditionalDrop = '';
+      data.englishDrop = '';
       const slaveData = [...slaveDataOld];
       slaveData.push(data);
       dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
@@ -110,6 +113,9 @@ const SlaveContainer = (props) => {
               data.sortNum = sortNum + rowIndex;
               data.assignField = '';
               data.fieldRelevance = '';
+              data.chineseDrop = '';
+              data.traditionalDrop = '';
+              data.englishDrop = '';
               slaveData.push(data);
             } else {
               const data = { ...props.onModify(), ...slaveData[index] };

@@ -106,7 +106,7 @@ export function TableComponent(params: any) {
 
     //-----列宽拖拽结束------------------------------
     dispatchModifySelfState({components, ...addState });
-  }, [params.property.columns, params.enabled, params.scrollToRow]);
+  }, [params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]);
 
   // useEffect(() => {
   //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功
@@ -223,12 +223,12 @@ export function TableComponent(params: any) {
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
-    modifySelfState({searchText: selectedKeys[0], searchedColumn: dataIndex});
+    dispatchModifySelfState({searchText: selectedKeys[0], searchedColumn: dataIndex});
   };
 
   const handleReset = clearFilters => {
     clearFilters();
-    modifySelfState({searchText: ''});
+    dispatchModifySelfState({searchText: ''});
   };
 
   const getColumn = (resizeColumns: any) => {

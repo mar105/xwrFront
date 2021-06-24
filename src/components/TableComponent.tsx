@@ -134,7 +134,8 @@ export function TableComponent(params: any) {
     onDragEnd(fromIndex, toIndex) {
       // fromIndex 取值包含 选择行列，行号列，列拖拽要减掉
       const { dispatchModifyState } = params;
-      const  selectionMinus = params.property.rowSelection === null ? 1 : 2;
+      let selectionMinus = params.property.rowSelection === null ? 0 : 1;
+      selectionMinus = params.config.isRowNo ? selectionMinus + 1 : selectionMinus;
       const columns = [...params.property.columns];
       const item = columns.splice(fromIndex - selectionMinus, 1)[0];
       columns.splice(toIndex - selectionMinus, 0, item);
@@ -147,7 +148,7 @@ export function TableComponent(params: any) {
   // 标题列宽度拖动
   const handleResize = index => (e, { size }) => {
     // index 取值包含 行号列，列拖动要减掉
-    const  selectionMinus = params.property.rowSelection === null ? 0 : 1;
+    const  selectionMinus = params.config.isRowNo === null ? 0 : 1;
     const columns: any = [...params.property.columns];
     columns[index - selectionMinus] = {
       ...columns[index - selectionMinus],

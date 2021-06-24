@@ -37,15 +37,15 @@ function IndexPage(props) {
   }
 
   const onClick = (path) => {
-    const {dispatch, dispatchModifyState, panes: panesOld, panesComponents } = props;
+    const {dispatch, dispatchModifyState, panesComponents } = props;
     const key = commonUtils.newId();
     const route: any = commonUtils.getRouteComponent(routeInfo, path);
     if (commonUtils.isNotEmptyObj(route)) {
       if (route.title) {
-        const panes = commonUtils.isEmptyArr(panesOld) ? [] : panesOld;
+        const panes = commonModel.panes;
         const pane = { key, title: route.title, route: path };
         panes.push(pane);
-        panesComponents.push(commonUtils.panesComponent(pane, route));
+        panesComponents.push(commonUtils.panesComponent(pane, route, null));
         dispatch({
           type: 'commonModel/saveActivePane',
           payload: { ...pane },

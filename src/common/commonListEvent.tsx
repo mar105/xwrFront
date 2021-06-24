@@ -7,9 +7,17 @@ const commonListEvent = (WrapComponent) => {
     const onSetForm = (formNew) => {
       form = formNew;
     }
+
+    const onButtonClick = async (key, config, e) => {
+      if (key === 'addButton') {
+        props.callbackAddPane(config.popupActiveId);
+      }
+    }
+
     return <WrapComponent
       {...props}
       onSetForm={onSetForm}
+      onButtonClick={onButtonClick}
     />
   };
 };

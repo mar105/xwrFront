@@ -72,31 +72,20 @@ const  Register = (props) => {
 
   const { sliderValue, sliderDisabled } = props;
   const userName = {
-    name: 'master',
-    form,
-    fieldName: 'userName',
-    rules: [{ required: true, message: '请输入你的用户名' }],
+    config: { fieldName: 'userName', isRequired: true },
     property: { placeholder: '请输入你的用户名' },
   };
   const userPwd = {
-    name: 'master',
-    form,
-    fieldName: 'userPwd',
-    rules: [{ required: true, pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z\d]{6,16}$/, message: '密码需要包含数字和英文字母（6位-16位）' }],
+    config: { fieldName: 'userPwd', isRequired: true, pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z\d]{6,16}$/, message: '密码需要包含数字和英文字母（6位-16位）' },
     property: { type: 'password', placeholder: '请输入你的密码' },
   };
   const userPwdTwo = {
-    name: 'master',
-    form,
-    fieldName: 'userPwdTwo',
-    rules: [{ required: true, pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z\d]{6,16}$/, message: '密码需要包含数字和英文字母（6位-16位）' }],
+    config: { fieldName: 'userPwdTwo', isRequired: true, pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[a-zA-Z\d]{6,16}$/, message: '密码需要包含数字和英文字母（6位-16位）' },
     property: { type: 'password', placeholder: '请再次输入你的密码' },
   };
   const userMobile = {
     name: 'master',
-    form,
-    fieldName: 'userMobile',
-    rules: [{ required: true, pattern: /^(((13[0-9])|(14[5-7])|(15[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))+\d{8})$/, message: '请输入正确的手机号' }],
+    config: { fieldName: 'userMobile', isRequired: true, pattern: /^(((13[0-9])|(14[5-7])|(15[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))+\d{8})$/, message: '请输入正确的手机号' },
     property: { placeholder: '请输入你的手机号码' },
   };
   const sendCaptchaButton = {
@@ -105,10 +94,7 @@ const  Register = (props) => {
     property: { onClick: handleSendCaptcha },
   };
   const userCaptcha = {
-    name: 'master',
-    form,
-    fieldName: 'userCaptcha',
-    rules: [{ required: true, message: '请输入你的验证码' }],
+    config: { fieldName: 'userCaptcha', isRequired: true, message: '请输入你的验证码' },
     property: { placeholder: '请输入你的验证码' },
   };
   const loginButton = {

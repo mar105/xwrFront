@@ -104,7 +104,7 @@ const commonBase = (WrapComponent) => {
       }
     }
     const getDataOne = async (params) => {
-      const { commonModel, dispatch, dispatchModifyState } = props;
+      const { commonModel, dispatch } = props;
       const { isWait } = params;
       const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + modifyState.routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId +
         '&containerId=' + params.containerId + '&dataId=' + params.condition.dataId;
@@ -212,7 +212,7 @@ const commonBase = (WrapComponent) => {
     const onTableClick = (name, record, e, isWait = false) => {
       const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld }: any = stateRef.current;
       const data = [...dataOld];
-      const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...dataOld];
+      const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
       const index = data.findIndex(item => item.id === record.id);
       if (index > -1) {
         data[index].handleType = 'del';
@@ -395,6 +395,7 @@ const commonBase = (WrapComponent) => {
         dispatchModifyState({...addState});
       }
     }
+
     return <Spin spinning={modifyState.pageLoading ? true : false}>
       <WrapComponent
       {...props}

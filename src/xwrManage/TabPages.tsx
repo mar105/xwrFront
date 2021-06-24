@@ -52,7 +52,7 @@ const TabsPages = (props) => {
     commonModel.panes.forEach(pane => {
       const route: any = commonUtils.getRouteComponent(routeInfo, pane.route);
       if (commonUtils.isNotEmptyObj(route)) {
-        panesComponents.push(commonUtils.panesComponent(pane, route));
+        panesComponents.push(commonUtils.panesComponent(pane, route, props.callbackAddPane));
       }
     });
     dispatchModifyState({ panesComponents });

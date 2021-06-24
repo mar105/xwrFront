@@ -5,7 +5,6 @@ import * as commonUtils from "../utils/commonUtils";
 import * as React from "react";
 import {Button, Menu} from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined, AppstoreOutlined } from '@ant-design/icons';
-import {replacePath, routeInfo} from "../routeInfo";
 
 const { SubMenu } = Menu;
 
@@ -45,51 +44,7 @@ const IndexMenu = (props) => {
   }
 
   const onClick = async (e) => {
-    const {dispatch, dispatchModifyState, panesComponents, commonModel } = props;
-    const path = replacePath(e.item.props.menuData.routeName);
-    const key = commonUtils.newId();
-    const route: any = commonUtils.getRouteComponent(routeInfo, path);
-    if (commonUtils.isNotEmptyObj(route)) {
-      let state: any = {};
-      if (route.title) {
-        const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + e.key;
-        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-        if (interfaceReturn.code === 1) {
-          state = { routeId: e.key, ...interfaceReturn.data };
-          const panes = commonModel.panes;
-          const pane = { key, title: state.routeData.viewName, route: path, ...state };
-          panes.push(pane);
-          panesComponents.push(commonUtils.panesComponent(pane, route));
-          dispatchModifyState({ panesComponents });
-          dispatch({
-            type: 'commonModel/saveActivePane',
-            payload: { ...pane },
-          });
-          dispatch({
-            type: 'commonModel/savePanes',
-            payload: panes,
-          });
-          dispatch({
-            type: 'commonModel/gotoNewPage',
-            payload: { newPage: path, state },
-          });
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-        }
-      } else {
-        const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + e.key;
-        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-        if (interfaceReturn.code === 1) {
-          state = { routeId: e.key, ...interfaceReturn.data};
-          dispatch({
-            type: 'commonModel/gotoNewPage',
-            payload: {newPage: path, state},
-          });
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-        }
-      }
-    }
+    props.callbackAddPane(e.key);
     dispatchModifySelfState({ collapsed: !modifySelfState.collapsed });
   };
 

@@ -212,7 +212,7 @@ const Container = (props) => {
       dispatchModifyState({...addState, treeData, enabled: false});
 
     } else if (key === 'delButton') {
-      const { commonModel, dispatch, masterData, slaveData, slaveDelData, dispatchModifyState } = props;
+      const { commonModel, dispatch, masterData, slaveData, dispatchModifyState } = props;
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
         return;
@@ -228,7 +228,7 @@ const Container = (props) => {
       const url: string = `${application.urlPrefix}/container/saveContainer`;
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [masterData], [], true));
-      saveData.push(commonUtils.mergeData('slave', slaveData, slaveDelData, true));
+      saveData.push(commonUtils.mergeData('slave', slaveData, [], true));
       const params = { id: masterData.id, tabId, saveData, handleType: 'del' };
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {

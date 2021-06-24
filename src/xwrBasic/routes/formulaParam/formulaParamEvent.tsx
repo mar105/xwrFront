@@ -167,7 +167,8 @@ const categoryListEvent = (WrapComponent) => {
         }
         const saveData: any = [];
         saveData.push(commonUtils.mergeData('master', [slaveSelectedRows[0]], [], true));
-        saveData.push(commonUtils.mergeData('category', [slaveSelectedRows[0]], [], true));
+        const returnData = await props.getDataList({ name: 'category', containerId: categoryContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
+        saveData.push(commonUtils.mergeData('category', returnData.categoryData, [], true));
         const params = { id: slaveSelectedRows[0].id, routeId: props.routeId, tabId, saveData, handleType: 'del' };
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;

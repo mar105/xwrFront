@@ -81,7 +81,7 @@ const TabsPages = (props) => {
     const panesComponents = panesComponentsOld.filter(pane => pane.key.toString() !== targetKey);
     const panes = commonModel.panes.filter(pane => pane.key.toString() !== targetKey);
     let activePane = {};
-    if (panes.length && commonModel.activePane.key === targetKey) {
+    if (panes.length > 0 && commonModel.activePane.key === targetKey) {
       if (lastIndex > -1) {
         activePane = panes[lastIndex];
       } else {

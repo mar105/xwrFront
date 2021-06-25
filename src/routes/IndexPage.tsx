@@ -13,10 +13,15 @@ import {replacePath, routeInfo} from "../routeInfo";
 
 function IndexPage(props) {
   const stompClientRef: any = useRef();
+  const panesRef: any = useRef();
   const panesComponentsRef: any = useRef();
   useEffect(() => {
     stompClientRef.current = props.commonModel.stompClient;
   }, [props.commonModel.stompClient]);
+
+  useEffect(() => {
+    panesRef.current = props.commonModel.panes;
+  }, [props.commonModel.panes]);
 
   useEffect(() => {
     panesComponentsRef.current = props.panesComponents;
@@ -61,7 +66,7 @@ function IndexPage(props) {
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       state = { routeId, ...interfaceReturn.data };
-      const panes = commonModel.panes;
+      const panes = [...panesRef.current];
       const path = replacePath(state.routeData.routeName);
       const key = commonUtils.newId();
       const route: any = commonUtils.getRouteComponent(routeInfo, path);
@@ -93,7 +98,7 @@ function IndexPage(props) {
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }
-  }, [props.panesComponents]);
+  }, [panesComponentsRef.current]);
 
   const { commonModel } = props;
   return (

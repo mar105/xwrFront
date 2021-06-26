@@ -5,6 +5,15 @@ import * as commonUtils from '../utils/commonUtils';
 
 export function InputComponent(params) {
   const rules: any = [];
+  const onKeyUp = (e) => {
+    if (e.key === 'F2') {
+      message.info(params.config.fieldName);
+    }
+  }
+  const event = {
+    onChange: params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null,
+    onKeyUp,
+  }
   if (params.config.isRequired) {
     rules.push({ required: params.config.isRequired,
       message: commonUtils.isNotEmpty(params.config.message) ? params.config.message :
@@ -54,20 +63,10 @@ export function InputComponent(params) {
           return prevValues[params.config.fieldName] !== currentValues[params.config.fieldName]
         }
         }>
-        <Input.TextArea {...params.property} {...params.event} />
+        <Input.TextArea {...params.property} { ...event } />
       </Form.Item>;
     }
   } else {
-    const onKeyUp = (e) => {
-      if (e.key === 'F2') {
-        message.info(params.config.fieldName);
-      }
-    }
-    const event = {
-      onChange: params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null,
-      onKeyUp,
-    }
-
     if (params.componentType === componentType.Soruce) {
       return <Input {...params.property} { ...event } />;
     } else {

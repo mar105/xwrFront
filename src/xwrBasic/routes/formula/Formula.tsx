@@ -1,5 +1,5 @@
 import { connect } from 'dva';
-import React, { useMemo } from 'react';
+import React, {useEffect, useMemo} from 'react';
 import * as application from "../../application";
 import * as request from "../../../utils/request";
 import {Col, Form, Row} from "antd";
@@ -9,6 +9,7 @@ import {ButtonGroup} from "../ButtonGroup";
 import commonBasic from "../../commonBasic";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {InputComponent} from "../../../components/InputComponent";
+import {TreeComponent} from "../../../components/TreeComponent";
 
 const Customer = (props) => {
   const [form] = Form.useForm();
@@ -18,6 +19,31 @@ const Customer = (props) => {
     wrapperCol: { span: 16 },
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const { dispatchModifyState } = props;
+      if (commonUtils.isNotEmptyArr(props.containerData)) {
+        const index = props.containerData[0].slaveData.findIndex(item => item.fieldName === 'treeSql');
+        if (index > -1) {
+          const returnState: any = await props.getSelectList({containerSlaveId: props.containerData[0].slaveData[index].id, isWait: true });
+          dispatchModifyState({ formulaParam: returnState.list });
+        }
+      }
+    }
+    fetchData();
+  }, []);
+
+  const onSelectChange = (name, fieldName, record, assignField, value, option) => {
+    if (fieldName === 'formulaType') {
+      const { dispatchModifyState, formulaParam } = props;
+      const returnState = props.onSelectChange(name, fieldName, record, assignField, value, option, true);
+      const treeData = formulaParam.filter(item => item.paramCategory === value);
+      dispatchModifyState({treeData, ...returnState});
+    } else {
+      props.onSelectChange(name, fieldName, record, assignField, value, option);
+    }
+
+  }
   const onFinish = async (values: any) => {
     const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
     const saveData: any = [];
@@ -103,21 +129,32 @@ const Customer = (props) => {
 
   }
 
+  const onDoubleClick = () => {
+
+  };
 
 
-  const { enabled, masterContainer, masterData: masterDataOld } = props;
+
+  const { enabled, masterContainer, masterData: masterDataOld, treeData } = props;
   const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
   const buttonGroup = { onClick, enabled };
   const index = commonUtils.isEmptyObj(masterContainer) ? -1 : masterContainer.slaveData.findIndex(item => item.fieldName === 'formula');
   const inputParams = {
-    name: props.name,
+    name: 'master',
+    text: true,
     config: index > -1 ? masterContainer.slaveData[index] : {},
     property: {value: masterData['formula'], disabled: !enabled },
     record: masterData,
     event: {onChange: props.onInputChange}
   };
+  const treeParam = {
+    property: { treeData, height: 500 },
+    event: { onDoubleClick },
+  };
   const component = useMemo(()=>{ return (
-    <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
+    <CommonExhibit name="master" {...props} onSelectChange={onSelectChange} />)}, [masterContainer, masterData, enabled]);
+  const tree = useMemo(()=>{ return (
+    <TreeComponent {...treeParam} />)}, [treeData]);
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
@@ -128,6 +165,10 @@ const Customer = (props) => {
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
           <InputComponent {...inputParams}  />;
+        </Col>
+
+        <Col>
+          {tree}
         </Col>
       </Row>
       <ButtonGroup {...buttonGroup} />

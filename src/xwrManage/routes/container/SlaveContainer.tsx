@@ -65,9 +65,9 @@ const SlaveContainer = (props) => {
   }, []);
 
   const onClick = async (name, e) => {
-    const { commonModel, dispatch, dispatchModifyState, masterData, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
+    const { commonModel, dispatch, dispatchModifyState, masterData, slaveContainer, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
     if (name === 'slaveAddButton') {
-      const data = props.onAdd();
+      const data = props.onAdd(slaveContainer);
       data.superiorId = masterData.id;
       data.containerType = 'field';
       data.sortNum = slaveDataOld.length;
@@ -106,7 +106,7 @@ const SlaveContainer = (props) => {
           interfaceReturn.data.forEach((dataRow, rowIndex)  => {
             const index = slaveData.findIndex(item => item.containerType === 'field' && item.fieldName === dataRow.columnName);
             if (!(index > -1)) {
-              const data = props.onAdd();
+              const data = props.onAdd(slaveContainer);
               data.superiorId = masterData.id;
               data.fieldName = dataRow.columnName;
               data.containerType = 'field';

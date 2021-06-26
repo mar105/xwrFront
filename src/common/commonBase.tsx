@@ -5,10 +5,9 @@ import * as request from "../utils/request";
 import {Spin} from "antd";
 
 
-
 const commonBase = (WrapComponent) => {
   return function ChildComponent(props) {
-    const stateRef = useRef();
+    const stateRef: any = useRef();
     const [modifyState, dispatchModifyState] = useReducer((state, action) => {
       return {...state, ...action };
     },{ ...props.commonModel.activePane });
@@ -141,7 +140,7 @@ const commonBase = (WrapComponent) => {
       if (interfaceReturn.code === 1) {
         if (isWait) {
           addState[params.name + 'Data'] = interfaceReturn.data.data.list;
-          if (params.pageNum === 1) {
+          if (params.pageNum === 1 || commonUtils.isEmpty(params.pageNum)) {
             addState[params.name + 'Sum'] = interfaceReturn.data.sum;
           }
           addState[params.name + 'PageNum'] = interfaceReturn.data.data.pageNum;
@@ -186,9 +185,10 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    const onAdd = () => {
+    const onAdd = (containerOld?) => {
       const { commonModel } = props;
-      const dataRow: any = {};
+      const container = commonUtils.isEmpty(containerOld) ? stateRef.current.masterContainer : containerOld;
+      const dataRow: any = {...commonUtils.getDefaultValue(container, stateRef.current)};
       dataRow.handleType = 'add';
       dataRow.id = commonUtils.newId();
       dataRow.key = dataRow.id;

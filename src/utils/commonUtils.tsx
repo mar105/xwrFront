@@ -220,3 +220,72 @@ export function paramGet(param) {
   return returnStr;
 }
 
+/** 转换成相应小数位的数字 */
+export function round(value, num) {
+  const fix = '10000000000'.substring(0, num + 1);
+  return Math.round(value * parseFloat(fix)) / parseFloat(fix);
+}
+
+
+
+/** 获取数据默认值  取消其他表值数据时  sTaxId:master.sTaxId */
+export function getDefaultValue(container, allDataset) {
+  const returnData = {};
+  container.slaveData.filter(item => item.defaultValue !== '').forEach((childConfig) => {
+    const { defaultValue, fieldName, fieldType } = childConfig;
+    if (defaultValue.indexOf('=') > -1 && defaultValue.indexOf('.') > -1) {
+      const oldFieldName = defaultValue.split('=')[1];
+      const datasetName = oldFieldName.split('.')[0] + 'Data';
+      const oldTableFieldName = oldFieldName.split('.')[1];
+      if (isNotEmptyObj(allDataset[datasetName])) {
+        if (oldFieldName.includes('+') || oldFieldName.includes('-') || oldFieldName.includes('*') ||
+          oldFieldName.includes('/') || oldFieldName.includes('(') || oldFieldName.includes(')')) {
+          let formula = oldFieldName;
+          let formulaSplit = oldFieldName;
+          formulaSplit = formulaSplit.split('+').join('$');
+          formulaSplit = formulaSplit.split('-').join('$');
+          formulaSplit = formulaSplit.split('*').join('$');
+          formulaSplit = formulaSplit.split('/').join('$');
+          formulaSplit = formulaSplit.split('(').join('$');
+          formulaSplit = formulaSplit.split(')').join('$');
+          formulaSplit.split('$').forEach((oldFieldNameItem) => {
+            const oldFieldItem = oldFieldNameItem.trim();
+            if (oldFieldItem.indexOf('.') > -1) {
+              const datasetName = oldFieldItem.split('.')[0].trim() + 'Data';
+              const oldTableFieldName = oldFieldItem.split('.')[1].trim();
+              if (isNotEmptyObj(allDataset[datasetName]) && allDataset[datasetName][oldTableFieldName] !== undefined) {
+                formula = formula.replace(oldFieldItem, allDataset[datasetName][oldTableFieldName]);
+              }
+            } else {
+              const oldTableFieldName = oldFieldItem.trim();
+              if (allDataset[datasetName][oldTableFieldName] !== undefined) {
+                formula = formula.replace(oldTableFieldName, `(${allDataset[datasetName][oldTableFieldName]})`); /* 加括号处理当值为负数时的异常 */
+              }
+            }
+          });
+          returnData[fieldName] = oldTableFieldName.substring(0, 1) === '&' ? formula.split('+').join('') : round(eval(formula), 6);
+        } else {
+          returnData[fieldName] = allDataset[datasetName][oldTableFieldName];
+        }
+      }
+    } else {
+      if (fieldType === 'tinyint') {
+        returnData[fieldName] = parseInt(defaultValue);
+      } else if (fieldType === 'datetime') {
+        if (defaultValue === 'today') {
+          returnData[fieldName] = moment().format('YYYY-MM-DD');
+        } else {
+          returnData[fieldName] = moment(defaultValue);
+        }
+      } else if (fieldType === 'int' || fieldType === 'smallint') {
+        returnData[fieldName] = parseInt(defaultValue);
+      } else if (fieldType === 'decimal') {
+        returnData[fieldName] = parseFloat(defaultValue);
+      } else {
+        returnData[fieldName] = defaultValue;
+      }
+    }
+  });
+  return returnData;
+}
+

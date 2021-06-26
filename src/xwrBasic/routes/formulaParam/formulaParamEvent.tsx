@@ -53,7 +53,7 @@ const categoryListEvent = (WrapComponent) => {
         if (index > -1 && masterContainer.slaveData[index].viewDrop) {
           const formulaCategory = commonUtils.objectToArr(commonUtils.stringToObj(masterContainer.slaveData[index].viewDrop));
           formulaCategory.forEach(item => {
-            const data = props.onAdd();
+            const data = props.onAdd(categoryContainer);
             data.superiorId = masterData.id;
             data.paramCategory = item.id;
             data.sortNum = index;
@@ -83,7 +83,7 @@ const categoryListEvent = (WrapComponent) => {
         if (index > -1 && masterContainer.slaveData[index].viewDrop) {
           const formulaCategory = commonUtils.objectToArr(commonUtils.stringToObj(masterContainer.slaveData[index].viewDrop));
           formulaCategory.forEach(item => {
-            const data = props.onAdd();
+            const data = props.onAdd(categoryContainer);
             data.superiorId = masterData.id;
             data.paramCategory = item.id;
             data.sortNum = index;
@@ -137,7 +137,7 @@ const categoryListEvent = (WrapComponent) => {
             formulaCategory.forEach((dataRow, index)  => {
               const indexCategory = categoryDataOld.findIndex(item => item.paramCategory === dataRow.id);
               if (!(indexCategory > -1)) {
-                const data = props.onAdd();
+                const data = props.onAdd(categoryContainer);
                 data.superiorId = masterData.id;
                 data.paramCategory = dataRow.id;
                 data.sortNum = index;
@@ -174,7 +174,7 @@ const categoryListEvent = (WrapComponent) => {
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
           const returnState = await props.getAllData();
-          dispatchModifyState({ ...returnState });
+          dispatchModifyState({ ...returnState, slaveSelectedRows: [] });
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
@@ -202,14 +202,12 @@ const categoryListEvent = (WrapComponent) => {
         const saveData: any = [];
         saveData.push(commonUtils.mergeData("master", [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
         const categorySelectedRowKeys = commonUtils.isEmptyArr(categorySelectedRowKeysOld) ? [] : categorySelectedRowKeysOld;
-        const categoryData = [...categoryDataOld];
-        for(const category of categoryData) {
-          if (!(categorySelectedRowKeys.findIndex(item => item === category.paramCategory) > -1)) {
-            if (category.handleType === 'add') {
-              delete category.handleType;
-            } else {
-              category.handleType = 'del';
-            }
+        const categoryData: any = [];
+        for(const category of categoryDataOld) {
+          if (categorySelectedRowKeys.findIndex(item => item === category.paramCategory) > -1) {
+            categoryData.push(category);
+          } else if (category.handleType !== 'add') {
+            categoryData.push({...category, handleType: 'del' });
           }
         }
         saveData.push(commonUtils.mergeData("category", categoryData.filter(item => commonUtils.isNotEmpty(item.handleType)), categoryDelData, true));
@@ -217,7 +215,7 @@ const categoryListEvent = (WrapComponent) => {
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
-          const returnState = await props.getAllData({ testMongo: true });
+          const returnState = await props.getAllData({ testMongo: true, pageNum: 1 });
           dispatchModifyState({ masterIsVisible: false, enabled: false, ...returnState });
           props.gotoSuccess(dispatch, interfaceReturn);
         } else {

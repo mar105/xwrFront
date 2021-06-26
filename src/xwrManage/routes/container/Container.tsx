@@ -117,7 +117,7 @@ const Container = (props) => {
       allList.splice(allList.length - 1, 1);
       const masterData = { ...data, key: data.id, superiorId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.superiorId : '',
         allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id,
-        isVisible: 1, isRowNo: 1, isSelect: 1, virtualIndex: '' };
+        isVisible: 1, isRowNum: 1, isSelect: 1, virtualIndex: '' };
       let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       const addState: any = {};
@@ -138,7 +138,7 @@ const Container = (props) => {
       }
       const data = props.onAdd();
       const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id,
-        isVisible: 1, isRowNo: 1, isSelect: 1, virtualIndex: '' };
+        isVisible: 1, isRowNum: 1, isSelect: 1, virtualIndex: '' };
       let treeData = [...treeDataOld];
       let treeExpandedKeys;
       treeData = props.setNewTreeNode(treeData, masterDataOld.allId, masterData);
@@ -409,10 +409,10 @@ const Container = (props) => {
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMutiChoise, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
-  const isRowNo = {
+  const isRowNum = {
     name: 'master',
-    config: { fieldName: 'isRowNo', viewName: '是否显示行号' },
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isRowNo, disabled: !enabled },
+    config: { fieldName: 'isRowNum', viewName: '是否显示行号' },
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isRowNum, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
 
@@ -551,7 +551,7 @@ const Container = (props) => {
           </Row>
           <Row>
             <Col><InputComponent {...tableKey} /></Col>
-            <Col><SwitchComponent {...isRowNo} /></Col>
+            <Col><SwitchComponent {...isRowNum} /></Col>
             <Col><SwitchComponent {...isTree} /></Col>
           </Row>
           {commonUtils.isNotEmptyObj(masterData) && masterData.isTree ?

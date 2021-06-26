@@ -11,7 +11,8 @@ import { CommonExhibit } from "../../../common/CommonExhibit";
 import {InputComponent} from "../../../components/InputComponent";
 import {TreeComponent} from "../../../components/TreeComponent";
 
-const Customer = (props) => {
+const Formula = (props) => {
+  const formulaRef = React.useRef<any>(null);
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
@@ -22,22 +23,49 @@ const Customer = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       const { dispatchModifyState } = props;
-      if (commonUtils.isNotEmptyArr(props.containerData)) {
-        const index = props.containerData[0].slaveData.findIndex(item => item.fieldName === 'treeSql');
-        if (index > -1) {
-          const returnState: any = await props.getSelectList({containerSlaveId: props.containerData[0].slaveData[index].id, isWait: true });
-          dispatchModifyState({ formulaParam: returnState.list });
-        }
+      const index = props.containerData[0].slaveData.findIndex(item => item.fieldName === 'treeSql');
+      if (index > -1) {
+        const returnState: any = await props.getSelectList({containerSlaveId: props.containerData[0].slaveData[index].id, isWait: true });
+        dispatchModifyState({ formulaParam: returnState.list });
       }
     }
     fetchData();
   }, []);
 
+  const getTreeData = (formulaType) => {
+    const { formulaParam: formulaParamOld, masterContainer } = props;
+    const treeData: any = [];
+    const formulaParam: any = [];
+    formulaParam.push(...formulaParamOld.filter(item => item.paramCategory === formulaType));
+    let index = masterContainer.slaveData.findIndex(item => item.fieldName === 'formulaParam');  // 公式参数
+    let config = index > -1 ? masterContainer.slaveData[index] : {};
+    treeData.push({title: config.viewName, key: config.id, children: formulaParam});
+
+    index = masterContainer.slaveData.findIndex(item => item.fieldName === 'billNumParam'); // 流水号参数
+    config = index > -1 ? masterContainer.slaveData[index] : {};
+    const billNumParam: any = {title: config.viewName, key: config.id, children: []};
+
+    // 年，月、日、流水号
+    masterContainer.slaveData.filter(item => item.viewName.indexOf('{') > -1).forEach(config => {
+      billNumParam.children.push({title: config.viewName, key: config.id});
+    });
+    treeData.push(billNumParam);
+
+    index = masterContainer.slaveData.findIndex(item => item.fieldName === 'systemParam'); // 系统参数
+    config = index > -1 ? masterContainer.slaveData[index] : {};
+    treeData.push({title: config.viewName, key: config.id, children: []});
+
+    index = masterContainer.slaveData.findIndex(item => item.fieldName === 'methodParam'); //函数参数
+    config = index > -1 ? masterContainer.slaveData[index] : {};
+    treeData.push({title: config.viewName, key: config.id, children: []});
+    return treeData;
+  };
+
   const onSelectChange = (name, fieldName, record, assignField, value, option) => {
     if (fieldName === 'formulaType') {
-      const { dispatchModifyState, formulaParam } = props;
+      const { dispatchModifyState } = props;
       const returnState = props.onSelectChange(name, fieldName, record, assignField, value, option, true);
-      const treeData = formulaParam.filter(item => item.paramCategory === value);
+      const treeData = getTreeData(value);
       dispatchModifyState({treeData, ...returnState});
     } else {
       props.onSelectChange(name, fieldName, record, assignField, value, option);
@@ -83,10 +111,10 @@ const Customer = (props) => {
       }
 
     } else if (key === 'cancelButton') {
-      if (masterData.handleType === 'add') {
+      if (masterDataOld.handleType === 'add') {
         const returnState = await props.getAllData({dataId: masterDataOld.id });
         dispatchModifyState({ ...returnState, enabled: false });
-      } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
+      } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
         const url: string = `${application.urlCommon}/verify/removeModifying`;
         const params = {id: masterData.id, tabId};
@@ -129,13 +157,39 @@ const Customer = (props) => {
 
   }
 
-  const onDoubleClick = () => {
+  const onTreeSelect = (selectedKeys: React.Key[], e) => {
+    const { dispatchModifyState } = props;
+    if (commonUtils.isNotEmptyArr(selectedKeys)) {
+      dispatchModifyState({treeSelectedKeys: selectedKeys, treeSelectNode: e.node});
+      const indexStart = formulaRef.current.resizableTextArea.textArea.selectionStart;
+      const indexEnd = formulaRef.current.resizableTextArea.textArea.selectionEnd;
+      formulaRef.current.resizableTextArea.textArea.setSelectionRange(indexStart, indexEnd);
+    }
+  }
 
-  };
+  const onTreeDoubleClick = (e) => {
+    const { dispatchModifyState, treeSelectNode, masterData: masterDataOld } = props;
+    const indexStart = formulaRef.current.resizableTextArea.textArea.selectionStart;
+    const indexEnd = formulaRef.current.resizableTextArea.textArea.selectionEnd;
+    if (treeSelectNode.children !== undefined) {
+      formulaRef.current.resizableTextArea.textArea.setSelectionRange(indexStart, indexEnd);
+    } else {
+      const formulaOld = commonUtils.isEmpty(formulaRef.current.resizableTextArea.textArea.value) ? '' : formulaRef.current.resizableTextArea.textArea.value;
+      const strStart = commonUtils.isEmpty(formulaOld.substring(0, indexStart)) ? '' : formulaOld.substring(0, indexStart);
+      const strEnd = commonUtils.isEmpty(formulaOld.substring(indexEnd, formulaOld.length)) ? '' : formulaOld.substring(indexEnd, formulaOld.length);
+      const formula = strStart + treeSelectNode.title + strEnd;
+      const masterData = {...masterDataOld, formula};
+      form.setFieldsValue({...masterData});
+      dispatchModifyState({masterData});
+      setTimeout(() => {
+        formulaRef.current.resizableTextArea.textArea.setSelectionRange(indexStart + treeSelectNode.title.length, indexStart + treeSelectNode.title.length);
+      }, 200);
+    }
+  }
 
 
 
-  const { enabled, masterContainer, masterData: masterDataOld, treeData } = props;
+  const { enabled, masterContainer, masterData: masterDataOld, treeData, treeSelectedKeys } = props;
   const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
   const buttonGroup = { onClick, enabled };
   const index = commonUtils.isEmptyObj(masterContainer) ? -1 : masterContainer.slaveData.findIndex(item => item.fieldName === 'formula');
@@ -143,18 +197,19 @@ const Customer = (props) => {
     name: 'master',
     text: true,
     config: index > -1 ? masterContainer.slaveData[index] : {},
-    property: {value: masterData['formula'], disabled: !enabled },
+    property: {value: masterData.formula, disabled: !enabled, ref: formulaRef },
     record: masterData,
     event: {onChange: props.onInputChange}
   };
+
   const treeParam = {
-    property: { treeData, height: 500 },
-    event: { onDoubleClick },
+    property: { treeData, selectedKeys: treeSelectedKeys, height: 500 },
+    event: { onDoubleClick: onTreeDoubleClick, onSelect: onTreeSelect },
   };
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} onSelectChange={onSelectChange} />)}, [masterContainer, masterData, enabled]);
   const tree = useMemo(()=>{ return (
-    <TreeComponent {...treeParam} />)}, [treeData]);
+    <TreeComponent {...treeParam} />)}, [treeData, treeSelectedKeys]);
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
@@ -176,4 +231,4 @@ const Customer = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonBasic(Customer)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonBasic(Formula)));

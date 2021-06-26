@@ -77,7 +77,7 @@ const commonManage = (WrapComponent) => {
       if (enabled) {
         props.gotoError(dispatch, { code: '6001', msg: '数据正在编辑，请先保存或取消！' });
       } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
-        const addState = {treeSelectedKeys: selectedKeys, masterData: { ...e.node }, selectNode: e.node };
+        const addState = {treeSelectedKeys: selectedKeys, masterData: { ...e.node } };
         if (isWait) {
           return addState;
         } else {

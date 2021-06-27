@@ -292,3 +292,8 @@ export function getDefaultValue(container, allDataset) {
   return returnData;
 }
 
+export function getViewName(container, fieldName) {
+  const index = container.slaveData.findIndex(item => item.fieldName === fieldName);
+  return index > -1 ? container.slaveData[index].viewName : '';
+}
+

@@ -10,7 +10,9 @@ export function ButtonGroup(params) {
   buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', disable: params.enabled, sortNum: 40, onClick: params.onClick, disabled: !params.enabled });
   buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', disable: params.enabled, sortNum: 50, onClick: params.onClick, disabled: !params.enabled });
   buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', disable: params.enabled, sortNum: 60, onClick: params.onClick, disabled: params.enabled });
-  buttonGroup.push([params.buttonGroup]);
+  if (commonUtils.isNotEmptyArr(params.buttonGroup)) {
+    buttonGroup.push(...params.buttonGroup);
+  }
 
   const buttonGroupNew = buttonGroup.map(item => {
     const button = {

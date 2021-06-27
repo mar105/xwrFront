@@ -34,6 +34,14 @@ const Formula = (props) => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (commonUtils.isNotEmptyObj(props.masterContainer)) {
+      if (props.handleType === 'add') {
+        onClick('addButton', null);
+      }
+    }
+  }, [props.masterContainer]);
+
   const getTreeData = (formulaType) => {
     const { formulaParam: formulaParamOld, masterContainer } = props;
     const treeData: any = [];
@@ -164,23 +172,28 @@ const Formula = (props) => {
 
   const verifyFormula = () => {
     const { dispatch, masterData } = props;
-    let formula = masterData.formula;
-    if (commonUtils.isNotEmptyArr(treeData)) {
-      treeData.forEach(tree => {
-        if (commonUtils.isNotEmptyArr(tree.children)) {
-          tree.children.forEach(item => {
-            formula = formula.replace(item.title, 0);
-          });
-        }
-      });
-    }
-    try {
-      eval('var result = 0; ' + formula);
-      props.gotoSuccess(dispatch, { code: '1', msg: commonUtils.getViewName(masterContainer,'verifySuccess')}); // 验证成功！
-      return 1;
-    }
-    catch (e) {
-      props.gotoError(dispatch, { code: '1', msg: commonUtils.getViewName(masterContainer,'verifyError') + e.message});
+    if (masterData.formulaType !== 'billNum') {
+      let formula = masterData.formula;
+      if (commonUtils.isNotEmptyArr(treeData)) {  //流水号公式不校验
+        treeData.forEach(tree => {
+          if (commonUtils.isNotEmptyArr(tree.children)) {
+            tree.children.forEach(item => {
+              formula = formula.replace(item.title, 0);
+            });
+          }
+        });
+      }
+      try {
+        eval('var result = 0; ' + formula);
+        props.gotoSuccess(dispatch, {code: '1', msg: commonUtils.getViewName(masterContainer, 'verifySuccess')}); // 验证成功！
+        return 1;
+      }
+      catch (e) {
+        props.gotoError(dispatch, {
+          code: '1',
+          msg: commonUtils.getViewName(masterContainer, 'verifyError') + e.message
+        });
+      }
     }
   }
 
@@ -253,7 +266,8 @@ const Formula = (props) => {
     property: { treeData, selectedKeys: treeSelectedKeys, height: 500 },
     event: { onDoubleClick: onTreeDoubleClick, onSelect: onTreeSelect },
   };
-  const component = useMemo(()=>{ return (
+  const component = useMemo(()=>{
+    return (
     <CommonExhibit name="master" {...props} onSelectChange={onSelectChange} />)}, [masterContainer, masterData, enabled]);
   const tree = useMemo(()=>{ return (
     <TreeComponent {...treeParam} />)}, [treeData, treeSelectedKeys]);

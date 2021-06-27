@@ -16,6 +16,7 @@ const CategoryList = (props) => {
   tableParam.rowSelection.checkStrictly = false;
   tableParam.isLastColumn = false;
   tableParam.enabled = false;
+  tableParam.eventOnRow = { ...tableParam.eventOnRow, onRowDoubleClick: props.onRowDoubleClick };
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 

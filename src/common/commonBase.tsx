@@ -8,6 +8,7 @@ import {Spin} from "antd";
 const commonBase = (WrapComponent) => {
   return function ChildComponent(props) {
     const stateRef: any = useRef();
+    let form;
     const [modifyState, dispatchModifyState] = useReducer((state, action) => {
       return {...state, ...action };
     },{ ...props.commonModel.activePane });
@@ -18,11 +19,12 @@ const commonBase = (WrapComponent) => {
     useEffect(() => {
       if (commonUtils.isNotEmpty(modifyState.routeId)) {
         const fetchData = async () => {
-          const returnState: any = await getAllData({ pageNum: 1, dataId: modifyState.dataId });
+          const returnState: any = await getAllData({ pageNum: 1, dataId: modifyState.dataId, handleType: modifyState.handleType });
           dispatchModifyState({...returnState});
         }
         fetchData();
       }
+      return () => {};
     }, []);
 
     useEffect(() => {
@@ -45,6 +47,10 @@ const commonBase = (WrapComponent) => {
         clearModifying();
       }
     }, []);
+
+    const onSetForm = (formNew) => {
+      form = formNew;
+    }
 
     const getAllData = async (paramsOld) => {
       const { containerData } = modifyState;
@@ -70,7 +76,8 @@ const commonBase = (WrapComponent) => {
               addState[container.dataSetName + 'Columns'] = columns;
             }
           }
-          if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
+          //dataId，列表传入，isSelect 配置传入， handleType 列表传入
+          if (commonUtils.isNotEmpty(params.dataId) && params.handleType !== 'add' && container.isSelect) {
             //单据获取
             if (container.isTable) {
               const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
@@ -80,9 +87,11 @@ const commonBase = (WrapComponent) => {
               // addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
               // addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
 
-            } else {
+            } else if (container.isSelect && modifyState.handleType !== 'add') {
               const returnData: any = await getDataOne({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData;
+              form.resetFields();
+              form.setFieldsValue(commonUtils.setFieldsValue(returnData));
             }
           } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
@@ -187,8 +196,8 @@ const commonBase = (WrapComponent) => {
 
     const onAdd = (containerOld?) => {
       const { commonModel } = props;
-      const container = commonUtils.isEmpty(containerOld) ? stateRef.current.masterContainer : containerOld;
-      const dataRow: any = {...commonUtils.getDefaultValue(container, stateRef.current)};
+      const container = commonUtils.isEmpty(containerOld) ? modifyState.masterContainer : containerOld;
+      const dataRow: any = {...commonUtils.getDefaultValue(container, modifyState)};
       dataRow.handleType = 'add';
       dataRow.id = commonUtils.newId();
       dataRow.key = dataRow.id;
@@ -420,6 +429,7 @@ const commonBase = (WrapComponent) => {
       onSelectChange={onSelectChange}
       onCascaderChange={onCascaderChange}
       onReachEnd={onReachEnd}
+      onSetForm={onSetForm}
     />
     </Spin>
   };

@@ -59,13 +59,13 @@ function IndexPage(props) {
     }
   }
 
-  const callbackAddPane = useCallback(async (routeId) => {
+  const callbackAddPane = useCallback(async (routeId, stateInfo) => {
     const {dispatch, dispatchModifyState, commonModel } = props;
-    let state: any = {};
+    let state: any = {...stateInfo};
     const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + routeId;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
-      state = { routeId, ...interfaceReturn.data };
+      state = { ...state, routeId, ...interfaceReturn.data };
       const panes = [...panesRef.current];
       const path = replacePath(state.routeData.routeName);
       const key = commonUtils.newId();

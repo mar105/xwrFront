@@ -30,15 +30,8 @@ const commonBasic = (WrapComponent) => {
       }
     }
 
-    // @ts-ignore
-    let form;
-    const onSetForm = (formNew) => {
-      form = formNew;
-    }
-
     return <WrapComponent
       {...props}
-      onSetForm={onSetForm}
     />
   };
 };

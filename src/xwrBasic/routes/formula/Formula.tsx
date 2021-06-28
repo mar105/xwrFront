@@ -1,5 +1,5 @@
 import { connect } from 'dva';
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import * as application from "../../application";
 import * as request from "../../../utils/request";
 import {Col, Form, Row} from "antd";
@@ -15,12 +15,17 @@ import {ButtonComponent} from "../../../components/ButtonComponent";
 
 const Formula = (props) => {
   const formulaRef = React.useRef<any>(null);
+  const formulaParamRef: any = useRef();
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
+
+  useEffect(() => {
+    formulaParamRef.current = props.formulaParam;
+  }, [props.formulaParam]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,10 +48,12 @@ const Formula = (props) => {
   }, [props.masterContainer]);
 
   const getTreeData = (formulaType) => {
-    const { formulaParam: formulaParamOld, masterContainer } = props;
+    const { masterContainer } = props;
     const treeData: any = [];
     const formulaParam: any = [];
-    formulaParam.push(...formulaParamOld.filter(item => item.paramCategory === formulaType));
+    // formulaParamRef.current 为何用这个？原因： 上面useEffect用了之后形成闭包，取不到props.formulaParam;
+    // onClick('addButton', null)这个上面可以加入props.formulaParam,为了不影响渲染速度，可以异步执行。
+    formulaParam.push(...formulaParamRef.current.filter(item => item.paramCategory === formulaType));
     let index = masterContainer.slaveData.findIndex(item => item.fieldName === 'formulaParam');  // 公式参数
     let config = index > -1 ? masterContainer.slaveData[index] : {};
     treeData.push({title: config.viewName, key: config.id, children: formulaParam});

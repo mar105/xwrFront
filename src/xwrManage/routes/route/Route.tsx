@@ -261,7 +261,7 @@ const Route = (props) => {
   const buttonAddGroup: any = [];
   buttonAddGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
   const buttonGroup = { onClick, enabled, buttonGroup: buttonAddGroup };
-  const tree =  useMemo(()=>{ return (<TreeModule {...props} onSelect={props.onTreeSelect} />
+  const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} getAllRoute={getAllRoute} />
     )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (
     <div>

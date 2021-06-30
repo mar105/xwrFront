@@ -71,7 +71,7 @@ const Search = (props) => {
         searchCondition.push({ fieldName: searchData['first' + key], condition: searchData['second' + key], fieldValue: searchData['third' + key] });
       });
       dispatchModifyState({[name + 'Loading']: true });
-      const returnData: any = await props.getDataList({ containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition }, isWait: true });
+      const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition }, isWait: true });
       addState = {...addState, ...returnData};
       // addState[name + 'Data'] = returnData.list;
       // addState[name + 'Sum'] = returnData.sum;

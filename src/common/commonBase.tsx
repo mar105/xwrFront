@@ -394,7 +394,7 @@ const commonBase = (WrapComponent) => {
       const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage, [name + 'CreateDate']: createDate }: any = stateRef.current;
       if (!isLastPage && !container.isTree) {
         dispatchModifyState({[name + 'Loading']: true });
-        const returnData: any = await getDataList({ containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true, createDate });
+        const returnData: any = await getDataList({ name, containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true, createDate });
         const addState = {...returnData};
         addState[name + 'Data'] = [...data, ...returnData[name + 'Data']];
         // addState[name + 'Data'] = [...data, ...returnData.list];

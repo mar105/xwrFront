@@ -65,6 +65,7 @@ const TreeModule = (props) => {
     const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
 
     let dragParent; //拖拽到的地方父级节点
+    let isError = false;
 
     const loop = (data, key, parent, callback) => {
       for (let i = 0; i < data.length; i++) {
@@ -90,7 +91,7 @@ const TreeModule = (props) => {
       // Drop on the content
       loop(data, dropKey, null,item => {
         if (item.routeName.split('/').length > 2) {
-          props.gotoError(dispatch, { code: '6004', msg: '不能移动到此节点' });
+          isError = true;
           return;
         }
         item.children = item.children || [];
@@ -105,7 +106,7 @@ const TreeModule = (props) => {
     ) {
       loop(data, dropKey, null,item => {
         if (item.routeName.split('/').length > 2) {
-          props.gotoError(dispatch, { code: '6004', msg: '不能移动到此节点' });
+          isError = true;
           return;
         }
         item.children = item.children || [];
@@ -121,19 +122,26 @@ const TreeModule = (props) => {
       let i;
       loop(data, dropKey, null,(item, index, arr) => {
         if (dragParent !== null && dragParent.routeName.split('/').length > 2) {
-          props.gotoError(dispatch, { code: '6004', msg: '不能移动到此节点' });
+          isError = true;
           return;
         }
         ar = arr;
         i = index;
       });
-      if (dropPosition === -1) {
-        ar.splice(i, 0, dragObj);
-      } else {
-        ar.splice(i + 1, 0, dragObj);
+      if (!isError) {
+        if (dropPosition === -1) {
+          ar.splice(i, 0, dragObj);
+        } else {
+          ar.splice(i + 1, 0, dragObj);
+        }
       }
     }
 
+
+    if (isError) {
+      props.gotoError(dispatch, { code: '6004', msg: '不能移动到此节点' });
+      return;
+    }
     //// 拖动完成后，修改superiorId, allId;
     const saveChangeData: any = [];
     let parentAllId;
@@ -216,7 +224,7 @@ const TreeModule = (props) => {
     event: { onChange, onSearch }
   };
   const treeParam = {
-    property: { treeData, selectedKeys: treeSelectedKeys, expandedKeys: treeExpandedKeys, height: 500, draggable: !enabled, blockNode: true },
+    property: { treeData, selectedKeys: treeSelectedKeys, expandedKeys: treeExpandedKeys, height: 500, draggable: !enabled && props.getAllRoute !== undefined, blockNode: true },
     event: { onSelect: props.onSelect, onExpand, onDrop: onDrop },
   };
   const columns = [

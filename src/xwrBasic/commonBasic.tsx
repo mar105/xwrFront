@@ -42,7 +42,7 @@ const commonBasic = (WrapComponent) => {
 
 
     const onButtonClick = async (key, config, e, childParams) => {
-      const { commonModel, tabId, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld } = props;
+      const { commonModel, tabId, dispatch, dispatchModifyState, masterData: masterDataOld } = props;
       if (key === 'addButton') {
         const masterData = props.onAdd();
         form.resetFields();
@@ -77,30 +77,24 @@ const commonBasic = (WrapComponent) => {
           }
         }
       } else if (key === 'delButton') {
-        if (commonUtils.isEmptyArr(treeSelectedKeys)) {
-          props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
-          return;
-        }
-        if (commonUtils.isNotEmptyArr(masterDataOld.children)) {
-          props.gotoError(dispatch, { code: '6001', msg: '请先删除子节点' });
-          return;
-        }
-        const params = { ...masterDataOld };
-        const url: string = `${application.urlPrefix}/route/delRoute1111111`;
-        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-        if (interfaceReturn.code === 1) {
-          const returnRoute: any = await props.getDataOne({isWait: true});
-          const addState: any = {};
-          if (commonUtils.isNotEmpty(returnRoute.treeData)) {
-            addState.treeSelectedKeys = [returnRoute.treeData[0].id];
-            addState.masterData = {...returnRoute.treeData[0]};
-            form.resetFields();
-            form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
+        if (commonUtils.isNotEmpty(masterDataOld.id)) {
+          const saveData: any = [];
+          saveData.push(commonUtils.mergeData('master', [masterDataOld], [], true));
+          if (childParams && childParams.childCallback) {
+            const saveChildData = await childParams.childCallback({masterDataOld});
+            saveData.push(...saveChildData);
           }
-
-          dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
+          const params = { id: masterDataOld.id, routeId: props.routeId, tabId, saveData, handleType: 'del'};
+          const url: string = `${application.urlMain}/getData/saveData`;
+          const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+          if (interfaceReturn.code === 1) {
+            props.gotoSuccess(dispatch, interfaceReturn);
+            props.callbackRemovePane(tabId);
+          } else {
+            props.gotoError(dispatch, interfaceReturn);
+          }
         } else {
-          props.gotoError(dispatch, interfaceReturn);
+          props.callbackRemovePane(tabId);
         }
       }
     }

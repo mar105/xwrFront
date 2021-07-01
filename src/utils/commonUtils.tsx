@@ -137,9 +137,9 @@ export function setFieldsValue(value) {
   return returnValue;
 }
 
-export function panesComponent(pane, routeData, callbackAddPane) {
+export function panesComponent(pane, routeData, callbackAddPane, callbackRemovePane) {
   const Component: any = dynamic({...routeData});
-  return {key: pane.key, component: <Component tabId={pane.key} callbackAddPane={callbackAddPane} />};
+  return {key: pane.key, component: <Component tabId={pane.key} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane}/>};
 };
 
 

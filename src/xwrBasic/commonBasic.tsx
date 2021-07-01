@@ -7,6 +7,11 @@ import * as request from "../utils/request";
 const commonBasic = (WrapComponent) => {
   return function ChildComponent(props) {
     let form;
+    const onSetForm = (formNew) => {
+      form = formNew;
+      props.onSetForm(form);
+    }
+
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
         && props.commonModel.stompClient.connected) {
@@ -19,11 +24,6 @@ const commonBasic = (WrapComponent) => {
         }
       };
     }, [props.commonModel.stompClient]);
-
-    const onSetForm = (formNew) => {
-      form = formNew;
-      props.onSetForm(form);
-    }
 
     const saveDataReturn = async (data) => {
       const { dispatch, dispatchModifyState, masterData } = props;

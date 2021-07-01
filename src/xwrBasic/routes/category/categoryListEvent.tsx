@@ -6,6 +6,11 @@ import {useEffect} from "react";
 
 const categoryListEvent = (WrapComponent) => {
   return function ChildComponent(props) {
+    let form;
+    const onSetForm = (formNew) => {
+      form = formNew;
+      props.onSetForm(form);
+    }
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
         && props.commonModel.stompClient.connected) {
@@ -24,7 +29,7 @@ const categoryListEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e, childParams) => {
-      const { dispatch, dispatchModifyState, commonModel, tabId, slaveSelectedRows, masterContainer, form } = props;
+      const { dispatch, dispatchModifyState, commonModel, tabId, slaveSelectedRows, masterContainer } = props;
       if (key === 'addButton') {
         let masterData = props.onAdd();
         if (commonUtils.isNotEmptyArr(slaveSelectedRows)) {
@@ -171,6 +176,7 @@ const categoryListEvent = (WrapComponent) => {
 
     return <WrapComponent
       {...props}
+      onSetForm={onSetForm}
       onModalOk={onModalOk}
       onModalCancel={onModalCancel}
       onButtonClick={onButtonClick}

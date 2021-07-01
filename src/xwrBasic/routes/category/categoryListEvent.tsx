@@ -27,7 +27,7 @@ const categoryListEvent = (WrapComponent) => {
       }
     }
 
-    const onButtonClick = async (key, config, e) => {
+    const onButtonClick = async (key, config, e, childParams) => {
       const { dispatch, dispatchModifyState, commonModel, tabId, slaveSelectedRows, masterContainer } = props;
       if (key === 'addButton') {
         let masterData = props.onAdd();
@@ -48,7 +48,12 @@ const categoryListEvent = (WrapComponent) => {
         }
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-        dispatchModifyState({ masterData, masterIsVisible: true, enabled: true });
+
+        let addState = {};
+        if (childParams && childParams.childCallback) {
+          addState = await childParams.childCallback({masterData});
+        }
+        dispatchModifyState({ masterData, ...addState, masterIsVisible: true, enabled: true });
       }
       else if (key === 'addChildButton') {
         let masterData = props.onAdd();
@@ -66,7 +71,11 @@ const categoryListEvent = (WrapComponent) => {
         }
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-        dispatchModifyState({ masterData, masterIsVisible: true, enabled: true });
+        let addState = {};
+        if (childParams && childParams.childCallback) {
+          addState = await childParams.childCallback({masterData});
+        }
+        dispatchModifyState({ masterData, ...addState, masterIsVisible: true, enabled: true });
       }
       else if (key === 'modifyButton') {
         if (commonUtils.isEmptyArr(slaveSelectedRows)) {
@@ -86,13 +95,17 @@ const categoryListEvent = (WrapComponent) => {
           masterData = {...masterData, ...data };
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-          dispatchModifyState({ masterData, masterIsVisible: true, enabled: true });
+          let addState = {};
+          if (childParams && childParams.childCallback) {
+            addState = await childParams.childCallback({masterData});
+          }
+          dispatchModifyState({ masterData, ...addState, masterIsVisible: true, enabled: true });
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
 
       } else if (key === 'delButton') {
-        const { commonModel, dispatch, dispatchModifyState } = props;
+        const { commonModel, dispatch, dispatchModifyState, masterData } = props;
         if (commonUtils.isEmptyArr(slaveSelectedRows)) {
           props.gotoError(dispatch, { code: '6001', msg: '请先选择数据！' });
           return;
@@ -105,6 +118,11 @@ const categoryListEvent = (WrapComponent) => {
         }
         const saveData: any = [];
         saveData.push(commonUtils.mergeData('master', [slaveSelectedRows[0]], [], true));
+        if (childParams && childParams.childCallback) {
+          const saveChildData = await childParams.childCallback({masterData});
+          saveData.push(...saveChildData);
+        }
+
         const params = { id: slaveSelectedRows[0].id, routeId: props.routeId, tabId, saveData, handleType: 'del' };
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -130,13 +148,17 @@ const categoryListEvent = (WrapComponent) => {
 
     }
 
-    const onModalOk = async (e) => {
+    const onModalOk = async (e, childParams) => {
       const { dispatchModifyState } = props;
       try {
         const values = await form.validateFields();
         const { commonModel, dispatch, masterData, tabId } = props;
         const saveData: any = [];
         saveData.push(commonUtils.mergeData("master", [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
+        if (childParams && childParams.childCallback) {
+          const saveChildData = await childParams.childCallback({masterData});
+          saveData.push(...saveChildData);
+        }
         const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;

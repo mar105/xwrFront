@@ -1,7 +1,5 @@
 import { connect } from 'dva';
 import React, {useEffect, useMemo, useRef} from 'react';
-import * as application from "../../application";
-import * as request from "../../../utils/request";
 import {Col, Form, Row} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
@@ -42,7 +40,7 @@ const Formula = (props) => {
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.masterContainer)) {
       if (props.handleType === 'add') {
-        onClick('addButton', null);
+        onButtonClick('addButton', null, null);
       }
     }
   }, [props.masterContainer]);
@@ -90,90 +88,18 @@ const Formula = (props) => {
 
   }
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
     if (verifyFormula() === 1) {
-      const saveData: any = [];
-      saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
-      const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
-      const url: string = `${application.urlMain}/getData/saveData`;
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-      if (interfaceReturn.code === 1) {
-        const returnState: any = await props.getAllData({ dataId: masterData.id });
-        dispatchModifyState({...returnState});
-        props.gotoSuccess(dispatch, interfaceReturn);
-      } else if (interfaceReturn.code === 10) {
-        dispatchModifyState({ pageLoading: true });
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
-      }
+      props.onFinish(values);
     }
   }
 
 
 
-  const onClick = async (key, e) => {
-    const { commonModel, tabId, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld } = props;
-    if (key === 'addButton') {
-      const masterData = props.onAdd();
-      form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, enabled: true });
-    } else if (key === 'modifyButton') {
-      const data = props.onModify();
-      const masterData = {...masterDataOld, ...data };
-      const url: string = `${application.urlCommon}/verify/isExistModifying`;
-      const params = {id: masterData.id, tabId};
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-      if (interfaceReturn.code === 1) {
-        dispatchModifyState({ masterData, enabled: true });
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
-      }
-
-    } else if (key === 'cancelButton') {
-      if (masterDataOld.handleType === 'add') {
-        const returnState = await props.getAllData({dataId: masterDataOld.id });
-        dispatchModifyState({ ...returnState, enabled: false });
-      } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
-        const {dispatch, commonModel, tabId, masterData} = props;
-        const url: string = `${application.urlCommon}/verify/removeModifying`;
-        const params = {id: masterData.id, tabId};
-        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-        if (interfaceReturn.code === 1) {
-          const returnState = await props.getAllData({dataId: masterDataOld.id });
-          dispatchModifyState({ ...returnState, enabled: false });
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-        }
-      }
-    } else if (key === 'delButton') {
-      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
-        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
-        return;
-      }
-      if (commonUtils.isNotEmptyArr(masterDataOld.children)) {
-        props.gotoError(dispatch, { code: '6001', msg: '请先删除子节点' });
-        return;
-      }
-      const params = { ...masterDataOld };
-      const url: string = `${application.urlPrefix}/route/delRoute`;
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-      if (interfaceReturn.code === 1) {
-        const returnRoute: any = await props.getDataOne({isWait: true});
-        const addState: any = {};
-        if (commonUtils.isNotEmpty(returnRoute.treeData)) {
-          addState.treeSelectedKeys = [returnRoute.treeData[0].id];
-          addState.masterData = {...returnRoute.treeData[0]};
-          form.resetFields();
-          form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
-        }
-
-        dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
-      }
-    } else if (key === 'verifyButton') {
+  const onButtonClick = async (key, config, e) => {
+    if (key === 'verifyButton') {
       verifyFormula();
+    } else {
+      props.onButtonClick(key, config, e);
     }
   }
 
@@ -257,8 +183,8 @@ const Formula = (props) => {
   const { enabled, masterContainer, masterData: masterDataOld, treeData, treeSelectedKeys } = props;
   const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
   const buttonAddGroup: any = [];
-  buttonAddGroup.push({ key: 'verifyButton', caption: '验证', htmlType: 'button', onClick, sortNum: 100, disabled: !props.enabled });
-  const buttonGroup = { onClick, enabled, buttonGroup: buttonAddGroup };
+  buttonAddGroup.push({ key: 'verifyButton', caption: '验证', htmlType: 'button', onClick: onButtonClick, sortNum: 100, disabled: !props.enabled });
+  const buttonGroup = { onClick: onButtonClick, enabled, buttonGroup: buttonAddGroup };
   const index = commonUtils.isEmptyObj(masterContainer) ? -1 : masterContainer.slaveData.findIndex(item => item.fieldName === 'formula');
   const inputParams = {
     name: 'master',

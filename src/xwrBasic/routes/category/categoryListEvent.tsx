@@ -6,10 +6,6 @@ import {useEffect} from "react";
 
 const categoryListEvent = (WrapComponent) => {
   return function ChildComponent(props) {
-    let form;
-    const onSetForm = (formNew) => {
-      form = formNew;
-    }
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
         && props.commonModel.stompClient.connected) {
@@ -28,7 +24,7 @@ const categoryListEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e, childParams) => {
-      const { dispatch, dispatchModifyState, commonModel, tabId, slaveSelectedRows, masterContainer } = props;
+      const { dispatch, dispatchModifyState, commonModel, tabId, slaveSelectedRows, masterContainer, form } = props;
       if (key === 'addButton') {
         let masterData = props.onAdd();
         if (commonUtils.isNotEmptyArr(slaveSelectedRows)) {
@@ -149,10 +145,9 @@ const categoryListEvent = (WrapComponent) => {
     }
 
     const onModalOk = async (e, childParams) => {
-      const { dispatchModifyState } = props;
+      const { dispatchModifyState, commonModel, dispatch, masterData, tabId, form } = props;
       try {
         const values = await form.validateFields();
-        const { commonModel, dispatch, masterData, tabId } = props;
         const saveData: any = [];
         saveData.push(commonUtils.mergeData("master", [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
         if (childParams && childParams.childCallback) {
@@ -176,7 +171,6 @@ const categoryListEvent = (WrapComponent) => {
 
     return <WrapComponent
       {...props}
-      onSetForm={onSetForm}
       onModalOk={onModalOk}
       onModalCancel={onModalCancel}
       onButtonClick={onButtonClick}

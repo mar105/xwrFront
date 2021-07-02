@@ -7,6 +7,7 @@ import {NumberComponent} from "../components/NumberComponent";
 import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
 import ProvinceCityArea from "./ProvinceCityArea";
+import {TreeSelectComponent} from "../components/TreeSelectComponent";
 
 export const CommonExhibit = (props) => {
   const { [props.name + 'Data']: masterDataOld, masterContainer, enabled } = props;
@@ -19,6 +20,13 @@ export const CommonExhibit = (props) => {
         property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
         event: {onChange: props.onSelectChange, getSelectList: props.getSelectList}
+      };
+      const treeSelectParams = {
+        name: props.name,
+        config: item,
+        property: {value: masterData[item.fieldName], disabled: !enabled },
+        record: masterData,
+        event: {onChange: props.onTreeSelectChange, getSelectList: props.getSelectList}
       };
       const inputParams = {
         name: props.name,
@@ -61,7 +69,11 @@ export const CommonExhibit = (props) => {
         if (item.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
           component = <ProvinceCityArea {...provinceCityAreaParams}  />;
         } else if (item.dropType === 'sql' || item.dropType === 'const') {
-          component = <SelectComponent {...selectParams}  />;
+          if (item.isTreeDrop) {
+            component = <TreeSelectComponent {...treeSelectParams}  />;
+          } else {
+            component = <SelectComponent {...selectParams}  />;
+          }
         } else {
           component = <InputComponent {...inputParams}  />;
         }

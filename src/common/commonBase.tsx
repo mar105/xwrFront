@@ -319,9 +319,41 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    const onSelectChange = (name, fieldName, record, assignField, value, option, isWait = false) => {
+    const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
+      const value = valueOld === undefined ? '' : valueOld;
       const { [name + 'Data']: dataOld }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
+
+      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+        const data = { ...dataOld, ...getAssignFieldValue(assignField, assignOption) };
+
+        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
+        data[fieldName] = value;
+        if (isWait) {
+          return { [name + 'Data']: data };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data });
+        }
+      } else {
+        const data = [...dataOld];
+        const index = data.findIndex(item => item.id === record.id);
+        if (index > -1) {
+          data[index] = { ...data[index], ...getAssignFieldValue(assignField, assignOption) };
+          data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+          data[index][fieldName] = value;
+          if (isWait) {
+            return { [name + 'Data']: data };
+          } else {
+            dispatchModifyState({ [name + 'Data']: data });
+          }
+        }
+      }
+    }
+
+    const onTreeSelectChange = (name, fieldName, record, assignField, valueOld, extra, isWait = false) => {
+      const value = valueOld === undefined ? '' : valueOld;
+      const { [name + 'Data']: dataOld }: any = stateRef.current;
+      const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
 
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld, ...getAssignFieldValue(assignField, assignOption) };
@@ -427,6 +459,7 @@ const commonBase = (WrapComponent) => {
       onCheckboxChange={onCheckboxChange}
       onNumberChange={onNumberChange}
       onSelectChange={onSelectChange}
+      onTreeSelectChange={onTreeSelectChange}
       onCascaderChange={onCascaderChange}
       onReachEnd={onReachEnd}
       onSetForm={onSetForm}

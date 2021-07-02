@@ -181,6 +181,11 @@ export function stringToObj(str) {
   return isEmpty(str) ? {} : JSON.parse(str);
 }
 
+/**   转换字符串为对象   */
+export function stringToArr(str) {
+  return isEmpty(str) ? [] : JSON.parse(str);
+}
+
 /**   对象转数组   */
 export function objectToArr(obj) {
   const arr: any = [];

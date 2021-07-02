@@ -127,6 +127,8 @@ const Formula = (props) => {
           msg: commonUtils.getViewName(masterContainer, 'verifyError') + e.message
         });
       }
+    } else {
+      return 1;
     }
   }
 

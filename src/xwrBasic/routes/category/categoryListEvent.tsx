@@ -150,27 +150,24 @@ const categoryListEvent = (WrapComponent) => {
     }
 
     const onModalOk = async (e, childParams) => {
-      const { dispatchModifyState, commonModel, dispatch, masterData, tabId, form } = props;
-      try {
-        const values = await form.validateFields();
-        const saveData: any = [];
-        saveData.push(commonUtils.mergeData("master", [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
-        if (childParams && childParams.childCallback) {
-          const saveChildData = await childParams.childCallback({masterData});
-          saveData.push(...saveChildData);
-        }
-        const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
-        const url: string = `${application.urlMain}/getData/saveData`;
-        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-        if (interfaceReturn.code === 1) {
-          const returnState = await props.getAllData({ testMongo: true, pageNum: 1 });
-          dispatchModifyState({ masterIsVisible: false, enabled: false, ...returnState });
-          props.gotoSuccess(dispatch, interfaceReturn);
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-          return;
-        }
-      } catch (errorInfo) {
+      const { dispatchModifyState, commonModel, dispatch, masterData, tabId } = props;
+      const values = await form.validateFields();
+      const saveData: any = [];
+      saveData.push(commonUtils.mergeData("master", [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
+      if (childParams && childParams.childCallback) {
+        const saveChildData = await childParams.childCallback({masterData});
+        saveData.push(...saveChildData);
+      }
+      const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
+      const url: string = `${application.urlMain}/getData/saveData`;
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        const returnState = await props.getAllData({ testMongo: true, pageNum: 1 });
+        dispatchModifyState({ masterIsVisible: false, enabled: false, ...returnState });
+        props.gotoSuccess(dispatch, interfaceReturn);
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+        return;
       }
     }
 

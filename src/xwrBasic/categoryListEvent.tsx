@@ -1,7 +1,7 @@
 import * as React from "react";
-import * as commonUtils from "../../../utils/commonUtils";
-import * as application from "../../application";
-import * as request from "../../../utils/request";
+import * as commonUtils from "../utils/commonUtils";
+import * as application from "./application";
+import * as request from "../utils/request";
 import {useEffect} from "react";
 
 const categoryListEvent = (WrapComponent) => {

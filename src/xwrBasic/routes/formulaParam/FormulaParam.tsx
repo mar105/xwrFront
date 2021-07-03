@@ -7,7 +7,7 @@ import {ButtonGroup} from "../ButtonGroup";
 import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import Search from "../../../common/Search";
-import categoryListEvent from "../category/categoryListEvent";
+import categoryListEvent from "../../categoryListEvent";
 
 const FormulaParam = (props) => {
   const [form] = Form.useForm();

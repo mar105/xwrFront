@@ -6,7 +6,7 @@ import {TableComponent} from "../../../components/TableComponent";
 import {ButtonGroup} from "../ButtonGroup";
 import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
-import categoryListEvent from "./categoryListEvent";
+import categoryListEvent from "../../categoryListEvent";
 import Search from "../../../common/Search";
 const CategoryList = (props) => {
   const [form] = Form.useForm();

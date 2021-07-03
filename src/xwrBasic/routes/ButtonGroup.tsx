@@ -5,27 +5,50 @@ import {Col, Row} from "antd";
 import React from 'react';
 
 export function ButtonGroup(params) {
-  const buttonGroup: any = [];
-  buttonGroup.push({ key: 'addButton', caption: '增加', htmlType: 'button', disable: params.enabled, sortNum: 10, onClick: params.onClick, disabled: params.enabled });
-  buttonGroup.push({ key: 'addChildButton', caption: '增加子级', htmlType: 'button', disable: params.enabled, sortNum: 20, onClick: params.onClick, disabled: params.enabled });
-  buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', disable: params.enabled, sortNum: 30, onClick: params.onClick, disabled: params.enabled });
-  buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', disable: params.enabled, sortNum: 40, onClick: params.onClick, disabled: !params.enabled });
-  buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', disable: params.enabled, sortNum: 50, onClick: params.onClick, disabled: !params.enabled });
-  buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', disable: params.enabled, sortNum: 60, onClick: params.onClick, disabled: params.enabled });
+  const buttonGroupOld: any = [];
+  buttonGroupOld.push({ key: 'addButton', caption: '增加', htmlType: 'button', disable: params.enabled, sortNum: 10, onClick: params.onClick, disabled: params.enabled });
+  buttonGroupOld.push({ key: 'addChildButton', caption: '增加子级', htmlType: 'button', disable: params.enabled, sortNum: 20, onClick: params.onClick, disabled: params.enabled });
+  buttonGroupOld.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', disable: params.enabled, sortNum: 30, onClick: params.onClick, disabled: params.enabled });
+  buttonGroupOld.push({ key: 'postButton', caption: '保存', htmlType: 'submit', disable: params.enabled, sortNum: 40, onClick: params.onClick, disabled: !params.enabled });
+  buttonGroupOld.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', disable: params.enabled, sortNum: 50, onClick: params.onClick, disabled: !params.enabled });
+  buttonGroupOld.push({ key: 'delButton', caption: '删除', htmlType: 'button', disable: params.enabled, sortNum: 60, onClick: params.onClick, disabled: params.enabled });
+
   if (commonUtils.isNotEmptyArr(params.buttonGroup)) {
-    buttonGroup.push(...params.buttonGroup);
+    buttonGroupOld.push(...params.buttonGroup);
   }
   const buttons = commonUtils.isEmptyObj(params.slaveContainer) ? [] : params.slaveContainer.slaveData.filter(item => item.containerType === 'control');
-  const buttonGroupNew = buttonGroup.map(item => {
+  //先找到通用按钮，取配置
+  const buttonGroup = buttonGroupOld.map(item => {
     const index = buttons.findIndex(button => button.fieldName === item.key);
-    const buttonConfig = index > -1 ? buttons[index] : {};
+    let buttonConfig: any = {isVisible: true};
+    if (index > -1) {
+      buttonConfig = buttons[index];
+      buttons.splice(index, 1);
+    }
+    if (buttonConfig.isVisible) {
+      const button = {
+        caption: item.caption,
+        property: { name: item.key, htmlType: item.htmlType, disabled: item.disabled },
+        event: { onClick: commonUtils.isEmpty(item.onClick) ? undefined : item.onClick.bind(this, item.key, buttonConfig) },
+        componentType: componentType.Soruce,
+      };
+
+      return <Col><ButtonComponent {...button} /></Col>;
+    }
+
+  });
+
+  //剩余的为界面其他按钮配置
+  const buttonGroupOther = buttons.filter(item => item.isVisible).map(item => {
     const button = {
-      caption: item.caption,
-      property: { name: item.key, htmlType: item.htmlType, disabled: item.disabled },
-      event: { onClick: commonUtils.isEmpty(item.onClick) ? undefined : item.onClick.bind(this, item.key, buttonConfig) },
+      caption: item.viewName,
+      property: { name: item.key, htmlType: 'button', disabled: item.disabled },
+      event: { onClick: commonUtils.isEmpty(item.onClick) ? undefined : item.onClick.bind(this, item.key, item) },
       componentType: componentType.Soruce,
     };
     return <Col><ButtonComponent {...button} /></Col>;
   });
-  return <Row style={{ height: 'auto', overflow: 'auto' }}>{buttonGroupNew}</Row>;
+  buttonGroup.push(...buttonGroupOther);
+
+  return <Row style={{ height: 'auto', overflow: 'auto' }}>{buttonGroup}</Row>;
 }

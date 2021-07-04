@@ -2,6 +2,7 @@ import * as React from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "./application";
 import * as request from "../utils/request";
+import categoryListButtonEvent from "./categoryListButtonEvent";
 import {useEffect} from "react";
 
 const categoryListEvent = (WrapComponent) => {
@@ -133,6 +134,8 @@ const categoryListEvent = (WrapComponent) => {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
+      } else {
+        categoryListButtonEvent(key, config, e, childParams, props);
       }
     }
     const onModalCancel = async (e) => {

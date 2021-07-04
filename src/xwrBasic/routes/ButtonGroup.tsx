@@ -6,12 +6,12 @@ import React from 'react';
 
 export function ButtonGroup(params) {
   const buttonGroupOld: any = [];
-  buttonGroupOld.push({ key: 'addButton', caption: '增加', htmlType: 'button', disable: params.enabled, sortNum: 10, onClick: params.onClick, disabled: params.enabled });
-  buttonGroupOld.push({ key: 'addChildButton', caption: '增加子级', htmlType: 'button', disable: params.enabled, sortNum: 20, onClick: params.onClick, disabled: params.enabled });
-  buttonGroupOld.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', disable: params.enabled, sortNum: 30, onClick: params.onClick, disabled: params.enabled });
-  buttonGroupOld.push({ key: 'postButton', caption: '保存', htmlType: 'submit', disable: params.enabled, sortNum: 40, onClick: params.onClick, disabled: !params.enabled });
-  buttonGroupOld.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', disable: params.enabled, sortNum: 50, onClick: params.onClick, disabled: !params.enabled });
-  buttonGroupOld.push({ key: 'delButton', caption: '删除', htmlType: 'button', disable: params.enabled, sortNum: 60, onClick: params.onClick, disabled: params.enabled });
+  buttonGroupOld.push({ key: 'addButton', caption: '增加', htmlType: 'button', sortNum: 10, disabled: params.enabled });
+  buttonGroupOld.push({ key: 'addChildButton', caption: '增加子级', htmlType: 'button', sortNum: 20, disabled: params.enabled });
+  buttonGroupOld.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 30, disabled: params.enabled });
+  buttonGroupOld.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !params.enabled });
+  buttonGroupOld.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !params.enabled });
+  buttonGroupOld.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: params.enabled });
 
   if (commonUtils.isNotEmptyArr(params.buttonGroup)) {
     buttonGroupOld.push(...params.buttonGroup);
@@ -29,7 +29,7 @@ export function ButtonGroup(params) {
       const button = {
         caption: item.caption,
         property: { name: item.key, htmlType: item.htmlType, disabled: item.disabled },
-        event: { onClick: commonUtils.isEmpty(item.onClick) ? undefined : item.onClick.bind(this, item.key, buttonConfig) },
+        event: { onClick: commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, item.key, buttonConfig) },
         componentType: componentType.Soruce,
       };
 
@@ -42,8 +42,8 @@ export function ButtonGroup(params) {
   const buttonGroupOther = buttons.filter(item => item.isVisible).map(item => {
     const button = {
       caption: item.viewName,
-      property: { name: item.key, htmlType: 'button', disabled: item.disabled },
-      event: { onClick: commonUtils.isEmpty(item.onClick) ? undefined : item.onClick.bind(this, item.key, item) },
+      property: { name: item.fieldName, htmlType: 'button', disabled: item.disabled },
+      event: { onClick: commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, item.fieldName, item) },
       componentType: componentType.Soruce,
     };
     return <Col><ButtonComponent {...button} /></Col>;

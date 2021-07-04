@@ -2,7 +2,7 @@ import * as request from "../utils/request";
 import * as application from "./application";
 
 const categoryListButtonEvent = async (key, config, e, childParams, props) => {
-  const { dispatch, commonModel, routeId } = props;
+  const { dispatch, dispatchModifyState, commonModel, routeId } = props;
   if (key === 'syncBillButton') {
     const url: string = `${application.urlPrefix}/button/syncBill`;
     const params = {
@@ -14,6 +14,8 @@ const categoryListButtonEvent = async (key, config, e, childParams, props) => {
     }
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
+      const returnState = await props.getAllData();
+      dispatchModifyState({ ...returnState, slaveSelectedRows: [], slaveSelectedRowKeys: [] });
       props.gotoSuccess(dispatch, interfaceReturn);
     } else {
       props.gotoError(dispatch, interfaceReturn);

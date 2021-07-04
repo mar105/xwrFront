@@ -122,6 +122,7 @@ const Container = (props) => {
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       const addState: any = {};
       addState.slaveData = [];
+      addState.slaveSelectedRows = [];
       addState.slaveSelectedRowKeys = [];
       addState.slaveDelData = [];
       form.resetFields();
@@ -150,6 +151,7 @@ const Container = (props) => {
       }
       const addState: any = {};
       addState.slaveData = [];
+      addState.slaveSelectedRows = [];
       addState.slaveSelectedRowKeys = [];
       addState.slaveDelData = [];
       form.resetFields();
@@ -186,6 +188,7 @@ const Container = (props) => {
         addState.masterData = {...props.getTreeNode(treeData, allList.join()) };
         addState.treeSelectedKeys = [addState.masterData.id];
         addState.slaveData = [];
+        addState.slaveSelectedRows = [];
         addState.slaveSelectedRowKeys = [];
         addState.slaveDelData = [];
         form.resetFields();
@@ -203,6 +206,7 @@ const Container = (props) => {
         interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           addState.slaveData = interfaceReturn.data;
+          addState.slaveSelectedRows = [];
           addState.slaveSelectedRowKeys = [];
           addState.slaveDelData = [];
         } else {
@@ -241,6 +245,7 @@ const Container = (props) => {
           form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
         }
         addState.slaveData = [];
+        addState.slaveSelectedRows = [];
         addState.slaveSelectedRowKeys = [];
         addState.slaveDelData = [];
         dispatchModifyState({ ...returnRoute, enabled: false, ...addState });

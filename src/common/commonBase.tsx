@@ -36,7 +36,8 @@ const commonBase = (WrapComponent) => {
           const { masterData }: any = stateRef.current;
           if (commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.handleType)) {
             const url: string = `${application.urlCommon}/verify/removeModifying`;
-            const params = {id: masterData.id, tabId};
+            const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
+              shopId: commonModel.userInfo.shopId};
             const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
             if (interfaceReturn.code === 1) {
             } else {

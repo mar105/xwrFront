@@ -43,8 +43,7 @@ const commonMasterEvent = (WrapComponent) => {
         const data = props.onModify();
         const masterData = {...masterDataOld, ...data };
         const url: string = `${application.urlCommon}/verify/isExistModifying`;
-        const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
-          shopId: commonModel.userInfo.shopId};
+        const params = {id: masterData.id, tabId};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
           dispatchModifyState({ masterData, enabled: true });

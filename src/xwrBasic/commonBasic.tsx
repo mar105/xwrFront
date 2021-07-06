@@ -74,7 +74,8 @@ const commonBasic = (WrapComponent) => {
         } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
           const {dispatch, commonModel, tabId, masterData} = props;
           const url: string = `${application.urlCommon}/verify/removeModifying`;
-          const params = {id: masterData.id, tabId};
+          const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
+            shopId: commonModel.userInfo.shopId};
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
             const returnState = await props.getAllData({dataId: masterDataOld.id });

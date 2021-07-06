@@ -3,14 +3,20 @@ import {useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "./application";
 import * as request from "../utils/request";
+import {useRef} from "react";
 
 const commonBasic = (WrapComponent) => {
   return function ChildComponent(props) {
+    const masterDataRef: any = useRef();
     let form;
     const onSetForm = (formNew) => {
       form = formNew;
       props.onSetForm(form);
     }
+
+    useEffect(() => {
+      masterDataRef.current = props.masterData;
+    }, [props.masterData]);
 
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
@@ -26,10 +32,10 @@ const commonBasic = (WrapComponent) => {
     }, [props.commonModel.stompClient]);
 
     const saveDataReturn = async (data) => {
-      const { dispatch, dispatchModifyState, masterData } = props;
+      const { dispatch, dispatchModifyState } = props;
       const returnBody = JSON.parse(data.body);
       if (returnBody.code === 1) {
-        const returnState: any = await props.getAllData({ dataId: masterData.id });
+        const returnState: any = await props.getAllData({ dataId: masterDataRef.current.id });
         dispatchModifyState({...returnState});
         props.gotoSuccess(dispatch, returnBody);
       } else {
@@ -52,7 +58,8 @@ const commonBasic = (WrapComponent) => {
         const data = props.onModify();
         const masterData = {...masterDataOld, ...data };
         const url: string = `${application.urlCommon}/verify/isExistModifying`;
-        const params = {id: masterData.id, tabId};
+        const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
+          shopId: commonModel.userInfo.shopId};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
           dispatchModifyState({ masterData, enabled: true });
@@ -84,7 +91,8 @@ const commonBasic = (WrapComponent) => {
             const saveChildData = await childParams.childCallback({masterDataOld});
             saveData.push(...saveChildData);
           }
-          const params = { id: masterDataOld.id, routeId: props.routeId, tabId, saveData, handleType: 'del'};
+          const params = { id: masterDataOld.id, routeId: props.routeId, tabId, saveData, groupId: commonModel.userInfo.groupId,
+            shopId: commonModel.userInfo.shopId, handleType: 'del'};
           const url: string = `${application.urlMain}/getData/saveData`;
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
@@ -103,7 +111,8 @@ const commonBasic = (WrapComponent) => {
       const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
-      const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
+      const params = { id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
+        shopId: commonModel.userInfo.shopId, saveData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType };
       const url: string = `${application.urlMain}/getData/saveData`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {

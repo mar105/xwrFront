@@ -1,7 +1,5 @@
 import { connect } from 'dva';
-import React, { useMemo } from 'react';
-import * as application from "../../application";
-import * as request from "../../../utils/request";
+import React, {useEffect, useMemo} from 'react';
 import {Col, Form, Row} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
@@ -18,95 +16,25 @@ const Customer = (props) => {
   };
 
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
-    const saveData: any = [];
-    saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
-    const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
-    const url: string = `${application.urlMain}/getData/saveData`;
-    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-    if (interfaceReturn.code === 1) {
-      const returnState: any = await props.getAllData({ dataId: masterData.id });
-      dispatchModifyState({...returnState});
-    } else if (interfaceReturn.code === 10) {
-      dispatchModifyState({ pageLoading: true });
-    } else {
-      props.gotoError(dispatch, interfaceReturn);
-    }
+    props.onFinish(values);
   }
 
-
-
-  const onClick = async (key, e) => {
-    const { commonModel, tabId, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld } = props;
-    if (key === 'addButton') {
-      const masterData = props.onAdd();
-      form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, enabled: true });
-    } else if (key === 'modifyButton') {
-      const data = props.onModify();
-      const masterData = {...masterDataOld, ...data };
-      const url: string = `${application.urlCommon}/verify/isExistModifying`;
-      const params = {id: masterData.id, tabId};
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-      if (interfaceReturn.code === 1) {
-        dispatchModifyState({ masterData, enabled: true });
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
-      }
-
-    } else if (key === 'cancelButton') {
-      if (masterData.handleType === 'add') {
-        const returnState = await props.getAllData({dataId: masterDataOld.id });
-        dispatchModifyState({ ...returnState, enabled: false });
-      } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
-        const {dispatch, commonModel, tabId, masterData} = props;
-        const url: string = `${application.urlCommon}/verify/removeModifying`;
-        const params = {id: masterData.id, tabId};
-        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-        if (interfaceReturn.code === 1) {
-          const returnState = await props.getAllData({dataId: masterDataOld.id });
-          dispatchModifyState({ ...returnState, enabled: false });
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-        }
-      }
-    } else if (key === 'delButton') {
-      const { commonModel, dispatch, masterData, dispatchModifyState } = props;
-      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
-        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
-        return;
-      }
-      if (commonUtils.isNotEmptyArr(masterData.children)) {
-        props.gotoError(dispatch, { code: '6001', msg: '请先删除子节点' });
-        return;
-      }
-      const params = { ...masterData };
-      const url: string = `${application.urlPrefix}/route/delRoute`;
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-      if (interfaceReturn.code === 1) {
-        const returnRoute: any = await props.getDataOne({isWait: true});
-        const addState: any = {};
-        if (commonUtils.isNotEmpty(returnRoute.treeData)) {
-          addState.treeSelectedKeys = [returnRoute.treeData[0].id];
-          addState.masterData = {...returnRoute.treeData[0]};
-          form.resetFields();
-          form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
-        }
-
-        dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
+  useEffect(() => {
+    if (commonUtils.isNotEmptyObj(props.masterContainer)) {
+      if (props.handleType === 'add') {
+        onButtonClick('addButton', null, null);
       }
     }
+  }, [props.masterContainer.dataSetName]);
 
+
+
+  const onButtonClick = async (key, config, e) => {
+    props.onButtonClick(key, config, e);
   }
-
-
-
 
   const { enabled, masterContainer, masterData } = props;
-  const buttonGroup = { onClick, enabled };
+  const buttonGroup = { onClick: onButtonClick, enabled };
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (

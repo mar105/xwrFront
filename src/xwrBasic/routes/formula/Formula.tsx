@@ -43,7 +43,7 @@ const Formula = (props) => {
         onButtonClick('addButton', null, null);
       }
     }
-  }, [props.masterContainer]);
+  }, [props.masterContainer.dataSetName]);
 
   const getTreeData = (formulaType) => {
     const { masterContainer } = props;

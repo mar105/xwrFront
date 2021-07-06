@@ -11,7 +11,7 @@ const commonBase = (WrapComponent) => {
     let form;
     const [modifyState, dispatchModifyState] = useReducer((state, action) => {
       return {...state, ...action };
-    },{ ...props.commonModel.activePane });
+    },{ masterContainer: {}, ...props.commonModel.activePane });
     useEffect(() => {
       stateRef.current = modifyState;
     }, [modifyState]);
@@ -90,8 +90,10 @@ const commonBase = (WrapComponent) => {
             } else if (container.isSelect && modifyState.handleType !== 'add') {
               const returnData: any = await getDataOne({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
               addState[container.dataSetName + 'Data'] = returnData;
-              form.resetFields();
-              form.setFieldsValue(commonUtils.setFieldsValue(returnData));
+              if (form) {
+                form.resetFields();
+                form.setFieldsValue(commonUtils.setFieldsValue(returnData));
+              }
             }
           } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
@@ -325,8 +327,9 @@ const commonBase = (WrapComponent) => {
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
 
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld, ...getAssignFieldValue(assignField, assignOption) };
-
+        const assignValue = getAssignFieldValue(assignField, assignOption);
+        const data = { ...dataOld, ...assignValue };
+        form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
         if (isWait) {
@@ -356,8 +359,9 @@ const commonBase = (WrapComponent) => {
       const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
 
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld, ...getAssignFieldValue(assignField, assignOption) };
-
+        const assignValue = getAssignFieldValue(assignField, assignOption);
+        const data = { ...dataOld, ...assignValue };
+        form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
         if (isWait) {

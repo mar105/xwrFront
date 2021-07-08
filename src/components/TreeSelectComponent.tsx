@@ -12,12 +12,18 @@ export function TreeSelectComponent(params) {
   const addProperty: any = {};
   addProperty.showSearch = true;
   addProperty.treeNodeFilterProp = params.config.treeColumnNameDrop;
+  addProperty.multiple = params.config.multiple;
   if (params.config.dropType === 'const') {
     addProperty.treeData = typeof params.config.viewDrop === 'string' ?
       commonUtils.stringToObj(params.config.viewDrop) : params.config.viewDrop;
   } else {
     addProperty.treeData = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
   }
+
+  if (params.config.multiple) {
+    addProperty.value = commonUtils.isEmpty(addProperty.value) ? [] : typeof addProperty.value === 'string' ? addProperty.value.split(',') : addProperty.value;
+  }
+
   const onKeyUp = (e) => {
     if (e.key === 'F2') {
       message.info(params.config.fieldName);
@@ -37,7 +43,7 @@ export function TreeSelectComponent(params) {
 
   const onChange = (value, label, extra) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange(params.name, params.config.fieldName, params.record, params.config.assignField, value, extra);
+      params.event.onChange(params.name, params.config.fieldName, params.record, params.config, value, extra);
     }
     dispatchModifySelfState({ searchValue: '' });
   }

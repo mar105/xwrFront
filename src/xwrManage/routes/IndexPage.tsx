@@ -19,7 +19,7 @@ function IndexPage(props) {
     connectionWebsocket();
     const websocket = setInterval(() => {
       connectionWebsocket();
-    }, 10000);
+    }, 5000);
     return () => clearInterval(websocket);
   }, []);
 
@@ -45,7 +45,7 @@ function IndexPage(props) {
         const panes = commonModel.panes;
         const pane = { key, title: route.title, route: path };
         panes.push(pane);
-        panesComponents.push(commonUtils.panesComponent(pane, route, null));
+        panesComponents.push(commonUtils.panesComponent(pane, route, null, null));
         dispatch({
           type: 'commonModel/saveActivePane',
           payload: { ...pane },

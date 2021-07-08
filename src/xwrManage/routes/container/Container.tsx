@@ -13,6 +13,7 @@ import {InputComponent} from "../../../components/InputComponent";
 import {NumberComponent} from "../../../components/NumberComponent";
 import {SwitchComponent} from "../../../components/SwitchComponent";
 import SlaveContainer from "./SlaveContainer";
+import {TreeSelectComponent} from "../../../components/TreeSelectComponent";
 
 const Container = (props) => {
   const [form] = Form.useForm();
@@ -29,7 +30,7 @@ const Container = (props) => {
         const {treeData} = returnRoute;
         const selectedKeys = [treeData[0].id];
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(treeData[0]), saveAfterMessage: commonUtils.isEmpty(treeData[0].saveAfterMessage) ? [] : treeData[0].saveAfterMessage.split(',') });
         dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], enabled: false});
       }
     }
@@ -78,7 +79,7 @@ const Container = (props) => {
   const onFinish = async (values: any) => {
     const { commonModel, dispatch, masterData, slaveData, slaveDelData, dispatchModifyState, tabId } = props;
     const saveData: any = [];
-    saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], [], false));
+    saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], [], false));
     saveData.push(commonUtils.mergeData('slave', slaveData, slaveDelData, false));
     const params = { id: masterData.id, tabId, saveData };
     const url: string = `${application.urlPrefix}/container/saveContainer`;
@@ -95,12 +96,13 @@ const Container = (props) => {
       }
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), saveAfterMessage: commonUtils.isEmpty(addState.masterData.saveAfterMessage) ? [] : addState.masterData.saveAfterMessage.split(',')  });
       dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }
   };
+
   const onClick = async (key, e) => {
     const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld, treeExpandedKeys: treeExpandedKeysOld } = props;
     if (key === 'addButton') {
@@ -126,7 +128,7 @@ const Container = (props) => {
       addState.slaveSelectedRowKeys = [];
       addState.slaveDelData = [];
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), saveAfterMessage: commonUtils.isEmpty(masterData.saveAfterMessage) ? [] : masterData.saveAfterMessage.split(',')});
       dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true, ...addState });
     } else if (key === 'addChildButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
@@ -155,7 +157,7 @@ const Container = (props) => {
       addState.slaveSelectedRowKeys = [];
       addState.slaveDelData = [];
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), saveAfterMessage: commonUtils.isEmpty(masterData.saveAfterMessage) ? [] : masterData.saveAfterMessage.split(',')});
       dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys, ...addState });
 
     } else if (key === 'modifyButton') {
@@ -192,7 +194,7 @@ const Container = (props) => {
         addState.slaveSelectedRowKeys = [];
         addState.slaveDelData = [];
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), saveAfterMessage: commonUtils.isEmpty(addState.masterData.saveAfterMessage) ? [] : addState.masterData.saveAfterMessage.split(',')});
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
         let url: string = `${application.urlCommon}/verify/removeModifying`;
@@ -242,7 +244,7 @@ const Container = (props) => {
           addState.treeSelectedKeys = [returnRoute.treeData[0].id];
           addState.masterData = {...returnRoute.treeData[0]};
           form.resetFields();
-          form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
+          form.setFieldsValue({ ...commonUtils.setFieldsValue(returnRoute.treeData[0]), saveAfterMessage: commonUtils.isEmpty(returnRoute.treeData[0].saveAfterMessage) ? [] : returnRoute.treeData[0].saveAfterMessage.split(',') });
         }
         addState.slaveData = [];
         addState.slaveSelectedRows = [];
@@ -295,13 +297,13 @@ const Container = (props) => {
         addState.slaveData = [];
       }
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(e.node));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(e.node), saveAfterMessage: commonUtils.isEmpty(e.node.saveAfterMessage) ? [] : e.node.saveAfterMessage.split(',')});
       dispatchModifyState(addState);
     }
   }
 
   const getSelectList = async (params) => {
-    const { commonModel, dispatch, dispatchModifyState } = props;
+    const { commonModel, dispatch } = props;
     const { isWait } = params;
     if (params.fieldName === 'popupActiveName' || params.fieldName === 'popupSelectName') {
       const requestParam = {
@@ -317,8 +319,21 @@ const Container = (props) => {
       if (interfaceReturn.code === 1) {
         if (isWait) {
           return { ...interfaceReturn.data.data };
-        } else {
-          dispatchModifyState({ ...interfaceReturn.data.data });
+        }
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+        return {};
+      }
+    } else if (params.fieldName === 'saveAfterMessage') {
+      const requestParam = {
+        routeId: props.routeId
+      }
+      const url: string = `${application.urlPrefix}/container/getAllContainer` + commonUtils.paramGet(requestParam);
+
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        if (isWait) {
+          return { list: interfaceReturn.data };
         }
       } else {
         props.gotoError(dispatch, interfaceReturn);
@@ -352,37 +367,44 @@ const Container = (props) => {
     name: 'master',
     config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
+    event: { onChange: props.onNumberChange }
   };
   const chineseName = {
     name: 'master',
     form,
     config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
   const traditionalName = {
     name: 'master',
     config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
   const englishName = {
     name: 'master',
     config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
   const entitySelect = {
     name: 'master',
     config: { fieldName: 'entitySelect', viewName: '实体查询' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
   const entityWhere = {
     name: 'master',
     config: { fieldName: 'entityWhere', viewName: '实体条件' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
   const entitySort = {
     name: 'master',
     config: { fieldName: 'entitySort', viewName: '实体排序' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
   const isVisible = {
     name: 'master',
@@ -394,6 +416,7 @@ const Container = (props) => {
     name: 'master',
     config: { fieldName: 'fixColumnCount', viewName: '固定列数' },
     property: { disabled: !enabled },
+    event: { onChange: props.onNumberChange }
   };
 
   const isTable = {
@@ -432,18 +455,21 @@ const Container = (props) => {
     name: 'master',
     config: { fieldName: 'virtualIndex', viewName: '虚拟索引' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
 
   const billNumField = {
     name: 'master',
     config: { fieldName: 'billNumField', viewName: '单据号字段' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
 
   const tableKey = {
     name: 'master',
     config: { fieldName: 'tableKey', viewName: '表格Key' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
 
   const isTree = {
@@ -485,24 +511,28 @@ const Container = (props) => {
     name: 'master',
     config: { fieldName: 'saveCallMessage', viewName: '保存调用消息' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
 
   const saveAfterMessage = {
     name: 'master',
-    config: { fieldName: 'saveAfterMessage', viewName: '保存后调用消息' },
-    property: { disabled: !enabled },
+    config: { fieldName: 'saveAfterMessage', viewName: '保存后调用消息', dropType: 'sql', multiple: true },
+    property: { disabled: !enabled, dropdownMatchSelectWidth: 400 },
+    event: { onChange: props.onTreeSelectChange, getSelectList }
   };
 
   const examineAfterMessage = {
     name: 'master',
     config: { fieldName: 'examineAfterMessage', viewName: '审核后调用消息' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
 
   const delAfterMessage = {
     name: 'master',
     config: { fieldName: 'delAfterMessage', viewName: '删除后调用消息' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
   };
 
   const buttonAddGroup: any = [];
@@ -530,7 +560,7 @@ const Container = (props) => {
       </Row>
       <Row>
         <Col><InputComponent {...saveCallMessage} /></Col>
-        <Col><InputComponent {...saveAfterMessage} /></Col>
+        <Col><TreeSelectComponent {...saveAfterMessage} /></Col>
         <Col><InputComponent {...examineAfterMessage} /></Col>
       </Row>
       <Row>

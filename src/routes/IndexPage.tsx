@@ -31,7 +31,7 @@ function IndexPage(props) {
     connectionWebsocket();
     const websocket = setInterval(() => {
       connectionWebsocket();
-    }, 10000);
+    }, 5000);
     return () => clearInterval(websocket);
   }, []);
 

@@ -330,7 +330,9 @@ const commonBase = (WrapComponent) => {
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const assignValue = getAssignFieldValue(assignField, assignOption);
         const data = { ...dataOld, ...assignValue };
-        form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
+        if (form) {
+          form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
+        }
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
         if (isWait) {
@@ -354,15 +356,16 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    const onTreeSelectChange = (name, fieldName, record, assignField, valueOld, extra, isWait = false) => {
-      const value = valueOld === undefined ? '' : valueOld;
+    const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
+      const value = valueOld === undefined ? '' : valueOld.toString();
       const { [name + 'Data']: dataOld }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
-
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const assignValue = getAssignFieldValue(assignField, assignOption);
+        const assignValue = getAssignFieldValue(config.assignField, assignOption);
         const data = { ...dataOld, ...assignValue };
-        form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
+        if (form) {
+          form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
+        }
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
         if (isWait) {
@@ -374,7 +377,7 @@ const commonBase = (WrapComponent) => {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
         if (index > -1) {
-          data[index] = { ...data[index], ...getAssignFieldValue(assignField, assignOption) };
+          data[index] = { ...data[index], ...getAssignFieldValue(config.assignField, assignOption) };
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = value;
           if (isWait) {

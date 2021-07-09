@@ -48,11 +48,11 @@ const commonBasic = (WrapComponent) => {
 
 
     const onButtonClick = async (key, config, e, childParams) => {
-      const { commonModel, tabId, dispatch, dispatchModifyState, masterData: masterDataOld } = props;
+      const { commonModel, tabId, dispatch, dispatchModifyState, masterContainer, masterData: masterDataOld } = props;
       if (key === 'addButton') {
         const masterData = props.onAdd();
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+        form.setFieldsValue(commonUtils.setFieldsValue(masterData, masterContainer));
         dispatchModifyState({ masterData, enabled: true });
       } else if (key === 'modifyButton') {
         const data = props.onModify();

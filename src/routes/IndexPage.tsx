@@ -52,7 +52,8 @@ function IndexPage(props) {
   const onExit = async () => {
     const {dispatch, commonModel} = props;
     const url: string = `${application.urlCommon}/verify/clearAllModifying`;
-    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({}))).data;
+    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,
+      shopId: commonModel.userInfo.shopId }))).data;
     if (interfaceReturn.code === 1) {
     } else {
       props.gotoError(dispatch, interfaceReturn);

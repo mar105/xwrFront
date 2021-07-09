@@ -126,21 +126,27 @@ export function getWebSocketData(authorization) {
 export function setFieldsValue(value, container: any = null) {
   const returnValue = {};
   if (container) {
-    for(const config of container.slaveData) {
-      if (config.fieldType === 'datetime') {
-        returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? null : moment(value[config.fieldName]);
-      } else if (config.multiple) {
-        returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : typeof value[config.fieldName] === 'string' ? value[config.fieldName].split(',') : value[config.fieldName];
-      } else {
-        returnValue[config.fieldName] = value[config.fieldName];
-      }
-    }
+    // for(const config of container.slaveData) {
+    //   if (config.containerType === 'cascader') {
+    //     returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : value[config.fieldName].split(',');
+    //   } else if (config.fieldType === 'datetime') {
+    //     returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? null : moment(value[config.fieldName]);
+    //   } else if (config.multiple) {
+    //     returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : typeof value[config.fieldName] === 'string' ? value[config.fieldName].split(',') : value[config.fieldName];
+    //   } else {
+    //     returnValue[config.fieldName] = value[config.fieldName];
+    //   }
+    // }
     Object.keys(value).forEach(item => {
       const index = container.slaveData.findIndex(config => config.fieldName === item);
       if (index > -1) {
         const config = container.slaveData[index];
-        if (config.fieldType === 'datetime') {
+        if (config.containerType === 'cascader') {
+          returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : value[config.fieldName].split(',');
+        } else if (config.fieldType === 'datetime') {
           returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? null : moment(value[config.fieldName]);
+        } else if (config.multiple) {
+          returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : typeof value[config.fieldName] === 'string' ? value[config.fieldName].split(',') : value[config.fieldName];
         } else {
           returnValue[config.fieldName] = value[config.fieldName];
         }
@@ -148,7 +154,6 @@ export function setFieldsValue(value, container: any = null) {
         returnValue[item] = value[item];
       }
     });
-
   } else if (isNotEmptyObj(value)) {
     Object.keys(value).forEach(item => {
       if (item.substring(item.length - 4) === 'Date') {

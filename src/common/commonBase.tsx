@@ -93,7 +93,7 @@ const commonBase = (WrapComponent) => {
               addState[container.dataSetName + 'Data'] = returnData;
               if (form) {
                 form.resetFields();
-                form.setFieldsValue(commonUtils.setFieldsValue(returnData));
+                form.setFieldsValue(commonUtils.setFieldsValue(returnData, container));
               }
             }
           } else if (params.handleType !== 'add' && container.isSelect) {

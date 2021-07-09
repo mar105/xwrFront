@@ -10,8 +10,19 @@ const commonListEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e) => {
+      const { dispatch, ['slaveContainer']: container, slaveSelectedRowKeys } = props;
       if (key === 'addButton') {
         props.callbackAddPane(config.popupSelectId, {handleType: 'add'});
+      }
+      else if (key === 'modifyButton') {
+        const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
+        if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {
+          if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+            props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+            return;
+          }
+          props.callbackAddPane(container.slaveData[index].popupSelectId, { handleType: 'modify', dataId: slaveSelectedRowKeys[0] });
+        }
       }
     }
 

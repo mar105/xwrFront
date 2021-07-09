@@ -24,6 +24,9 @@ const Customer = (props) => {
       if (props.handleType === 'add') {
         onButtonClick('addButton', null, null);
       }
+      else if (props.handleType === 'modify') {
+        onButtonClick('modifyButton', null, null);
+      }
     }
   }, [props.masterContainer.dataSetName]);
 

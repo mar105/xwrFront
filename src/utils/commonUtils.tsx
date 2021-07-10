@@ -4,6 +4,8 @@ import SockJS from 'sockjs-client';
 import moment from 'moment';
 import dynamic from "dva/dynamic";
 import * as React from "react";
+import {Tooltip} from "antd";
+import { PlusOutlined } from '@ant-design/icons';
 
 var Snowflake = (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
@@ -126,17 +128,6 @@ export function getWebSocketData(authorization) {
 export function setFieldsValue(value, container: any = null) {
   const returnValue = {};
   if (container) {
-    // for(const config of container.slaveData) {
-    //   if (config.containerType === 'cascader') {
-    //     returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : value[config.fieldName].split(',');
-    //   } else if (config.fieldType === 'datetime') {
-    //     returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? null : moment(value[config.fieldName]);
-    //   } else if (config.multiple) {
-    //     returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : typeof value[config.fieldName] === 'string' ? value[config.fieldName].split(',') : value[config.fieldName];
-    //   } else {
-    //     returnValue[config.fieldName] = value[config.fieldName];
-    //   }
-    // }
     Object.keys(value).forEach(item => {
       const index = container.slaveData.findIndex(config => config.fieldName === item);
       if (index > -1) {
@@ -189,7 +180,10 @@ export function getTableProps(name, props) {
     onTableDelClick: props.onTableDelClick,
     pagination: true, // 是否分页
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
-      onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList  }
+      onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList  },
+    labelTitle: <div>
+      <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
+    </div>
   }
   return tableParam;
 };

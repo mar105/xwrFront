@@ -10,10 +10,11 @@ import ProvinceCityArea from "./ProvinceCityArea";
 import {TreeSelectComponent} from "../components/TreeSelectComponent";
 
 export const CommonExhibit = (props) => {
-  const { [props.name + 'Data']: masterDataOld, masterContainer, enabled } = props;
+  const { [props.name + 'Data']: masterDataOld, masterContainer, enabled: enabledOld } = props;
   const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
   const masterComponent = commonUtils.isEmptyObj(masterContainer) ? '' :
     masterContainer.slaveData.filter(item => item.isVisible).map(item => {
+      const enabled = item.tagType === 'alwaysReadonly' || item.isReadOnly ? false : item.tagType === 'alwaysModify' ? true : enabledOld;
       const selectParams = {
         name: props.name,
         config: item,

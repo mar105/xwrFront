@@ -284,7 +284,7 @@ export function TableComponent(params: any) {
           column.className = 'column-money';
           column.align = 'align';
         }
-        if (params.enabled && !config.isReadOnly) {
+        if (params.enabled && !config.isReadOnly && config.tagType !== 'alwaysReadonly') {
           column.render = (text, record, index) => {
             const selectParams = {
               name: params.name,

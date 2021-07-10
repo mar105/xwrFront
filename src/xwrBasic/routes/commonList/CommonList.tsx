@@ -11,7 +11,9 @@ const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const { enabled, slaveContainer, searchRowKeys, searchData } = props;
-  const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer };
+  const buttonAddGroup: any = [];
+  buttonAddGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', onClick: props.onButtonClick, sortNum: 100, disabled: props.enabled });
+  const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer, buttonGroup: buttonAddGroup };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.rowSelection.checkStrictly = false;
   tableParam.isLastColumn = false;

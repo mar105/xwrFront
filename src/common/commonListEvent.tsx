@@ -10,7 +10,7 @@ const commonListEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e) => {
-      const { dispatch, ['slaveContainer']: container, slaveSelectedRowKeys } = props;
+      const { dispatch, dispatchModifyState, ['slaveContainer']: container, slaveSelectedRowKeys } = props;
       if (key === 'addButton') {
         props.callbackAddPane(config.popupSelectId, {handleType: 'add'});
       }
@@ -23,6 +23,11 @@ const commonListEvent = (WrapComponent) => {
           }
           props.callbackAddPane(container.slaveData[index].popupSelectId, { handleType: 'modify', dataId: slaveSelectedRowKeys[0] });
         }
+      }
+      else if (key === 'refreshButton') {
+        dispatchModifyState({ pageLoading: true });
+        const returnState = await props.getAllData({ pageNum: 1});
+        dispatchModifyState({ ...returnState });
       }
     }
 

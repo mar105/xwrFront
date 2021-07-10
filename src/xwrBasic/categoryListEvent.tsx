@@ -23,7 +23,7 @@ const categoryListEvent = (WrapComponent) => {
       const { dispatch, dispatchModifyState } = props;
       const returnBody = JSON.parse(data.body);
       if (returnBody.code === 1) {
-        const returnState = await props.getAllData();
+        const returnState = await props.getAllData({ pageNum: 1 });
         dispatchModifyState({ ...returnState });
         props.gotoSuccess(dispatch, returnBody);
       }
@@ -130,7 +130,7 @@ const categoryListEvent = (WrapComponent) => {
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
-          const returnState = await props.getAllData();
+          const returnState = await props.getAllData({ pageNum: 1});
           dispatchModifyState({ ...returnState, slaveSelectedRows: [] });
         } else {
           props.gotoError(dispatch, interfaceReturn);

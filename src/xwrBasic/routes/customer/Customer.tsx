@@ -6,6 +6,7 @@ import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../ButtonGroup";
 import commonBasic from "../../commonBasic";
 import { CommonExhibit } from "../../../common/CommonExhibit";
+import {TableComponent} from "../../../components/TableComponent";
 
 const Customer = (props) => {
   const [form] = Form.useForm();
@@ -38,8 +39,12 @@ const Customer = (props) => {
 
   const { enabled, masterContainer, masterData } = props;
   const buttonGroup = { onClick: onButtonClick, enabled };
+  const contactParam: any = commonUtils.getTableProps('contact', props);
+  console.log('contactParam', contactParam, props);
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
+  const buttonGroupComponent = useMemo(()=>{ return (
+    <ButtonGroup {...buttonGroup} />)}, [enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
@@ -47,7 +52,12 @@ const Customer = (props) => {
           {component}
         </Col>
       </Row>
-      <ButtonGroup {...buttonGroup} />
+      <Row style={{ height: 'auto', overflow: 'auto' }}>
+        <Col>
+          {commonUtils.isNotEmptyObj(props.contactContainer) ? <TableComponent {...contactParam} /> : '' }
+        </Col>
+      </Row>
+      {buttonGroupComponent}
     </Form>
   );
 }

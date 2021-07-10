@@ -1,14 +1,14 @@
 import {TableComponent} from "../../../components/TableComponent";
 import React, {useEffect} from "react";
 import * as commonUtils from "../../../utils/commonUtils";
-import {ButtonComponent} from "../../../components/ButtonComponent";
-import {componentType} from "../../../utils/commonTypes";
 import * as application from "../../application";
 import * as request from "../../../utils/request";
+import { PlusOutlined, CloudSyncOutlined } from '@ant-design/icons';
+import {Tooltip} from "antd";
 
 const SlaveContainer = (props) => {
 
-  const { name, enabled } = props;
+  const { name } = props;
   const columns = [
     { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 80, fixed: 'left' },
     { title: '名称', dataIndex: 'fieldName', isRequired: true, fieldType: 'varchar', sortNum: 20, width: 150, fixed: 'left' },
@@ -141,27 +141,15 @@ const SlaveContainer = (props) => {
     }
   }
 
-  const button = {
-    caption: '增加',
-    property: { name: name + 'AddButton', htmlType: 'button', disabled: !enabled },
-    event: { onClick: onClick.bind(this, name + 'AddButton') },
-    componentType: componentType.Soruce,
-  };
-
-  const syncDataButton = {
-    caption: '同步字段',
-    property: { name: name + 'SyncDataButton', htmlType: 'button', disabled: !enabled },
-    event: { onClick: onClick.bind(this, name + 'SyncDataButton') },
-    componentType: componentType.Soruce,
-  };
-
   const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.isDragRow = true;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
+  tableParam.labelTitle = <div>
+    <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
+    <a onClick={onClick.bind(this, name + 'SyncDataButton')}> <Tooltip placement="top" title="同步字段"><CloudSyncOutlined /> </Tooltip></a>
+  </div>
   return (
     <div>
-      <ButtonComponent {...button} />
-      <ButtonComponent {...syncDataButton} />
       {props.slaveContainer ? <TableComponent {...tableParam} /> : ''}
     </div>
   );

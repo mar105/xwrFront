@@ -252,6 +252,7 @@ export function TableComponent(params: any) {
         columns.push(column);
       } else if (columnOld.title === 'o') {
         const column = {...columnOld};
+        column.title = params.labelTitle ? params.labelTitle : column.title;
         columns.push(column);
       } else {
         const index = params.config.slaveData.findIndex(item => item.fieldName === columnOld.dataIndex);
@@ -264,6 +265,10 @@ export function TableComponent(params: any) {
           width: columnHeader.width,
           onResize: handleResize(columnIndex),
         });
+        column.shouldUpdate = (record, prevRecord) => {
+          return record[column.fieldName] !== prevRecord[column.fieldName];
+        }
+
         column.ellipsis = {showTitle: true};
         // 多列排序
         column.sorter = {

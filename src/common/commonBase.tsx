@@ -78,22 +78,19 @@ const commonBase = (WrapComponent) => {
             }
           }
           //dataId，列表传入，isSelect 配置传入， handleType 列表传入
-          if (commonUtils.isNotEmpty(params.dataId) && params.handleType !== 'add' && container.isSelect) {
+          if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
             //单据获取
-            if (container.isTable) {
-              const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
-              addState = {...addState, ...returnData, [container.dataSetName + 'DelData']: []};
-              // addState[container.dataSetName + 'Data'] = returnData.list;
-              // addState[container.dataSetName + 'Sum'] = returnData.sum;
-              // addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
-              // addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
-
-            } else if (container.isSelect && modifyState.handleType !== 'add') {
-              const returnData: any = await getDataOne({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
-              addState[container.dataSetName + 'Data'] = returnData;
-              if (form) {
-                form.resetFields();
-                form.setFieldsValue(commonUtils.setFieldsValue(returnData, container));
+            if (params.handleType !== 'add')  {
+              if (container.isTable) {
+                const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
+                addState = {...addState, ...returnData, [container.dataSetName + 'DelData']: []};
+              } else if (container.isSelect && modifyState.handleType !== 'add') {
+                const returnData: any = await getDataOne({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
+                addState[container.dataSetName + 'Data'] = returnData;
+                if (form) {
+                  form.resetFields();
+                  form.setFieldsValue(commonUtils.setFieldsValue(returnData, container));
+                }
               }
             }
           } else if (params.handleType !== 'add' && container.isSelect) {
@@ -101,13 +98,6 @@ const commonBase = (WrapComponent) => {
             if (container.isTable) {
               const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum, condition: {}, isWait: true });
               addState = {...addState, ...returnData, [container.dataSetName + 'DelData']: []};
-              // addState[container.dataSetName + 'Data'] = returnData.list;
-              // addState[container.dataSetName + 'Sum'] = returnData.sum;
-              // addState[container.dataSetName + 'PageNum'] = returnData.pageNum;
-              // addState[container.dataSetName + 'IsLastPage'] = returnData.isLastPage;
-              // if (commonUtils.isNotEmpty(returnData.createDate)) {
-              //   addState[container.dataSetName + 'CreateDate'] = returnData.createDate;
-              // }
             }
           }
         };
@@ -221,7 +211,7 @@ const commonBase = (WrapComponent) => {
       return dataRow;
     };
 
-    const onTableClick = (name, record, e, isWait = false) => {
+    const onTableDelClick = (name, record, e, isWait = false) => {
       const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld }: any = stateRef.current;
       const data = [...dataOld];
       const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
@@ -235,6 +225,21 @@ const commonBase = (WrapComponent) => {
         } else {
           dispatchModifyState({ [name + 'Data']: data, [name + 'DelData']: delData });
         }
+      }
+    };
+
+    const onTableAddClick = (name, e, isWait = false) => {
+      const { [name + 'Data']: dataOld, masterData, [name + 'Container']: container }: any = stateRef.current;
+      const tableData = dataOld === undefined ? [] : [...dataOld];
+
+      const data = onAdd(container);
+      data.superiorId = masterData.id;
+      tableData.push(data);
+
+      if (isWait) {
+        return { [name + 'Data']: tableData };
+      } else {
+        dispatchModifyState({ [name + 'Data']: tableData });
       }
     };
 
@@ -436,11 +441,7 @@ const commonBase = (WrapComponent) => {
         dispatchModifyState({[name + 'Loading']: true });
         const returnData: any = await getDataList({ name, containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true, createDate });
         const addState = {...returnData};
-        addState[name + 'Data'] = [...data, ...returnData[name + 'Data']];
-        // addState[name + 'Data'] = [...data, ...returnData.list];
-        // addState[name + 'PageNum'] = returnData.pageNum;
-        // addState[name + 'IsLastPage'] = returnData.isLastPage;
-        // addState[name + 'Loading'] = false;
+        addState[name + 'Data'] = commonUtils.isEmptyArr(returnData[name + 'Data']) ? addState[name + 'Data'] : [...data, ...returnData[name + 'Data']];
         dispatchModifyState({...addState});
       }
     }
@@ -458,7 +459,8 @@ const commonBase = (WrapComponent) => {
       onAdd={onAdd}
       onModify={onModify}
       onDel={onDel}
-      onTableClick={onTableClick}
+      onTableAddClick={onTableAddClick}
+      onTableDelClick={onTableDelClick}
       gotoError={gotoError}
       gotoSuccess={gotoSuccess}
       onRowSelectChange={onRowSelectChange}

@@ -240,7 +240,7 @@ export function TableComponent(params: any) {
               params.property.dataSource.length < 10000 ? 70 : 80 , fixed: 'left' };
     const columnsOld: any = params.config.isRowNum ? [firstColumn, ...resizeColumns] : [ ...resizeColumns];
     const lastColumn: any = { title: 'o', render: (text,record, index)=>
-        <a onClick={params.onTableClick ? params.onTableClick.bind(this, params.name, record) : null}><DeleteOutlined /></a>, width: 50 , fixed: 'right' };
+        <a onClick={params.onTableDelClick ? params.onTableDelClick.bind(this, params.name, record) : null}><DeleteOutlined /></a>, width: 50 , fixed: 'right' };
     if (params.isLastColumn && params.enabled) {
       columnsOld.push(lastColumn);
     }

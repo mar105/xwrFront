@@ -1,12 +1,13 @@
 import { connect } from 'dva';
 import React, {useEffect, useMemo} from 'react';
-import {Col, Form, Row} from "antd";
+import {Col, Form, Row, Tooltip} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../ButtonGroup";
 import commonBasic from "../../commonBasic";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
+import { PlusOutlined } from '@ant-design/icons';
 
 const Customer = (props) => {
   const [form] = Form.useForm();
@@ -40,7 +41,9 @@ const Customer = (props) => {
   const { enabled, masterContainer, masterData } = props;
   const buttonGroup = { onClick: onButtonClick, enabled };
   const contactParam: any = commonUtils.getTableProps('contact', props);
-  console.log('contactParam', contactParam, props);
+  contactParam.labelTitle = <div>
+    <a onClick={props.onTableAddClick.bind(this, 'contact')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
+  </div>;
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   const buttonGroupComponent = useMemo(()=>{ return (

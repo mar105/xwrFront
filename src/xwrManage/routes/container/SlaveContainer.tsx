@@ -147,7 +147,7 @@ const SlaveContainer = (props) => {
   tableParam.labelTitle = <div>
     <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
     <a onClick={onClick.bind(this, name + 'SyncDataButton')}> <Tooltip placement="top" title="同步字段"><CloudSyncOutlined /> </Tooltip></a>
-  </div>
+  </div>;
   return (
     <div>
       {props.slaveContainer ? <TableComponent {...tableParam} /> : ''}

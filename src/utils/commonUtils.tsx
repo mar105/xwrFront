@@ -180,7 +180,7 @@ export function getTableProps(name, props) {
     onTableDelClick: props.onTableDelClick,
     pagination: true, // 是否分页
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
-      onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList  },
+      onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList, onCascaderChange: props.onCascaderChange },
     labelTitle: <div>
       <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
     </div>

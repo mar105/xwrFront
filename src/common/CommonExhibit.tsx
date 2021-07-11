@@ -46,14 +46,14 @@ export const CommonExhibit = (props) => {
       const numberParams = {
         name: props.name,
         config: item,
-        property: {checked: masterData[item.fieldName], disabled: !enabled },
+        property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
         event: {onChange: props.onNumberChange}
       };
       const dateParams = {
         name: props.name,
         config: item,
-        property: {checked: masterData[item.fieldName], disabled: !enabled },
+        property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
         event: {onChange: props.onNumberChange}
       };

@@ -111,7 +111,10 @@ const commonBasic = (WrapComponent) => {
     const onFinish = async (values: any, childParams) => {
       const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
+      saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
+      if (commonUtils.isNotEmptyObj(childParams) && commonUtils.isNotEmptyArr(childParams.saveData)) {
+        saveData.push(...childParams.saveData);
+      }
       const params = { id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId, saveData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType };
       const url: string = `${application.urlMain}/getData/saveData`;

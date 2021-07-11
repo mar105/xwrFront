@@ -70,7 +70,7 @@ const commonBase = (WrapComponent) => {
             addState[container.dataSetName + 'Container'] = container;
             if (container.isTable && commonUtils.isEmptyArr(modifyState[container.dataSetName + 'Columns'])) {
               const columns: any = [];
-              container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance') && item.isVisible).forEach(item => {
+              container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance' || item.containerType === 'cascader') && item.isVisible).forEach(item => {
                 const column = { title: item.viewName, dataIndex: item.fieldName, fieldType: item.fieldType, sortNum: item.sortNum, width: item.width };
                 columns.push(column);
               });
@@ -217,8 +217,10 @@ const commonBase = (WrapComponent) => {
       const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
       const index = data.findIndex(item => item.id === record.id);
       if (index > -1) {
-        data[index].handleType = 'del';
-        delData.push(data[index]);
+        if (data[index].handleType !== 'add') {
+          data[index].handleType = 'del';
+          delData.push(data[index]);
+        }
         data.splice(index, 1);
         if (isWait) {
           return { [name + 'Data']: data, [name + 'DelData']: delData };

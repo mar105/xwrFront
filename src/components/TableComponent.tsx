@@ -16,6 +16,7 @@ import arrayMove from 'array-move';
 import ReactDragListView from 'react-drag-listview';
 import Highlighter from 'react-highlight-words';
 import moment from 'moment';
+import ProvinceCityArea from "../common/ProvinceCityArea";
 
 const TableSummaryCell: any = Table.Summary.Cell;
 
@@ -319,42 +320,47 @@ export function TableComponent(params: any) {
               name: params.name,
               componentType: componentType.Soruce,
               config,
-              property: {checked: text},
+              property: {value: text},
               record,
               event: {onChange: params.event.onNumberChange}
             };
+            const provinceCityAreaParams = {
+              name: params.name,
+              componentType: componentType.Soruce,
+              config,
+              property: {value: text },
+              record,
+              event: {onChange: params.event.onCascaderChange}
+            };
             if (column.dataIndex === 'sortNum' && params.isDragRow) {
               return <div><DragHandle/> {text}</div>;
-            } else if (column.fieldType === 'varchar') {
-              if (config.dropType === 'sql' || config.dropType === 'const') {
+            } else if (column.fieldType === 'varchar' || column.fieldType === 'text') {
+              if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
+                return <ProvinceCityArea {...provinceCityAreaParams}  />;
+              } else if (config.dropType === 'sql' || config.dropType === 'const') {
                 const component = useMemo(() => {
-                  return (<SelectComponent {...selectParams}  />
-                  )
+                  return <SelectComponent {...selectParams}  />
                 }, [text]);
                 return component;
               } else {
                 const component = useMemo(() => {
-                  return (<InputComponent {...inputParams}  />
-                  )
+                  return <InputComponent {...inputParams}  />
                 }, [text]);
                 return component;
               }
             } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
               const component = useMemo(() => {
-                return (<NumberComponent {...numberParams}  />
-                )
+                return <NumberComponent {...numberParams}  />
               }, [text]);
               return component;
             } else if (column.fieldType === 'tinyint') {
               const component = useMemo(() => {
-                return (<CheckboxComponent {...checkboxParams}  />
-                )
+                return <CheckboxComponent {...checkboxParams}  />
               }, [text]);
               return component;
             } else if (column.fieldType === 'datetime') {
               const component = useMemo(() => {
-                return (<DatePickerComponent {...params}  />
-                )
+                return <DatePickerComponent {...params}  />
               }, [text]);
               return component;
             } else {

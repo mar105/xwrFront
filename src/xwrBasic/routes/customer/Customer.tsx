@@ -17,7 +17,12 @@ const Customer = (props) => {
   };
 
   const onFinish = async (values: any) => {
-    props.onFinish(values);
+    const { contactData, contactDelData, addressData, addressDelData } = props;
+    const saveData: any = [];
+    saveData.push(commonUtils.mergeData('contact', contactData, contactDelData, false));
+    saveData.push(commonUtils.mergeData('address', addressData, addressDelData, false));
+    const childParams = { saveData };
+    props.onFinish(values, childParams);
   }
 
   useEffect(() => {
@@ -31,8 +36,6 @@ const Customer = (props) => {
     }
   }, [props.masterContainer.dataSetName]);
 
-
-
   const onButtonClick = async (key, config, e) => {
     props.onButtonClick(key, config, e);
   }
@@ -40,7 +43,9 @@ const Customer = (props) => {
   const { enabled, masterContainer, masterData } = props;
   const buttonGroup = { onClick: onButtonClick, enabled };
   const contactParam: any = commonUtils.getTableProps('contact', props);
+  contactParam.pagination = false;
   const addressParam: any = commonUtils.getTableProps('address', props);
+  addressParam.pagination = false;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);

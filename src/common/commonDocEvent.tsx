@@ -132,10 +132,15 @@ const commonDocEvent = (WrapComponent) => {
     const getButtonGroup = () => {
       const buttonGroup: any = [];
       buttonGroup.push({ key: 'addButton', caption: '增加', htmlType: 'button', sortNum: 10, disabled: props.enabled });
-      buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 30, disabled: props.enabled });
-      buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !props.enabled });
-      buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !props.enabled });
-      buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: props.enabled });
+      buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 20, disabled: props.enabled });
+      buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 30, disabled: !props.enabled });
+      buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 40, disabled: !props.enabled });
+      buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 50, disabled: props.enabled });
+      buttonGroup.push({ key: 'firstButton', caption: '首条', htmlType: 'button', sortNum: 60, disabled: props.enabled });
+      buttonGroup.push({ key: 'priorButton', caption: '上一条', htmlType: 'button', sortNum: 70, disabled: props.enabled });
+      buttonGroup.push({ key: 'nextButton', caption: '下一条', htmlType: 'button', sortNum: 80, disabled: props.enabled });
+      buttonGroup.push({ key: 'lastButton', caption: '末条', htmlType: 'button', sortNum: 90, disabled: props.enabled });
+      buttonGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled });
       return buttonGroup;
     }
 

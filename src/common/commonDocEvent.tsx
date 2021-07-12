@@ -1,11 +1,11 @@
 import * as React from "react";
 import {useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
-import * as application from "./application";
+import * as application from "../xwrBasic/application";
 import * as request from "../utils/request";
 import {useRef} from "react";
 
-const commonBasic = (WrapComponent) => {
+const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {
     const masterDataRef: any = useRef();
     let form;
@@ -53,7 +53,7 @@ const commonBasic = (WrapComponent) => {
         const masterData = props.onAdd();
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(masterData, masterContainer));
-        dispatchModifyState({ masterData, enabled: true });
+        dispatchModifyState({ masterData, enabled: true, ...childParams });
       } else if (key === 'modifyButton') {
         const data = props.onModify();
         const masterData = {...masterDataOld, ...data };
@@ -69,8 +69,7 @@ const commonBasic = (WrapComponent) => {
 
       } else if (key === 'cancelButton') {
         if (masterDataOld.handleType === 'add') {
-          const returnState = await props.getAllData({dataId: masterDataOld.id });
-          dispatchModifyState({ ...returnState, enabled: false });
+          props.callbackRemovePane(tabId);
         } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
           const {dispatch, commonModel, tabId, masterData} = props;
           const url: string = `${application.urlCommon}/verify/removeModifying`;
@@ -139,7 +138,7 @@ const commonBasic = (WrapComponent) => {
   };
 };
 
-export default commonBasic;
+export default commonDocEvent;
 
 
 

@@ -4,7 +4,7 @@ import {Col, Form, Row, Tooltip} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../ButtonGroup";
-import commonBasic from "../../commonBasic";
+import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { StarTwoTone, DeleteOutlined, StarFilled } from '@ant-design/icons';
@@ -38,7 +38,16 @@ const Customer = (props) => {
   }, [props.masterContainer.dataSetName]);
 
   const onButtonClick = async (key, config, e) => {
-    props.onButtonClick(key, config, e);
+    const childParams: any = {};
+    if (key === 'addButton') {
+      childParams.addressData = [];
+      childParams.addressDelData = [];
+      childParams.contactData = [];
+      childParams.contactDelData = [];
+      props.onButtonClick(key, config, e, childParams);
+    } else {
+      props.onButtonClick(key, config, e);
+    }
   }
 
   const onLastColumnClick = (name, key, record, e, isWait = false) => {
@@ -46,7 +55,6 @@ const Customer = (props) => {
     if (name === 'contact') {
       if (key === 'defaultButton') {
         const masterData = { ...masterDataOld, defaultContactId: record.id };
-        console.log('ddd', masterData);
         dispatchModifyState({ masterData });
       }
     } else if (name === 'address') {
@@ -108,4 +116,4 @@ const Customer = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonBasic(Customer)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(Customer)));

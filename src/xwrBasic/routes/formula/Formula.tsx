@@ -4,7 +4,7 @@ import {Col, Form, Row} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../ButtonGroup";
-import commonBasic from "../../commonBasic";
+import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {InputComponent} from "../../../components/InputComponent";
 import {TreeComponent} from "../../../components/TreeComponent";
@@ -303,4 +303,4 @@ const Formula = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonBasic(Formula)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(Formula)));

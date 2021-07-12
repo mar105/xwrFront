@@ -1,18 +1,17 @@
-import {ButtonComponent} from "../../components/ButtonComponent";
-import {componentType} from "../../utils/commonTypes";
-import * as commonUtils from "../../utils/commonUtils";
+import {ButtonComponent} from "../components/ButtonComponent";
+import {componentType} from "../utils/commonTypes";
+import * as commonUtils from "../utils/commonUtils";
 import {Col, Row} from "antd";
 import React from 'react';
 
 export function ButtonGroup(params) {
   const buttonGroupOld: any = [];
-  buttonGroupOld.push({ key: 'addButton', caption: '增加', htmlType: 'button', sortNum: 10, disabled: params.enabled });
-  buttonGroupOld.push({ key: 'addChildButton', caption: '增加子级', htmlType: 'button', sortNum: 20, disabled: params.enabled });
-  buttonGroupOld.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 30, disabled: params.enabled });
-  buttonGroupOld.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !params.enabled });
-  buttonGroupOld.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !params.enabled });
-  buttonGroupOld.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: params.enabled });
-
+  // buttonGroupOld.push({ key: 'addButton', caption: '增加', htmlType: 'button', sortNum: 10, disabled: params.enabled });
+  // buttonGroupOld.push({ key: 'addChildButton', caption: '增加子级', htmlType: 'button', sortNum: 20, disabled: params.enabled });
+  // buttonGroupOld.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 30, disabled: params.enabled });
+  // buttonGroupOld.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !params.enabled });
+  // buttonGroupOld.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !params.enabled });
+  // buttonGroupOld.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: params.enabled });
   if (commonUtils.isNotEmptyArr(params.buttonGroup)) {
     buttonGroupOld.push(...params.buttonGroup);
   }

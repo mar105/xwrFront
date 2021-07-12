@@ -2,9 +2,9 @@ import {connect} from "react-redux";
 import * as commonUtils from "../../utils/commonUtils";
 import commonBase from "../../common/commonBase";
 import React, {useMemo} from "react";
-import {ButtonGroup} from "../ButtonGroup";
+import {ButtonGroup} from "../../common/ButtonGroup";
 import {Form} from "antd";
-import commonMasterEvent from "../../common/commonMasterEvent";
+import commonDocEvent from "../../common/commonDocEvent";
 import {CommonExhibit} from "../../common/CommonExhibit";
 
 const Shop = (props) => {
@@ -40,4 +40,4 @@ const Shop = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonMasterEvent(Shop)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(Shop)));

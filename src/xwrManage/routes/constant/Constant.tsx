@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import commonBase from "../../../common/commonBase";
 import {Col, Form, Row} from "antd";
-import {ButtonGroup} from "../ButtonGroup";
+import {ButtonGroup} from "../../../common/ButtonGroup";
 import React, {useEffect, useMemo} from "react";
 import * as commonUtils from "../../../utils/commonUtils";
 import * as application from "../../application";
@@ -228,7 +228,7 @@ const Constant = (props) => {
   };
 
 
-  const buttonGroup = { onClick, enabled };
+  const buttonGroup = { onClick, enabled, buttonGroup: props.getButtonGroup() };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (

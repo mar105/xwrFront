@@ -5,7 +5,7 @@ import * as request from "../../../utils/request";
 import {Col, Form, Row} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
-import {ButtonGroup} from "../ButtonGroup";
+import {ButtonGroup} from "../../../common/ButtonGroup";
 import {InputComponent} from "../../../components/InputComponent";
 import {NumberComponent} from "../../../components/NumberComponent";
 import {SwitchComponent} from "../../../components/SwitchComponent";
@@ -258,7 +258,7 @@ const Route = (props) => {
     event: { onChange: props.onSwitchChange }
   };
 
-  const buttonAddGroup: any = [];
+  const buttonAddGroup: any = props.getButtonGroup();
   buttonAddGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
   const buttonGroup = { onClick, enabled, buttonGroup: buttonAddGroup };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} getAllRoute={getAllRoute} />

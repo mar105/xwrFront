@@ -3,7 +3,7 @@ import * as commonUtils from "../../../utils/commonUtils";
 import commonBase from "../../../common/commonBase";
 import React, {useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
-import {ButtonGroup} from "../ButtonGroup";
+import {ButtonGroup} from "../../../common/ButtonGroup";
 import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import categoryListEvent from "../../categoryListEvent";
@@ -12,7 +12,7 @@ const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData } = props;
-  const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer };
+  const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.rowSelection.checkStrictly = false;
   tableParam.isLastColumn = false;

@@ -3,7 +3,7 @@ import React, {useEffect, useMemo} from 'react';
 import {Col, Form, Row, Tooltip} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
-import {ButtonGroup} from "../ButtonGroup";
+import {ButtonGroup} from "../../../common/ButtonGroup";
 import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
@@ -63,12 +63,10 @@ const Customer = (props) => {
         dispatchModifyState({ masterData });
       }
     }
-
-
   };
 
   const { enabled, masterContainer, masterData } = props;
-  const buttonGroup = { onClick: onButtonClick, enabled };
+  const buttonGroup = { onClick: onButtonClick, enabled, buttonGroup: props.getButtonGroup() };
   const contactParam: any = commonUtils.getTableProps('contact', props);
   contactParam.pagination = false;
   contactParam.lastColumn = { title: 'o',

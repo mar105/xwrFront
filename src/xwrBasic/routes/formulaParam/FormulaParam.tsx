@@ -3,7 +3,7 @@ import * as commonUtils from "../../../utils/commonUtils";
 import commonBase from "../../../common/commonBase";
 import React, {useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
-import {ButtonGroup} from "../ButtonGroup";
+import {ButtonGroup} from "../../../common/ButtonGroup";
 import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import Search from "../../../common/Search";

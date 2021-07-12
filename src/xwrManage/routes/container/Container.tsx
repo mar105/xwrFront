@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import commonBase from "../../../common/commonBase";
 import {Col, Form, Row} from "antd";
-import {ButtonGroup} from "../ButtonGroup";
+import {ButtonGroup} from "../../../common/ButtonGroup";
 import React, {useEffect, useMemo} from "react";
 import * as commonUtils from "../../../utils/commonUtils";
 import * as application from "../../application";
@@ -535,7 +535,7 @@ const Container = (props) => {
     event: { onChange: props.onInputChange }
   };
 
-  const buttonAddGroup: any = [];
+  const buttonAddGroup: any = props.getButtonGroup();
   buttonAddGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
   buttonAddGroup.push({ key: 'syncToMongoIndexButton', caption: '同步到mongo索引', htmlType: 'button', onClick, sortNum: 101, disabled: props.enabled });
   const buttonGroup = { onClick, enabled, buttonGroup: buttonAddGroup };

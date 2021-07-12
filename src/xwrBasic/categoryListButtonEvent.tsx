@@ -3,7 +3,7 @@ import * as application from "./application";
 
 const categoryListButtonEvent = async (key, config, e, childParams, props) => {
   const { dispatch, dispatchModifyState, commonModel, routeId } = props;
-  if (key === 'syncBillButton') {
+  if (key === 'syncBillButton') { //单据号设置 同步单据
     const url: string = `${application.urlPrefix}/button/syncBill`;
     const params = {
       routeId,

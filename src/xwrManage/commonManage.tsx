@@ -92,12 +92,24 @@ const commonManage = (WrapComponent) => {
       form = formNew;
     }
 
+    const getButtonGroup = () => {
+      const buttonGroup: any = [];
+      buttonGroup.push({ key: 'addButton', caption: '增加', htmlType: 'button', sortNum: 10, disabled: props.enabled });
+      buttonGroup.push({ key: 'addChildButton', caption: '增加子级', htmlType: 'button', sortNum: 20, disabled: props.enabled });
+      buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 30, disabled: props.enabled });
+      buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !props.enabled });
+      buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !props.enabled });
+      buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: props.enabled });
+      return buttonGroup;
+    }
+
     return <WrapComponent
       {...props}
       setNewTreeNode={setNewTreeNode}
       getTreeNode={getTreeNode}
       onTreeSelect={onTreeSelect}
       onSetForm={onSetForm}
+      getButtonGroup={getButtonGroup}
     />
   };
 };

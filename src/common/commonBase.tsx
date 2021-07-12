@@ -211,23 +211,26 @@ const commonBase = (WrapComponent) => {
       return dataRow;
     };
 
-    const onTableDelClick = (name, record, e, isWait = false) => {
+    const onLastColumnClick = (name, key, record, e, isWait = false) => {
       const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld }: any = stateRef.current;
-      const data = [...dataOld];
-      const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
-      const index = data.findIndex(item => item.id === record.id);
-      if (index > -1) {
-        if (data[index].handleType !== 'add') {
-          data[index].handleType = 'del';
-          delData.push(data[index]);
-        }
-        data.splice(index, 1);
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'DelData']: delData };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'DelData']: delData });
+      if (key === 'delButton') {
+        const data = [...dataOld];
+        const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
+        const index = data.findIndex(item => item.id === record.id);
+        if (index > -1) {
+          if (data[index].handleType !== 'add') {
+            data[index].handleType = 'del';
+            delData.push(data[index]);
+          }
+          data.splice(index, 1);
+          if (isWait) {
+            return { [name + 'Data']: data, [name + 'DelData']: delData };
+          } else {
+            dispatchModifyState({ [name + 'Data']: data, [name + 'DelData']: delData });
+          }
         }
       }
+
     };
 
     const onTableAddClick = (name, e, isWait = false) => {
@@ -462,7 +465,7 @@ const commonBase = (WrapComponent) => {
       onModify={onModify}
       onDel={onDel}
       onTableAddClick={onTableAddClick}
-      onTableDelClick={onTableDelClick}
+      onLastColumnClick={onLastColumnClick}
       gotoError={gotoError}
       gotoSuccess={gotoSuccess}
       onRowSelectChange={onRowSelectChange}

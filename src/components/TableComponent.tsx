@@ -11,7 +11,7 @@ import {componentType} from "../utils/commonTypes";
 import { Resizable } from 'react-resizable';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import "react-resizable/css/styles.css";
-import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined, DeleteOutlined } from '@ant-design/icons';
+import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
 import ReactDragListView from 'react-drag-listview';
 import Highlighter from 'react-highlight-words';
@@ -107,7 +107,7 @@ export function TableComponent(params: any) {
 
     //-----列宽拖拽结束------------------------------
     dispatchModifySelfState({components, ...addState });
-  }, [params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]);
+  }, [params.lastColumn, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]);
 
   // useEffect(() => {
   //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功
@@ -240,10 +240,8 @@ export function TableComponent(params: any) {
             params.property.dataSource.length < 1000 ? 60 :
               params.property.dataSource.length < 10000 ? 70 : 80 , fixed: 'left' };
     const columnsOld: any = params.config.isRowNum ? [firstColumn, ...resizeColumns] : [ ...resizeColumns];
-    const lastColumn: any = { title: 'o', render: (text,record, index)=>
-        <a onClick={params.onTableDelClick ? params.onTableDelClick.bind(this, params.name, record) : null}><DeleteOutlined /></a>, width: 50 , fixed: 'right' };
     if (params.isLastColumn && params.enabled) {
-      columnsOld.push(lastColumn);
+      columnsOld.push(params.lastColumn);
     }
 
     let columns: any = [];
@@ -253,7 +251,7 @@ export function TableComponent(params: any) {
         columns.push(column);
       } else if (columnOld.title === 'o') {
         const column = {...columnOld};
-        column.title = params.labelTitle ? params.labelTitle : column.title;
+        column.title = params.lastTitle ? params.lastTitle : column.title;
         columns.push(column);
       } else {
         const index = params.config.slaveData.findIndex(item => item.fieldName === columnOld.dataIndex);

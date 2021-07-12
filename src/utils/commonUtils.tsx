@@ -5,7 +5,7 @@ import moment from 'moment';
 import dynamic from "dva/dynamic";
 import * as React from "react";
 import {Tooltip} from "antd";
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
 var Snowflake = (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
@@ -177,13 +177,16 @@ export function getTableProps(name, props) {
     config: props[name + 'Container'],
     onReachEnd: props.onReachEnd, //分页滚动 拖动到最后调用接口
     isLastColumn: true,
-    onTableDelClick: props.onTableDelClick,
+    onLastColumnClick: props.onLastColumnClick,
     pagination: true, // 是否分页
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
       onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList, onCascaderChange: props.onCascaderChange },
-    labelTitle: <div>
-      <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
-    </div>
+    lastTitle: <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>,
+    lastColumn: { title: 'o',
+      render: (text,record, index)=> {
+        return <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, props.name, 'delButton', record) : null}>
+          <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
+      }, width: 50 , fixed: 'right' }
   }
   return tableParam;
 };

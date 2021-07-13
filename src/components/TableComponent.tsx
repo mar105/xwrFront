@@ -39,7 +39,7 @@ const ResizeableTitle = (props) => {
 export function TableComponent(params: any) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
     return {...state, ...action };
-  },{columns: [], components: {}, sorterInfo: [], searchText: '', filteredInfo: [], searchedColumn: ''});
+  },{ vid: commonUtils.newId(), columns: [], components: {}, sorterInfo: [], searchText: '', filteredInfo: [], searchedColumn: ''});
 
   let searchInput;
   const onReachEnd = () => {
@@ -49,7 +49,7 @@ export function TableComponent(params: any) {
   }
   useEffect(() => {
     const addState: any = { columns: getColumn(params.property.columns) };
-    const addComponents: any = { ...VList({ height: 500, vid: commonUtils.newId(), onReachEnd: onReachEnd })};
+    const addComponents: any = { ...VList({ height: 500, vid: modifySelfState.vid, onReachEnd: onReachEnd })};
 
     // 树形通过配置展开列名找到展开列
     if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
@@ -107,7 +107,8 @@ export function TableComponent(params: any) {
 
     //-----列宽拖拽结束------------------------------
     dispatchModifySelfState({components, ...addState });
-  }, [params.lastColumn, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]);
+    //params.lastColumn.changeValue 判断是否需要重新渲染最后一列。
+  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]);
 
   // useEffect(() => {
   //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功

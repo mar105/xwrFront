@@ -69,7 +69,7 @@ const Customer = (props) => {
   const buttonGroup = { onClick: onButtonClick, enabled, buttonGroup: props.getButtonGroup() };
   const contactParam: any = commonUtils.getTableProps('contact', props);
   contactParam.pagination = false;
-  contactParam.lastColumn = { title: 'o',
+  contactParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultContactId,
     render: (text,record, index)=> {
     return <div>
       <a onClick={onLastColumnClick.bind(this, 'contact', 'defaultButton', record)}>
@@ -79,7 +79,7 @@ const Customer = (props) => {
   }, width: 50 , fixed: 'right' };
   const addressParam: any = commonUtils.getTableProps('address', props);
   addressParam.pagination = false;
-  addressParam.lastColumn = { title: 'o',
+  addressParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultAddressId,
     render: (text,record, index)=> {
       return <div>
         <a onClick={onLastColumnClick.bind(this, 'address', 'defaultButton', record)}>

@@ -178,6 +178,7 @@ export function getTableProps(name, props) {
     onReachEnd: props.onReachEnd, //分页滚动 拖动到最后调用接口
     isLastColumn: true,
     onLastColumnClick: props.onLastColumnClick,
+    onTableChange: props.onTableChange,
     pagination: true, // 是否分页
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
       onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList, onCascaderChange: props.onCascaderChange },

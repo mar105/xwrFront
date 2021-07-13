@@ -281,7 +281,7 @@ export function TableComponent(params: any) {
               return ((commonUtils.isEmpty(a[column.dataIndex]) ? '0' : a[column.dataIndex]).localeCompare((commonUtils.isEmpty(b[column.dataIndex]) ? '1' : b[column.dataIndex])));
             }
           },
-          multiple: modifySelfState.sorterInfo.findIndex((item: any) => item.field === column.fieldName),
+          multiple: modifySelfState.sorterInfo ? modifySelfState.sorterInfo.findIndex((item: any) => item.field === column.fieldName) : -1,
         }
 
         //金额靠右显示
@@ -435,18 +435,32 @@ export function TableComponent(params: any) {
 
 
   const onChange = (pagination, filters, sorter, extra) => {
-    const sorterInfo: any = [...modifySelfState.sorterInfo];
-    const index = sorterInfo.findIndex(item => item.field === sorter.field);
-    if (index > -1) {
-      if (commonUtils.isEmpty(sorter.column)) {
-        sorterInfo.splice(index, 1);
-      } else {
-        sorterInfo.splice(index, 1, sorter);
-      }
-    } else {
-      sorterInfo.push(sorter)
+    // const sorterInfo: any = [...modifySelfState.sorterInfo];
+    // const index = sorterInfo.findIndex(item => item.field === sorter.field);
+    // if (index > -1) {
+    //   if (commonUtils.isEmpty(sorter.column)) {
+    //     sorterInfo.splice(index, 1);
+    //   } else {
+    //     sorterInfo.push(sorter);
+    //   }
+    // } else {
+    //   sorterInfo.push(sorter)
+    // }
+    const sorterInfo: any = [];
+    if (Array.isArray(sorter)) {
+      sorter.forEach(item => {
+        if (item.column) {
+          sorterInfo.push({field: item.field, order: item.order});
+        }
+      });
+    } else if (sorter.column) {
+      sorterInfo.push({field: sorter.field, order: sorter.order});
     }
     dispatchModifySelfState({filteredInfo: filters, sorterInfo});
+
+    if (params.onTableChange && !params.config.isTree) {
+      params.onTableChange(params.name, pagination, filters, sorterInfo, extra);
+    }
   }
 
   const summary = () => {

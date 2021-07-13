@@ -96,7 +96,8 @@ const commonBase = (WrapComponent) => {
           } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum, condition: {}, isWait: true });
+              const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum,
+                condition: { searchCondition: modifyState[container.dataSetName + 'SearchCondition'], sorterInfo: modifyState[container.dataSetName + 'SorterInfo'] }, isWait: true });
               addState = {...addState, ...returnData, [container.dataSetName + 'DelData']: []};
             }
           }

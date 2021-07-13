@@ -50,10 +50,10 @@ const Search = (props) => {
 
   const onButtonClick = async (key, e) => {
     const name = 'slave';
-    const { searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState, [name + 'Container']: container } = props;
+    const { searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState, [name + 'Container']: container, [name + 'SorterInfo']: sorterInfo } = props;
     const searchData = {...searchDataOld};
     const searchRowKeys = [...searchRowKeysOld];
-    let addState = {};
+    let addState: any = {};
     if (key === 'addConditionButton') {
       const key = commonUtils.newId();
       searchRowKeys.push(key);
@@ -70,14 +70,10 @@ const Search = (props) => {
       searchRowKeys.forEach(key => {
         searchCondition.push({ fieldName: searchData['first' + key], condition: searchData['second' + key], fieldValue: searchData['third' + key] });
       });
+      addState[name + 'SearchCondition'] = searchCondition;
       dispatchModifyState({[name + 'Loading']: true });
-      const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition }, isWait: true });
+      const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition, sorterInfo }, isWait: true });
       addState = {...addState, ...returnData};
-      // addState[name + 'Data'] = returnData.list;
-      // addState[name + 'Sum'] = returnData.sum;
-      // addState[name + 'PageNum'] = returnData.pageNum;
-      // addState[name + 'IsLastPage'] = returnData.isLastPage;
-      // addState[name + 'Loading'] = false;
       dispatchModifyState({...addState});
     }
   }

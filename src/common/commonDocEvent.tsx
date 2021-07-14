@@ -104,7 +104,22 @@ const commonDocEvent = (WrapComponent) => {
         } else {
           props.callbackRemovePane(tabId);
         }
+      } else if (key === 'firstButton' || key === 'priorButton' || key === 'nextButton' || key === 'lastButton') {
+        let listRowIndex = key === 'firstButton' ? 1 :
+          key === 'priorButton' ? props.listRowIndex - 1 :
+            key === 'nextButton' ? props.listRowIndex + 1 :
+              key === 'lastButton' ? props.listRowTotal : 1;
+        if (listRowIndex <= 0 || listRowIndex > props.listRowTotal) {
+          return;
+        }
+        const returnData: any = await props.getDataList({ name: 'master', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
+        if (commonUtils.isNotEmptyArr(returnData.masterData)) {
+          const returnState: any = await props.getAllData({ dataId: returnData.masterData[0].id });
+          dispatchModifyState({...returnState, listRowIndex});
+        }
+
       }
+
     }
 
     const onFinish = async (values: any, childParams) => {

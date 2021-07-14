@@ -10,7 +10,8 @@ const commonListEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e) => {
-      const { dispatch, dispatchModifyState, ['slaveContainer']: container, slaveSelectedRowKeys } = props;
+      const { dispatch, dispatchModifyState, ['slaveContainer']: container, slaveData, slaveSum, slaveSelectedRowKeys,
+        slaveSearchCondition: searchCondition, slaveSorterInfo: sorterInfo, routeId } = props;
       if (key === 'addButton') {
         props.callbackAddPane(config.popupSelectId, {handleType: 'add'});
       } else if (key === 'modifyButton') {
@@ -20,7 +21,11 @@ const commonListEvent = (WrapComponent) => {
             props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
             return;
           }
-          props.callbackAddPane(container.slaveData[index].popupSelectId, { handleType: 'modify', dataId: slaveSelectedRowKeys[0] });
+          const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === slaveSelectedRowKeys[0]);
+          props.callbackAddPane(container.slaveData[index].popupSelectId, { handleType: 'modify',
+            listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: container.tableKey,
+            listRowIndex: slaveIndex > -1 ? slaveIndex + 1 : 1, listRowTotal: slaveSum.total,
+            dataId: slaveSelectedRowKeys[0] });
         }
       } else if (key === 'refreshButton') {
         dispatchModifyState({ pageLoading: true });
@@ -30,11 +35,15 @@ const commonListEvent = (WrapComponent) => {
     }
 
     const onRowDoubleClick = async (name, record, e) => {
-      const {[name + 'Container']: container } = props;
+      const {[name + 'Container']: container, routeId, slaveSum, slaveSearchCondition: searchCondition, slaveData, slaveSorterInfo: sorterInfo } = props;
       const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
       if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {
+        const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === record[container.tableKey]);
         const key = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? container.tableKey : container.slaveData[index].popupSelectKey;
-        props.callbackAddPane(container.slaveData[index].popupSelectId, { dataId: record[key] });
+        props.callbackAddPane(container.slaveData[index].popupSelectId, {
+          listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: container.tableKey,
+          listRowIndex: slaveIndex > -1 ? slaveIndex + 1 : 1, listRowTotal: slaveSum.total,
+          dataId: record[key] });
       }
     }
 

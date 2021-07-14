@@ -19,7 +19,7 @@ const commonBase = (WrapComponent) => {
     useEffect(() => {
       if (commonUtils.isNotEmpty(modifyState.routeId)) {
         const fetchData = async () => {
-          const returnState: any = await getAllData({ pageNum: 1, dataId: modifyState.dataId, handleType: modifyState.handleType });
+          const returnState: any = await getAllData({ pageNum: 1, dataId: modifyState.dataId });
           dispatchModifyState({...returnState});
         }
         fetchData();
@@ -80,7 +80,7 @@ const commonBase = (WrapComponent) => {
           //dataId，列表传入，isSelect 配置传入， handleType 列表传入
           if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
             //单据获取
-            if (params.handleType !== 'add')  {
+            if (modifyState.handleType !== 'add')  {
               if (container.isTable) {
                 const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
                 addState = {...addState, ...returnData, [container.dataSetName + 'DelData']: []};
@@ -93,7 +93,7 @@ const commonBase = (WrapComponent) => {
                 }
               }
             }
-          } else if (params.handleType !== 'add' && container.isSelect) {
+          } else if (modifyState.handleType !== 'add' && container.isSelect) {
             //列表获取
             if (container.isTable) {
               const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum,
@@ -134,7 +134,7 @@ const commonBase = (WrapComponent) => {
         shopId: commonModel.userInfo.shopId,
         containerId: params.containerId,
         pageNum: params.pageNum,
-        pageSize: application.pageSize,
+        pageSize: params.pageSize ? params.pageSize : application.pageSize,
         condition: params.condition,
         createDate: params.createDate,
       }

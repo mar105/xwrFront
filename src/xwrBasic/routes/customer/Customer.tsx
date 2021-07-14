@@ -90,8 +90,6 @@ const Customer = (props) => {
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
-  const buttonGroupComponent = useMemo(()=>{ return (
-    <ButtonGroup {...buttonGroup} />)}, [enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
@@ -109,7 +107,7 @@ const Customer = (props) => {
           {commonUtils.isNotEmptyObj(props.addressContainer) ? <TableComponent {...addressParam} /> : '' }
         </Col>
       </Row>
-      {buttonGroupComponent}
+      <ButtonGroup {...buttonGroup} />
     </Form>
   );
 }

@@ -265,9 +265,9 @@ export function getAssignFieldValue(assignField, option, allDataset = undefined)
     assignField.split(',').forEach(item => {
       const arrAssign = item.split('=');
       if (item.indexOf('=') > -1 && item.indexOf('.') > -1) {
-        returnField[arrAssign[0]] = copeDataSetValue(arrAssign[1], allDataset);
+        returnField[arrAssign[0].trim()] = copeDataSetValue(arrAssign[1].trim(), allDataset);
       } else {
-        returnField[arrAssign[0]] = option[arrAssign[1]];
+        returnField[arrAssign[0].trim()] = option[arrAssign[1].trim()];
       }
     });
   }
@@ -281,7 +281,7 @@ export function getDefaultValue(container, allDataset) {
     container.slaveData.filter(item => isNotEmpty(item.defaultValue)).forEach((childConfig) => {
       const {defaultValue, fieldName, fieldType} = childConfig;
       if (defaultValue.indexOf('=') > -1 && defaultValue.indexOf('.') > -1) {
-        returnData[fieldName] = copeDataSetValue(defaultValue.split('=')[1], allDataset);
+        returnData[fieldName] = copeDataSetValue(defaultValue.split('=')[1].trim(), allDataset);
       } else {
         if (fieldType === 'tinyint') {
           returnData[fieldName] = parseInt(defaultValue);

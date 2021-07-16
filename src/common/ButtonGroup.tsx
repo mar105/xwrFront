@@ -1,7 +1,7 @@
 import {ButtonComponent} from "../components/ButtonComponent";
 import {componentType} from "../utils/commonTypes";
 import * as commonUtils from "../utils/commonUtils";
-import {Col, Row} from "antd";
+import {Col, Row,  Menu} from "antd";
 import React from 'react';
 
 export function ButtonGroup(params) {
@@ -15,20 +15,45 @@ export function ButtonGroup(params) {
   if (commonUtils.isNotEmptyArr(params.buttonGroup)) {
     buttonGroupOld.push(...params.buttonGroup);
   }
-  const buttons = commonUtils.isEmptyObj(params.slaveContainer) ? [] : params.slaveContainer.slaveData.filter(item => item.containerType === 'control');
+  const buttons = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item => item.containerType === 'control' && item.fieldName.endsWith('Button') && !item.fieldName.includes('.'));
   //先找到通用按钮，取配置
-  const buttonGroup = buttonGroupOld.map(item => {
-    const index = buttons.findIndex(button => button.fieldName === item.key);
+  const buttonGroup = buttonGroupOld.map(buttonOld => {
+    const index = buttons.findIndex(button => button.fieldName === buttonOld.key);
     let buttonConfig: any = {isVisible: true};
     if (index > -1) {
       buttonConfig = buttons[index];
       buttons.splice(index, 1);
     }
     if (buttonConfig.isVisible) {
+      let isDropDown = false;
+      let menusData;
+      let buttonItem = {...buttonOld}; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置
+      if (buttonOld.key === 'copyToButton') {
+        const buttonChildren = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
+          item.containerType === 'control' && item.isVisible && item.fieldName.startsWith(buttonOld.key + '.') && item.fieldName.split('.').length < 3);
+        if (buttonChildren.length === 1) {
+          buttonItem = {...buttonOld, ...buttonChildren[0]};
+          buttonConfig = {...buttonChildren[0]};
+          const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
+            item.containerType === 'control' && item.fieldName.startsWith(buttonChildren[0].fieldName + '.'));
+          buttonConfig.children = buttonChildrenSlave;
+        } else if (buttonChildren.length > 1) {
+          isDropDown = true;
+          menusData = <Menu onClick={commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, 'menu', null)}>{buttonChildren.map(menu => {
+            const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
+              item.containerType === 'control' && item.fieldName.startsWith(menu.fieldName + '.'));
+            menu.children = buttonChildrenSlave;
+            // @ts-ignore
+            return <Menu.Item key={menu.fieldName} config={menu} > {menu.viewName} </Menu.Item>})
+          }</Menu>
+        }
+      }
+      
       const button = {
-        caption: item.caption,
-        property: { name: item.key, htmlType: item.htmlType, disabled: item.disabled },
-        event: { onClick: commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, item.key, buttonConfig) },
+        caption: buttonOld.caption,
+        isDropDown,
+        property: { name: buttonItem.key, htmlType: buttonItem.htmlType, disabled: buttonItem.disabled, overlay: menusData },
+        event: { onClick: commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, buttonItem.key, buttonConfig) },
         componentType: componentType.Soruce,
       };
 

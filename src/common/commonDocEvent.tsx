@@ -50,7 +50,7 @@ const commonDocEvent = (WrapComponent) => {
     const onButtonClick = async (key, config, e, childParams) => {
       const { commonModel, tabId, dispatch, dispatchModifyState, masterContainer, masterData: masterDataOld } = props;
       if (key === 'addButton') {
-        const masterData = props.onAdd();
+        const masterData = childParams && childParams.masterData ? childParams.masterData : props.onAdd();
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(masterData, masterContainer));
         dispatchModifyState({ masterData, enabled: true, ...childParams });
@@ -69,7 +69,12 @@ const commonDocEvent = (WrapComponent) => {
 
       } else if (key === 'cancelButton') {
         if (masterDataOld.handleType === 'add') {
-          props.callbackRemovePane(tabId);
+          const returnData: any = await props.getDataList({ name: 'slave', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: props.listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
+          if (commonUtils.isNotEmptyArr(returnData.slaveData)) {
+            const returnState: any = await props.getAllData({ dataId: returnData.slaveData[0].id });
+            dispatchModifyState({...returnState, listRowIndex: props.listRowIndex});
+          }
+          // props.callbackRemovePane(tabId);
         } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
           const {dispatch, commonModel, tabId, masterData} = props;
           const url: string = `${application.urlCommon}/verify/removeModifying`;
@@ -112,14 +117,25 @@ const commonDocEvent = (WrapComponent) => {
         if (listRowIndex <= 0 || listRowIndex > props.listRowTotal) {
           return;
         }
-        const returnData: any = await props.getDataList({ name: 'master', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
-        if (commonUtils.isNotEmptyArr(returnData.masterData)) {
-          const returnState: any = await props.getAllData({ dataId: returnData.masterData[0].id });
+        const returnData: any = await props.getDataList({ name: 'slave', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
+        if (commonUtils.isNotEmptyArr(returnData.slaveData)) {
+          const returnState: any = await props.getAllData({ dataId: returnData.slaveData[0].id });
           dispatchModifyState({...returnState, listRowIndex});
         }
 
+      } else if (key === 'copyToButton' || key === 'menu') {
+        const { containerData, routeId } = props;
+        if (commonUtils.isNotEmptyArr(containerData)) {
+          const copyToData: any = {};
+          for(const container of containerData) {
+            copyToData[container.dataSetName + 'Data'] = props[container.dataSetName + 'Data'];
+          }
+          copyToData.config = key === 'menu' ? e.item.props.config : config;
+          props.callbackAddPane(copyToData.config.popupActiveId, { handleType: 'add',
+            listRouteId: routeId, listContainerId: props.listContainerId, listCondition: props.listCondition, listTableKey: props.listTableKey,
+            listRowIndex: props.listRowTotal, listRowTotal: props.listRowTotal, copyToData });
+        }
       }
-
     }
 
     const onFinish = async (values: any, childParams) => {
@@ -155,7 +171,7 @@ const commonDocEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'priorButton', caption: '上一条', htmlType: 'button', sortNum: 70, disabled: props.enabled });
       buttonGroup.push({ key: 'nextButton', caption: '下一条', htmlType: 'button', sortNum: 80, disabled: props.enabled });
       buttonGroup.push({ key: 'lastButton', caption: '末条', htmlType: 'button', sortNum: 90, disabled: props.enabled });
-      buttonGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled });
+      buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled });
       return buttonGroup;
     }
 

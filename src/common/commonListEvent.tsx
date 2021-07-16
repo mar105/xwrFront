@@ -13,7 +13,9 @@ const commonListEvent = (WrapComponent) => {
       const { dispatch, dispatchModifyState, ['slaveContainer']: container, slaveData, slaveSum, slaveSelectedRowKeys,
         slaveSearchCondition: searchCondition, slaveSorterInfo: sorterInfo, routeId } = props;
       if (key === 'addButton') {
-        props.callbackAddPane(config.popupSelectId, {handleType: 'add'});
+        props.callbackAddPane(config.popupSelectId, {handleType: 'add',
+          listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: container.tableKey,
+          listRowIndex: slaveSum.total, listRowTotal: slaveSum.total });
       } else if (key === 'modifyButton') {
         const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
         if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {

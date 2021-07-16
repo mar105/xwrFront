@@ -43,7 +43,7 @@ const categoryListEvent = (WrapComponent) => {
           masterData.allId = allList.join() + ',' + masterData.id;
           masterData.superiorId = slaveSelectedRows[0].superiorId;
           if (commonUtils.isNotEmpty(config.assignField)) {
-            masterData = {...masterData, ...props.getAssignFieldValue(config.assignField, slaveSelectedRows[0])}
+            masterData = {...masterData, ...commonUtils.getAssignFieldValue(config.assignField, slaveSelectedRows[0])}
           }
         } else {
           masterData.allId = masterData.id;
@@ -69,7 +69,7 @@ const categoryListEvent = (WrapComponent) => {
         masterData.allId = slaveSelectedRows[0].allId + ',' + masterData.id;
         masterData.superiorId = slaveSelectedRows[0].id;
         if (commonUtils.isNotEmpty(config.assignField)) {
-          masterData = {...masterData, ...props.getAssignFieldValue(config.assignField, slaveSelectedRows[0])}
+          masterData = {...masterData, ...commonUtils.getAssignFieldValue(config.assignField, slaveSelectedRows[0])}
         }
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(masterData));

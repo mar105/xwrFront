@@ -19,7 +19,7 @@ const commonBase = (WrapComponent) => {
     useEffect(() => {
       if (commonUtils.isNotEmpty(modifyState.routeId)) {
         const fetchData = async () => {
-          const returnState: any = await getAllData({ pageNum: 1, dataId: modifyState.dataId });
+          const returnState: any = await getAllData({ pageNum: 1, dataId: modifyState.dataId, handleType: modifyState.handleType });
           dispatchModifyState({...returnState});
         }
         fetchData();
@@ -80,11 +80,11 @@ const commonBase = (WrapComponent) => {
           //dataId，列表传入，isSelect 配置传入， handleType 列表传入
           if (commonUtils.isNotEmpty(params.dataId) && container.isSelect) {
             //单据获取
-            if (modifyState.handleType !== 'add')  {
+            if (params.handleType !== 'add')  {
               if (container.isTable) {
                 const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
                 addState = {...addState, ...returnData, [container.dataSetName + 'DelData']: []};
-              } else if (container.isSelect && modifyState.handleType !== 'add') {
+              } else if (container.isSelect) {
                 const returnData: any = await getDataOne({ name: container.dataSetName, containerId: container.id, condition: { dataId: params.dataId }, isWait: true });
                 addState[container.dataSetName + 'Data'] = returnData;
                 if (form) {
@@ -93,7 +93,7 @@ const commonBase = (WrapComponent) => {
                 }
               }
             }
-          } else if (modifyState.handleType !== 'add' && container.isSelect) {
+          } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
             if (container.isTable) {
               const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum,
@@ -339,7 +339,7 @@ const commonBase = (WrapComponent) => {
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
 
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const assignValue = getAssignFieldValue(assignField, assignOption);
+        const assignValue = commonUtils.getAssignFieldValue(assignField, assignOption);
         const data = { ...dataOld, ...assignValue };
         if (form) {
           form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
@@ -355,7 +355,7 @@ const commonBase = (WrapComponent) => {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
         if (index > -1) {
-          data[index] = { ...data[index], ...getAssignFieldValue(assignField, assignOption) };
+          data[index] = { ...data[index], ...commonUtils.getAssignFieldValue(assignField, assignOption) };
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = value;
           if (isWait) {
@@ -372,7 +372,7 @@ const commonBase = (WrapComponent) => {
       const { [name + 'Data']: dataOld }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const assignValue = getAssignFieldValue(config.assignField, assignOption);
+        const assignValue = commonUtils.getAssignFieldValue(config.assignField, assignOption);
         const data = { ...dataOld, ...assignValue };
         if (form) {
           form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
@@ -388,7 +388,7 @@ const commonBase = (WrapComponent) => {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
         if (index > -1) {
-          data[index] = { ...data[index], ...getAssignFieldValue(config.assignField, assignOption) };
+          data[index] = { ...data[index], ...commonUtils.getAssignFieldValue(config.assignField, assignOption) };
           data[index].handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index][fieldName] = value;
           if (isWait) {
@@ -430,17 +430,6 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    const getAssignFieldValue = (assignField, option) => {
-      const returnField = {};
-      if (commonUtils.isNotEmptyObj(option) && commonUtils.isNotEmpty(assignField)) {
-        assignField.split(',').forEach(item => {
-          const arrAssign = item.split('=');
-          returnField[arrAssign[0]] = option[arrAssign[1]];
-        });
-      }
-      return returnField;
-    }
-
     const onReachEnd = async (name) => {
       const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage, [name + 'CreateDate']: createDate }: any = stateRef.current;
       if (!isLastPage && !container.isTree) {
@@ -461,7 +450,6 @@ const commonBase = (WrapComponent) => {
       getDataOne={getDataOne}
       getDataList={getDataList}
       getSelectList={getSelectList}
-      getAssignFieldValue={getAssignFieldValue}
       onAdd={onAdd}
       onModify={onModify}
       onDel={onDel}

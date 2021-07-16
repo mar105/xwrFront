@@ -94,6 +94,9 @@ function IndexPage(props) {
 
   const callbackAddPane = useCallback(async (routeId, stateInfo) => {
     const {dispatch, dispatchModifyState, commonModel } = props;
+    if (commonUtils.isEmpty(routeId)) {
+      props.gotoError(dispatch, { code: '6002', msg: '路由Id不能为空！' });
+    }
     let state: any = {...stateInfo};
     const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + routeId;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;

@@ -29,7 +29,23 @@ const Customer = (props) => {
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.masterContainer)) {
       if (props.handleType === 'add') {
-        onButtonClick('addButton', null, null);
+        const childParams = {};
+        if (props.copyToData) {
+          const masterData = {...commonUtils.getAssignFieldValue(props.copyToData.config.assignField, props.copyToData.masterData), ...props.onAdd() };
+          childParams['masterData'] = masterData;
+          for(const config of props.copyToData.config.children) {
+            const fieldNameSplit = config.fieldName.split('.');
+            const dataSetName = childParams[fieldNameSplit.length - 1];
+            if (commonUtils.isNotEmptyArr(props.copyToData[dataSetName])) {
+              const copyData: any = [];
+              for(const data of props.copyToData[dataSetName]) {
+                copyData.push({...commonUtils.getAssignFieldValue(config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
+              }
+              childParams[dataSetName] = copyData;
+            }
+          }
+        }
+        onButtonClick('addButton', null, null, childParams);
       }
       else if (props.handleType === 'modify') {
         onButtonClick('modifyButton', null, null);
@@ -37,13 +53,13 @@ const Customer = (props) => {
     }
   }, [props.masterContainer.dataSetName]);
 
-  const onButtonClick = async (key, config, e) => {
-    const childParams: any = {};
+  const onButtonClick = async (key, config, e, childParamsOld: any = undefined) => {
+    let childParams: any = {};
     if (key === 'addButton') {
-      childParams.addressData = [];
-      childParams.addressDelData = [];
-      childParams.contactData = [];
-      childParams.contactDelData = [];
+      for(const container of props.containerData) {
+        childParams[container.dataSetName + 'Data'] = [];
+      }
+      childParams = {...childParams, ...childParamsOld};
       props.onButtonClick(key, config, e, childParams);
     } else {
       props.onButtonClick(key, config, e);
@@ -66,7 +82,7 @@ const Customer = (props) => {
   };
 
   const { enabled, masterContainer, masterData } = props;
-  const buttonGroup = { onClick: onButtonClick, enabled, buttonGroup: props.getButtonGroup() };
+  const buttonGroup = { onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
   const contactParam: any = commonUtils.getTableProps('contact', props);
   contactParam.pagination = false;
   contactParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultContactId,

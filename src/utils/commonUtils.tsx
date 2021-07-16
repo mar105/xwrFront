@@ -125,6 +125,7 @@ export function getWebSocketData(authorization) {
   return stompClient;
 }
 
+//form.setFieldsValue时做个数据格式化。
 export function setFieldsValue(value, container: any = null) {
   const returnValue = {};
   if (container) {
@@ -258,7 +259,20 @@ export function round(value, num) {
   return Math.round(value * parseFloat(fix)) / parseFloat(fix);
 }
 
-
+export function getAssignFieldValue(assignField, option, allDataset = undefined) {
+  const returnField = {};
+  if (isNotEmptyObj(option) && isNotEmpty(assignField)) {
+    assignField.split(',').forEach(item => {
+      const arrAssign = item.split('=');
+      if (item.indexOf('=') > -1 && item.indexOf('.') > -1) {
+        returnField[arrAssign[0]] = copeDataSetValue(arrAssign[1], allDataset);
+      } else {
+        returnField[arrAssign[0]] = option[arrAssign[1]];
+      }
+    });
+  }
+  return returnField;
+}
 
 /** 获取数据默认值  取消其他表值数据时  sTaxId:master.sTaxId */
 export function getDefaultValue(container, allDataset) {
@@ -267,41 +281,7 @@ export function getDefaultValue(container, allDataset) {
     container.slaveData.filter(item => isNotEmpty(item.defaultValue)).forEach((childConfig) => {
       const {defaultValue, fieldName, fieldType} = childConfig;
       if (defaultValue.indexOf('=') > -1 && defaultValue.indexOf('.') > -1) {
-        const oldFieldName = defaultValue.split('=')[1];
-        const datasetName = oldFieldName.split('.')[0] + 'Data';
-        const oldTableFieldName = oldFieldName.split('.')[1];
-        if (isNotEmptyObj(allDataset[datasetName])) {
-          if (oldFieldName.includes('+') || oldFieldName.includes('-') || oldFieldName.includes('*') ||
-            oldFieldName.includes('/') || oldFieldName.includes('(') || oldFieldName.includes(')')) {
-            let formula = oldFieldName;
-            let formulaSplit = oldFieldName;
-            formulaSplit = formulaSplit.split('+').join('$');
-            formulaSplit = formulaSplit.split('-').join('$');
-            formulaSplit = formulaSplit.split('*').join('$');
-            formulaSplit = formulaSplit.split('/').join('$');
-            formulaSplit = formulaSplit.split('(').join('$');
-            formulaSplit = formulaSplit.split(')').join('$');
-            formulaSplit.split('$').forEach((oldFieldNameItem) => {
-              const oldFieldItem = oldFieldNameItem.trim();
-              if (oldFieldItem.indexOf('.') > -1) {
-                const datasetName = oldFieldItem.split('.')[0].trim() + 'Data';
-                const oldTableFieldName = oldFieldItem.split('.')[1].trim();
-                if (isNotEmptyObj(allDataset[datasetName]) && allDataset[datasetName][oldTableFieldName] !== undefined) {
-                  formula = formula.replace(oldFieldItem, allDataset[datasetName][oldTableFieldName]);
-                }
-              } else {
-                const oldTableFieldName = oldFieldItem.trim();
-                if (allDataset[datasetName][oldTableFieldName] !== undefined) {
-                  formula = formula.replace(oldTableFieldName, `(${allDataset[datasetName][oldTableFieldName]})`);
-                  /* 加括号处理当值为负数时的异常 */
-                }
-              }
-            });
-            returnData[fieldName] = oldTableFieldName.substring(0, 1) === '&' ? formula.split('+').join('') : round(eval(formula), 6);
-          } else {
-            returnData[fieldName] = allDataset[datasetName][oldTableFieldName];
-          }
-        }
+        returnData[fieldName] = copeDataSetValue(defaultValue.split('=')[1], allDataset);
       } else {
         if (fieldType === 'tinyint') {
           returnData[fieldName] = parseInt(defaultValue);
@@ -322,6 +302,47 @@ export function getDefaultValue(container, allDataset) {
     });
   }
   return returnData;
+}
+
+// 处理赋值赋值字段、默认值赋值字段 其他数据集value;
+export function copeDataSetValue(assignValueField, allDataset) {
+  const oldFieldName = assignValueField;
+  const dataSetName = oldFieldName.split('.')[0] + 'Data';
+  const oldTableFieldName = oldFieldName.split('.')[1];
+  if (isNotEmptyObj(allDataset[dataSetName])) {
+    if (oldFieldName.includes('+') || oldFieldName.includes('-') || oldFieldName.includes('*') ||
+      oldFieldName.includes('/') || oldFieldName.includes('(') || oldFieldName.includes(')')) {
+      let formula = oldFieldName;
+      let formulaSplit = oldFieldName;
+      formulaSplit = formulaSplit.split('+').join('$');
+      formulaSplit = formulaSplit.split('-').join('$');
+      formulaSplit = formulaSplit.split('*').join('$');
+      formulaSplit = formulaSplit.split('/').join('$');
+      formulaSplit = formulaSplit.split('(').join('$');
+      formulaSplit = formulaSplit.split(')').join('$');
+      formulaSplit.split('$').forEach((oldFieldNameItem) => {
+        const oldFieldItem = oldFieldNameItem.trim();
+        if (oldFieldItem.indexOf('.') > -1) {
+          const dataSetName = oldFieldItem.split('.')[0].trim() + 'Data';
+          const oldTableFieldName = oldFieldItem.split('.')[1].trim();
+          if (isNotEmptyObj(allDataset[dataSetName]) && allDataset[dataSetName][oldTableFieldName] !== undefined) {
+            formula = formula.replace(oldFieldItem, allDataset[dataSetName][oldTableFieldName]);
+          }
+        } else {
+          const oldTableFieldName = oldFieldItem.trim();
+          if (allDataset[dataSetName][oldTableFieldName] !== undefined) {
+            formula = formula.replace(oldTableFieldName, `(${allDataset[dataSetName][oldTableFieldName]})`);
+            /* 加括号处理当值为负数时的异常 */
+          }
+        }
+      });
+      return oldTableFieldName.substring(0, 1) === '&' ? formula.split('+').join('') : round(eval(formula), 6);
+    } else {
+      return allDataset[dataSetName][oldTableFieldName];
+    }
+  } else {
+    return '';
+  }
 }
 
 export function getViewName(container, fieldName) {

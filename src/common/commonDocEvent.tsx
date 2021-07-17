@@ -88,7 +88,7 @@ const commonDocEvent = (WrapComponent) => {
             props.gotoError(dispatch, interfaceReturn);
           }
         }
-      } else if (key === 'delButton') {
+      } else if (key === 'delButton' || key === 'invalidButton') {
         if (commonUtils.isNotEmpty(masterDataOld.id)) {
           const saveData: any = [];
           saveData.push(commonUtils.mergeData('master', [masterDataOld], [], true));
@@ -97,7 +97,7 @@ const commonDocEvent = (WrapComponent) => {
             saveData.push(...saveChildData);
           }
           const params = { id: masterDataOld.id, routeId: props.routeId, tabId, saveData, groupId: commonModel.userInfo.groupId,
-            shopId: commonModel.userInfo.shopId, handleType: 'del'};
+            shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
           const url: string = `${application.urlMain}/getData/saveData`;
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
@@ -172,6 +172,7 @@ const commonDocEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'nextButton', caption: '下一条', htmlType: 'button', sortNum: 80, disabled: props.enabled });
       buttonGroup.push({ key: 'lastButton', caption: '末条', htmlType: 'button', sortNum: 90, disabled: props.enabled });
       buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled });
+      buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 100, disabled: props.enabled });
       return buttonGroup;
     }
 

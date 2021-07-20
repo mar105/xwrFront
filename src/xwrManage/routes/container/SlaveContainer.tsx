@@ -1,5 +1,5 @@
 import {TableComponent} from "../../../components/TableComponent";
-import React, {useEffect} from "react";
+import React, {useEffect, useRef} from "react";
 import * as commonUtils from "../../../utils/commonUtils";
 import * as application from "../../application";
 import * as request from "../../../utils/request";
@@ -7,7 +7,10 @@ import { PlusOutlined, CloudSyncOutlined } from '@ant-design/icons';
 import {Tooltip} from "antd";
 
 const SlaveContainer = (props) => {
-
+  const masterDataRef: any = useRef();
+  useEffect(() => {
+    masterDataRef.current = props.masterData;
+  }, [props.masterData]);
   const { name } = props;
   const columns = [
     { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 80, fixed: 'left' },
@@ -71,10 +74,10 @@ const SlaveContainer = (props) => {
   }, []);
 
   const onClick = async (name, e) => {
-    const { commonModel, dispatch, dispatchModifyState, masterData, slaveContainer, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
+    const { commonModel, dispatch, dispatchModifyState, slaveContainer, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = props;
     if (name === 'slaveAddButton') {
       const data = props.onAdd(slaveContainer);
-      data.superiorId = masterData.id;
+      data.superiorId = masterDataRef.current.id;
       data.containerType = 'field';
       data.sortNum = slaveDataOld.length;
       data.assignField = '';
@@ -86,8 +89,8 @@ const SlaveContainer = (props) => {
       slaveData.push(data);
       dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
     } else if (name === 'slaveSyncDataButton') {
-      if (masterData.containerName === 'noTable') { return };
-      const url: string = `${application.urlPrefix}/container/getDBFields?tableName=` + masterData.containerName;
+      if (masterDataRef.current.containerName === 'noTable') { return };
+      const url: string = `${application.urlPrefix}/container/getDBFields?tableName=` + masterDataRef.current.containerName;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         const slaveData = [...slaveDataOld];
@@ -114,7 +117,7 @@ const SlaveContainer = (props) => {
             const index = slaveData.findIndex(item => item.containerType === 'field' && item.fieldName === dataRow.columnName);
             if (!(index > -1)) {
               const data = props.onAdd(slaveContainer);
-              data.superiorId = masterData.id;
+              data.superiorId = masterDataRef.current.id;
               data.fieldName = dataRow.columnName;
               data.containerType = 'field';
               data.fieldType = dataRow.dataType;

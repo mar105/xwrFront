@@ -144,7 +144,7 @@ const TreeModule = (props) => {
     }
     //// 拖动完成后，修改superiorId, allId;
     const saveChangeData: any = [];
-    let parentAllId;
+    let parentAllId = '';
     if (dragParent === null) {
       data.forEach((item, index) => {
         item.handleType = 'modify';

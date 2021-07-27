@@ -20,7 +20,7 @@ const FormulaParam = (props) => {
       const childCallback = (params) => {
         const categoryData: any = [];
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'formulaCategory');
-        if (index > -1 && masterContainer.slaveData[index].viewDrop) {
+        if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
           const formulaCategory = commonUtils.objectToArr(commonUtils.stringToObj(masterContainer.slaveData[index].viewDrop));
           formulaCategory.forEach(item => {
             const data = props.onAdd(categoryContainer);
@@ -46,7 +46,7 @@ const FormulaParam = (props) => {
         });
         const categoryDelData: any = commonUtils.isEmptyArr(categoryDelDataOld) ? [] : [...categoryDelDataOld];
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'formulaCategory');
-        if (index > -1 && masterContainer.slaveData[index].viewDrop) {
+        if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
           const formulaCategory = commonUtils.objectToArr(commonUtils.stringToObj(masterContainer.slaveData[index].viewDrop));
           let rowIndex = 0;
           for(const dataRow of categoryDataOld) {
@@ -113,12 +113,10 @@ const FormulaParam = (props) => {
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData } = props;
   const buttonGroup = { onClick: props.onButtonClick, enabled, slaveContainer };
   const tableParam: any = commonUtils.getTableProps('slave', props);
-  tableParam.rowSelection.checkStrictly = false;
   tableParam.isLastColumn = false;
   tableParam.enabled = false;
 
   const categoryParam: any = commonUtils.getTableProps('category', props);
-  categoryParam.rowSelection.checkStrictly = false;
   categoryParam.isLastColumn = false;
   categoryParam.pagination = false;
   const search = useMemo(() => {

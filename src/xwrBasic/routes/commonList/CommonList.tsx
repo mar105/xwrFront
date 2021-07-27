@@ -13,7 +13,6 @@ const CategoryList = (props) => {
   const { enabled, slaveContainer, searchRowKeys, searchData } = props;
   const buttonGroup = { onClick: props.onButtonClick, enabled, container: slaveContainer, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
-  tableParam.rowSelection.checkStrictly = false;
   tableParam.isLastColumn = false;
   tableParam.enabled = false;
   tableParam.eventOnRow = { ...tableParam.eventOnRow, onRowDoubleClick: props.onRowDoubleClick };

@@ -18,51 +18,58 @@ const UserPermission = (props) => {
 
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.masterContainer)) {
-      const fetchData = async () => {
-        const { dispatchModifyState } = props;
-
-        let addState = {};
-        // 权限分类
-        addState = { ...addState, ... await getFetchData('permissionCategory') };
-
-        // 客户权限
-        addState = { ...addState, ... await getFetchData('customer') };
-
-        // 供应商权限
-        addState = { ...addState, ... await getFetchData('supply') };
-
-        // 工序权限
-        addState = { ...addState, ... await getFetchData('process') };
-
-        // 人员权限
-        addState = { ...addState, ... await getFetchData('userBusiness') };
-
-        dispatchModifyState({ ...addState });
-      }
       fetchData();
-
     }
   }, [props.masterContainer.dataSetName]);
 
+  const fetchData = async () => {
+    const { dispatchModifyState } = props;
 
-  const getSlaveData = (name, table, container, tableDataOld, tableSrcData, masterKeyValue, assignField) => {
-    const tableData: any = [];
-    table.filter(item => item[container.treeSlaveKey] === masterKeyValue).forEach((dataRow, indexTable) => {
-      const indexCategory = tableDataOld.findIndex(item => item[name + 'Id'] === dataRow.id);
-      let data: any = !(indexCategory > -1) ? props.onAdd(container) : tableDataOld[indexCategory];
-      data = { ...data, ...commonUtils.getAssignFieldValue(assignField, dataRow)};
-      data.userId = masterData.userId;
-      data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
-      data.sortNum = indexTable;
-      const children = getSlaveData(name, table, container, tableDataOld, tableSrcData, dataRow.id, assignField);
-      if (commonUtils.isNotEmptyArr(children)) {
-        data.children = children;
-      }
-      tableSrcData.push(data);
-      tableData.push(data);
-    });
-    return tableData;
+    let addState = {};
+    // 权限分类
+    addState = { ...addState, ... await getFetchData('permissionCategory') };
+
+    // 客户权限
+    addState = { ...addState, ... await getFetchData('customer') };
+
+    // 供应商权限
+    addState = { ...addState, ... await getFetchData('supply') };
+
+    // 工序权限
+    addState = { ...addState, ... await getFetchData('process') };
+
+    // 人员权限
+    addState = { ...addState, ... await getFetchData('userBusiness') };
+
+    dispatchModifyState({ ...addState });
   }
+
+  // useEffect(() => {
+  //   if (commonUtils.isNotEmptyObj(props.masterContainer)) {
+  //     if (props.handleType === 'add') {
+  //       const childParams = {};
+  //       if (props.copyToData) {
+  //         const masterData = {...commonUtils.getAssignFieldValue(props.copyToData.config.assignField, props.copyToData.masterData), ...props.onAdd() };
+  //         childParams['masterData'] = masterData;
+  //         for(const config of props.copyToData.config.children) {
+  //           const fieldNameSplit = config.fieldName.split('.');
+  //           const dataSetName = fieldNameSplit[fieldNameSplit.length - 1];
+  //           if (commonUtils.isNotEmptyArr(props.copyToData[dataSetName + 'Data'])) {
+  //             const copyData: any = [];
+  //             for(const data of props.copyToData[dataSetName + 'Data']) {
+  //               copyData.push({...commonUtils.getAssignFieldValue(config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
+  //             }
+  //             childParams[dataSetName + 'Data'] = copyData;
+  //           }
+  //         }
+  //       }
+  //       onButtonClick('addButton', null, null, childParams);
+  //     }
+  //     else if (props.handleType === 'modify') {
+  //       onButtonClick('modifyButton', null, null);
+  //     }
+  //   }
+  // }, [props.masterContainer.dataSetName]);
 
   const getFetchData = async (name) => {
     const { [name + 'Container']: container, [name + 'DelData']: delDataOld, masterData } = props;
@@ -114,6 +121,7 @@ const UserPermission = (props) => {
         addState[name + 'Data'] = tableData;
         addState[name + 'SelectedRowKeys'] = tableSelectedRowKeys;
         addState[name + 'SrcData'] = tableSrcData;
+        addState[name + 'Sum'].total = tableSrcData.length;
       }
 
     } else {
@@ -140,70 +148,60 @@ const UserPermission = (props) => {
         });
         addState[name + 'Data'] = tableData;
         addState[name + 'SelectedRowKeys'] = tableSelectedRowKeys;
+        addState[name + 'Sum'].total = tableData.length;
       }
     }
-
     return addState;
   }
 
+  const getSlaveData = (name, table, container, tableDataOld, tableSrcData, masterKeyValue, assignField) => {
+    const tableData: any = [];
+    table.filter(item => item[container.treeSlaveKey] === masterKeyValue).forEach((dataRow, indexTable) => {
+      const indexCategory = tableDataOld.findIndex(item => item[name + 'Id'] === dataRow.id);
+      let data: any = !(indexCategory > -1) ? props.onAdd(container) : tableDataOld[indexCategory];
+      data = { ...data, ...commonUtils.getAssignFieldValue(assignField, dataRow)};
+      data.userId = masterData.userId;
+      data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
+      data.sortNum = indexTable;
+      const children = getSlaveData(name, table, container, tableDataOld, tableSrcData, dataRow.id, assignField);
+      if (commonUtils.isNotEmptyArr(children)) {
+        data.children = children;
+      }
+      tableSrcData.push(data);
+      tableData.push(data);
+    });
+    return tableData;
+  }
+
   const onFinish = async (values: any) => {
-    const { permissionCategoryData: permissionCategoryDataOld, permissionCategoryDelData, permissionCategorySelectedRowKeys: permissionCategorySelectedRowKeysOld,
-      customerSelectedRowKeys: customerSelectedRowKeysOld, customerSrcData: customerDataOld, customerDelData } = props;
     const childCallback = (params) => {
       const saveData: any = [];
-      const permissionCategorySelectedRowKeys = commonUtils.isEmptyArr(permissionCategorySelectedRowKeysOld) ? [] : permissionCategorySelectedRowKeysOld;
-      const permissionCategoryData: any = [];
-      for(const permissionCategory of permissionCategoryDataOld) {
-        if (permissionCategorySelectedRowKeys.findIndex(item => item === permissionCategory.permissionCategoryId) > -1) {
-          permissionCategoryData.push(permissionCategory);
-        } else if (permissionCategory.handleType !== 'add') {
-          permissionCategoryData.push({...permissionCategory, handleType: 'del' });
-        }
-      }
-
-      const customerSelectedRowKeys = commonUtils.isEmptyArr(customerSelectedRowKeysOld) ? [] : customerSelectedRowKeysOld;
-      const customerData: any = [];
-      for(const customer of customerDataOld) {
-        if (customerSelectedRowKeys.findIndex(item => item === customer.customerId) > -1) {
-          customerData.push(customer);
-        } else if (customer.handleType !== 'add') {
-          customerData.push({...customer, handleType: 'del' });
-        }
-      }
-      saveData.push(commonUtils.mergeData('permissionCategory', permissionCategoryData.filter(item => commonUtils.isNotEmpty(item.handleType)), permissionCategoryDelData, true));
-      saveData.push(commonUtils.mergeData('customer', customerData.filter(item => commonUtils.isNotEmpty(item.handleType)), customerDelData, true));
+      saveData.push(getSaveData('permissionCategory'));
+      saveData.push(getSaveData('customer'));
+      saveData.push(getSaveData('supply'));
+      saveData.push(getSaveData('process'));
+      saveData.push(getSaveData('userBusiness'));
       return saveData;
     }
 
-    props.onFinish(values, {childCallback});
+    await props.onFinish(values, {childCallback});
+    fetchData();
   }
 
-  useEffect(() => {
-    if (commonUtils.isNotEmptyObj(props.masterContainer)) {
-      if (props.handleType === 'add') {
-        const childParams = {};
-        if (props.copyToData) {
-          const masterData = {...commonUtils.getAssignFieldValue(props.copyToData.config.assignField, props.copyToData.masterData), ...props.onAdd() };
-          childParams['masterData'] = masterData;
-          for(const config of props.copyToData.config.children) {
-            const fieldNameSplit = config.fieldName.split('.');
-            const dataSetName = fieldNameSplit[fieldNameSplit.length - 1];
-            if (commonUtils.isNotEmptyArr(props.copyToData[dataSetName + 'Data'])) {
-              const copyData: any = [];
-              for(const data of props.copyToData[dataSetName + 'Data']) {
-                copyData.push({...commonUtils.getAssignFieldValue(config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
-              }
-              childParams[dataSetName + 'Data'] = copyData;
-            }
-          }
-        }
-        onButtonClick('addButton', null, null, childParams);
-      }
-      else if (props.handleType === 'modify') {
-        onButtonClick('modifyButton', null, null);
+  const getSaveData = (name) => {
+    const newName = props[name + 'Container'].isTree ? name + 'Src' : name;
+    const { [name + 'SelectedRowKeys']: tableSelectedRowKeysOld, [newName + 'Data']: tableDataOld, [name + 'DelData']: tableDelData } = props;
+    const tableSelectedRowKeys = commonUtils.isEmptyArr(tableSelectedRowKeysOld) ? [] : tableSelectedRowKeysOld;
+    const tableData: any = [];
+    for(const dataRow of tableDataOld) {
+      if (tableSelectedRowKeys.findIndex(item => item === dataRow[name + 'Id']) > -1) {
+        tableData.push(dataRow);
+      } else if (dataRow.handleType !== 'add') {
+        tableData.push({...dataRow, handleType: 'del' });
       }
     }
-  }, [props.masterContainer.dataSetName]);
+    return commonUtils.mergeData(name, tableData.filter(item => commonUtils.isNotEmpty(item.handleType)), tableDelData, true);
+  }
 
   const onButtonClick = async (key, config, e, childParamsOld: any = undefined) => {
     let childParams: any = {};
@@ -232,13 +230,13 @@ const UserPermission = (props) => {
   supplyParam.pagination = false;
   supplyParam.isLastColumn = false;
 
-  const userParam: any = commonUtils.getTableProps('user', props);
-  userParam.pagination = false;
-  userParam.isLastColumn = false;
-
   const processParam: any = commonUtils.getTableProps('process', props);
   processParam.pagination = false;
   processParam.isLastColumn = false;
+
+  const userBusinessParam: any = commonUtils.getTableProps('userBusiness', props);
+  userBusinessParam.pagination = false;
+  userBusinessParam.isLastColumn = false;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
@@ -264,16 +262,17 @@ const UserPermission = (props) => {
           {commonUtils.isNotEmptyObj(props.supplyContainer) ? <TableComponent {...supplyParam} /> : '' }
         </Col>
       </Row>
-      <Row style={{ height: 'auto', overflow: 'auto' }}>
-        <Col>
-          {commonUtils.isNotEmptyObj(props.userContainer) ? <TableComponent {...userParam} /> : '' }
-        </Col>
-      </Row>
-      <Row style={{ height: 'auto', overflow: 'auto' }}>
+      <Row>
         <Col>
           {commonUtils.isNotEmptyObj(props.processContainer) ? <TableComponent {...processParam} /> : '' }
         </Col>
       </Row>
+      <Row>
+        <Col>
+          {commonUtils.isNotEmptyObj(props.userBusinessContainer) ? <TableComponent {...userBusinessParam} /> : '' }
+        </Col>
+      </Row>
+
       <ButtonGroup {...buttonGroup} />
     </Form>
   );

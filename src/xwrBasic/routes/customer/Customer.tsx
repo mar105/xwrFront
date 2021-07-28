@@ -19,11 +19,13 @@ const Customer = (props) => {
 
   const onFinish = async (values: any) => {
     const { contactData, contactDelData, addressData, addressDelData } = props;
-    const saveData: any = [];
-    saveData.push(commonUtils.mergeData('contact', contactData, contactDelData, false));
-    saveData.push(commonUtils.mergeData('address', addressData, addressDelData, false));
-    const childParams = { saveData };
-    props.onFinish(values, childParams);
+    const childCallback = (params) => {
+      const saveData: any = [];
+      saveData.push(commonUtils.mergeData('contact', contactData, contactDelData, false));
+      saveData.push(commonUtils.mergeData('address', addressData, addressDelData, false));
+      return saveData;
+    }
+    props.onFinish(values, { childCallback });
   }
 
   useEffect(() => {

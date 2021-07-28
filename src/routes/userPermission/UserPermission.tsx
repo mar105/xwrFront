@@ -45,7 +45,7 @@ const UserPermission = (props) => {
   }, [props.masterContainer.dataSetName]);
 
 
-  const getSlaveData = (name, table, container, tableDataOld, masterKeyValue, assignField) => {
+  const getSlaveData = (name, table, container, tableDataOld, tableSrcData, masterKeyValue, assignField) => {
     const tableData: any = [];
     table.filter(item => item[container.treeSlaveKey] === masterKeyValue).forEach((dataRow, indexTable) => {
       const indexCategory = tableDataOld.findIndex(item => item[name + 'Id'] === dataRow.id);
@@ -54,10 +54,11 @@ const UserPermission = (props) => {
       data.userId = masterData.userId;
       data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
       data.sortNum = indexTable;
-      const children = getSlaveData(name, table, container, tableDataOld, dataRow[container.treeKey], assignField);
+      const children = getSlaveData(name, table, container, tableDataOld, tableSrcData, dataRow.id, assignField);
       if (commonUtils.isNotEmptyArr(children)) {
         data.children = children;
       }
+      tableSrcData.push(data);
       tableData.push(data);
     });
     return tableData;
@@ -65,14 +66,16 @@ const UserPermission = (props) => {
 
   const getFetchData = async (name) => {
     const { [name + 'Container']: container, [name + 'DelData']: delDataOld, masterData } = props;
-    let returnData = await props.getDataList({ name, containerId: container.id, condition: { dataId: props.dataId }, isWait: true });
+    let returnData = await props.getDataList({ name, containerId: container.id, isNotViewTree: 1, condition: { dataId: masterData.userId }, isWait: true });
     let addState = {...returnData};
     const tableData: any = [];
+    const tableSrcData: any = [];
     const tableDataOld: any = [...addState[name + 'Data']];
     const tableSelectedRowKeys: any = [];
     addState[name + 'Data'].forEach(item => {
       tableSelectedRowKeys.push(item[container.tableKey]);
     });
+
     const tableDelData: any = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
     if (container.isTree) {
       const indexTree = container.slaveData.findIndex(item => item.fieldName === (name + 'Tree'));
@@ -101,13 +104,16 @@ const UserPermission = (props) => {
           data.userId = masterData.userId;
           data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
           data.sortNum = indexTable;
-          const children = getSlaveData(name, table, container, tableDataOld, dataRow[container.treeKey], container.slaveData[index].assignField);
+          const children = getSlaveData(name, table, container, tableDataOld, tableSrcData, dataRow.id, container.slaveData[index].assignField);
           if (commonUtils.isNotEmptyArr(children)) {
             data.children = children;
           }
+          tableSrcData.push(data);
           tableData.push(data);
         });
         addState[name + 'Data'] = tableData;
+        addState[name + 'SelectedRowKeys'] = tableSelectedRowKeys;
+        addState[name + 'SrcData'] = tableSrcData;
       }
 
     } else {
@@ -124,7 +130,6 @@ const UserPermission = (props) => {
           }
           rowIndex += 1;
         }
-
         table.forEach((dataRow, indexTable)  => {
           const indexCategory = tableDataOld.findIndex(item => item[name + 'Id'] === dataRow.id);
           let data: any = !(indexCategory > -1) ? props.onAdd(container) : tableDataOld[indexCategory];
@@ -134,6 +139,7 @@ const UserPermission = (props) => {
           tableData.push(data);
         });
         addState[name + 'Data'] = tableData;
+        addState[name + 'SelectedRowKeys'] = tableSelectedRowKeys;
       }
     }
 
@@ -141,12 +147,35 @@ const UserPermission = (props) => {
   }
 
   const onFinish = async (values: any) => {
-    const { permissionData, permissionDelData, customerData, customerDelData } = props;
-    const saveData: any = [];
-    saveData.push(commonUtils.mergeData('permission', permissionData, permissionDelData, false));
-    saveData.push(commonUtils.mergeData('customer', customerData, customerDelData, false));
-    const childParams = { saveData };
-    props.onFinish(values, childParams);
+    const { permissionCategoryData: permissionCategoryDataOld, permissionCategoryDelData, permissionCategorySelectedRowKeys: permissionCategorySelectedRowKeysOld,
+      customerSelectedRowKeys: customerSelectedRowKeysOld, customerSrcData: customerDataOld, customerDelData } = props;
+    const childCallback = (params) => {
+      const saveData: any = [];
+      const permissionCategorySelectedRowKeys = commonUtils.isEmptyArr(permissionCategorySelectedRowKeysOld) ? [] : permissionCategorySelectedRowKeysOld;
+      const permissionCategoryData: any = [];
+      for(const permissionCategory of permissionCategoryDataOld) {
+        if (permissionCategorySelectedRowKeys.findIndex(item => item === permissionCategory.permissionCategoryId) > -1) {
+          permissionCategoryData.push(permissionCategory);
+        } else if (permissionCategory.handleType !== 'add') {
+          permissionCategoryData.push({...permissionCategory, handleType: 'del' });
+        }
+      }
+
+      const customerSelectedRowKeys = commonUtils.isEmptyArr(customerSelectedRowKeysOld) ? [] : customerSelectedRowKeysOld;
+      const customerData: any = [];
+      for(const customer of customerDataOld) {
+        if (customerSelectedRowKeys.findIndex(item => item === customer.customerId) > -1) {
+          customerData.push(customer);
+        } else if (customer.handleType !== 'add') {
+          customerData.push({...customer, handleType: 'del' });
+        }
+      }
+      saveData.push(commonUtils.mergeData('permissionCategory', permissionCategoryData.filter(item => commonUtils.isNotEmpty(item.handleType)), permissionCategoryDelData, true));
+      saveData.push(commonUtils.mergeData('customer', customerData.filter(item => commonUtils.isNotEmpty(item.handleType)), customerDelData, true));
+      return saveData;
+    }
+
+    props.onFinish(values, {childCallback});
   }
 
   useEffect(() => {

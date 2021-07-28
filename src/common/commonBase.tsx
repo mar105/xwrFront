@@ -134,6 +134,7 @@ const commonBase = (WrapComponent) => {
         shopId: commonModel.userInfo.shopId,
         containerId: params.containerId,
         pageNum: params.pageNum,
+        isNotViewTree: params.isNotViewTree,
         pageSize: params.pageSize ? params.pageSize : application.pageSize,
         condition: params.condition,
         createDate: params.createDate,

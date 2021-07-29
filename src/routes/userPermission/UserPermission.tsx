@@ -221,22 +221,27 @@ const UserPermission = (props) => {
   const permissionCategoryParam: any = commonUtils.getTableProps('permissionCategory', props);
   permissionCategoryParam.pagination = false;
   permissionCategoryParam.isLastColumn = false;
+  permissionCategoryParam.enabled = false;
 
   const customerParam: any = commonUtils.getTableProps('customer', props);
   customerParam.pagination = false;
   customerParam.isLastColumn = false;
+  customerParam.enabled = false;
 
   const supplyParam: any = commonUtils.getTableProps('supply', props);
   supplyParam.pagination = false;
   supplyParam.isLastColumn = false;
+  supplyParam.enabled = false;
 
   const processParam: any = commonUtils.getTableProps('process', props);
   processParam.pagination = false;
   processParam.isLastColumn = false;
+  processParam.enabled = false;
 
   const userBusinessParam: any = commonUtils.getTableProps('userBusiness', props);
   userBusinessParam.pagination = false;
   userBusinessParam.isLastColumn = false;
+  userBusinessParam.enabled = false;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);

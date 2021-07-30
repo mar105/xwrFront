@@ -176,11 +176,11 @@ const UserPermission = (props) => {
   const onFinish = async (values: any) => {
     const childCallback = (params) => {
       const saveData: any = [];
-      saveData.push(getSaveData('permissionCategory'));
-      saveData.push(getSaveData('customer'));
-      saveData.push(getSaveData('supply'));
-      saveData.push(getSaveData('process'));
-      saveData.push(getSaveData('userBusiness'));
+      saveData.push(getFinishData('permissionCategory'));
+      saveData.push(getFinishData('customer'));
+      saveData.push(getFinishData('supply'));
+      saveData.push(getFinishData('process'));
+      saveData.push(getFinishData('userBusiness'));
       return saveData;
     }
 
@@ -188,7 +188,7 @@ const UserPermission = (props) => {
     fetchData();
   }
 
-  const getSaveData = (name) => {
+  const getFinishData = (name) => {
     const newName = props[name + 'Container'].isTree ? name + 'Src' : name;
     const { [name + 'SelectedRowKeys']: tableSelectedRowKeysOld, [newName + 'Data']: tableDataOld, [name + 'DelData']: tableDelData } = props;
     const tableSelectedRowKeys = commonUtils.isEmptyArr(tableSelectedRowKeysOld) ? [] : tableSelectedRowKeysOld;

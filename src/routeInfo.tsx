@@ -9,7 +9,9 @@ const xwrMainRouteInfo: any[] = [{
     children: [{
       path: '/shop', name: 'shop', title: '公司信息', component: () => import('./routes/shop/Shop'),
     }, {
-      path: '/userPermission', name: 'userPermission', title: '用户权限信息', component: () => import('./routes/userPermission/UserPermission'),
+      path: '/userPermission', name: 'userPermission', title: '用户信息', component: () => import('./routes/userPermission/UserPermission'),
+    }, {
+      path: '/permission', name: 'permission', title: '用户权限', component: () => import('./routes/permission/Permission'),
     }]
   },
 ];

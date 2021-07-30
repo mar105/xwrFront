@@ -11,7 +11,7 @@ import {componentType} from "../utils/commonTypes";
 import { Resizable } from 'react-resizable';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import "react-resizable/css/styles.css";
-import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined } from '@ant-design/icons';
+import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
 import ReactDragListView from 'react-drag-listview';
 import Highlighter from 'react-highlight-words';
@@ -53,9 +53,10 @@ export function TableComponent(params: any) {
 
     // 树形通过配置展开列名找到展开列
     if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
-      const  selectionMinus = params.property.rowSelection === null ? 1 : 2;
+      let selectionMinus = params.property.rowSelection === null ? 0 : 2;
+      selectionMinus = params.config.isRowNum ? selectionMinus + 1 : selectionMinus;
       const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
-      addState.expandable = { expandIconColumnIndex: index + selectionMinus };
+      addState.expandable = { expandIconColumnIndex: index + selectionMinus }
     }
 
     //-----增加行拖拽------------------------------
@@ -92,12 +93,14 @@ export function TableComponent(params: any) {
 
 
     //-----增加列宽拖拽------------------------------
-    const components = {
+    const components = params.config.isTree ? {} : {
       header: {
         cell: ResizeableTitle,
       },
       ...addComponents
     }
+
+
 
     if (params.scrollToRow) {
       setTimeout(() => {
@@ -266,14 +269,14 @@ export function TableComponent(params: any) {
           onResize: handleResize(columnIndex),
         });
         column.shouldUpdate = (record, prevRecord) => {
-          return record[column.fieldName] !== prevRecord[column.fieldName];
+          return record[column.dataIndex] !== prevRecord[column.dataIndex];
         }
 
         column.ellipsis = {showTitle: true};
         // 多列排序
         column.sorter = {
           compare: (a, b) => {
-            if (column.fieldType === 'decimal' || column.fieldType === 'int' || columns.fieldType === 'smallint' || columns.fieldType === 'tinyint') {
+            if (column.fieldType === 'decimal' || column.fieldType === 'int' || column.fieldType === 'smallint' || column.fieldType === 'tinyint') {
               return ((commonUtils.isEmpty(a[column.dataIndex]) ? 0 : a[column.dataIndex]) - (commonUtils.isEmpty(b[column.dataIndex]) ? 0 : b[column.dataIndex]));
             } else if (column.fieldType === 'datetime') {
               return (moment(commonUtils.isEmpty(a[column.dataIndex]) ? '2000-01-01' : a[column.dataIndex]).diff(moment(commonUtils.isEmpty(b[column.dataIndex]) ? '2000-01-01' : b[column.dataIndex])));
@@ -281,7 +284,7 @@ export function TableComponent(params: any) {
               return ((commonUtils.isEmpty(a[column.dataIndex]) ? '0' : a[column.dataIndex]).localeCompare((commonUtils.isEmpty(b[column.dataIndex]) ? '1' : b[column.dataIndex])));
             }
           },
-          multiple: modifySelfState.sorterInfo ? modifySelfState.sorterInfo.findIndex((item: any) => item.field === column.fieldName) : -1,
+          multiple: modifySelfState.sorterInfo ? modifySelfState.sorterInfo.findIndex((item: any) => item.field === column.dataIndex) : -1,
         }
 
         //金额靠右显示
@@ -487,6 +490,7 @@ export function TableComponent(params: any) {
     components: modifySelfState.components,
     rowSelection: { checkStrictly: false, type: params.config.isMutiChoise ? 'checkbox' : 'radio', fixed: true, ...params.rowSelection,
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
+      getCheckboxProps: (record) => { disabled: record.disabled },
       onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } },
     pagination: false,
     summary,

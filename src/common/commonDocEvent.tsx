@@ -152,7 +152,8 @@ const commonDocEvent = (WrapComponent) => {
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnState: any = await props.getAllData({ dataId: masterData.id });
-        dispatchModifyState({...returnState});
+        const returnChild: any = await childParams.getAllData(true);
+        dispatchModifyState({...returnState, ...returnChild});
         props.gotoSuccess(dispatch, interfaceReturn);
       } else if (interfaceReturn.code === 10) {
         dispatchModifyState({ pageLoading: true });

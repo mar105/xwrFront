@@ -490,7 +490,7 @@ export function TableComponent(params: any) {
     components: modifySelfState.components,
     rowSelection: { checkStrictly: false, type: params.config.isMutiChoise ? 'checkbox' : 'radio', fixed: true, ...params.rowSelection,
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
-      getCheckboxProps: (record) => { disabled: record.disabled },
+      getCheckboxProps: (record) => ({ disabled: record.disabled }),
       onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } },
     pagination: false,
     summary,
@@ -500,7 +500,7 @@ export function TableComponent(params: any) {
     sticky: true,
     onRow: record => {
       return {
-        // onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
+        onClick: () => { params.eventOnRow && params.eventOnRow.onRowClick ? params.eventOnRow.onRowClick(params.name, record, rowKey) : null }, // 点击行
         onDoubleClick: () => { params.eventOnRow && params.eventOnRow.onRowDoubleClick ? params.eventOnRow.onRowDoubleClick(params.name, record) : null },
         // onContextMenu: event => {},
         // onMouseEnter: event => {}, // 鼠标移入行

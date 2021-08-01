@@ -5,9 +5,8 @@ import commonBase from "../../common/commonBase";
 import * as commonUtils from "../../utils/commonUtils";
 import {ButtonGroup} from "../../common/ButtonGroup";
 import commonDocEvent from "../../common/commonDocEvent";
-import { CommonExhibit } from "../../common/CommonExhibit";
 import {TableComponent} from "../../components/TableComponent";
-import * as application from "../../xwrManage/application";
+import * as application from "../../application";
 import * as request from "../../utils/request";
 
 const Permission = (props) => {
@@ -20,28 +19,69 @@ const Permission = (props) => {
 
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.userContainer)) {
-      fetchData();
+      getAllData();
+
     }
   }, [props.userContainer]);
 
-  const fetchData = async () => {
+  const getAllData = async (isWait) => {
     const { dispatchModifyState } = props;
-
     let addState = {};
     // 权限分类
-    addState = { ...addState, ... await getFetchData('user') };
+    addState = { masterData: {id: props.tabId}, ...addState, ... await getFetchData('user') };
 
     //系统权限
     const permission = await getAllPermission({ isWait: true });
     addState.permissionData = permission.treeData;
 
-    dispatchModifyState({ ...addState });
+    let userId;
+    let isCategory;
+    if (commonUtils.isNotEmptyArr(props.userSelectedRowKeys)) {
+      const indexUser = props.userSrcData.findIndex(item => item.userId === props.userSelectedRowKeys.toString());
+      userId = indexUser > -1 ? props.userSrcData[indexUser].userId : '';
+      isCategory = indexUser > -1 ? props.userSrcData[indexUser].isCategory : false;
+    } else {
+      userId = commonUtils.isNotEmptyArr(addState.userData) ? addState.userData[0].userId : '';
+      isCategory = commonUtils.isNotEmptyArr(addState.userData) ? addState.userData[0].isCategory : false;
+    }
+
+    if (commonUtils.isNotEmpty(userId)) {
+      addState = { ...addState, ... await getUserPermission(userId, isCategory, true) };
+      setPermissionDisabled(addState.userPermission, addState.permissionData, isCategory);
+      const permissionSelectedRowKeys = [];
+      addState.userPermission.forEach(item => {
+        permissionSelectedRowKeys.push(item.permissionId);
+      });
+      addState.permissionSelectedRowKeys = permissionSelectedRowKeys;
+      addState.userSelectedRowKeys = [addState.userData[0].userId];
+    }
+    if (isWait) {
+      return addState;
+    } else {
+      dispatchModifyState(addState);
+    }
   }
+
+  const setPermissionDisabled = (userPermission, tableData, isCategory) => {
+    for(const dataRow of tableData) {
+      if (isCategory) {
+        dataRow.disabled = false;
+      } else {
+        const categoryIndex = userPermission.findIndex(item => item.permissionId === dataRow.id && item.isCategory === 1);
+        dataRow.disabled = categoryIndex > -1;
+      }
+      if (commonUtils.isNotEmptyArr(dataRow.children)) {
+        setPermissionDisabled(userPermission, dataRow.children, isCategory);
+      }
+    }
+  }
+
+
 
   const getAllPermission = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlPrefix}/permission/getAllPermission`;
+    const url: string = `${application.urlManage}/permission/getAllPermission`;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -54,10 +94,27 @@ const Permission = (props) => {
     }
   }
 
+  const getUserPermission = async (userId, isCategory, isWait) => {
+    const { commonModel, dispatch, dispatchModifyState } = props;
+    const url: string = isCategory ? `${application.urlPrefix}/userPermission/getUserPermission?routeId=` + props.routeId +
+        '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&permissionCategoryId=' + userId :
+      `${application.urlPrefix}/userPermission/getUserPermission?routeId=` + props.routeId +
+        '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&userId=' + userId;
+    const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+    if (interfaceReturn.code === 1) {
+      if (isWait) {
+        return { userPermission: interfaceReturn.data };
+      } else {
+        dispatchModifyState({ userPermission: interfaceReturn.data });
+      }
+    } else {
+      props.gotoError(dispatch, interfaceReturn);
+    }
+  }
+
   const getFetchData = async (name) => {
     const { [name + 'Container']: container } = props;
     const tableData: any = [];
-    const tableSrcData: any = [];
     let addState = { [name + 'Data']: [] };
 
     if (container.isTree) {
@@ -73,31 +130,29 @@ const Permission = (props) => {
           const data = { ...props.onAdd(container), ...commonUtils.getAssignFieldValue(container.slaveData[index].assignField, dataRow)};
           data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
           data.sortNum = indexTable;
-          const children = getSlaveData(name, table, container, tableSrcData, dataRow[container.treeKey], container.slaveData[index].assignField);
+          const children = getSlaveData(name, table, container, dataRow[container.treeKey], container.slaveData[index].assignField);
           if (commonUtils.isNotEmptyArr(children)) {
             data.children = children;
           }
-          tableSrcData.push(data);
           tableData.push(data);
         });
+        addState[name + 'SrcData'] = table;
         addState[name + 'Data'] = tableData;
-        addState[name + 'SrcData'] = tableSrcData;
       }
     }
     return addState;
   }
 
-  const getSlaveData = (name, table, container, tableSrcData, masterKeyValue, assignField) => {
+  const getSlaveData = (name, table, container, masterKeyValue, assignField) => {
     const tableData: any = [];
     table.filter(item => item[container.treeSlaveKey] === masterKeyValue).forEach((dataRow, indexTable) => {
       const data = { ...props.onAdd(container), ...commonUtils.getAssignFieldValue(assignField, dataRow)};
       data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
       data.sortNum = indexTable;
-      const children = getSlaveData(name, table, container, tableSrcData, dataRow.id, assignField);
+      const children = getSlaveData(name, table, container, dataRow.id, assignField);
       if (commonUtils.isNotEmptyArr(children)) {
         data.children = children;
       }
-      tableSrcData.push(data);
       tableData.push(data);
     });
     return tableData;
@@ -110,23 +165,36 @@ const Permission = (props) => {
       return saveData;
     }
 
-    await props.onFinish(values, {childCallback});
-    fetchData();
+    await props.onFinish(values, {childCallback, getAllData});
   }
 
   const getFinishData = (name) => {
-    const newName = props[name + 'Container'].isTree ? name + 'Src' : name;
-    const { [name + 'SelectedRowKeys']: tableSelectedRowKeysOld, [newName + 'Data']: tableDataOld, [name + 'DelData']: tableDelData } = props;
+    const { [name + 'SelectedRowKeys']: tableSelectedRowKeysOld, [name + 'Data']: tableDataOld, [name + 'DelData']: tableDelData,
+      userPermission, userSelectedRowKeys, userSrcData: userData } = props;
     const tableSelectedRowKeys = commonUtils.isEmptyArr(tableSelectedRowKeysOld) ? [] : tableSelectedRowKeysOld;
     const tableData: any = [];
+    // 正向找，一次递归， 反向找，多次递归中断。决定正向找。
+    const indexUser = userData.findIndex(item => item.userId === userSelectedRowKeys.toString());
+    getFinishSlaveData(name, tableDataOld, tableSelectedRowKeys, tableData, userPermission, userData[indexUser]);
+    return commonUtils.mergeData(name, tableData.filter(item => commonUtils.isNotEmpty(item.handleType)), tableDelData, true);
+  }
+
+  const getFinishSlaveData = (name, tableDataOld, tableSelectedRowKeys, tableData, userPermission, userInfo) => {
     for(const dataRow of tableDataOld) {
-      if (tableSelectedRowKeys.findIndex(item => item === dataRow[name + 'Id']) > -1) {
-        tableData.push(dataRow);
-      } else if (dataRow.handleType !== 'add') {
-        tableData.push({...dataRow, handleType: 'del' });
+      const indexPermission = userPermission.findIndex(item => item.permissionId === dataRow.id);
+      if (tableSelectedRowKeys.findIndex(item => item === dataRow.id) > -1) {
+        if (!(indexPermission > -1)) {
+          tableData.push({ ...props.onAdd(), sortNum: 0, permissionId: dataRow.id, permissionCategoryId: userInfo.isCategory ? userInfo.userId : '',
+            userId: userInfo.isCategory ? '' : userInfo.userId, handleType: 'add' });
+        }
+      } else if (indexPermission > -1) {
+        tableData.push({ id: userPermission[indexPermission].id, permissionId: dataRow.id, permissionCategoryId: userInfo.isCategory ? userInfo.userId : '',
+          userId: userInfo.isCategory ? '' : userInfo.userId, handleType: 'del' });
+      }
+      if (commonUtils.isNotEmptyArr(dataRow.children)) {
+        getFinishSlaveData(name, dataRow.children, tableSelectedRowKeys, tableData, userPermission, userInfo);
       }
     }
-    return commonUtils.mergeData(name, tableData.filter(item => commonUtils.isNotEmpty(item.handleType)), tableDelData, true);
   }
 
   const onButtonClick = async (key, config, e, childParamsOld: any = undefined) => {
@@ -142,6 +210,19 @@ const Permission = (props) => {
     }
   }
 
+  const onRowClick = async (name, record, rowKey) => {
+    const { dispatchModifyState } = props;
+    const addState = await getUserPermission(record[rowKey], record.isCategory, true);
+    setPermissionDisabled(addState.userPermission, props.permissionData, record.isCategory);
+    addState.permissionData = props.permissionData;
+    const permissionSelectedRowKeys = [];
+    addState.userPermission.forEach(item => {
+      permissionSelectedRowKeys.push(item.permissionId);
+    });
+    addState.permissionSelectedRowKeys = permissionSelectedRowKeys;
+    dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]], ...addState });
+  }
+
   const { enabled, masterContainer } = props;
   const buttonGroup = { onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
 
@@ -150,6 +231,7 @@ const Permission = (props) => {
   userParam.isLastColumn = false;
   userParam.enabled = false;
   userParam.property.rowSelection = null;
+  userParam.eventOnRow.onRowClick = onRowClick;
 
   const permissionParam: any = commonUtils.getTableProps('permission', props);
   permissionParam.pagination = false;

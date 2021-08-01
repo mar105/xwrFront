@@ -47,7 +47,7 @@ const Permission = (props) => {
 
     if (commonUtils.isNotEmpty(userId)) {
       addState = { ...addState, ... await getUserPermission(userId, isCategory, true) };
-      setPermissionDisabled(addState.userPermission, addState.permissionData, isCategory);
+      setPermissionDisabled(addState.userPermission, addState.permissionData, isCategory, false);
       const permissionSelectedRowKeys = [];
       addState.userPermission.forEach(item => {
         permissionSelectedRowKeys.push(item.permissionId);
@@ -62,9 +62,11 @@ const Permission = (props) => {
     }
   }
 
-  const setPermissionDisabled = (userPermission, tableData, isCategory) => {
+  const setPermissionDisabled = (userPermission, tableData, isCategory, enabled) => {
     for(const dataRow of tableData) {
-      if (isCategory) {
+      if (!enabled) {
+        dataRow.disabled = true;
+      } else if (isCategory) {
         dataRow.disabled = false;
       } else {
         const categoryIndex = userPermission.findIndex(item => item.permissionId === dataRow.id && item.isCategory === 1);
@@ -199,11 +201,17 @@ const Permission = (props) => {
 
   const onButtonClick = async (key, config, e, childParamsOld: any = undefined) => {
     let childParams: any = {};
-    if (key === 'addButton') {
-      for(const container of props.containerData) {
-        childParams[container.dataSetName + 'Data'] = [];
-      }
-      childParams = {...childParams, ...childParamsOld};
+    if (key === 'modifyButton') {
+      const indexUser = props.userSrcData.findIndex(item => item.userId === props.userSelectedRowKeys.toString());
+      const isCategory = indexUser > -1 ? props.userSrcData[indexUser].isCategory : false;
+      setPermissionDisabled(props.userPermission, props.permissionData, isCategory, true);
+      childParams.permissionData = props.permissionData;
+      props.onButtonClick(key, config, e, childParams);
+    } else if (key === 'cancelButton') {
+      const indexUser = props.userSrcData.findIndex(item => item.userId === props.userSelectedRowKeys.toString());
+      const isCategory = indexUser > -1 ? props.userSrcData[indexUser].isCategory : false;
+      setPermissionDisabled(props.userPermission, props.permissionData, isCategory, false);
+      childParams.permissionData = props.permissionData;
       props.onButtonClick(key, config, e, childParams);
     } else {
       props.onButtonClick(key, config, e);
@@ -213,7 +221,7 @@ const Permission = (props) => {
   const onRowClick = async (name, record, rowKey) => {
     const { dispatchModifyState } = props;
     const addState = await getUserPermission(record[rowKey], record.isCategory, true);
-    setPermissionDisabled(addState.userPermission, props.permissionData, record.isCategory);
+    setPermissionDisabled(addState.userPermission, props.permissionData, record.isCategory, props.enabled);
     addState.permissionData = props.permissionData;
     const permissionSelectedRowKeys = [];
     addState.userPermission.forEach(item => {
@@ -223,8 +231,17 @@ const Permission = (props) => {
     dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]], ...addState });
   }
 
+  const getButtonGroup = () => {
+    const buttonGroup: any = [];
+    buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 20, disabled: props.enabled });
+    buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 30, disabled: !props.enabled });
+    buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 40, disabled: !props.enabled });
+    return buttonGroup;
+  }
+
+
   const { enabled, masterContainer } = props;
-  const buttonGroup = { onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
+  const buttonGroup = { onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: getButtonGroup() };
 
   const userParam: any = commonUtils.getTableProps('user', props);
   userParam.pagination = false;

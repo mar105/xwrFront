@@ -62,7 +62,7 @@ const commonDocEvent = (WrapComponent) => {
           shopId: commonModel.userInfo.shopId};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
-          dispatchModifyState({ masterData, enabled: true });
+          dispatchModifyState({ masterData, enabled: true, ...childParams });
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
@@ -83,7 +83,7 @@ const commonDocEvent = (WrapComponent) => {
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
             const returnState = await props.getAllData({dataId: masterDataOld.id });
-            dispatchModifyState({ ...returnState, enabled: false });
+            dispatchModifyState({ ...returnState, enabled: false, ...childParams });
           } else {
             props.gotoError(dispatch, interfaceReturn);
           }

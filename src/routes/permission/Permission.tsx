@@ -73,7 +73,7 @@ const Permission = (props) => {
         dataRow.disabled = categoryIndex > -1;
       }
       if (commonUtils.isNotEmptyArr(dataRow.children)) {
-        setPermissionDisabled(userPermission, dataRow.children, isCategory);
+        setPermissionDisabled(userPermission, dataRow.children, isCategory, enabled);
       }
     }
   }
@@ -186,7 +186,7 @@ const Permission = (props) => {
       const indexPermission = userPermission.findIndex(item => item.permissionId === dataRow.id);
       if (tableSelectedRowKeys.findIndex(item => item === dataRow.id) > -1) {
         if (!(indexPermission > -1)) {
-          tableData.push({ ...props.onAdd(), sortNum: 0, permissionId: dataRow.id, permissionCategoryId: userInfo.isCategory ? userInfo.userId : '',
+          tableData.push({ ...props.onAdd(), sortNum: 0, permissionRouteId: dataRow.isPermission === 1 ? dataRow.superiorId : dataRow.id, permissionId: dataRow.id, permissionCategoryId: userInfo.isCategory ? userInfo.userId : '',
             userId: userInfo.isCategory ? '' : userInfo.userId, handleType: 'add' });
         }
       } else if (indexPermission > -1) {

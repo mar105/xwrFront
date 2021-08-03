@@ -27,7 +27,10 @@ export function ButtonGroup(params) {
     if (buttonConfig.isVisible) {
       let isDropDown = false;
       let menusData;
-      let buttonItem = {...buttonOld}; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置
+      const disabled = !(params.permissionData && params.permissionData.findIndex(item => item.permissionName &&
+        (item.permissionName === buttonOld.key || item.permissionName === buttonConfig.fieldName)) > -1);
+
+      let buttonItem = {...buttonOld, disabled: disabled ? disabled : buttonOld.disabled }; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置
       if (buttonOld.key === 'copyToButton') {
         const buttonChildren = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
           item.containerType === 'control' && item.isVisible && item.fieldName.startsWith(buttonOld.key + '.') && item.fieldName.split('.').length < 3);

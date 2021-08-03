@@ -186,7 +186,8 @@ const Permission = (props) => {
       const indexPermission = userPermission.findIndex(item => item.permissionId === dataRow.id);
       if (tableSelectedRowKeys.findIndex(item => item === dataRow.id) > -1) {
         if (!(indexPermission > -1)) {
-          tableData.push({ ...props.onAdd(), sortNum: 0, permissionRouteId: dataRow.isPermission === 1 ? dataRow.superiorId : dataRow.id, permissionId: dataRow.id, permissionCategoryId: userInfo.isCategory ? userInfo.userId : '',
+          tableData.push({ ...props.onAdd(), sortNum: 0, permissionRouteId: dataRow.isPermission === 1 ? dataRow.superiorId : dataRow.id,
+            permissionId: dataRow.id, permissionCategoryId: userInfo.isCategory ? userInfo.userId : '', permissionName: dataRow.permissionName,
             userId: userInfo.isCategory ? '' : userInfo.userId, handleType: 'add' });
         }
       } else if (indexPermission > -1) {
@@ -241,7 +242,7 @@ const Permission = (props) => {
 
 
   const { enabled, masterContainer } = props;
-  const buttonGroup = { onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: getButtonGroup() };
+  const buttonGroup = { onClick: onButtonClick, enabled, container: masterContainer, permissionData: props.permissionData, buttonGroup: getButtonGroup() };
 
   const userParam: any = commonUtils.getTableProps('user', props);
   userParam.pagination = false;

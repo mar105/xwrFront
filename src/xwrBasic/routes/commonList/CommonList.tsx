@@ -11,7 +11,7 @@ const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const { enabled, slaveContainer, searchRowKeys, searchData } = props;
-  const buttonGroup = { onClick: props.onButtonClick, enabled, container: slaveContainer, buttonGroup: props.getButtonGroup() };
+  const buttonGroup = { onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;

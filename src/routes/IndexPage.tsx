@@ -99,7 +99,7 @@ function IndexPage(props) {
       return;
     }
     let state: any = {...stateInfo};
-    const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + routeId;
+    const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       state = { ...state, routeId, ...interfaceReturn.data };

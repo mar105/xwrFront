@@ -27,8 +27,21 @@ export function ButtonGroup(params) {
     if (buttonConfig.isVisible) {
       let isDropDown = false;
       let menusData;
-      const disabled = !(params.permissionData && params.permissionData.findIndex(item => item.permissionName &&
-        (item.permissionName === buttonOld.key || item.permissionName === buttonConfig.fieldName)) > -1);
+      let disabled;
+      disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName &&
+        (item.permissionName === buttonOld.key || item.permissionName === buttonConfig.fieldName)) > -1) : false;
+
+      if (buttonOld.key === 'postButton' || buttonConfig.fieldName === 'postButton' ||
+          buttonOld.key === 'cancelButton' || buttonConfig.fieldName === 'cancelButton') {
+        disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName &&
+          (buttonOld.key === 'addButton' || buttonConfig.fieldName === 'addButton' ||
+            buttonOld.key === 'modifyButton' || buttonConfig.fieldName === 'modifyButton')) > -1) : false;
+      }
+
+      if (buttonOld.key === 'refreshButton' || buttonConfig.fieldName === 'refreshButton' ||
+        buttonOld.key === 'cancelButton' || buttonConfig.fieldName === 'cancelButton') {
+        disabled = false;
+      }
 
       let buttonItem = {...buttonOld, disabled: disabled ? disabled : buttonOld.disabled }; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置
       if (buttonOld.key === 'copyToButton') {

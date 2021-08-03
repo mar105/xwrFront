@@ -107,7 +107,7 @@ const categoryListEvent = (WrapComponent) => {
           props.gotoError(dispatch, interfaceReturn);
         }
 
-      } else if (key === 'delButton') {
+      } else if (key === 'delButton' || key === 'invalidButton') {
         const { commonModel, dispatch, dispatchModifyState, masterData } = props;
         if (commonUtils.isEmptyArr(slaveSelectedRows)) {
           props.gotoError(dispatch, { code: '6001', msg: '请先选择数据！' });
@@ -126,7 +126,7 @@ const categoryListEvent = (WrapComponent) => {
           saveData.push(...saveChildData);
         }
 
-        const params = { id: slaveSelectedRows[0].id, routeId: props.routeId, tabId, saveData, handleType: 'del' };
+        const params = { id: slaveSelectedRows[0].id, routeId: props.routeId, tabId, saveData, handleType: key.replace('Button', '') };
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
@@ -187,6 +187,7 @@ const categoryListEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !props.enabled });
       buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !props.enabled });
       buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: props.enabled });
+      buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 60, disabled: props.enabled });
       buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 100, disabled: props.enabled });
       return buttonGroup;
     }

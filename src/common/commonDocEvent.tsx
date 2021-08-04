@@ -69,12 +69,15 @@ const commonDocEvent = (WrapComponent) => {
 
       } else if (key === 'cancelButton') {
         if (masterDataOld.handleType === 'add') {
-          const returnData: any = await props.getDataList({ name: 'slave', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: props.listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
-          if (commonUtils.isNotEmptyArr(returnData.slaveData)) {
-            const returnState: any = await props.getAllData({ dataId: returnData.slaveData[0].id });
-            dispatchModifyState({...returnState, listRowIndex: props.listRowIndex});
+          if (props.listRouteId) {
+            const returnData: any = await props.getDataList({ name: 'slave', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: props.listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
+            if (commonUtils.isNotEmptyArr(returnData.slaveData)) {
+              const returnState: any = await props.getAllData({ dataId: returnData.slaveData[0].id });
+              dispatchModifyState({...returnState, listRowIndex: props.listRowIndex});
+            }
+          } else {
+            props.callbackRemovePane(tabId);
           }
-          // props.callbackRemovePane(tabId);
         } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
           const {dispatch, commonModel, tabId, masterData} = props;
           const url: string = `${application.urlCommon}/verify/removeModifying`;
@@ -151,9 +154,12 @@ const commonDocEvent = (WrapComponent) => {
       const url: string = `${application.urlMain}/getData/saveData`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        const returnState: any = await props.getAllData({ dataId: masterData.id });
-        const returnChild: any = await childParams.getAllData(true);
-        dispatchModifyState({...returnState, ...returnChild});
+        let returnState: any = await props.getAllData({ dataId: masterData.id });
+        if (commonUtils.isNotEmptyObj(childParams) && childParams.childCallback) {
+          const returnChild: any = await childParams.getAllData(true);
+          returnState = {...returnState, ...returnChild};
+        }
+        dispatchModifyState({...returnState});
         props.gotoSuccess(dispatch, interfaceReturn);
       } else if (interfaceReturn.code === 10) {
         dispatchModifyState({ pageLoading: true });

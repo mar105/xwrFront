@@ -7,9 +7,11 @@ import * as request from "../utils/request";
 import TabsPages from "../TabsPages";
 import commonBase from "../common/commonBase";
 import IndexMenu from "./IndexMenu";
-import {Row} from "antd";
+import {Dropdown, Menu, Row} from "antd";
 import {useRef} from "react";
 import {replacePath, routeInfo} from "../routeInfo";
+import { DownOutlined } from '@ant-design/icons';
+import {useMemo} from "react";
 
 function IndexPage(props) {
   const stompClientRef: any = useRef();
@@ -49,7 +51,7 @@ function IndexPage(props) {
   }
 
 
-  const onExit = async () => {
+  const onClear = async () => {
     const {dispatch, commonModel} = props;
     const url: string = `${application.urlCommon}/verify/clearAllModifying`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,
@@ -58,6 +60,14 @@ function IndexPage(props) {
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }
+  }
+
+  const onExit = async () => {
+    const {dispatch} = props;
+    dispatch({
+      type: 'commonModel/gotoNewPage',
+      payload: {newPage: '/login'},
+    });
   }
 
   const callbackRemovePane = useCallback((targetKey) => {
@@ -137,7 +147,45 @@ function IndexPage(props) {
     }
   }, [panesComponentsRef.current]);
 
+  const onClick = ({ key }) => {
+    const { dispatch, commonModel, dispatchModifyState } = props;
+    const userInfo = {...commonModel.userInfo};
+    const index = userInfo.userShop.findIndex(item => item.id === key);
+    userInfo.groupId = userInfo.userShop[index].groupId;
+    userInfo.groupName = userInfo.userShop[index].groupName;
+    userInfo.shopId = userInfo.userShop[index].shopId;
+    userInfo.shopName = userInfo.userShop[index].shopName;
+    dispatch({
+      type: 'commonModel/saveUserInfo',
+      payload: userInfo,
+    });
+    dispatch({
+      type: 'commonModel/savePanes',
+      payload: [],
+    });
+    dispatchModifyState({ panesComponents: [] });
+  };
+
+
+
   const { commonModel } = props;
+
+  const shop = useMemo(()=>{
+    const menu = <Menu onClick={onClick}>
+      { commonModel.userInfo.userShop.map(item => {
+        return <Menu.Item key={item.id}>{item.shopName}</Menu.Item>
+      }) }
+    </Menu>;
+    return (
+    <div>{commonModel.userInfo.userName}
+      {
+        commonModel.userInfo.userShop.length === 1 ? commonModel.userInfo.shopName :
+          <Dropdown overlay={menu}>
+            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+              {commonModel.userInfo.shopName}  <DownOutlined />
+            </a>
+          </Dropdown>
+      }</div>)}, [commonModel.userInfo]);
   return (
     <div>
       <Row>
@@ -146,8 +194,9 @@ function IndexPage(props) {
         <a href="/xwrManage">管理主页</a>
         <a href="/register"> register</a>
         <a href="/login"> login</a>
+        <button onClick={onClear}> 清除缓存</button>
         <button onClick={onExit}> 退出</button>
-        <div>{commonModel.userInfo.userName} {commonModel.userInfo.shopName}</div>
+        {shop}
       </Row>
       <div><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} /></div>
     </div>

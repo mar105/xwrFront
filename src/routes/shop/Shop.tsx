@@ -28,7 +28,7 @@ const Shop = (props) => {
   }
 
   const { enabled, masterContainer, masterData } = props;
-  const buttonGroup = { onClick: props.onButtonClick, enabled };
+  const buttonGroup = { onClick: props.onButtonClick, enabled, buttonGroup: props.getButtonGroup() };
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (

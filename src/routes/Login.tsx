@@ -42,6 +42,7 @@ const Login = ({ dispatch }) => {
         userInfo.groupName = interfaceReturn.data.userShop[0].groupName;
         userInfo.shopId = interfaceReturn.data.userShop[0].shopId;
         userInfo.shopName = interfaceReturn.data.userShop[0].shopName;
+        userInfo.userShop = interfaceReturn.data.userShop;
       }
       dispatch({
         type: 'commonModel/saveToken',

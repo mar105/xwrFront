@@ -15,31 +15,41 @@ const IndexMenu = (props) => {
   useEffect(() => {
     const {dispatch, commonModel } = props;
     const fetchData = async () => {
-      const url: string = `${application.urlManage}/route/getAllRoute`;
-      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-      if (interfaceReturn.code === 1) {
-        const menusData = interfaceReturn.data.map(menu => {
-          return subMenu(menu);
-        });
-        dispatchModifySelfState({ menusData });
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
+      if (commonModel.userInfo.userId !== '') {
+        const url: string = `${application.urlManage}/route/getAllRoute`;
+        const userPermissionUrl: string = `${application.urlPrefix}/userPermission/getUserPermission?routeId=` + props.routeId +
+          '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&userId=' + commonModel.userInfo.userId;
+        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+        const userPermissionReturn = commonModel.userInfo.isManage ? { code: 1, data: [] } : (await request.getRequest(userPermissionUrl, commonModel.token)).data;
+        if (interfaceReturn.code === 1 && userPermissionReturn.code === 1) {
+          const menusData = interfaceReturn.data.map(menu => {
+            return subMenu(menu, userPermissionReturn.data);
+          });
+          dispatchModifySelfState({ menusData });
+        } else {
+          if (interfaceReturn.code !== 1) {
+            props.gotoError(dispatch, interfaceReturn);
+          }  else if (userPermissionReturn.code !== 1) {
+            props.gotoError(dispatch, userPermissionReturn);
+          }
+        }
       }
     }
 
     fetchData();
-  }, []);
+  }, [props.commonModel.userInfo.userId]);
 
-  const subMenu = (menu) => {
+  const subMenu = (menu, userPermission) => {
     if (commonUtils.isNotEmptyArr(menu.children) ) {
       return <SubMenu key={menu.id} title={menu.viewName}>
         {menu.children.map(menu => {
-          return subMenu(menu);
+          return subMenu(menu, userPermission);
         })}
       </SubMenu>
     } else {
+      const disabled = props.commonModel.userInfo.isManage ? false : !(userPermission.findIndex(item => item.permissionRouteId === menu.id) > -1);
       // @ts-ignore
-      return <Menu.Item key={menu.id} menuData={menu}>{menu.viewName}</Menu.Item>
+      return <Menu.Item key={menu.id} menuData={menu} disabled={disabled}>{menu.viewName}</Menu.Item>
     }
   }
 

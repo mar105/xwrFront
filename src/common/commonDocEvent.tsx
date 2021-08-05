@@ -99,7 +99,7 @@ const commonDocEvent = (WrapComponent) => {
             const saveChildData = await childParams.childCallback({masterDataOld});
             saveData.push(...saveChildData);
           }
-          const params = { id: masterDataOld.id, routeId: props.routeId, tabId, saveData, groupId: commonModel.userInfo.groupId,
+          const params = { id: masterDataOld.id, tabId, routeId: props.routeId, saveData, groupId: commonModel.userInfo.groupId,
             shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
           const url: string = `${application.urlMain}/getData/saveData`;
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;

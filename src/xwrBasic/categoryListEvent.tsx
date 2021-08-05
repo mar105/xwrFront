@@ -126,7 +126,8 @@ const categoryListEvent = (WrapComponent) => {
           saveData.push(...saveChildData);
         }
 
-        const params = { id: slaveSelectedRows[0].id, routeId: props.routeId, tabId, saveData, handleType: key.replace('Button', '') };
+        const params = { id: slaveSelectedRows[0].id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
+          shopId: commonModel.userInfo.shopId,  saveData, handleType: key.replace('Button', '') };
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
@@ -167,7 +168,8 @@ const categoryListEvent = (WrapComponent) => {
         const saveChildData = await childParams.childCallback({masterData});
         saveData.push(...saveChildData);
       }
-      const params = { id: masterData.id, tabId, routeId: props.routeId,  saveData };
+      const params = { id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
+        shopId: commonModel.userInfo.shopId, saveData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType };
       const url: string = `${application.urlMain}/getData/saveData`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {

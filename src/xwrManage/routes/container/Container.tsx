@@ -344,7 +344,7 @@ const Container = (props) => {
   }
 
   const { enabled, masterData, slaveData, slaveColumns, slaveSelectedRowKeys,
-    treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
+    treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, commonModel } = props;
 
   const createDate = {
     name: 'master',
@@ -538,7 +538,7 @@ const Container = (props) => {
   const buttonAddGroup: any = props.getButtonGroup();
   buttonAddGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
   buttonAddGroup.push({ key: 'syncToMongoIndexButton', caption: '同步到mongo索引', htmlType: 'button', onClick, sortNum: 101, disabled: props.enabled });
-  const buttonGroup = { onClick, enabled, buttonGroup: buttonAddGroup };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick, enabled, buttonGroup: buttonAddGroup };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (

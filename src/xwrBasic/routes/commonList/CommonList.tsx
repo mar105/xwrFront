@@ -10,8 +10,8 @@ import commonListEvent from "../../../common/commonListEvent";
 const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
-  const { enabled, slaveContainer, searchRowKeys, searchData } = props;
-  const buttonGroup = { onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup() };
+  const { commonModel, enabled, slaveContainer, searchRowKeys, searchData } = props;
+  const buttonGroup = { userInfo: commonModel.userInfo, userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;

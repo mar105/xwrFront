@@ -3,6 +3,7 @@ import {componentType} from "../utils/commonTypes";
 import * as commonUtils from "../utils/commonUtils";
 import {Col, Row,  Menu} from "antd";
 import React from 'react';
+import {userInfo} from "os";
 
 export function ButtonGroup(params) {
   const buttonGroupOld: any = [];
@@ -38,7 +39,7 @@ export function ButtonGroup(params) {
             buttonOld.key === 'modifyButton' || buttonConfig.fieldName === 'modifyButton')) > -1) : false;
       }
 
-      if (buttonOld.key === 'refreshButton' || buttonConfig.fieldName === 'refreshButton' ||
+      if (params.userInfo.isManage || buttonOld.key === 'refreshButton' || buttonConfig.fieldName === 'refreshButton' ||
         buttonOld.key === 'cancelButton' || buttonConfig.fieldName === 'cancelButton') {
         disabled = false;
       }

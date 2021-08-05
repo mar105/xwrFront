@@ -11,8 +11,8 @@ import Search from "../../../common/Search";
 const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
-  const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData } = props;
-  const buttonGroup = { onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup() };
+  const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel } = props;
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;

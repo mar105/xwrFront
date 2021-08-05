@@ -193,7 +193,7 @@ const Constant = (props) => {
   }
 
   const { enabled, masterData,
-    treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
+    treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, commonModel } = props;
 
   const createDate = {
     name: 'master',
@@ -228,7 +228,7 @@ const Constant = (props) => {
   };
 
 
-  const buttonGroup = { onClick, enabled, buttonGroup: props.getButtonGroup() };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick, enabled, buttonGroup: props.getButtonGroup() };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (

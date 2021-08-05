@@ -216,8 +216,8 @@ const UserPermission = (props) => {
     }
   }
 
-  const { enabled, masterContainer, masterData } = props;
-  const buttonGroup = { onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
+  const { enabled, masterContainer, masterData, commonModel } = props;
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
   const permissionCategoryParam: any = commonUtils.getTableProps('permissionCategory', props);
   permissionCategoryParam.pagination = false;
   permissionCategoryParam.isLastColumn = false;

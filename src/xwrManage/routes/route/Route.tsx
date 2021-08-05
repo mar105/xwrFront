@@ -213,7 +213,7 @@ const Route = (props) => {
 
 
 
-  const { treeSelectedKeys, treeData, enabled, masterData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys } = props;
+  const { treeSelectedKeys, treeData, enabled, masterData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, commonModel } = props;
 
   const createDate = {
     name: 'master',
@@ -260,7 +260,7 @@ const Route = (props) => {
 
   const buttonAddGroup: any = props.getButtonGroup();
   buttonAddGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
-  const buttonGroup = { onClick, enabled, buttonGroup: buttonAddGroup };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick, enabled, buttonGroup: buttonAddGroup };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} getAllRoute={getAllRoute} />
     )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (

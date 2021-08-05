@@ -155,6 +155,7 @@ function IndexPage(props) {
     userInfo.groupName = userInfo.userShop[index].groupName;
     userInfo.shopId = userInfo.userShop[index].shopId;
     userInfo.shopName = userInfo.userShop[index].shopName;
+    userInfo.isManage = userInfo.userShop[index].isManage;
     dispatch({
       type: 'commonModel/saveUserInfo',
       payload: userInfo,

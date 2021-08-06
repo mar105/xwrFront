@@ -11,7 +11,7 @@ import {componentType} from "../utils/commonTypes";
 import { Resizable } from 'react-resizable';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import "react-resizable/css/styles.css";
-import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined, RightOutlined, DownOutlined } from '@ant-design/icons';
+import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined } from '@ant-design/icons';
 import arrayMove from 'array-move';
 import ReactDragListView from 'react-drag-listview';
 import Highlighter from 'react-highlight-words';

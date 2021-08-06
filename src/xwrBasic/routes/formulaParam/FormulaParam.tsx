@@ -26,7 +26,7 @@ const FormulaParam = (props) => {
             const data = props.onAdd(categoryContainer);
             data.superiorId = params.masterData.id;
             data.paramCategory = item.id;
-            data.sortNum = index;
+            data.sortNum = index + 1;
             categoryData.push(data);
           });
         }
@@ -65,7 +65,7 @@ const FormulaParam = (props) => {
               const data = props.onAdd(categoryContainer);
               data.superiorId = params.masterData.id;
               data.paramCategory = dataRow.id;
-              data.sortNum = index;
+              data.sortNum = index + 1;
               categoryData.push(data);
             } else {
               categoryData.push(categoryDataOld[indexCategory]);

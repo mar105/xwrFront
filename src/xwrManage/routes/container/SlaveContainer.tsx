@@ -15,7 +15,8 @@ const SlaveContainer = (props) => {
   const columns = [
     { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 80, fixed: 'left' },
     { title: '名称', dataIndex: 'fieldName', isRequired: true, fieldType: 'varchar', sortNum: 20, width: 150, fixed: 'left' },
-    { title: '字段|类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const', viewDrop: '{ "field": "字段", "relevance": "关联性字段", "control": "控件", "cascader": "级联" }', defaultValue: 'field', sortNum: 30, width: 150 },
+    { title: '字段|类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const',
+      viewDrop: '{ "field": "字段", "relevance": "关联性字段", "spare": "备用字段", "control": "控件", "cascader": "级联" }', defaultValue: 'field', sortNum: 30, width: 150 },
     { title: '字段|字段类型', dataIndex: 'fieldType', isRequired: true, fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "varchar": "字符型", "decimal": "数字型", "int": "整型", "smallint": "微整型", "datetime": "日期型", "tinyint": "布尔型", "text": "备注型" }', sortNum: 40, width: 150 },
     { title: '字段|关联性', dataIndex: 'fieldRelevance', fieldType: 'varchar', sortNum: 50, width: 150 },
     { title: '字段|关联性条件', dataIndex: 'conditionRelevance', fieldType: 'varchar', sortNum: 60, width: 150 },
@@ -79,7 +80,7 @@ const SlaveContainer = (props) => {
       const data = props.onAdd(slaveContainer);
       data.superiorId = propsRef.current.masterData.id;
       data.containerType = 'field';
-      data.sortNum = slaveDataOld.length;
+      data.sortNum = slaveDataOld.length + 1;
       data.assignField = '';
       data.fieldRelevance = '';
       data.chineseDrop = '';

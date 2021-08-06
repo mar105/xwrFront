@@ -131,7 +131,7 @@ const Permission = (props) => {
         table.filter(item => commonUtils.isEmpty(item[container.treeSlaveKey])).forEach((dataRow, indexTable) => {
           const data = { ...props.onAdd(container), ...commonUtils.getAssignFieldValue(container.slaveData[index].assignField, dataRow)};
           data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
-          data.sortNum = indexTable;
+          data.sortNum = indexTable + 1;
           const children = getSlaveData(name, table, container, dataRow[container.treeKey], container.slaveData[index].assignField);
           if (commonUtils.isNotEmptyArr(children)) {
             data.children = children;
@@ -150,7 +150,7 @@ const Permission = (props) => {
     table.filter(item => item[container.treeSlaveKey] === masterKeyValue).forEach((dataRow, indexTable) => {
       const data = { ...props.onAdd(container), ...commonUtils.getAssignFieldValue(assignField, dataRow)};
       data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
-      data.sortNum = indexTable;
+      data.sortNum = indexTable + 1;
       const children = getSlaveData(name, table, container, dataRow.id, assignField);
       if (commonUtils.isNotEmptyArr(children)) {
         data.children = children;

@@ -110,7 +110,7 @@ const UserPermission = (props) => {
           data = { ...data, ...commonUtils.getAssignFieldValue(container.slaveData[index].assignField, dataRow)};
           data.userId = masterData.userId;
           data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
-          data.sortNum = indexTable;
+          data.sortNum = indexTable + 1;
           const children = getSlaveData(name, table, container, tableDataOld, tableSrcData, dataRow.id, container.slaveData[index].assignField);
           if (commonUtils.isNotEmptyArr(children)) {
             data.children = children;
@@ -143,7 +143,7 @@ const UserPermission = (props) => {
           let data: any = !(indexCategory > -1) ? props.onAdd(container) : tableDataOld[indexCategory];
           data = { ...data, ...commonUtils.getAssignFieldValue(container.slaveData[index].assignField, dataRow)};
           data.userId = masterData.userId;
-          data.sortNum = indexTable;
+          data.sortNum = indexTable + 1;
           tableData.push(data);
         });
         addState[name + 'Data'] = tableData;
@@ -162,7 +162,7 @@ const UserPermission = (props) => {
       data = { ...data, ...commonUtils.getAssignFieldValue(assignField, dataRow)};
       data.userId = masterData.userId;
       data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
-      data.sortNum = indexTable;
+      data.sortNum = indexTable + 1;
       const children = getSlaveData(name, table, container, tableDataOld, tableSrcData, dataRow.id, assignField);
       if (commonUtils.isNotEmptyArr(children)) {
         data.children = children;

@@ -18,11 +18,11 @@ const Customer = (props) => {
   };
 
   const onFinish = async (values: any) => {
-    const { contactData, contactDelData, addressData, addressDelData } = props;
+    const { contactData, contactModifyData, contactDelData, addressData, addressModifyData, addressDelData } = props;
     const childCallback = (params) => {
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('contact', contactData, contactDelData, false));
-      saveData.push(commonUtils.mergeData('address', addressData, addressDelData, false));
+      saveData.push(commonUtils.mergeData('contact', contactData, contactModifyData, contactDelData, false));
+      saveData.push(commonUtils.mergeData('address', addressData, addressModifyData, addressDelData, false));
       return saveData;
     }
     props.onFinish(values, { childCallback });
@@ -44,6 +44,8 @@ const Customer = (props) => {
                 copyData.push({...commonUtils.getAssignFieldValue(config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
               }
               childParams[dataSetName + 'Data'] = copyData;
+              childParams[dataSetName + 'ModifyData'] = [];
+              childParams[dataSetName + 'DelData'] = [];
             }
           }
         }

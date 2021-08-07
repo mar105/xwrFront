@@ -81,7 +81,7 @@ const FormulaParam = (props) => {
       const childCallback = async (params) => {
         const saveData: any = [];
         const returnData = await props.getDataList({ name: 'category', containerId: categoryContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
-        saveData.push(commonUtils.mergeData('category', returnData.categoryData, [], true));
+        saveData.push(commonUtils.mergeData('category', returnData.categoryData, [], [], true));
         return saveData;
       }
       props.onButtonClick(key, config, e, {childCallback});
@@ -101,7 +101,7 @@ const FormulaParam = (props) => {
           categoryData.push({...category, handleType: 'del' });
         }
       }
-      saveData.push(commonUtils.mergeData("category", categoryData.filter(item => commonUtils.isNotEmpty(item.handleType)), categoryDelData, true));
+      saveData.push(commonUtils.mergeData('category', categoryData.filter(item => commonUtils.isNotEmpty(item.handleType)), [], categoryDelData, true));
       return saveData;
     }
     props.onModalOk(e, {childCallback});

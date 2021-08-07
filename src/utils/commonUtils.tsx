@@ -196,12 +196,15 @@ export function getTableProps(name, props) {
 /** 处理数据格式
  * name 名称
  * saveTmpData 表单数据
- * delTmpData 表单删除数据*/
-export function mergeData(name, saveTmpData, delTmpData, isAll = false) {
+ * delTmpData 表单删除数据
+ * saveModifyTmpData 表单修改数据
+ **/
+export function mergeData(name, saveTmpData, saveModifyTmpData, delTmpData, isAll = false) {
   const delData = isEmptyArr(delTmpData) ? [] : delTmpData;
   const savesData = isEmptyArr(saveTmpData) ? [] : saveTmpData;
-  const returnData = isAll ? savesData : savesData.filter(item => item.handleType === 'add' || item.handleType === 'modify');
-  return { name, data: [...returnData, ...delData] };
+  const saveModifyData = isAll ? [] : isEmptyArr(saveModifyTmpData) ? [] : saveModifyTmpData;
+  const returnData = isAll ? savesData : savesData.filter(item => item.handleType === 'add'); // || item.handleType === 'modify'
+  return { name, data: [...returnData, ...saveModifyData, ...delData] };
 }
 
 /**   转换字符串为对象   */

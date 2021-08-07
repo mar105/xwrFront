@@ -120,7 +120,7 @@ const categoryListEvent = (WrapComponent) => {
           return;
         }
         const saveData: any = [];
-        saveData.push(commonUtils.mergeData('master', [slaveSelectedRows[0]], [], true));
+        saveData.push(commonUtils.mergeData('master', [slaveSelectedRows[0]], [], [], true));
         if (childParams && childParams.childCallback) {
           const saveChildData = await childParams.childCallback({masterData});
           saveData.push(...saveChildData);
@@ -161,10 +161,10 @@ const categoryListEvent = (WrapComponent) => {
     }
 
     const onModalOk = async (e, childParams) => {
-      const { dispatchModifyState, commonModel, dispatch, masterData, tabId } = props;
-      const values = await form.validateFields();
+      const { dispatchModifyState, commonModel, dispatch, masterData, masterModifyData, tabId } = props;
+      // const values = await form.validateFields();
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData("master", [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
+      saveData.push(commonUtils.mergeData("master", [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], [masterModifyData], []));
       if (childParams && childParams.childCallback) {
         const saveChildData = await childParams.childCallback({masterData});
         saveData.push(...saveChildData);

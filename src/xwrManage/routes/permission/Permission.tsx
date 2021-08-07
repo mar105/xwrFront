@@ -28,7 +28,7 @@ const Permission = (props) => {
         const selectedKeys = [treeData[0].id];
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
-        dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], enabled: false});
+        dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], masterModifyData: {}, enabled: false});
       }
     }
     fetchData();
@@ -51,9 +51,9 @@ const Permission = (props) => {
   }
 
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, dispatchModifyState, tabId } = props;
+    const { commonModel, dispatch, masterData, masterModifyData, dispatchModifyState, tabId } = props;
     const saveData: any = [];
-    saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], []));
+    saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], [masterModifyData], []));
     const params = { id: masterData.id, tabId, saveData };
     const url: string = `${application.urlPrefix}/permission/savePermission`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -61,6 +61,7 @@ const Permission = (props) => {
       const returnRoute: any = await getAllPermission({isWait: true});
       const addState: any = {};
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
+      addState.masterModifyData = {};
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
@@ -88,7 +89,7 @@ const Permission = (props) => {
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
+      dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
     } else if (key === 'addChildButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
@@ -111,7 +112,7 @@ const Permission = (props) => {
       }
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
+      dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
 
     } else if (key === 'modifyButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
@@ -128,7 +129,7 @@ const Permission = (props) => {
       const params = {id: masterData.id, tabId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        dispatchModifyState({ masterData, enabled: true });
+        dispatchModifyState({ masterData, masterModifyData: {}, enabled: true });
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
@@ -171,7 +172,7 @@ const Permission = (props) => {
         return;
       }
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('master', [masterData], [], true));
+      saveData.push(commonUtils.mergeData('master', [masterData], [], [], true));
       const params = { id: masterData.id, tabId, saveData, handleType: 'del' };
       const url: string = `${application.urlPrefix}/permission/savePermission`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -181,6 +182,7 @@ const Permission = (props) => {
         if (commonUtils.isNotEmpty(returnRoute.treeData)) {
           addState.treeSelectedKeys = [returnRoute.treeData[0].id];
           addState.masterData = {...returnRoute.treeData[0]};
+          addState.masterModifyData = {};
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
         }
@@ -199,32 +201,37 @@ const Permission = (props) => {
     name: 'master',
     config: { fieldName: 'createDate', viewName: '创建日期' },
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
+    event: { onChange: props.onDatePickerChange },
   };
   const permissionName = {
     name: 'master',
     config: { fieldName: 'permissionName', isRequired: true, viewName: '权限名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onInputChange },
   };
   const sortNum = {
     name: 'master',
     config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
+    event: { onChange: props.onNumberChange }
   };
   const chineseName = {
     name: 'master',
     config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange },
   };
   const traditionalName = {
     name: 'master',
     config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange },
   };
   const englishName = {
     name: 'master',
     config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange },
   };
 
 

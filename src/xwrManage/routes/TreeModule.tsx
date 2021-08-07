@@ -52,7 +52,7 @@ const TreeModule = (props) => {
   const onRowDoubleClick = (name, record) => {
     const { dispatchModifyState, treeExpandedKeys: treeExpandedKeysOld } = props;
     const expandedKeys = commonUtils.isEmptyArr(treeExpandedKeysOld) ? [...record.allId.split(',')] : [...record.allId.split(','), ...treeExpandedKeysOld];
-    dispatchModifyState({ treeSelectedKeys: [record.id], treeExpandedKeys: expandedKeys, masterData: {...record}, treeSearchIsVisible: false });
+    dispatchModifyState({ treeSelectedKeys: [record.id], treeExpandedKeys: expandedKeys, masterData: {...record}, masterModifyData: {}, treeSearchIsVisible: false });
   }
 
   const onDrop = async (info) => {
@@ -195,7 +195,7 @@ const TreeModule = (props) => {
 
     if (commonUtils.isNotEmptyArr(saveChangeData)) {
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('master', saveChangeData, [], true));
+      saveData.push(commonUtils.mergeData('master', saveChangeData, [], [], true));
       const params = { id: info.dragNode.id, tabId, saveData, isSync: true };
       const url: string = `${application.urlPrefix}/route/saveRoute`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -203,6 +203,7 @@ const TreeModule = (props) => {
         const returnRoute: any = await props.getAllRoute({isWait: true});
         const addState: any = {};
         addState.masterData = {...props.getTreeNode(returnRoute.treeData, parentAllId + ',' + info.dragNode.id) };
+        addState.masterModifyData = {};
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
         dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [info.dragNode.id], ...addState });

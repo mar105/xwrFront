@@ -200,7 +200,7 @@ const UserPermission = (props) => {
         tableData.push({...dataRow, handleType: 'del' });
       }
     }
-    return commonUtils.mergeData(name, tableData.filter(item => commonUtils.isNotEmpty(item.handleType)), tableDelData, true);
+    return commonUtils.mergeData(name, tableData.filter(item => commonUtils.isNotEmpty(item.handleType)), [], tableDelData, true);
   }
 
   const onButtonClick = async (key, config, e, childParamsOld: any = undefined) => {

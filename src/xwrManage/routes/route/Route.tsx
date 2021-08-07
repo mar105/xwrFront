@@ -44,7 +44,7 @@ const Route = (props) => {
         const selectedKeys = [treeData[0].id];
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
-        dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], enabled: false});
+        dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], masterModifyData: {}, enabled: false});
       }
     }
     fetchData();
@@ -67,9 +67,9 @@ const Route = (props) => {
   }
 
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, dispatchModifyState, tabId } = props;
+    const { commonModel, dispatch, masterData, masterModifyData, dispatchModifyState, tabId } = props;
     const saveData: any = [];
-    saveData.push(commonUtils.mergeData('master', [{ ...masterData, ...values, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
+    saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], [masterModifyData], []));
     const params = { id: masterData.id, tabId, saveData };
     const url: string = `${application.urlPrefix}/route/saveRoute`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -77,6 +77,7 @@ const Route = (props) => {
       const returnRoute: any = await getAllRoute({isWait: true});
       const addState: any = {};
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
+      addState.masterModifyData = {};
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
@@ -99,7 +100,7 @@ const Route = (props) => {
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
+      dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
     } else if (key === 'addChildButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
         props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
@@ -119,7 +120,7 @@ const Route = (props) => {
       }
       form.resetFields();
       form.setFieldsValue(commonUtils.setFieldsValue(masterData));
-      dispatchModifyState({ masterData, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
+      dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
 
     } else if (key === 'modifyButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
@@ -132,7 +133,7 @@ const Route = (props) => {
       const params = {id: masterData.id, tabId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        dispatchModifyState({ masterData, enabled: true });
+        dispatchModifyState({ masterData, masterModifyData: {}, enabled: true });
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
@@ -179,6 +180,7 @@ const Route = (props) => {
         if (commonUtils.isNotEmpty(returnRoute.treeData)) {
           addState.treeSelectedKeys = [returnRoute.treeData[0].id];
           addState.masterData = {...returnRoute.treeData[0]};
+          addState.masterModifyData = {};
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
         }
@@ -200,6 +202,7 @@ const Route = (props) => {
         const returnRoute: any = await getAllRoute({isWait: true});
         const addState: any = {};
         addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
+        addState.masterModifyData = {};
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
         dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [addState.masterData.id], ...addState });
@@ -219,36 +222,43 @@ const Route = (props) => {
     name: 'master',
     config: { fieldName: 'createDate', viewName: '创建日期' },
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
+    event: { onChange: props.onDatePickerChange },
   };
   const routeName = {
     name: 'master',
     config: { fieldName: 'routeName', isRequired: true, viewName: '路由名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange },
   };
   const sortNum = {
     name: 'master',
     config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
+    event: { onChange: props.onNumberChange },
   };
   const chineseName = {
     name: 'master',
     config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange },
   };
   const traditionalName = {
     name: 'master',
     config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange },
   };
   const englishName = {
     name: 'master',
     config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange },
   };
   const modelsType = {
     name: 'master',
     config: { fieldName: 'modelsType', viewName: '模块类型' },
     property: { disabled: !enabled },
+    event: { onChange: props.onInputChange },
   };
 
   const isVisible = {

@@ -1,5 +1,5 @@
 import { connect } from 'dva';
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect} from 'react';
 import {Col, Form, Row} from "antd";
 import commonBase from "../../common/commonBase";
 import * as commonUtils from "../../utils/commonUtils";
@@ -24,14 +24,14 @@ const Permission = (props) => {
     }
   }, [props.userContainer]);
 
-  const getAllData = async (isWait) => {
+  const getAllData = async (isWait = false) => {
     const { dispatchModifyState } = props;
-    let addState = {};
+    let addState: any = {};
     // 权限分类
     addState = { masterData: {id: props.tabId}, ...addState, ... await getFetchData('user') };
 
     //系统权限
-    const permission = await getAllPermission({ isWait: true });
+    const permission: any = await getAllPermission({ isWait: true });
     addState.permissionData = permission.treeData;
 
     let userId;
@@ -48,7 +48,7 @@ const Permission = (props) => {
     if (commonUtils.isNotEmpty(userId)) {
       addState = { ...addState, ... await getUserPermission(userId, isCategory, true) };
       setPermissionDisabled(addState.userPermission, addState.permissionData, isCategory, false);
-      const permissionSelectedRowKeys = [];
+      const permissionSelectedRowKeys: any = [];
       addState.userPermission.forEach(item => {
         permissionSelectedRowKeys.push(item.permissionId);
       });
@@ -117,7 +117,7 @@ const Permission = (props) => {
   const getFetchData = async (name) => {
     const { [name + 'Container']: container } = props;
     const tableData: any = [];
-    let addState = { [name + 'Data']: [] };
+    let addState: any = { [name + 'Data']: [] };
 
     if (container.isTree) {
       const indexTree = container.slaveData.findIndex(item => item.fieldName === (name + 'Tree'));
@@ -178,7 +178,7 @@ const Permission = (props) => {
     // 正向找，一次递归， 反向找，多次递归中断。决定正向找。
     const indexUser = userData.findIndex(item => item.userId === userSelectedRowKeys.toString());
     getFinishSlaveData(name, tableDataOld, tableSelectedRowKeys, tableData, userPermission, userData[indexUser]);
-    return commonUtils.mergeData(name, tableData.filter(item => commonUtils.isNotEmpty(item.handleType)), tableDelData, true);
+    return commonUtils.mergeData(name, tableData.filter(item => commonUtils.isNotEmpty(item.handleType)), [], tableDelData, true);
   }
 
   const getFinishSlaveData = (name, tableDataOld, tableSelectedRowKeys, tableData, userPermission, userInfo) => {
@@ -221,10 +221,10 @@ const Permission = (props) => {
 
   const onRowClick = async (name, record, rowKey) => {
     const { dispatchModifyState } = props;
-    const addState = await getUserPermission(record[rowKey], record.isCategory, true);
+    const addState: any = await getUserPermission(record[rowKey], record.isCategory, true);
     setPermissionDisabled(addState.userPermission, props.permissionData, record.isCategory, props.enabled);
     addState.permissionData = props.permissionData;
-    const permissionSelectedRowKeys = [];
+    const permissionSelectedRowKeys: any = [];
     addState.userPermission.forEach(item => {
       permissionSelectedRowKeys.push(item.permissionId);
     });

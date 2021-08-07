@@ -53,7 +53,7 @@ const commonDocEvent = (WrapComponent) => {
         const masterData = childParams && childParams.masterData ? childParams.masterData : props.onAdd();
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(masterData, masterContainer));
-        dispatchModifyState({ masterData, enabled: true, ...childParams });
+        dispatchModifyState({ masterData, masterModifyData: {}, enabled: true, ...childParams });
       } else if (key === 'modifyButton') {
         const data = props.onModify();
         const masterData = {...masterDataOld, ...data };
@@ -62,7 +62,7 @@ const commonDocEvent = (WrapComponent) => {
           shopId: commonModel.userInfo.shopId};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
-          dispatchModifyState({ masterData, enabled: true, ...childParams });
+          dispatchModifyState({ masterData, masterModifyData: {}, enabled: true, ...childParams });
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
@@ -94,7 +94,7 @@ const commonDocEvent = (WrapComponent) => {
       } else if (key === 'delButton' || key === 'invalidButton') {
         if (commonUtils.isNotEmpty(masterDataOld.id)) {
           const saveData: any = [];
-          saveData.push(commonUtils.mergeData('master', [masterDataOld], [], true));
+          saveData.push(commonUtils.mergeData('master', [masterDataOld], [], [], true));
           if (childParams && childParams.childCallback) {
             const saveChildData = await childParams.childCallback({masterDataOld});
             saveData.push(...saveChildData);
@@ -142,9 +142,9 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     const onFinish = async (values: any, childParams) => {
-      const { commonModel, dispatch, masterData, tabId, dispatchModifyState } = props;
+      const { commonModel, dispatch, masterData, masterModifyData, tabId, dispatchModifyState } = props;
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], []));
+      saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], [masterModifyData], []));
       if (commonUtils.isNotEmptyObj(childParams) && childParams.childCallback) {
         const saveChildData = await childParams.childCallback({masterData});
         saveData.push(...saveChildData);

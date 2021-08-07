@@ -131,8 +131,9 @@ const categoryListEvent = (WrapComponent) => {
         const url: string = `${application.urlMain}/getData/saveData`;
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
+          props.gotoSuccess(dispatch, interfaceReturn);
           const returnState = await props.getAllData({ pageNum: 1});
-          dispatchModifyState({ ...returnState, slaveSelectedRows: [] });
+          dispatchModifyState({ ...returnState, slaveSelectedRows: [], slaveSelectedRowKeys: [] });
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }

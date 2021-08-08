@@ -204,6 +204,11 @@ export function mergeData(name, saveTmpData, saveModifyTmpData, delTmpData, isAl
   const savesData = isEmptyArr(saveTmpData) ? [] : saveTmpData;
   const saveModifyData = isAll ? [] : isEmptyArr(saveModifyTmpData) ? [] : saveModifyTmpData;
   const returnData = isAll ? savesData : savesData.filter(item => item.handleType === 'add'); // || item.handleType === 'modify'
+  if (name === 'master' && isNotEmptyArr(saveTmpData) && saveTmpData[0].handleType === 'modify') {
+    saveModifyTmpData[0].handleType = 'modify';
+    saveModifyTmpData[0].id = saveTmpData[0].id;
+    saveModifyTmpData[0].sortNum = saveTmpData[0].sortNum;
+  }
   return { name, data: [...returnData, ...saveModifyData, ...delData] };
 }
 

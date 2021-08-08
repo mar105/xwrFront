@@ -271,8 +271,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = checked;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: record.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: record.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify }
         } else {
@@ -289,7 +289,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[index][fieldName] = data[index][fieldName];
+              dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
             }
@@ -311,8 +311,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = e.target.checked;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: record.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: record.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify }
         } else {
@@ -329,7 +329,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[index][fieldName] = data[index][fieldName];
+              dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
             }
@@ -352,8 +352,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = e.target.value;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: record.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: record.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -370,7 +370,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[index][fieldName] = data[index][fieldName];
+              dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
             }
@@ -392,8 +392,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = value;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: record.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: record.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -410,7 +410,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[index][fieldName] = data[index][fieldName];
+              dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
             }
@@ -439,8 +439,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = value;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: record.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: record.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -458,7 +458,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[index][fieldName] = data[index][fieldName];
+              dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
             }
@@ -486,8 +486,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = value;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: record.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: record.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -505,7 +505,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[index][fieldName] = data[index][fieldName];
+              dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
             }
@@ -534,8 +534,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = value;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: record.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: record.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -558,7 +558,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[index][fieldName] = data[index][fieldName];
+              dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
             }
@@ -580,8 +580,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = value;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: record.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: record.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -598,7 +598,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[index][fieldName] = data[index][fieldName];
+              dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
             }

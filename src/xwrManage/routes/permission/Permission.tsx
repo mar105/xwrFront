@@ -190,6 +190,26 @@ const Permission = (props) => {
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
+    } else if (key === 'copyButton') {
+      const { commonModel, dispatch, masterData, dispatchModifyState } = props;
+      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+        return;
+      }
+      const params = { id: masterData.id };
+      const url: string = `${application.urlPrefix}/permission/copyPermission`;
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        const returnRoute: any = await getAllPermission({isWait: true});
+        const addState: any = {};
+        addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
+        addState.masterModifyData = {};
+        form.resetFields();
+        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+        dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [addState.masterData.id], ...addState });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
     }
 
   }
@@ -235,7 +255,9 @@ const Permission = (props) => {
   };
 
 
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick, enabled, buttonGroup: props.getButtonGroup() };
+  const buttonAddGroup: any = props.getButtonGroup();
+  buttonAddGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick, enabled, buttonGroup: buttonAddGroup };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={props.onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);
   const component = useMemo(()=>{ return (

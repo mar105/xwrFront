@@ -11,6 +11,8 @@ export const routeInfo: any[] = [
       path: '/xwrBasic/formulaParam', title: '公式参数', name: 'formulaParam', component: () => import('./routes/formulaParam/FormulaParam'),
     }, {
       path: '/xwrBasic/formula', title: '公式信息', name: 'formula', component: () => import('./routes/formula/Formula'),
+    }, {
+      path: '/xwrBasic/material', title: '材料信息', name: 'material', component: () => import('./routes/material/Material'),
     }]
   },
 ];

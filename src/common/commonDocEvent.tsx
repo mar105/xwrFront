@@ -51,9 +51,15 @@ const commonDocEvent = (WrapComponent) => {
       const { commonModel, tabId, dispatch, dispatchModifyState, masterContainer, masterData: masterDataOld } = props;
       if (key === 'addButton') {
         const masterData = childParams && childParams.masterData ? childParams.masterData : props.onAdd();
+        const addState = {};
         form.resetFields();
         form.setFieldsValue(commonUtils.setFieldsValue(masterData, masterContainer));
-        dispatchModifyState({ masterData, masterModifyData: {}, enabled: true, ...childParams });
+        for(const container of props.containerData) {
+          addState[container.dataSetName + 'Data'] = [];
+          addState[container.dataSetName + 'ModifyData'] = [];
+          addState[container.dataSetName + 'DelData'] = [];
+        }
+        dispatchModifyState({ ...addState, masterData, masterModifyData: {}, enabled: true, ...childParams });
       } else if (key === 'modifyButton') {
         const data = props.onModify();
         const masterData = {...masterDataOld, ...data };

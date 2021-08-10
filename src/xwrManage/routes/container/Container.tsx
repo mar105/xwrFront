@@ -283,6 +283,35 @@ const Container = (props) => {
       const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName, virtualIndex: masterData.virtualIndex, tableKey: masterData.tableKey };
       stompClient.send('/websocket/container/syncToMongoIndex', {}, JSON.stringify(application.paramInit(params)));
 
+    } else if (key === 'copyButton') {
+      const { commonModel, dispatch, masterData, dispatchModifyState } = props;
+      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
+        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+        return;
+      }
+      const params = { id: masterData.id };
+      const url: string = `${application.urlPrefix}/container/copyContainer`;
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        const returnRoute: any = await getAllContainer({isWait: true});
+        const addState: any = {};
+        const url: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
+        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+        if (interfaceReturn.code === 1) {
+          addState.slaveData = interfaceReturn.data;
+          addState.slaveModifyData = [];
+          addState.slaveDelData = [];
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
+        }
+        addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
+        addState.masterModifyData = {};
+        form.resetFields();
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), saveAfterMessage: commonUtils.isEmpty(addState.masterData.saveAfterMessage) ? [] : addState.masterData.saveAfterMessage.split(',')  });
+        dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [addState.masterData.id], ...addState });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
     }
 
   }
@@ -549,8 +578,9 @@ const Container = (props) => {
   };
 
   const buttonAddGroup: any = props.getButtonGroup();
-  buttonAddGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
-  buttonAddGroup.push({ key: 'syncToMongoIndexButton', caption: '同步到mongo索引', htmlType: 'button', onClick, sortNum: 101, disabled: props.enabled });
+  buttonAddGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
+  buttonAddGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick, sortNum: 101, disabled: props.enabled });
+  buttonAddGroup.push({ key: 'syncToMongoIndexButton', caption: '同步到mongo索引', htmlType: 'button', onClick, sortNum: 102, disabled: props.enabled });
   const buttonGroup = { userInfo: commonModel.userInfo, onClick, enabled, buttonGroup: buttonAddGroup };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);

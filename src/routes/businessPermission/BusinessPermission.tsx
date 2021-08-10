@@ -9,7 +9,7 @@ import {TableComponent} from "../../components/TableComponent";
 import * as application from "../../application";
 import * as request from "../../utils/request";
 
-const Permission = (props) => {
+const BusinessPermission = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
@@ -271,4 +271,4 @@ const Permission = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(Permission)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(BusinessPermission)));

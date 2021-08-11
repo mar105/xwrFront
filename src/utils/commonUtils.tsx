@@ -177,6 +177,8 @@ export function getTableProps(name, props) {
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
     config: props[name + 'Container'],
     onReachEnd: props.onReachEnd, //分页滚动 拖动到最后调用接口
+    onSortEnd: props.onSortEnd,
+    draggableBodyRow: props.draggableBodyRow,
     isLastColumn: true,
     onLastColumnClick: props.onLastColumnClick,
     onTableChange: props.onTableChange,

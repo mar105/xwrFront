@@ -3,6 +3,7 @@ import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
 import {Spin} from "antd";
+import arrayMove from "array-move";
 
 
 const commonBase = (WrapComponent) => {
@@ -291,7 +292,7 @@ const commonBase = (WrapComponent) => {
             if (indexModify > -1) {
               dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
             }
           }
           if (isWait) {
@@ -331,7 +332,7 @@ const commonBase = (WrapComponent) => {
             if (indexModify > -1) {
               dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
             }
           }
           if (isWait) {
@@ -372,7 +373,7 @@ const commonBase = (WrapComponent) => {
             if (indexModify > -1) {
               dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
             }
           }
           if (isWait) {
@@ -412,7 +413,7 @@ const commonBase = (WrapComponent) => {
             if (indexModify > -1) {
               dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
             }
           }
           if (isWait) {
@@ -462,7 +463,7 @@ const commonBase = (WrapComponent) => {
               dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], ...assignValue };
               dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, ...assignValue, [fieldName]: data[fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, ...assignValue, [fieldName]: data[index][fieldName] })
             }
           }
           if (isWait) {
@@ -511,7 +512,7 @@ const commonBase = (WrapComponent) => {
               dataModify[indexModify] = { ...dataModify[indexModify], ...dataModify[index], ...assignValue };
               dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, ...assignValue, [fieldName]: data[fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, ...assignValue, [fieldName]: data[index][fieldName] })
             }
           }
 
@@ -564,7 +565,7 @@ const commonBase = (WrapComponent) => {
             if (indexModify > -1) {
               dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
             }
           }
           if (isWait) {
@@ -604,7 +605,7 @@ const commonBase = (WrapComponent) => {
             if (indexModify > -1) {
               dataModify[indexModify][fieldName] = data[index][fieldName];
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
             }
           }
           if (isWait) {
@@ -626,6 +627,35 @@ const commonBase = (WrapComponent) => {
         dispatchModifyState({...addState});
       }
     }
+
+    const draggableBodyRow = (name, rowKey, SortableItem, className, style, restProps ) => {
+      const { [name + 'Data']: data } = stateRef.current;
+      // const { dataSource: dataSourceOld }: any = params.property;
+      // function findIndex base on Table rowKey props and should always be a right array index
+      const dataSource = commonUtils.isEmptyArr(data) ? [] : data;
+      const index = dataSource.findIndex((x: any) => x[rowKey] === restProps['data-row-key']);
+      return <SortableItem index={index} {...restProps} />;
+    };
+
+    // 数据行拖动
+    const onSortEnd = (name, oldIndex, newIndex) => {
+      const { [name + 'Data']: data, [name + 'ModifyData']: dataModifyOld } = stateRef.current;
+      if (oldIndex !== newIndex) {
+        const newData = arrayMove([].concat(data), oldIndex, newIndex).filter(el => !!el);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        newData.forEach((itemData: any, index) => {
+          itemData.handleType = commonUtils.isEmpty(itemData.handleType) ? 'modify' : itemData.handleType;
+          itemData.sortNum = index + 1;
+          const indexModify = dataModify.findIndex(item => item.id === itemData.id);
+          if (indexModify > -1) {
+            dataModify[indexModify].sortNum = itemData.sortNum;
+          } else {
+            dataModify.push({ id: itemData.id, handleType: itemData.handleType, sortNum: itemData.sortNum })
+          }
+        });
+        dispatchModifyState({ [name + 'Data']: newData, [name + 'ModifyData']: dataModify });
+      }
+    };
 
     return <Spin spinning={modifyState.pageLoading ? true : false}>
       <WrapComponent
@@ -654,6 +684,8 @@ const commonBase = (WrapComponent) => {
       onDatePickerChange={onDatePickerChange}
       onReachEnd={onReachEnd}
       onSetForm={onSetForm}
+      onSortEnd={onSortEnd}
+      draggableBodyRow={draggableBodyRow}
     />
     </Spin>
   };

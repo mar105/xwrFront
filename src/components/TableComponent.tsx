@@ -12,7 +12,6 @@ import { Resizable } from 'react-resizable';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import "react-resizable/css/styles.css";
 import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined } from '@ant-design/icons';
-import arrayMove from 'array-move';
 import ReactDragListView from 'react-drag-listview';
 import Highlighter from 'react-highlight-words';
 import moment from 'moment';
@@ -76,11 +75,12 @@ export function TableComponent(params: any) {
     );
 
     const DraggableBodyRow = ({ className, style, ...restProps }) => {
-      const { dataSource: dataSourceOld }: any = params.property;
-      // function findIndex base on Table rowKey props and should always be a right array index
-      const dataSource = commonUtils.isEmptyArr(dataSourceOld) ? [] : dataSourceOld;
-      const index = dataSource.findIndex((x: any) => x[rowKey] === restProps['data-row-key']);
-      return <SortableItem index={index} {...restProps} />;
+      return params.draggableBodyRow(params.name, rowKey, SortableItem, className, style, restProps);
+      // const { dataSource: dataSourceOld }: any = params.property;
+      // // function findIndex base on Table rowKey props and should always be a right array index
+      // const dataSource = commonUtils.isEmptyArr(dataSourceOld) ? [] : dataSourceOld;
+      // const index = dataSource.findIndex((x: any) => x[rowKey] === restProps['data-row-key']);
+      // return <SortableItem index={index} {...restProps} />;
     };
 
     if (params.isDragRow) {
@@ -111,7 +111,7 @@ export function TableComponent(params: any) {
     //-----列宽拖拽结束------------------------------
     dispatchModifySelfState({components, ...addState });
     //params.lastColumn.changeValue 判断是否需要重新渲染最后一列。
-  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]);
+  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
 
   // useEffect(() => {
   //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功
@@ -121,16 +121,8 @@ export function TableComponent(params: any) {
   // }, [params.scrollToRow]);
   // 数据行拖动
   const onSortEnd = ({ oldIndex, newIndex }) => {
-    const { dispatchModifyState } = params;
-    const { dataSource } = params.property;
-    if (oldIndex !== newIndex) {
-      const newData = arrayMove([].concat(dataSource), oldIndex, newIndex).filter(el => !!el);
-      newData.forEach((item: any, index) => {
-        item.handleType = commonUtils.isEmpty(item.handleType) ? 'modify' : item.handleType;
-        item.sortNum = index + 1;
-      });
-      dispatchModifyState({[params.name + 'Data']: newData});
-    }
+    params.onSortEnd(params.name, oldIndex, newIndex);
+    dispatchModifySelfState({ rowSort: !modifySelfState.rowSort });
   };
 
 

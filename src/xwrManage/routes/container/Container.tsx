@@ -351,7 +351,7 @@ const Container = (props) => {
         routeId: props.routeId,
         pageNum: params.pageNum,
         pageSize: application.pageSize,
-        searchValue: params.condition ? params.condition.searchValue : '',
+        searchValue: params.condition && params.condition.searchValue ? params.condition.searchValue : '',
         onlySearchRouteName: true,
       }
       const url: string = `${application.urlPrefix}/route/getSearchRoute` + commonUtils.paramGet(requestParam);

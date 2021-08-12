@@ -79,7 +79,8 @@ const Container = (props) => {
   const onFinish = async (values: any) => {
     const { commonModel, dispatch, masterData, masterModifyData, slaveData, slaveModifyData, slaveDelData, dispatchModifyState, tabId } = props;
     const saveData: any = [];
-    saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }], [masterModifyData], [], false));
+    saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }],
+      commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], [], false));
     saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, false));
     const params = { id: masterData.id, tabId, saveData };
     const url: string = `${application.urlPrefix}/container/saveContainer`;

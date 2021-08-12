@@ -150,7 +150,8 @@ const commonDocEvent = (WrapComponent) => {
     const onFinish = async (values: any, childParams) => {
       const { commonModel, dispatch, masterData, masterModifyData, tabId, dispatchModifyState } = props;
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], [masterModifyData], []));
+      saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }],
+        commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], []));
       if (commonUtils.isNotEmptyObj(childParams) && childParams.childCallback) {
         const saveChildData = await childParams.childCallback({masterData});
         saveData.push(...saveChildData);

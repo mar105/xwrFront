@@ -69,7 +69,8 @@ const Route = (props) => {
   const onFinish = async (values: any) => {
     const { commonModel, dispatch, masterData, masterModifyData, dispatchModifyState, tabId } = props;
     const saveData: any = [];
-    saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], [masterModifyData], []));
+    saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }],
+      commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], []));
     const params = { id: masterData.id, tabId, saveData };
     const url: string = `${application.urlPrefix}/route/saveRoute`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;

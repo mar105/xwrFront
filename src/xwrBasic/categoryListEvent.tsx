@@ -164,7 +164,8 @@ const categoryListEvent = (WrapComponent) => {
       const { dispatchModifyState, commonModel, dispatch, masterData, masterModifyData, tabId } = props;
       // const values = await form.validateFields();
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData("master", [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }], [masterModifyData], []));
+      saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }],
+        commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], []));
       if (childParams && childParams.childCallback) {
         const saveChildData = await childParams.childCallback({masterData});
         saveData.push(...saveChildData);

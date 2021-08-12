@@ -646,11 +646,13 @@ const commonBase = (WrapComponent) => {
         newData.forEach((itemData: any, index) => {
           itemData.handleType = commonUtils.isEmpty(itemData.handleType) ? 'modify' : itemData.handleType;
           itemData.sortNum = index + 1;
-          const indexModify = dataModify.findIndex(item => item.id === itemData.id);
-          if (indexModify > -1) {
-            dataModify[indexModify].sortNum = itemData.sortNum;
-          } else {
-            dataModify.push({ id: itemData.id, handleType: itemData.handleType, sortNum: itemData.sortNum })
+          if (itemData.handleType === 'modify') {
+            const indexModify = dataModify.findIndex(item => item.id === itemData.id);
+            if (indexModify > -1) {
+              dataModify[indexModify].sortNum = itemData.sortNum;
+            } else {
+              dataModify.push({id: itemData.id, handleType: itemData.handleType, sortNum: itemData.sortNum})
+            }
           }
         });
         dispatchModifyState({ [name + 'Data']: newData, [name + 'ModifyData']: dataModify });

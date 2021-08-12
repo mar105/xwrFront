@@ -260,7 +260,7 @@ export function TableComponent(params: any) {
           width: columnHeader.width,
           onResize: handleResize(columnIndex),
         });
-        column.shouldUpdate = (record, prevRecord) => {
+        column.shouldCellUpdate = (record, prevRecord) => {
           return record[column.dataIndex] !== prevRecord[column.dataIndex];
         }
 

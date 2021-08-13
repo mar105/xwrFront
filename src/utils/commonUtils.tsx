@@ -204,12 +204,11 @@ export function getTableProps(name, props) {
 export function mergeData(name, saveTmpData, saveModifyTmpData, delTmpData, isAll = false) {
   const delData = isEmptyArr(delTmpData) ? [] : delTmpData;
   const savesData = isEmptyArr(saveTmpData) ? [] : saveTmpData;
-  const saveModifyData = isAll ? [] : isEmptyArr(saveModifyTmpData) ? [] : saveModifyTmpData;
+  let saveModifyData = isAll ? [] : isEmptyArr(saveModifyTmpData) ? [] : saveModifyTmpData;
   const returnData = isAll ? savesData : savesData.filter(item => item.handleType === 'add'); // || item.handleType === 'modify'
   if (name === 'master' && isNotEmptyArr(saveTmpData) && saveTmpData[0].handleType === 'modify') {
-    saveModifyTmpData[0].handleType = 'modify';
-    saveModifyTmpData[0].id = saveTmpData[0].id;
-    saveModifyTmpData[0].sortNum = saveTmpData[0].sortNum;
+    const rowData = { handleType: 'modify', id: saveTmpData[0].id, sortNum: saveTmpData[0].sortNum};
+    saveModifyData = isEmptyArr(saveModifyData) ? [rowData] : [{...saveModifyData[0], ...rowData }];
   }
   return { name, data: [...returnData, ...saveModifyData, ...delData] };
 }

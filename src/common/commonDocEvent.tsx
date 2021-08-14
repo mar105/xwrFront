@@ -40,6 +40,7 @@ const commonDocEvent = (WrapComponent) => {
         props.gotoSuccess(dispatch, returnBody);
       } else {
         dispatchModifyState({ pageLoading: false });
+        console.error('saveDataReturn', returnBody);
         props.gotoError(dispatch, returnBody);
       }
     }

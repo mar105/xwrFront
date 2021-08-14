@@ -49,7 +49,7 @@ const IndexMenu = (props) => {
     } else {
       const disabled = props.commonModel.userInfo.isManage ? false : !(userPermission.findIndex(item => item.permissionRouteId === menu.id) > -1);
       // @ts-ignore
-      return <Menu.Item key={menu.id} menuData={menu} disabled={disabled}>{menu.viewName}</Menu.Item>
+      return menu.isVisible ? <Menu.Item key={menu.id} menuData={menu} disabled={disabled}>{menu.viewName}</Menu.Item> : '';
     }
   }
 

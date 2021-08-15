@@ -71,7 +71,7 @@ const Material = (props) => {
     const { dispatchModifyState, masterData: masterDataOld }: any = props;
     if (name === 'supply') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, defaultsupplyId: record.id };
+        const masterData = { ...masterDataOld, defaultSupplyId: record.id };
         dispatchModifyState({ masterData });
       }
     }
@@ -81,11 +81,11 @@ const Material = (props) => {
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
   const supplyParam: any = commonUtils.getTableProps('supply', props);
   supplyParam.pagination = false;
-  supplyParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultsupplyId,
+  supplyParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultSupplyId,
     render: (text,record, index)=> {
     return <div>
       <a onClick={onLastColumnClick.bind(this, 'supply', 'defaultButton', record)}>
-        <Tooltip placement="top" title="默认"> {masterData.defaultsupplyId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
+        <Tooltip placement="top" title="默认"> {masterData.defaultSupplyId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
       <a onClick={props.onLastColumnClick.bind(this, 'supply', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
     </div>
   }, width: 50 , fixed: 'right' };

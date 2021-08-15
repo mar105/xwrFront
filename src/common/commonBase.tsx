@@ -590,12 +590,12 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    const onDatePickerChange = (name, fieldName, record, value, isWait) => {
+    const onDatePickerChange = (name, fieldName, record, value, dateString, isWait) => {
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = value;
+        data[fieldName] = dateString;
 
         const dataModify = data.handleType === 'modify' ?
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
@@ -611,7 +611,7 @@ const commonBase = (WrapComponent) => {
         if (index > -1) {
           const rowData = { ...data[index] };
           rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = value;
+          rowData[fieldName] = dateString;
           data[index] = rowData;
 
           const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];

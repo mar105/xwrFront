@@ -183,8 +183,9 @@ export function getTableProps(name, props) {
     onLastColumnClick: props.onLastColumnClick,
     onTableChange: props.onTableChange,
     pagination: true, // 是否分页
-    event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange,
-      onNumberChange: props.onNumberChange, onSelectChange: props.onSelectChange, getSelectList: props.getSelectList, onCascaderChange: props.onCascaderChange },
+    event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange, onNumberChange: props.onNumberChange,
+      onSelectChange: props.onSelectChange, onDatePickerChange: props.onDatePickerChange, getSelectList: props.getSelectList,
+      onCascaderChange: props.onCascaderChange },
     lastTitle: <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>,
     lastColumn: { title: 'o',
       render: (text,record, index)=> {

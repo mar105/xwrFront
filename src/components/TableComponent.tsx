@@ -310,6 +310,14 @@ export function TableComponent(params: any) {
               record,
               event: {onChange: params.event.onCheckboxChange}
             };
+            const datePickerParams = {
+              name: params.name,
+              componentType: componentType.Soruce,
+              config,
+              property: {value: text},
+              record,
+              event: {onChange: params.event.onDatePickerChange}
+            };
             const numberParams = {
               name: params.name,
               componentType: componentType.Soruce,
@@ -354,7 +362,7 @@ export function TableComponent(params: any) {
               return component;
             } else if (column.fieldType === 'datetime') {
               const component = useMemo(() => {
-                return <DatePickerComponent {...params}  />
+                return <DatePickerComponent {...datePickerParams}  />
               }, [text]);
               return component;
             } else {

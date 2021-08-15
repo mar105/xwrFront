@@ -48,6 +48,7 @@ export function TableComponent(params: any) {
   }
   useEffect(() => {
     const addState: any = { columns: getColumn(params.property.columns) };
+    addState.enabled = params.enabled;
     const addComponents: any = { ...VList({ height: 500, vid: modifySelfState.vid, onReachEnd: onReachEnd })};
 
     // 树形通过配置展开列名找到展开列
@@ -254,14 +255,13 @@ export function TableComponent(params: any) {
         const config = index > -1 ? params.config.slaveData[index] : {};
         const column = config.dropType === 'const' ? {...columnOld, ...getColumnSearchConstProps(columnOld, config)} : {...columnOld, ...getColumnSearchProps(columnOld)};
 
-
-
         column.onHeaderCell = columnHeader => ({
           width: columnHeader.width,
           onResize: handleResize(columnIndex),
         });
         column.shouldCellUpdate = (record, prevRecord) => {
-          return record[column.dataIndex] !== prevRecord[column.dataIndex];
+          //这一段与 组件使用useMemo，不知道是否多余，暂时两个都放，我的个人想法是可以把useMemo这个去除。
+          return record[column.dataIndex] !== prevRecord[column.dataIndex] || modifySelfState.enabled !== params.enabled;
         }
 
         column.ellipsis = {showTitle: true};

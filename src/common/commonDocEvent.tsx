@@ -163,7 +163,7 @@ const commonDocEvent = (WrapComponent) => {
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         let returnState: any = await props.getAllData({ dataId: masterData.id });
-        if (commonUtils.isNotEmptyObj(childParams) && childParams.childCallback) {
+        if (commonUtils.isNotEmptyObj(childParams) && childParams.getAllData) {
           const returnChild: any = await childParams.getAllData(true);
           returnState = {...returnState, ...returnChild};
         }

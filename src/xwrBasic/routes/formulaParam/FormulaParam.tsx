@@ -22,10 +22,10 @@ const FormulaParam = (props) => {
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'formulaCategory');
         if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
           const formulaCategory = commonUtils.objectToArr(commonUtils.stringToObj(masterContainer.slaveData[index].viewDrop));
-          formulaCategory.forEach(item => {
+          formulaCategory.forEach(dataRow => {
             const data = props.onAdd(categoryContainer);
             data.superiorId = params.masterData.id;
-            data.paramCategory = item.id;
+            data.paramCategory = dataRow.id;
             data.sortNum = index + 1;
             categoryData.push(data);
           });
@@ -44,6 +44,7 @@ const FormulaParam = (props) => {
         addState.categoryData.forEach(item => {
           categorySelectedRowKeys.push(item[categoryContainer.tableKey]);
         });
+        addState.categorySelectedRowKeys = categorySelectedRowKeys;
         const categoryDelData: any = commonUtils.isEmptyArr(categoryDelDataOld) ? [] : [...categoryDelDataOld];
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'formulaCategory');
         if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
@@ -111,7 +112,7 @@ const FormulaParam = (props) => {
 
 
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, slaveContainer };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, slaveContainer, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;

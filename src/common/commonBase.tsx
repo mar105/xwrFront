@@ -661,15 +661,15 @@ const commonBase = (WrapComponent) => {
         const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
         newData.forEach((itemData: any, index) => {
           const rowData = { ...itemData };
-          rowData.handleType = commonUtils.isEmpty(itemData.handleType) ? 'modify' : itemData.handleType;
+          rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
           rowData.sortNum = index + 1;
           data.push(rowData);
-          if (itemData.handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === itemData.id);
+          if (rowData.handleType === 'modify') {
+            const indexModify = dataModify.findIndex(item => item.id === rowData.id);
             if (indexModify > -1) {
-              dataModify[indexModify].sortNum = itemData.sortNum;
+              dataModify[indexModify].sortNum = rowData.sortNum;
             } else {
-              dataModify.push({id: itemData.id, handleType: itemData.handleType, sortNum: itemData.sortNum})
+              dataModify.push({id: rowData.id, handleType: rowData.handleType, sortNum: rowData.sortNum})
             }
           }
         });

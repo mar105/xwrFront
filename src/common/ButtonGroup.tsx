@@ -3,7 +3,6 @@ import {componentType} from "../utils/commonTypes";
 import * as commonUtils from "../utils/commonUtils";
 import {Col, Row,  Menu} from "antd";
 import React from 'react';
-import {userInfo} from "os";
 
 export function ButtonGroup(params) {
   const buttonGroupOld: any = [];

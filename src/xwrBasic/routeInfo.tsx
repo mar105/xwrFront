@@ -13,6 +13,8 @@ export const routeInfo: any[] = [
       path: '/xwrBasic/formula', title: '公式信息', name: 'formula', component: () => import('./routes/formula/Formula'),
     }, {
       path: '/xwrBasic/material', title: '材料信息', name: 'material', component: () => import('./routes/material/Material'),
+    }, {
+      path: '/xwrBasic/productCategory', title: '产品分类', name: 'productCategory', component: () => import('./routes/productCategory/ProductCategory'),
     }]
   },
 ];

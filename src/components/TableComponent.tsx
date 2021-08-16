@@ -512,7 +512,7 @@ export function TableComponent(params: any) {
   if (commonUtils.isNotEmptyObj(modifySelfState.expandable)) {
     tableParams.expandable = modifySelfState.expandable;
   }
-  return <div style={{width: 1000}}>
+  return <div style={{width: params.width ? params.width: 1000}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
       <Table
         {...tableParams}

@@ -1,15 +1,19 @@
 import {connect} from "react-redux";
 import * as commonUtils from "../../../utils/commonUtils";
 import commonBase from "../../../common/commonBase";
-import React, {useMemo} from "react";
+import React, {useEffect, useMemo, useRef} from "react";
 import {TableComponent} from "../../../components/TableComponent";
 import {ButtonGroup} from "../../../common/ButtonGroup";
 import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import Search from "../../../common/Search";
 import categoryListEvent from "../../categoryListEvent";
-
 const ProductCategory = (props) => {
+  const propsRef: any = useRef();
+  useEffect(() => {
+    propsRef.current = props;
+  }, [props]);
+
   const [form] = Form.useForm();
   props.onSetForm(form);
 
@@ -108,7 +112,14 @@ const ProductCategory = (props) => {
     props.onModalOk(e, {childCallback});
   }
 
-
+  const getSelectList = async (params) => {
+    const { masterData } = propsRef.current;
+    if (params.fieldName === 'component') {
+      return { list: commonUtils.objectToArr(commonUtils.stringToObj(masterData.allComponent)) };
+    } else {
+      return await props.getSelectList(params);
+    }
+  }
 
 
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel } = props;
@@ -121,6 +132,7 @@ const ProductCategory = (props) => {
   processCategoryParam.isLastColumn = false;
   processCategoryParam.pagination = false;
   processCategoryParam.width = 500;
+  processCategoryParam.event.getSelectList = getSelectList;
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 

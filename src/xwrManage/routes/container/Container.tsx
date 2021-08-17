@@ -474,10 +474,10 @@ const Container = (props) => {
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTableHeadSort, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
-  const isMutiChoise = {
+  const isMultiChoise = {
     name: 'master',
-    config: { fieldName: 'isMutiChoise', viewName: '是否多选' },
-    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMutiChoise, disabled: !enabled },
+    config: { fieldName: 'isMultiChoise', viewName: '是否多选' },
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMultiChoise, disabled: !enabled },
     event: { onChange: props.onSwitchChange }
   };
   const isRowNum = {
@@ -626,7 +626,7 @@ const Container = (props) => {
           <Row>
             <Col><NumberComponent {...fixColumnCount} /></Col>
             <Col><SwitchComponent {...isTableHeadSort} /></Col>
-            <Col><SwitchComponent {...isMutiChoise} /></Col>
+            <Col><SwitchComponent {...isMultiChoise} /></Col>
           </Row>
           <Row>
             <Col><InputComponent {...tableKey} /></Col>

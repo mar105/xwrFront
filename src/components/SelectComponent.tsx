@@ -14,6 +14,7 @@ export function SelectComponent(params) {
   const addProperty: any = {};
   addProperty.showSearch = true;
   addProperty.optionFilterProp = 'children';
+  addProperty.mode = params.config.isMultiChoise ? 'multiple' : '';
   if (params.config.dropType === 'const') {
     const array: any = typeof params.config.viewDrop === 'string' ?
       commonUtils.objectToArr(commonUtils.stringToObj(params.config.viewDrop)) : params.config.viewDrop;

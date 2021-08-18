@@ -1,8 +1,9 @@
 import {ButtonComponent} from "../components/ButtonComponent";
 import {componentType} from "../utils/commonTypes";
 import * as commonUtils from "../utils/commonUtils";
-import {Col, Row,  Menu} from "antd";
+import {Col, Row, Menu, Popconfirm} from "antd";
 import React from 'react';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 export function ButtonGroup(params) {
   const buttonGroupOld: any = [];
@@ -69,11 +70,17 @@ export function ButtonGroup(params) {
         caption: buttonOld.caption,
         isDropDown,
         property: { name: buttonItem.key, htmlType: buttonItem.htmlType, disabled: buttonItem.disabled, overlay: menusData },
-        event: { onClick: commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, buttonItem.key, buttonConfig) },
+        event: { onClick: commonUtils.isEmpty(params.onClick) || buttonOld.key === 'delButton' || buttonOld.key === 'invalidButton' ? undefined :
+            params.onClick.bind(this, buttonItem.key, buttonConfig) },
         componentType: componentType.Soruce,
       };
-
-      return <Col><ButtonComponent {...button} /></Col>;
+      if (buttonOld.key === 'delButton' || buttonOld.key === 'invalidButton') {
+        return <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>} onConfirm={params.onClick.bind(this, buttonItem.key, buttonConfig)}>
+          <Col><ButtonComponent {...button} /></Col>
+        </Popconfirm>
+      } else {
+        return <Col><ButtonComponent {...button} /></Col>;
+      }
     }
 
   });

@@ -296,6 +296,9 @@ const Container = (props) => {
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllContainer({isWait: true});
         const addState: any = {};
+        addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
+        addState.masterModifyData = {};
+
         const url: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
@@ -305,8 +308,7 @@ const Container = (props) => {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
-        addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
-        addState.masterModifyData = {};
+
         form.resetFields();
         form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), saveAfterMessage: commonUtils.isEmpty(addState.masterData.saveAfterMessage) ? [] : addState.masterData.saveAfterMessage.split(',')  });
         dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [addState.masterData.id], ...addState });

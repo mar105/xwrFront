@@ -34,7 +34,7 @@ const ProductCategory = (props) => {
             processCategoryData.push(data);
           });
         }
-        return { processCategoryData };
+        return { processCategoryData, processCategorySelectedRowKeys: [] };
       }
       props.onButtonClick(key, config, e, {childCallback});
     }
@@ -115,7 +115,12 @@ const ProductCategory = (props) => {
   const getSelectList = async (params) => {
     const { masterData } = propsRef.current;
     if (params.fieldName === 'component') {
-      return { list: commonUtils.objectToArr(commonUtils.stringToObj(masterData.allComponent)) };
+      const selectAllComponent = commonUtils.isEmpty(masterData.allComponent) ? [] : masterData.allComponent.split(',');
+      const selectReturn: any = [];
+      selectAllComponent.forEach(item => {
+        selectReturn.push({ value: item, id: item });
+      });
+      return { list: selectReturn };
     } else {
       return await props.getSelectList(params);
     }

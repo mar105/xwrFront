@@ -230,7 +230,7 @@ export function objectToArr(obj) {
   if (isNotEmptyObj(obj)) {
     for (const key of Object.keys(obj)) {
       const value = obj[key];
-      arr.push({ value, id: key });
+      arr.push({ value, id: key, title: value });
     }
   }
   return arr;

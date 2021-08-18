@@ -435,7 +435,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
-      const value = valueOld === undefined ? '' : valueOld;
+      const value = valueOld === undefined ? '' : Array.isArray(valueOld) ? valueOld.toString() : valueOld;
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
 

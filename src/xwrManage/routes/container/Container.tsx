@@ -300,13 +300,13 @@ const Container = (props) => {
         addState.masterModifyData = {};
 
         const url: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
-        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-        if (interfaceReturn.code === 1) {
-          addState.slaveData = interfaceReturn.data;
+        const interfaceReturnSlave = (await request.getRequest(url, commonModel.token)).data;
+        if (interfaceReturnSlave.code === 1) {
+          addState.slaveData = interfaceReturnSlave.data;
           addState.slaveModifyData = [];
           addState.slaveDelData = [];
         } else {
-          props.gotoError(dispatch, interfaceReturn);
+          props.gotoError(dispatch, interfaceReturnSlave);
         }
 
         form.resetFields();

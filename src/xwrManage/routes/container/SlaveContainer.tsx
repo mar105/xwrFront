@@ -151,6 +151,7 @@ const SlaveContainer = (props) => {
   const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.isDragRow = true;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
+  tableParam.width = 2200;
   tableParam.lastTitle = <div>
     <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
     <a onClick={onClick.bind(this, name + 'SyncDataButton')}> <Tooltip placement="top" title="同步字段"><CloudSyncOutlined /> </Tooltip></a>

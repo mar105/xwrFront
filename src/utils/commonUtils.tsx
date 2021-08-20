@@ -189,7 +189,7 @@ export function getTableProps(name, props) {
     lastTitle: <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>,
     lastColumn: { title: 'o',
       render: (text,record, index)=> {
-        return <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, props.name, 'delButton', record) : null}>
+        return <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, name, 'delButton', record) : null}>
           <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
       }, width: 50 , fixed: 'right' }
   }

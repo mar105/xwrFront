@@ -360,3 +360,14 @@ export function getViewName(container, fieldName) {
   return index > -1 ? container.slaveData[index].viewName : '';
 }
 
+export function isJson(str) {
+  if (typeof str == 'string') {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+  return false;
+}

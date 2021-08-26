@@ -1,7 +1,7 @@
 export const prefix: string = 'xwrMain';
 export const pageSize: number = 20;
-export const url: string = 'http://127.0.0.1:8202';
-export const urlWs: string = 'ws://127.0.0.1:8202';
+export const url: string = 'http://101.132.117.54:8202';
+export const urlWs: string = 'ws://101.132.117.54:8202';
 export const urlPrefix: string = url + '/xwrMain';
 export const urlManage: string = url + '/xwrManage';
 export const urlCommon: string = url + '/xwrCommon';

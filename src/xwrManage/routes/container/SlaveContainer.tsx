@@ -1,10 +1,13 @@
 import {TableComponent} from "../../../components/TableComponent";
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef } from "react";
 import * as commonUtils from "../../../utils/commonUtils";
 import * as application from "../../application";
 import * as request from "../../../utils/request";
-import { PlusOutlined, CloudSyncOutlined } from '@ant-design/icons';
+import { PlusOutlined, CloudSyncOutlined, CopyOutlined, DeleteOutlined, SnippetsOutlined } from '@ant-design/icons';
 import {Tooltip} from "antd";
+import copy from "copy-to-clipboard";
+import {isJson} from "../../../utils/commonUtils";
+
 
 const SlaveContainer = (props) => {
   const propsRef: any = useRef();
@@ -145,15 +148,55 @@ const SlaveContainer = (props) => {
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
+    } else if (name === 'slavePasteButton') {
+      //本地127.0.0.1可以测试，其他不能测试，如 192.168.1.3 属于不安全访问
+      if (navigator.clipboard) {
+        let data = props.onAdd(slaveContainer);
+        data.superiorId = propsRef.current.masterData.id;
+        data.sortNum = slaveDataOld.length + 1;
+        const clipboardText: any = await navigator.clipboard.readText();
+        if (isJson(clipboardText)) {
+          const clipboardValue = JSON.parse(clipboardText);
+          data = { ...clipboardValue, ...data };
+          const slaveData = [...slaveDataOld];
+          slaveData.push(data);
+          dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
+        } else {
+          props.gotoError(dispatch, {code: '5000', msg: '不能复制其他数据！'});
+        }
+      } else {
+        props.gotoError(dispatch, {code: '5000', msg: '此浏览器不支持复制'});
+      }
+
     }
   }
+
+  const onLastColumnClick = (name, key, record, e, isWait = false) => {
+    const { dispatch } = propsRef.current;
+    if (key === 'copyToClipboardButton') {
+      copy(JSON.stringify(record));
+      props.gotoSuccess(dispatch, {code: '1', msg: '已复制到剪贴板'});
+    } else if (props.onLastColumnClick) {
+      props.onLastColumnClick(name, 'delButton', record, e, isWait);
+    }
+  };
 
   const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.isDragRow = true;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
   tableParam.width = 2200;
+  tableParam.lastColumn = { title: 'o',
+    render: (text,record, index)=> {
+    return <div>
+      <a onClick={onLastColumnClick.bind(this, name, 'copyToClipboardButton', record)}>
+      <Tooltip placement="top" title="复制到剪贴版"><CopyOutlined /></Tooltip></a>
+      <a onClick={onLastColumnClick.bind(this, name, 'delButton', record)}>
+      <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
+    </div>
+  }, width: 50 , fixed: 'right' }
   tableParam.lastTitle = <div>
     <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
+    <a onClick={onClick.bind(this, name + 'PasteButton')} > <Tooltip placement="top" title="粘贴增加行"><SnippetsOutlined /> </Tooltip></a>
     <a onClick={onClick.bind(this, name + 'SyncDataButton')}> <Tooltip placement="top" title="同步字段"><CloudSyncOutlined /> </Tooltip></a>
   </div>;
   return (

@@ -151,7 +151,7 @@ const SlaveContainer = (props) => {
     } else if (name === 'slavePasteButton') {
       //本地127.0.0.1可以测试，其他不能测试，如 192.168.1.3 属于不安全访问
       if (navigator.clipboard) {
-        let data = props.onAdd(slaveContainer);
+        let data = props.onAdd({}); // 不要默认值。
         data.superiorId = propsRef.current.masterData.id;
         data.sortNum = slaveDataOld.length + 1;
         const clipboardText: any = await navigator.clipboard.readText();

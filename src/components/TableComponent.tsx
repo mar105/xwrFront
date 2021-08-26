@@ -105,7 +105,7 @@ export function TableComponent(params: any) {
 
     if (params.scrollToRow) {
       setTimeout(() => {
-        scrollTo({row: params.scrollToRow });
+        scrollTo({row: params.scrollToRow, vid: modifySelfState.vid });
       });
     }
 

@@ -17,7 +17,7 @@ const SlaveContainer = (props) => {
   const { name } = props;
   const columns = [
     { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 80, fixed: 'left' },
-    { title: '名称', dataIndex: 'fieldName', isRequired: true, fieldType: 'varchar', sortNum: 20, width: 150, fixed: 'left' },
+    { title: '名称', dataIndex: 'fieldName', isRequired: true, fieldType: 'varchar', sortNum: 20, width: 300, fixed: 'left' },
         { title: '名称|中文', dataIndex: 'chineseName', isRequired: true, fieldType: 'varchar', sortNum: 31, width: 150 },
     { title: '名称|繁体', dataIndex: 'traditionalName', fieldType: 'varchar', sortNum: 32, width: 150 },
     { title: '名称|英文', dataIndex: 'englishName', fieldType: 'varchar', sortNum: 33, width: 150 },

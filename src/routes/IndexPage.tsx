@@ -170,17 +170,17 @@ function IndexPage(props) {
 
 
   const { commonModel } = props;
-
   const shop = useMemo(()=>{
     const menu = <Menu onClick={onClick}>
-      { commonModel.userInfo.userShop.map(item => {
+      { commonModel.userInfo && commonModel.userInfo.userShop ? commonModel.userInfo.userShop.map(item => {
         return <Menu.Item key={item.id}>{item.shopName}</Menu.Item>
-      }) }
+      }) : '' }
     </Menu>;
     return (
     <div>{commonModel.userInfo.userName}
       {
-        commonModel.userInfo.userShop.length === 1 ? commonModel.userInfo.shopName :
+        commonModel.userInfo && commonModel.userInfo.userShop && commonModel.userInfo.userShop.length === 1 ?
+          commonModel.userInfo.shopName :
           <Dropdown overlay={menu}>
             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
               {commonModel.userInfo.shopName}  <DownOutlined />

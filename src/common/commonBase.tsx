@@ -4,6 +4,8 @@ import * as application from "../application";
 import * as request from "../utils/request";
 import {Spin} from "antd";
 import arrayMove from "array-move";
+import reqwest from 'reqwest';
+import {Md5} from "ts-md5";
 
 
 const commonBase = (WrapComponent) => {
@@ -677,6 +679,116 @@ const commonBase = (WrapComponent) => {
       }
     };
 
+    const onUpload = (name) => {
+      const { [name + 'FileList']: fileList }: any = stateRef.current;
+      const { dispatch } = props;
+      fileList.forEach(fileObj => {
+        const file = fileObj.originFileObj;
+        const formData = new FormData();
+        const size = file.size;
+        //文件分片 以10MB去分片
+        const shardSize: any = 10 * 1024 * 1024;
+        //总片数
+        const shardTotal: any = Math.ceil(size / shardSize);
+        //文件的后缀名
+        const fileName = file.name;
+        const suffix = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length).toLowerCase();
+        //把视频的信息存储为一个字符串
+        const fileDetails = file.name + file.size + file.type + file.lastModifiedDate;
+        //使用当前文件的信息用md5加密生成一个key 这个加密是根据文件的信息来加密的 如果相同的文件 加的密还是一样的
+        const key: any = Md5.hashAsciiStr(Md5.hashAsciiStr(fileDetails).toString());
+        formData.append('fileName', fileName);
+        formData.append('suffix', suffix);
+        formData.append('shardSize', shardSize);
+        formData.append('shardTotal', shardTotal);
+        formData.append('size', size);
+        formData.append('routeName', modifyState.routeName);
+        formData.append('dataId', modifyState.dataId);
+        formData.append('key', key);
+        reqwest({
+          url: application.urlUpload + '/checkFile',
+          method: 'post',
+          processData: false,
+          data: formData,
+          success: (data) => {
+            if (data.code === 1) {
+              if (data.data === -1) {
+                gotoSuccess(dispatch, data);
+                dispatchModifyState({ pageLoading: false });
+              } else {
+                // 通过分片文件继续上传。
+                uploadFile(fileObj, modifyState.routeName, modifyState.dataId, data.data);
+              }
+            }
+          }
+        });
+
+      });
+      dispatchModifyState({ pageLoading: true });
+    };
+
+    const uploadFile = (fileObj, routeName, dataId, shardIndex) => {
+      const file = fileObj.originFileObj;
+      const { dispatch } = props;
+      const formData = new FormData();
+
+      // formData.append('files[]', file);
+
+      //文件分片 以10MB去分片
+      const shardSize: any = 10 * 1024 * 1024;
+      //定义分片索引
+      // const shardIndex = shardIndex;
+      //定义分片的起始位置
+      const start = shardIndex * shardSize;
+      //定义分片结束的位置 file哪里来的?
+      const end = Math.min(file.size, start + shardSize);
+      //从文件中截取当前的分片数据
+      const fileShard = file.slice(start, end);
+      //分片的大小
+      const size = file.size;
+      //总片数
+      const shardTotal: any = Math.ceil(size / shardSize);
+      //文件的后缀名
+      const fileName = file.name;
+      const suffix = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length).toLowerCase();
+      //把视频的信息存储为一个字符串
+      const fileDetails = file.name + file.size + file.type + file.lastModifiedDate;
+      //使用当前文件的信息用md5加密生成一个key 这个加密是根据文件的信息来加密的 如果相同的文件 加的密还是一样的
+      const key: any = Md5.hashAsciiStr(Md5.hashAsciiStr(fileDetails).toString());
+      //前面的参数必须和controller层定义的一样
+      formData.append('file', fileShard);
+      formData.append('fileName', fileName);
+      formData.append('suffix', suffix);
+      formData.append('shardIndex',shardIndex);
+      formData.append('shardSize', shardSize);
+      formData.append('shardTotal', shardTotal);
+      formData.append('size', size);
+      formData.append('routeName', routeName);
+      formData.append('dataId', dataId);
+      formData.append('key', key);
+
+      // You can use any AJAX library you like
+      reqwest({
+        url: application.urlUpload + '/uploadFile',
+        method: 'post',
+        processData: false,
+        data: formData,
+        success: () => {
+          if(shardIndex < shardTotal - 1) {
+            shardIndex += 1;
+            uploadFile(fileObj, routeName, dataId, shardIndex);
+          } else {
+            dispatchModifyState({ fileList: [], pageLoading: false });
+            gotoSuccess(dispatch, {code: '1', msg: '上传成功！'});
+          }
+        },
+        error: () => {
+          dispatchModifyState({ pageLoading: false });
+          gotoError(dispatch, {code: '5000', msg: '上传失败！'});
+        },
+      });
+    };
+
     return <Spin spinning={modifyState.pageLoading ? true : false}>
       <WrapComponent
       {...props}
@@ -706,6 +818,7 @@ const commonBase = (WrapComponent) => {
       onSetForm={onSetForm}
       onSortEnd={onSortEnd}
       draggableBodyRow={draggableBodyRow}
+      onUpload={onUpload}
     />
     </Spin>
   };

@@ -8,6 +8,7 @@ import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { StarTwoTone, DeleteOutlined, StarFilled } from '@ant-design/icons';
+import {UploadFile} from "../../../common/UploadFile";
 
 const Product = (props) => {
   const [form] = Form.useForm();
@@ -95,6 +96,9 @@ const Product = (props) => {
   const inventorySumParam: any = commonUtils.getTableProps('inventorySum', props);
   inventorySumParam.pagination = false;
 
+  const uploadParam: any = commonUtils.getUploadProps('upload', props);
+
+
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
@@ -102,6 +106,12 @@ const Product = (props) => {
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
           {component}
+        </Col>
+      </Row>
+      <Row style={{ height: 'auto', overflow: 'auto' }}>
+        <Col>
+          <UploadFile {...uploadParam}/>
+          <button onClick={props.onUpload.bind(this, 'upload')} type={"button"}>aaaa</button>
         </Col>
       </Row>
       <Row style={{ height: 'auto', overflow: 'auto' }}>

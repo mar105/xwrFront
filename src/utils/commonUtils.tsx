@@ -196,6 +196,17 @@ export function getTableProps(name, props) {
   return tableParam;
 };
 
+
+export function getUploadProps(name, props) {
+  const uploadParam ={
+    name,
+    enabled: props.enabled,
+    dispatchModifyState: props.dispatchModifyState,
+    uploadFileList: props[name + 'FileList'],
+  }
+  return uploadParam;
+};
+
 /** 处理数据格式
  * name 名称
  * saveTmpData 表单数据

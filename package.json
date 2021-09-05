@@ -45,6 +45,7 @@
     "react-scripts": "^4.0.3",
     "react-sortable-hoc": "^2.0.0",
     "react-window": "^1.8.6",
+    "reqwest": "^2.0.5",
     "sockjs-client": "^1.5.0",
     "style-loader": "^2.0.0",
     "ts-md5": "^1.2.7",

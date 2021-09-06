@@ -683,6 +683,8 @@ const commonBase = (WrapComponent) => {
       const { [name + 'FileList']: fileList }: any = stateRef.current;
       const { dispatch } = props;
       fileList.forEach(fileObj => {
+        fileObj.percent = 1;
+        fileObj.status = 'uploading';
         const file = fileObj.originFileObj;
         const formData = new FormData();
         const size = file.size;
@@ -714,20 +716,22 @@ const commonBase = (WrapComponent) => {
             if (data.code === 1) {
               if (data.data === -1) {
                 gotoSuccess(dispatch, data);
-                dispatchModifyState({ pageLoading: false });
+                fileObj.percent = 100;
+                fileObj.status = 'done';
+                dispatchModifyState({ [name + 'FileList']: fileList, pageLoading: false });
               } else {
                 // 通过分片文件继续上传。
-                uploadFile(fileObj, modifyState.routeName, modifyState.dataId, data.data);
+                uploadFile(name, fileObj, modifyState.routeName, modifyState.dataId, data.data);
               }
             }
           }
         });
 
       });
-      dispatchModifyState({ pageLoading: true });
+      dispatchModifyState({ pageLoading: true, [name + 'FileList']: fileList });
     };
 
-    const uploadFile = (fileObj, routeName, dataId, shardIndex) => {
+    const uploadFile = (name, fileObj, routeName, dataId, shardIndex) => {
       const file = fileObj.originFileObj;
       const { dispatch } = props;
       const formData = new FormData();
@@ -776,9 +780,17 @@ const commonBase = (WrapComponent) => {
         success: () => {
           if(shardIndex < shardTotal - 1) {
             shardIndex += 1;
-            uploadFile(fileObj, routeName, dataId, shardIndex);
+            const fileList = [...modifyState[name + 'FileList']];
+            const index = fileList.findIndex(item => item.uid === fileObj.uid);
+            fileList[index].percent = Math.ceil(100  * (shardIndex / shardTotal));
+            dispatchModifyState({ [name + 'FileList']: fileList, pageLoading: false });
+            uploadFile(name, fileObj, routeName, dataId, shardIndex);
           } else {
-            dispatchModifyState({ fileList: [], pageLoading: false });
+            const fileList = [...modifyState[name + 'FileList']];
+            const index = fileList.findIndex(item => item.uid === fileObj.uid);
+            fileList[index].percent = 100;
+            fileList[index].status = 'done';
+            dispatchModifyState({ [name + 'FileList']: fileList, pageLoading: false });
             gotoSuccess(dispatch, {code: '1', msg: '上传成功！'});
           }
         },

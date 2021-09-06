@@ -27,8 +27,9 @@ const Product = (props) => {
       saveData.push(commonUtils.mergeData('inventory', inventoryData, inventoryModifyData, inventoryDelData, false));
       saveData.push(commonUtils.mergeData('inventorySum', inventorySumData, inventorySumModifyData, inventorySumDelData, false));
       return saveData;
-    }
+    };
     props.onFinish(values, { childCallback });
+    props.onUpload('upload');
   }
 
   useEffect(() => {
@@ -98,7 +99,6 @@ const Product = (props) => {
 
   const uploadParam: any = commonUtils.getUploadProps('upload', props);
 
-
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
@@ -111,7 +111,7 @@ const Product = (props) => {
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
           <UploadFile {...uploadParam}/>
-          <button onClick={props.onUpload.bind(this, 'upload')} type={"button"}>aaaa</button>
+          {/*<button onClick={props.onUpload.bind(this, 'upload')} type={"button"}>aaaa</button>*/}
         </Col>
       </Row>
       <Row style={{ height: 'auto', overflow: 'auto' }}>

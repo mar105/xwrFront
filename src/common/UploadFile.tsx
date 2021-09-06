@@ -47,7 +47,7 @@ export function UploadFile(params) {
 
   return <div>
     <Upload
-      // action={application.urlUpload + '/singleFile'}
+      // action={application.urlUpload + '/uploadFile'}
       listType="picture-card"
       fileList={params.fileList}
       multiple

@@ -5,6 +5,7 @@ export const pageSize: number = application.pageSize;
 export const urlMain: string = application.url + '/xwrMain';
 export const urlPrefix: string = application.url + '/xwrBasic';
 export const urlCommon: string = application.urlCommon;
+export const urlUpload: string = application.urlUpload;
 
 export function paramInit(param) {
   param.type = 'computerBasic';

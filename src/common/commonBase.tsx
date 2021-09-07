@@ -681,8 +681,8 @@ const commonBase = (WrapComponent) => {
 
     const onUpload = (name) => {
       const { [name + 'FileList']: fileList }: any = stateRef.current;
-      const { dispatch } = props;
-      fileList.forEach(fileObj => {
+      const { dispatch, commonModel } = props;
+      fileList.filter(item => item.status !== 'done').forEach(fileObj => {
         fileObj.percent = 1;
         fileObj.status = 'uploading';
         const file = fileObj.originFileObj;
@@ -704,7 +704,9 @@ const commonBase = (WrapComponent) => {
         formData.append('shardSize', shardSize);
         formData.append('shardTotal', shardTotal);
         formData.append('size', size);
-        formData.append('routeName', modifyState.routeName);
+        formData.append('routeId', modifyState.routeId);
+        formData.append('groupId', commonModel.userInfo.groupId);
+        formData.append('shopId', commonModel.userInfo.shopId);
         formData.append('dataId', modifyState.dataId);
         formData.append('key', key);
         reqwest({
@@ -733,7 +735,7 @@ const commonBase = (WrapComponent) => {
 
     const uploadFile = (name, fileObj, routeName, dataId, shardIndex) => {
       const file = fileObj.originFileObj;
-      const { dispatch } = props;
+      const { dispatch, commonModel } = props;
       const formData = new FormData();
 
       // formData.append('files[]', file);
@@ -767,7 +769,9 @@ const commonBase = (WrapComponent) => {
       formData.append('shardSize', shardSize);
       formData.append('shardTotal', shardTotal);
       formData.append('size', size);
-      formData.append('routeName', routeName);
+      formData.append('routeId', modifyState.routeId);
+      formData.append('groupId', commonModel.userInfo.groupId);
+      formData.append('shopId', commonModel.userInfo.shopId);
       formData.append('dataId', dataId);
       formData.append('key', key);
 

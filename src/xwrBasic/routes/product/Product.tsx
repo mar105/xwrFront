@@ -9,6 +9,8 @@ import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { StarTwoTone, DeleteOutlined, StarFilled } from '@ant-design/icons';
 import {UploadFile} from "../../../common/UploadFile";
+import * as request from "../../../utils/request";
+import * as application from "../../application";
 
 const Product = (props) => {
   const [form] = Form.useForm();
@@ -57,9 +59,29 @@ const Product = (props) => {
       }
       else if (props.handleType === 'modify') {
         onButtonClick('modifyButton', null, null);
+      } else {
+        getFileList();
       }
     }
   }, [props.masterContainer.dataSetName]);
+
+  const getFileList = async () => {
+    const { dispatch, dispatchModifyState } = props;
+    const requestParam = {
+      routeId: props.routeId,
+      groupId: commonModel.userInfo.groupId,
+      shopId: commonModel.userInfo.shopId,
+      dataId: props.dataId,
+    };
+    const url = application.urlUpload + '/getFileList' + commonUtils.paramGet(requestParam);
+    const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+    if (interfaceReturn.code === 1) {
+      dispatchModifyState({ uploadFileList: interfaceReturn.data});
+    } else {
+      props.gotoError(dispatch, interfaceReturn);
+      return {};
+    }
+  }
 
   const onButtonClick = async (key, config, e, childParams: any = undefined) => {
     if (key === 'addButton') {

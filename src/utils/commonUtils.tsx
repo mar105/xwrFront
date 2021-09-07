@@ -202,7 +202,7 @@ export function getUploadProps(name, props) {
     name,
     enabled: props.enabled,
     dispatchModifyState: props.dispatchModifyState,
-    uploadFileList: props[name + 'FileList'],
+    fileList: props[name + 'FileList'],
   }
   return uploadParam;
 };

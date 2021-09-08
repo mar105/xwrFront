@@ -1,6 +1,7 @@
 import React, {useReducer} from "react";
 import { Modal, Upload} from "antd";
 import { PlusOutlined } from '@ant-design/icons';
+import * as commonUtils from "../utils/commonUtils";
 
 export function UploadFile(params) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
@@ -36,6 +37,11 @@ export function UploadFile(params) {
     return false;
   }
 
+  const onRemove = file => {
+    const delFileList = commonUtils.isEmptyArr(params.delFileList) ? [] : params.delFileList;
+    params.dispatchModifyState({ [params.name + 'DelFileList']: [...delFileList, file] });
+  }
+
   const onCancel = () => dispatchModifySelfState({ previewVisible: false });
 
   const uploadButton = (
@@ -52,6 +58,7 @@ export function UploadFile(params) {
       fileList={params.fileList}
       multiple
       beforeUpload={beforeUpload}
+      onRemove={onRemove}
       onPreview={onPreview}
       onChange={onChange}>
       {params.enabled ? uploadButton : null}

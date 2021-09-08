@@ -30,8 +30,8 @@ const Product = (props) => {
       saveData.push(commonUtils.mergeData('inventorySum', inventorySumData, inventorySumModifyData, inventorySumDelData, false));
       return saveData;
     };
-    props.onUpload('upload');
     props.onFinish(values, { childCallback });
+    props.onUpload('upload');
   }
 
   useEffect(() => {

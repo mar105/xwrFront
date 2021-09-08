@@ -679,10 +679,38 @@ const commonBase = (WrapComponent) => {
       }
     };
 
-    const onUpload = (name) => {
-      const { [name + 'FileList']: fileList }: any = stateRef.current;
+    const onUpload = async (name) => {
+      const { [name + 'FileList']: fileList, [name + 'DelFileList']: delfileListOld }: any = stateRef.current;
       const { dispatch, commonModel } = props;
-      fileList.filter(item => item.status !== 'done').forEach(fileObj => {
+      const delFileList = commonUtils.isEmptyArr(delfileListOld) ? [] : delfileListOld;
+      if (commonUtils.isNotEmptyArr(delFileList)) {
+        // 先删除文件
+        const formData = new FormData();
+        formData.append('fileListStr', JSON.stringify(delFileList));
+        formData.append('routeId', modifyState.routeId);
+        formData.append('groupId', commonModel.userInfo.groupId);
+        formData.append('shopId', commonModel.userInfo.shopId);
+        formData.append('dataId', modifyState.dataId);
+        await reqwest({
+          url: application.urlUpload + '/delFileList',
+          method: 'post',
+          processData: false,
+          data: formData,
+          success: (data) => {
+            if (data.code === 1) {
+              if (data.data === -1) {
+                // gotoSuccess(dispatch, data);
+              } else {
+                gotoError(dispatch, data);
+              }
+            }
+          }
+        });
+      }
+
+
+      // 第二步上传文件
+      fileList.filter(item => item.status !== 'done').forEach(async fileObj => {
         fileObj.percent = 1;
         fileObj.status = 'uploading';
         const file = fileObj.originFileObj;
@@ -709,7 +737,7 @@ const commonBase = (WrapComponent) => {
         formData.append('shopId', commonModel.userInfo.shopId);
         formData.append('dataId', modifyState.dataId);
         formData.append('key', key);
-        reqwest({
+        await reqwest({
           url: application.urlUpload + '/checkFile',
           method: 'post',
           processData: false,
@@ -730,7 +758,8 @@ const commonBase = (WrapComponent) => {
         });
 
       });
-      dispatchModifyState({ pageLoading: true, [name + 'FileList']: fileList });
+
+      dispatchModifyState({ pageLoading: true, [name + 'FileList']: fileList, [name + 'DelFileList']: [] });
     };
 
     const uploadFile = (name, fileObj, routeName, dataId, shardIndex) => {

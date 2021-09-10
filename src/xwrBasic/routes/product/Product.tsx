@@ -72,6 +72,7 @@ const Product = (props) => {
       groupId: commonModel.userInfo.groupId,
       shopId: commonModel.userInfo.shopId,
       dataId: props.dataId,
+      downloadPrefix: application.urlUpload + '/downloadFile',
     };
     const url = application.urlUpload + '/getFileList' + commonUtils.paramGet(requestParam);
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;

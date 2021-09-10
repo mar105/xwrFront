@@ -20,12 +20,18 @@ export function UploadFile(params) {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
+    const suffix = file.name.substring(file.name.lastIndexOf(".") + 1, file.name.length).toLowerCase();
+    if (suffix === 'jpg' || suffix === 'png' || suffix === 'gif' || suffix === 'bmp' || suffix === 'jpeg' ||
+      suffix === 'tif' || suffix === 'tiff' || suffix === 'ico') {
+      dispatchModifySelfState({
+        previewImage: file.url || file.preview,
+        previewVisible: true,
+        previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
+      });
+    } else if (!file.url) {
+      window.open(file.url);
+    }
 
-    dispatchModifySelfState({
-      previewImage: file.url || file.preview,
-      previewVisible: true,
-      previewTitle: file.name || file.url.substring(file.url.lastIndexOf('/') + 1),
-    });
   };
 
   const onChange = ({ fileList }) => {
@@ -42,6 +48,12 @@ export function UploadFile(params) {
     params.dispatchModifyState({ [params.name + 'DelFileList']: [...delFileList, file] });
   }
 
+  // const onDownload = file => {
+  //   if (!file.url) {
+  //     window.open(file.url);
+  //   }
+  // }
+
   const onCancel = () => dispatchModifySelfState({ previewVisible: false });
 
   const uploadButton = (
@@ -50,6 +62,7 @@ export function UploadFile(params) {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+
 
   return <div>
     <Upload
@@ -60,6 +73,7 @@ export function UploadFile(params) {
       beforeUpload={beforeUpload}
       onRemove={onRemove}
       onPreview={onPreview}
+      // onDownload={onDownload}
       onChange={onChange}>
       {params.enabled ? uploadButton : null}
     </Upload>

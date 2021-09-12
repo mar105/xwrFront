@@ -18,13 +18,13 @@ const Process = (props) => {
   };
 
   const onFinish = async (values: any) => {
-    const { customerData, customerModifyData, customerDelData, inventoryData, inventoryModifyData,
-      inventorySumDelData, inventorySumData, inventorySumModifyData, inventoryDelData } = props;
+    const { machineData, machineModifyData, machineDelData, matchData, matchModifyData,
+      outsourceDelData, outsourceData, outsourceModifyData, matchDelData } = props;
     const childCallback = (params) => {
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('customer', customerData, customerModifyData, customerDelData, false));
-      saveData.push(commonUtils.mergeData('inventory', inventoryData, inventoryModifyData, inventoryDelData, false));
-      saveData.push(commonUtils.mergeData('inventorySum', inventorySumData, inventorySumModifyData, inventorySumDelData, false));
+      saveData.push(commonUtils.mergeData('machine', machineData, machineModifyData, machineDelData, false));
+      saveData.push(commonUtils.mergeData('match', matchData, matchModifyData, matchDelData, false));
+      saveData.push(commonUtils.mergeData('outsource', outsourceData, outsourceModifyData, outsourceDelData, false));
       return saveData;
     }
     props.onFinish(values, { childCallback });
@@ -69,9 +69,9 @@ const Process = (props) => {
 
   const onLastColumnClick = (name, key, record, e, isWait = false) => {
     const { dispatchModifyState, masterData: masterDataOld }: any = props;
-    if (name === 'customer') {
+    if (name === 'machine') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, defaultCustomerId: record.id };
+        const masterData = { ...masterDataOld, defaultMachineId: record.id };
         dispatchModifyState({ masterData });
       }
     }
@@ -79,21 +79,21 @@ const Process = (props) => {
 
   const { enabled, masterContainer, masterData, commonModel } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
-  const customerParam: any = commonUtils.getTableProps('customer', props);
-  customerParam.pagination = false;
-  customerParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultCustomerId,
+  const machineParam: any = commonUtils.getTableProps('machine', props);
+  machineParam.pagination = false;
+  machineParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultMachineId,
     render: (text,record, index)=> {
     return <div>
-      <a onClick={onLastColumnClick.bind(this, 'customer', 'defaultButton', record)}>
-        <Tooltip placement="top" title="默认"> {masterData.defaultCustomerId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
-      <a onClick={props.onLastColumnClick.bind(this, 'customer', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+      <a onClick={onLastColumnClick.bind(this, 'machine', 'defaultButton', record)}>
+        <Tooltip placement="top" title="默认"> {masterData.defaultMachineId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
+      <a onClick={props.onLastColumnClick.bind(this, 'machine', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
     </div>
   }, width: 50 , fixed: 'right' };
-  const inventoryParam: any = commonUtils.getTableProps('inventory', props);
-  inventoryParam.pagination = false;
+  const matchParam: any = commonUtils.getTableProps('match', props);
+  matchParam.pagination = false;
 
-  const inventorySumParam: any = commonUtils.getTableProps('inventorySum', props);
-  inventorySumParam.pagination = false;
+  const outsourceParam: any = commonUtils.getTableProps('outsource', props);
+  outsourceParam.pagination = false;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
@@ -106,17 +106,17 @@ const Process = (props) => {
       </Row>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
-          {commonUtils.isNotEmptyObj(props.customerContainer) ? <TableComponent {...customerParam} /> : '' }
+          {commonUtils.isNotEmptyObj(props.machineContainer) ? <TableComponent {...machineParam} /> : '' }
         </Col>
       </Row>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
-          {commonUtils.isNotEmptyObj(props.inventoryContainer) ? <TableComponent {...inventoryParam} /> : '' }
+          {commonUtils.isNotEmptyObj(props.matchContainer) ? <TableComponent {...matchParam} /> : '' }
         </Col>
       </Row>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
         <Col>
-          {commonUtils.isNotEmptyObj(props.inventorySumContainer) ? <TableComponent {...inventorySumParam} /> : '' }
+          {commonUtils.isNotEmptyObj(props.outsourceContainer) ? <TableComponent {...outsourceParam} /> : '' }
         </Col>
       </Row>
       <ButtonGroup {...buttonGroup} />

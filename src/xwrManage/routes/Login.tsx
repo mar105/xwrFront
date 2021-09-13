@@ -52,6 +52,10 @@ const Login = ({ dispatch }) => {
         type: 'commonModel/gotoNewPage',
         payload: { newPage: '/xwrManage' },
       });
+      dispatch({
+        type: 'commonModel/saveStompClient',
+        payload: null,
+      });
     } else {
       dispatch({
         type: 'commonModel/gotoError',

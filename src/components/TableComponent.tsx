@@ -56,7 +56,7 @@ export function TableComponent(params: any) {
       let selectionMinus = params.property.rowSelection === null ? 0 : 2;
       selectionMinus = params.config.isRowNum ? selectionMinus + 1 : selectionMinus;
       const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
-      addState.expandable = { expandIconColumnIndex: index + selectionMinus }
+      addState.expandable = { indentSize: 30, expandIconColumnIndex: index + selectionMinus }
     }
 
     //-----增加行拖拽------------------------------
@@ -94,7 +94,8 @@ export function TableComponent(params: any) {
 
 
     //-----增加列宽拖拽------------------------------
-    const components = params.config.isTree ? {} : {
+    // params.config.isTree ? {} :
+    const components = {
       header: {
         cell: ResizeableTitle,
       },
@@ -512,6 +513,7 @@ export function TableComponent(params: any) {
   if (commonUtils.isNotEmptyObj(modifySelfState.expandable)) {
     tableParams.expandable = modifySelfState.expandable;
   }
+
   return <div style={{width: params.width ? params.width: 1000}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
       <Table

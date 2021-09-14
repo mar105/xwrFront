@@ -19,6 +19,8 @@ export const routeInfo: any[] = [
       path: '/xwrBasic/product', title: '产品信息', name: 'product', component: () => import('./routes/product/Product'),
     }, {
       path: '/xwrBasic/process', title: '工艺信息', name: 'process', component: () => import('./routes/process/Process'),
+    }, {
+      path: '/xwrBasic/machine', title: '机台信息', name: 'machine', component: () => import('./routes/commonMaster/CommonMaster'),
     }]
   },
 ];

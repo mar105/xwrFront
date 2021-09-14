@@ -56,7 +56,7 @@ export function TableComponent(params: any) {
       let selectionMinus = params.property.rowSelection === null ? 0 : 2;
       selectionMinus = params.config.isRowNum ? selectionMinus + 1 : selectionMinus;
       const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
-      addState.expandable = { indentSize: 30, expandIconColumnIndex: index + selectionMinus }
+      addState.expandable = { expandIconColumnIndex: index + selectionMinus }
     }
 
     //-----增加行拖拽------------------------------

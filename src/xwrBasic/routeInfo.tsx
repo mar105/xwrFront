@@ -20,7 +20,9 @@ export const routeInfo: any[] = [
     }, {
       path: '/xwrBasic/process', title: '工艺信息', name: 'process', component: () => import('./routes/process/Process'),
     }, {
-      path: '/xwrBasic/machine', title: '机台信息', name: 'machine', component: () => import('./routes/commonMaster/CommonMaster'),
+      path: '/xwrBasic/machine', title: '设备信息', name: 'machine', component: () => import('./routes/commonMaster/CommonMaster'),
+    }, {
+      path: '/xwrBasic/team', title: '班组信息', name: 'team', component: () => import('./routes/team/Team'),
     }]
   },
 ];

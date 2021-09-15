@@ -462,7 +462,7 @@ export function TableComponent(params: any) {
     }
     dispatchModifySelfState({filteredInfo: filters, sorterInfo});
 
-    if (params.onTableChange && !params.config.isTree) {
+    if (params.onTableChange && !params.config.isTree && !params.enabled) {
       params.onTableChange(params.name, pagination, filters, sorterInfo, extra);
     }
   }

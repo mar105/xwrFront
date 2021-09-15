@@ -23,6 +23,8 @@ export const routeInfo: any[] = [
       path: '/xwrBasic/machine', title: '设备信息', name: 'machine', component: () => import('./routes/commonMaster/CommonMaster'),
     }, {
       path: '/xwrBasic/team', title: '班组信息', name: 'team', component: () => import('./routes/team/Team'),
+    }, {
+      path: '/xwrBasic/currency', title: '币别信息', name: 'currency', component: () => import('./routes/currency/Currency'),
     }]
   },
 ];

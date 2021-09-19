@@ -1,5 +1,7 @@
 import * as React from "react";
 import * as commonUtils from "../utils/commonUtils";
+import * as application from "../application";
+import * as request from "../utils/request";
 
 const commonListEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -10,7 +12,7 @@ const commonListEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e) => {
-      const { dispatch, dispatchModifyState, ['slaveContainer']: container, slaveData, slaveSum, slaveSelectedRowKeys,
+      const { dispatch, commonModel, dispatchModifyState, ['slaveContainer']: container, slaveData, slaveSum, slaveSelectedRowKeys,
         slaveSearchCondition: searchCondition, slaveSorterInfo: sorterInfo, routeId } = props;
       if (key === 'addButton') {
         props.callbackAddPane(config.popupSelectId, {handleType: 'add',
@@ -33,6 +35,18 @@ const commonListEvent = (WrapComponent) => {
         dispatchModifyState({ pageLoading: true });
         const returnState = await props.getAllData({ pageNum: 1});
         dispatchModifyState({ ...returnState });
+      } else if (key === 'exportExcelButton') {
+        const url: string = `${application.urlUpload}/excel/exportExcel`;
+        const requestParam = {
+          routeId: routeId,
+          groupId: commonModel.userInfo.groupId,
+          shopId: commonModel.userInfo.shopId,
+          containerId: container.id,
+          pageSize: application.pageSize,
+          condition: { searchCondition: props.slaveSearchCondition, sorterInfo: props.slaveSorterInfo },
+        }
+        const interfaceReturn = await request.postExcelRequest(url, commonModel.token, application.paramInit(requestParam));
+        commonUtils.downloadExcel(interfaceReturn);
       }
     }
 
@@ -56,7 +70,8 @@ const commonListEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !props.enabled });
       buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !props.enabled });
       buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: props.enabled });
-      buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 100, disabled: props.enabled });
+      buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 70, disabled: props.enabled });
+      buttonGroup.push({ key: 'exportExcelButton', caption: '导出excel', htmlType: 'button', sortNum: 80, disabled: false });
       return buttonGroup;
     }
 

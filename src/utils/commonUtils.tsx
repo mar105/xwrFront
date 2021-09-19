@@ -383,3 +383,30 @@ export function isJson(str) {
   }
   return false;
 }
+
+export function downloadExcel(interfaceReturn) {
+  if (interfaceReturn.headers.get('content-type') !== 'application/json') {
+    interfaceReturn.blob().then((blob) => {
+      const a = window.document.createElement('a');
+      // 获取 blob 本地文件连接 (blob 为纯二进制对象，不能够直接保存到磁盘上) //此处的type按照导出的格式来，这里是.xls
+      const downUrl = window.URL.createObjectURL(new Blob([blob], { type: "application/vnd.ms-excel" }));
+      //定义导出文件的命名
+      let fileName = "download.xls";
+      //下面的if判断为获取后台配置的文件名称，如果获取不到则走自己定义的文件名称
+      if (interfaceReturn.headers.get('Content-Disposition') && interfaceReturn.headers.get('Content-Disposition').indexOf("filename=") !== -1) {
+        fileName = interfaceReturn.headers.get('Content-Disposition').split('filename=')[1];
+        a.href = downUrl;
+        a.download = `${decodeURI(fileName)}` || "download.xls";
+        a.click();
+        window.URL.revokeObjectURL(downUrl);
+      } else {
+        a.href = downUrl;
+        a.download = "数据导出.xls";
+        a.click();
+        window.URL.revokeObjectURL(downUrl);
+      }
+    }).catch(error => {
+      throw new Error(error);
+    });
+  }
+}

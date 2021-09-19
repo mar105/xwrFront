@@ -52,3 +52,15 @@ export function postRequest(url, token, params): any {
   };
   return request(url, options);
 }
+
+export function postExcelRequest(url, token, params): any {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      authorization: token,
+    },
+    body: JSON.stringify(params),
+  };
+  return fetch(url, options).catch((err) => ({ err }));
+}

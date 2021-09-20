@@ -12,8 +12,13 @@ import {useRef} from "react";
 import {replacePath, routeInfo} from "../routeInfo";
 import { DownOutlined } from '@ant-design/icons';
 import {useMemo} from "react";
+import {useReducer} from "react";
 
 function IndexPage(props) {
+  const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
+    return {...state, ...action};
+  },{});
+
   const stompClientRef: any = useRef();
   const panesRef: any = useRef();
   const panesComponentsRef: any = useRef();
@@ -30,11 +35,11 @@ function IndexPage(props) {
   }, [props.panesComponents]);
 
   useEffect(() => {
-    connectionWebsocket();
-    const websocket = setInterval(() => {
+    const intervalWebsocket = setInterval(() => {
       connectionWebsocket();
     }, 5000);
-    return () => clearInterval(websocket);
+    dispatchModifySelfState({intervalWebsocket});
+    return () => clearInterval(intervalWebsocket);
   }, []);
 
   const connectionWebsocket = () => {
@@ -64,6 +69,7 @@ function IndexPage(props) {
 
   const onExit = async () => {
     const {dispatch} = props;
+    clearInterval(modifySelfState.intervalWebsocket);
     dispatch({
       type: 'commonModel/gotoNewPage',
       payload: {newPage: '/login'},

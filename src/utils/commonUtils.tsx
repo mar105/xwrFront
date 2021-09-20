@@ -100,28 +100,25 @@ export function isNotEmptyObj(value) {
 }
 
 //  websocket 推送消息
-var stompClient: any = null;
 export function getWebSocketData(authorization) {
-  if(stompClient === null || !stompClient.connected) {
-    let socket;
-    if ('WebSocket' in window) {
-      socket = new WebSocket(urlWebSocket);
-    } else {
-      socket = new SockJS(urlSockJs);
-    }
-    stompClient = Stomp.over(socket);
-    stompClient.connect({authorization}, frame => {
-      // // websocket订阅一个topic，第一个参数是top名称
-      // // 第二个参数是一个回调函数,表示订阅成功后获得的data
-      stompClient.subscribe('/topic-websocket/heartbeat', data => {
-        // 一般来说这个data是一个 Frame对象,需要JSON.parse(data)一下拿到数据
-        stompClient.send('/websocket/heartbeat', {}, JSON.stringify({}));
-        // 这样才能拿到需要的数据格式,一个对象。  下面是一个例子
-        //  {name:"xwr"}
-        //  然后对这个数据进行处理,渲染到页面就可以了。
-      });
-    });
+  let socket;
+  if ('WebSocket' in window) {
+    socket = new WebSocket(urlWebSocket);
+  } else {
+    socket = new SockJS(urlSockJs);
   }
+  const stompClient = Stomp.over(socket);
+  stompClient.connect({authorization}, frame => {
+    // // websocket订阅一个topic，第一个参数是top名称
+    // // 第二个参数是一个回调函数,表示订阅成功后获得的data
+    stompClient.subscribe('/topic-websocket/heartbeat', data => {
+      // 一般来说这个data是一个 Frame对象,需要JSON.parse(data)一下拿到数据
+      stompClient.send('/websocket/heartbeat', {}, JSON.stringify({}));
+      // 这样才能拿到需要的数据格式,一个对象。  下面是一个例子
+      //  {name:"xwr"}
+      //  然后对这个数据进行处理,渲染到页面就可以了。
+    });
+  });
   return stompClient;
 }
 

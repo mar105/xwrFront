@@ -70,6 +70,7 @@ function IndexPage(props) {
   const onExit = async () => {
     const {dispatch} = props;
     clearInterval(modifySelfState.intervalWebsocket);
+    props.commonModel.stompClient.disconnect();
     dispatch({
       type: 'commonModel/gotoNewPage',
       payload: {newPage: '/login'},

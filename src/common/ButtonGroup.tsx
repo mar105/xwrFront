@@ -21,7 +21,6 @@ export function ButtonGroup(params) {
   }
 
   const onCustomRequest = (request) => {
-    console.log('ddd', request);
     const formData = new FormData();
     formData.append('file', request.file);
     formData.append('routeId', request.data.routeId);

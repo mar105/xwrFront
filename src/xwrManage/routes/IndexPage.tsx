@@ -8,31 +8,44 @@ import * as application from "../application";
 import * as request from "../../utils/request";
 import {useEffect} from "react";
 import {useRef} from "react";
+import {useReducer} from "react";
 
 function IndexPage(props) {
+  const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
+    return {...state, ...action};
+  },{});
+
   const stompClientRef: any = useRef();
+  const panesRef: any = useRef();
+  const panesComponentsRef: any = useRef();
   useEffect(() => {
     stompClientRef.current = props.commonModel.stompClient;
   }, [props.commonModel.stompClient]);
 
   useEffect(() => {
-    connectionWebsocket();
-    const websocket = setInterval(() => {
+    panesRef.current = props.commonModel.panes;
+  }, [props.commonModel.panes]);
+
+  useEffect(() => {
+    panesComponentsRef.current = props.panesComponents;
+  }, [props.panesComponents]);
+
+  useEffect(() => {
+    const intervalWebsocket = setInterval(() => {
       connectionWebsocket();
     }, 5000);
-    return () => clearInterval(websocket);
+    dispatchModifySelfState({intervalWebsocket});
+    return () => clearInterval(intervalWebsocket);
   }, []);
 
   const connectionWebsocket = () => {
     const {dispatch, commonModel } = props;
     if (commonUtils.isEmpty(stompClientRef.current) || !stompClientRef.current.connected) {
-      const stompClient = commonUtils.getWebSocketData(commonModel.token);
-      if (stompClient.connected) {
-        dispatch({
-          type: 'commonModel/saveStompClient',
-          payload: stompClient,
-        });
-      }
+      const stompClient = commonUtils.getWebSocketData(stompClientRef.current, commonModel.token);
+      dispatch({
+        type: 'commonModel/saveStompClient',
+        payload: stompClient,
+      });
     }
   }
 
@@ -64,7 +77,7 @@ function IndexPage(props) {
   };
 
 
-  const onExit = async () => {
+  const onClear = async () => {
     const {dispatch, commonModel} = props;
     const url: string = `${application.urlCommon}/verify/clearAllModifying`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({}))).data;
@@ -73,6 +86,20 @@ function IndexPage(props) {
       props.gotoError(dispatch, interfaceReturn);
     }
   }
+
+  const onExit = async () => {
+    const {dispatch} = props;
+    clearInterval(modifySelfState.intervalWebsocket);
+    if (props.commonModel.stompClient !== null) {
+      props.commonModel.stompClient.disconnect();
+    }
+
+    dispatch({
+      type: 'commonModel/gotoNewPage',
+      payload: {newPage: '/xwrManage/login'},
+    });
+  }
+
   const { commonModel } = props;
   return (
     <div>
@@ -81,6 +108,7 @@ function IndexPage(props) {
       <a href="/xwrManage/register"> register</a>
       <a href="/xwrManage/login"> login</a>
       <a href="/xwrManage/route"> route</a>
+      <button onClick={onClear}> 清除缓存</button>
       <button onClick={onExit}> 退出</button>
       <button onClick={onClick.bind(this, '/xwrManage/route')}> add route</button>
       <button onClick={onClick.bind(this, '/xwrManage/container')}> add container</button>

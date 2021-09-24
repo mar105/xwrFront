@@ -45,13 +45,11 @@ function IndexPage(props) {
   const connectionWebsocket = () => {
     const {dispatch, commonModel } = props;
     if (commonUtils.isEmpty(stompClientRef.current) || !stompClientRef.current.connected) {
-      const stompClient = commonUtils.getWebSocketData(commonModel.token);
-      if (stompClient.connected) {
-        dispatch({
-          type: 'commonModel/saveStompClient',
-          payload: stompClient,
-        });
-      }
+      const stompClient = commonUtils.getWebSocketData(stompClientRef.current, commonModel.token);
+      dispatch({
+        type: 'commonModel/saveStompClient',
+        payload: stompClient,
+      });
     }
   }
 
@@ -70,7 +68,9 @@ function IndexPage(props) {
   const onExit = async () => {
     const {dispatch} = props;
     clearInterval(modifySelfState.intervalWebsocket);
-    props.commonModel.stompClient.disconnect();
+    if (props.commonModel.stompClient !== null) {
+      props.commonModel.stompClient.disconnect();
+    }
     dispatch({
       type: 'commonModel/gotoNewPage',
       payload: {newPage: '/login'},

@@ -100,14 +100,19 @@ export function isNotEmptyObj(value) {
 }
 
 //  websocket 推送消息
-export function getWebSocketData(authorization) {
+export function getWebSocketData(stompClientOld, authorization) {
   let socket;
-  if ('WebSocket' in window) {
-    socket = new WebSocket(urlWebSocket);
+  let stompClient;
+  if (stompClientOld == null) {
+    if ('WebSocket' in window) {
+      socket = new WebSocket(urlWebSocket);
+    } else {
+      socket = new SockJS(urlSockJs);
+    }
+    stompClient = Stomp.over(socket);
   } else {
-    socket = new SockJS(urlSockJs);
+    stompClient = stompClientOld;
   }
-  const stompClient = Stomp.over(socket);
   stompClient.connect({authorization}, frame => {
     // // websocket订阅一个topic，第一个参数是top名称
     // // 第二个参数是一个回调函数,表示订阅成功后获得的data

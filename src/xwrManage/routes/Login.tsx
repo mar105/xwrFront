@@ -6,6 +6,7 @@ import React from 'react';
 import * as application from '../application';
 import * as request from '../../utils/request';
 import { Md5 } from 'ts-md5';
+import * as commonUtils from "../../utils/commonUtils";
 
 const Login = ({ dispatch }) => {
   const [form] = Form.useForm();
@@ -52,9 +53,10 @@ const Login = ({ dispatch }) => {
         type: 'commonModel/gotoNewPage',
         payload: { newPage: '/xwrManage' },
       });
+      const stompClient = commonUtils.getWebSocketData(null, interfaceReturn.data.token);
       dispatch({
         type: 'commonModel/saveStompClient',
-        payload: null,
+        payload: stompClient,
       });
     } else {
       dispatch({

@@ -74,8 +74,10 @@ export function UploadFile(params) {
       onRemove={onRemove}
       onPreview={onPreview}
       // onDownload={onDownload}
-      onChange={onChange}>
-      {params.enabled ? uploadButton : null}
+      onChange={onChange}
+      {...params.property}
+    >
+      { params.button ? params.button : params.enabled ? uploadButton : null}
     </Upload>
     <Modal
       visible={modifySelfState.previewVisible}

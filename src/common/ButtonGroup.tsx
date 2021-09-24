@@ -4,6 +4,9 @@ import * as commonUtils from "../utils/commonUtils";
 import {Col, Row, Menu, Popconfirm} from "antd";
 import React from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import {UploadFile} from "./UploadFile";
+import * as application from "../application";
+import reqwest from 'reqwest';
 
 export function ButtonGroup(params) {
   const buttonGroupOld: any = [];
@@ -16,6 +19,30 @@ export function ButtonGroup(params) {
   if (commonUtils.isNotEmptyArr(params.buttonGroup)) {
     buttonGroupOld.push(...params.buttonGroup);
   }
+
+  const onCustomRequest = (request) => {
+    console.log('ddd', request);
+    const formData = new FormData();
+    formData.append('file', request.file);
+    formData.append('routeId', request.data.routeId);
+    formData.append('groupId', request.data.groupId);
+    formData.append('shopId', request.data.shopId);
+    formData.append('containerId', request.data.containerId);
+
+    reqwest({
+      url: request.action,
+      method: request.method,
+      processData: false,
+      data: formData,
+      headers: request.headers,
+      success: (data) => {
+        params.onUploadSuccess(request.data.name, data);
+      },
+      error: () => {
+      },
+    });
+  }
+
   const buttons = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item => item.containerType === 'control' && item.fieldName.endsWith('Button') && !item.fieldName.includes('.'));
   //先找到通用按钮，取配置
   const buttonGroup = buttonGroupOld.map(buttonOld => {
@@ -74,10 +101,38 @@ export function ButtonGroup(params) {
             params.onClick.bind(this, buttonItem.key, buttonConfig) },
         componentType: componentType.Soruce,
       };
+
+
       if (buttonOld.key === 'delButton' || buttonOld.key === 'invalidButton') {
         return <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>} onConfirm={params.onClick.bind(this, buttonItem.key, buttonConfig)}>
           <Col><ButtonComponent {...button} /></Col>
         </Popconfirm>
+      } else if (buttonOld.key.startsWith('importExcel') > 0) {
+        const uploadParam: any = {
+          name: 'upload' + buttonOld.key,
+          enabled: false,
+          button: <ButtonComponent {...button} />,
+          property: {
+            listType: 'text',
+            action: application.urlUpload + '/excel/importExcel',
+            headers: {
+              authorization: params.token,
+            },
+            fileList: [],
+            multiple: false,
+            beforeUpload: undefined,
+            onChange: undefined,
+            customRequest: onCustomRequest,
+            data: {
+              name: 'upload' + buttonOld.key,
+              routeId: params.routeId,
+              groupId: params.groupId,
+              shopId: params.shopId,
+              containerId: '1403507479207350272',
+            }
+          },
+        };
+        return <Col><UploadFile {...uploadParam}></UploadFile></Col>;
       } else {
         return <Col><ButtonComponent {...button} /></Col>;
       }

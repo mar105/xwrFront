@@ -47,6 +47,16 @@ const commonListEvent = (WrapComponent) => {
         }
         const interfaceReturn = await request.postExcelRequest(url, commonModel.token, application.paramInit(requestParam));
         commonUtils.downloadExcel(interfaceReturn);
+      } else if (key === 'importExcelButton') {
+        // const url: string = `${application.urlUpload}/excel/importExcel`;
+        // const requestParam = {
+        //   routeId: routeId,
+        //   groupId: commonModel.userInfo.groupId,
+        //   shopId: commonModel.userInfo.shopId,
+        //   containerId: container.id,
+        // }
+        // const interfaceReturn = await request.postExcelRequest(url, commonModel.token, application.paramInit(requestParam));
+        // commonUtils.downloadExcel(interfaceReturn);
       }
     }
 
@@ -72,6 +82,7 @@ const commonListEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: props.enabled });
       buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 70, disabled: props.enabled });
       buttonGroup.push({ key: 'exportExcelButton', caption: '导出excel', htmlType: 'button', sortNum: 80, disabled: false });
+      buttonGroup.push({ key: 'importExcelButton', caption: '导入数据', htmlType: 'button', sortNum: 80, disabled: false });
       return buttonGroup;
     }
 
@@ -83,6 +94,10 @@ const commonListEvent = (WrapComponent) => {
       dispatchModifyState({...addState});
     }
 
+    const onUploadSuccess = (name, data) => {
+      console.log(name, data);
+    }
+
     return <WrapComponent
       {...props}
       onSetForm={onSetForm}
@@ -90,6 +105,7 @@ const commonListEvent = (WrapComponent) => {
       onRowDoubleClick={onRowDoubleClick}
       getButtonGroup={getButtonGroup}
       onTableChange={onTableChange}
+      onUploadSuccess={onUploadSuccess}
     />
   };
 };

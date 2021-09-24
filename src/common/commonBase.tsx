@@ -742,6 +742,9 @@ const commonBase = (WrapComponent) => {
           method: 'post',
           processData: false,
           data: formData,
+          headers: {
+            authorization: commonModel.token,
+          },
           success: (data) => {
             if (data.code === 1) {
               if (data.data === -1) {

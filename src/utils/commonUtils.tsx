@@ -100,7 +100,7 @@ export function isNotEmptyObj(value) {
 }
 
 //  websocket 推送消息
-export function getWebSocketData(stompClientOld, authorization) {
+export function getWebSocketData(stompClientOld, onSuccess, authorization) {
   let socket;
   let stompClient;
   if (stompClientOld == null) {
@@ -114,6 +114,7 @@ export function getWebSocketData(stompClientOld, authorization) {
     stompClient = stompClientOld;
   }
   stompClient.connect({authorization}, frame => {
+    onSuccess();
     // // websocket订阅一个topic，第一个参数是top名称
     // // 第二个参数是一个回调函数,表示订阅成功后获得的data
     stompClient.subscribe('/topic-websocket/heartbeat', data => {

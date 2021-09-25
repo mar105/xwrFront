@@ -41,7 +41,7 @@ const commonDocEvent = (WrapComponent) => {
       } else {
         dispatchModifyState({ pageLoading: false });
         props.gotoError(dispatch, returnBody);
-        throw new Error(returnBody);
+        throw new Error(returnBody.msg);
       }
     }
 

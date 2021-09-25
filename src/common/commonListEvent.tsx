@@ -2,6 +2,7 @@ import * as React from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
+import {useEffect} from "react";
 
 const commonListEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -9,6 +10,33 @@ const commonListEvent = (WrapComponent) => {
     let form;
     const onSetForm = (formNew) => {
       form = formNew;
+    }
+
+    useEffect(() => {
+      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+        && props.commonModel.stompClient.connected) {
+        props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+      }
+      return () => {
+        if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+          && props.commonModel.stompClient.connected) {
+          props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId);
+        }
+      };
+    }, [props.commonModel.stompClient]);
+
+    const saveDataReturn = async (data) => {
+      const { dispatch, dispatchModifyState } = props;
+      const returnBody = JSON.parse(data.body);
+      if (returnBody.code === 1) {
+        const returnState = await props.getAllData({ pageNum: 1});
+        dispatchModifyState({ ...returnState, importIsVisible: false });
+        props.gotoSuccess(dispatch, returnBody);
+      } else {
+        dispatchModifyState({ pageLoading: false });
+        props.gotoError(dispatch, returnBody);
+        throw new Error(returnBody.msg);
+      }
     }
 
     const onButtonClick = async (key, config, e) => {
@@ -94,9 +122,50 @@ const commonListEvent = (WrapComponent) => {
       dispatchModifyState({...addState});
     }
 
-    const onUploadSuccess = (name, data) => {
-      console.log(name, data);
+    const onUploadSuccess = (buttonName, interfaceReturn) => {
+      const { dispatch, dispatchModifyState } = props;
+      const addState = {};
+      console.log(buttonName, interfaceReturn);
+      if (interfaceReturn.code === 1) {
+        const { container, data } = interfaceReturn.data;
+        const columns: any = [];
+        container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance' || item.containerType === 'spare' || item.containerType === 'cascader') && item.isVisible).forEach(item => {
+          const column = { title: item.viewName, dataIndex: item.fieldName, fieldType: item.fieldType, sortNum: item.sortNum, width: item.width };
+          columns.push(column);
+        });
+        addState[container.dataSetName + 'Container'] = container;
+        addState[container.dataSetName + 'Columns'] = columns;
+        addState[container.dataSetName + 'Data'] = data;
+        dispatchModifyState({ ...addState, importIsVisible: true, pageLoading: false });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
     }
+
+    const onModalCancel = () => {
+      props.dispatchModifyState({ pageLoading: false, importIsVisible: false });
+    };
+
+    const onModalOk = async () => {
+      const { commonModel, dispatch, slaveContainer, importData, tabId, dispatchModifyState } = props;
+      const saveData: any = [];
+      saveData.push(commonUtils.mergeData('master', importData, [], [], false));
+
+      const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'addButton');
+      const params = { tabId, routeId: slaveContainer.slaveData[index].popupSelectId, groupId: commonModel.userInfo.groupId,
+        shopId: commonModel.userInfo.shopId, saveData, handleType: 'add' };
+      const url: string = `${application.urlPrefix}/getData/saveData`;
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        dispatchModifyState({ pageLoading: true });
+        const returnState = await props.getAllData({ pageNum: 1});
+        dispatchModifyState({ ...returnState, importIsVisible: false });
+      } if (interfaceReturn.code === 10) {
+        dispatchModifyState({ pageLoading: true });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+    };
 
     return <WrapComponent
       {...props}
@@ -106,6 +175,8 @@ const commonListEvent = (WrapComponent) => {
       getButtonGroup={getButtonGroup}
       onTableChange={onTableChange}
       onUploadSuccess={onUploadSuccess}
+      onModalCancel={onModalCancel}
+      onModalOk={onModalOk}
     />
   };
 };

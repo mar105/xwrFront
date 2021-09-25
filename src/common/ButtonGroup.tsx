@@ -21,12 +21,15 @@ export function ButtonGroup(params) {
   }
 
   const onCustomRequest = (request) => {
+    params.dispatchModifyState({ pageLoading: true });
     const formData = new FormData();
     formData.append('file', request.file);
     formData.append('routeId', request.data.routeId);
     formData.append('groupId', request.data.groupId);
     formData.append('shopId', request.data.shopId);
-    formData.append('containerId', request.data.containerId);
+    formData.append('saveRouteId', request.data.saveRouteId);
+    formData.append('activeId', request.data.activeId);
+    formData.append('activeKey', request.data.activeKey);
 
     reqwest({
       url: request.action,
@@ -38,6 +41,7 @@ export function ButtonGroup(params) {
         params.onUploadSuccess(request.data.name, data);
       },
       error: () => {
+        params.dispatchModifyState({ pageLoading: false });
       },
     });
   }
@@ -107,8 +111,10 @@ export function ButtonGroup(params) {
           <Col><ButtonComponent {...button} /></Col>
         </Popconfirm>
       } else if (buttonOld.key.startsWith('importExcel') > 0) {
+        const index = commonUtils.isEmptyObj(params.container) ? -1 : params.container.slaveData.findIndex(item => item.fieldName === 'addButton');
+        const saveRouteId = index > -1 ? params.container.slaveData[index].popupSelectId : '';
         const uploadParam: any = {
-          name: 'upload' + buttonOld.key,
+          name: buttonOld.key,
           enabled: false,
           button: <ButtonComponent {...button} />,
           property: {
@@ -123,11 +129,13 @@ export function ButtonGroup(params) {
             onChange: undefined,
             customRequest: onCustomRequest,
             data: {
-              name: 'upload' + buttonOld.key,
+              name: buttonOld.key,
               routeId: params.routeId,
               groupId: params.groupId,
               shopId: params.shopId,
-              containerId: '1403507479207350272',
+              saveRouteId: saveRouteId,
+              activeId: buttonConfig.popupActiveId,
+              activeKey: buttonConfig.popupActiveKey,
             }
           },
         };

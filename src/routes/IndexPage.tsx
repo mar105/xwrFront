@@ -42,14 +42,15 @@ function IndexPage(props) {
     return () => clearInterval(intervalWebsocket);
   }, []);
 
-  const connectionWebsocket = () => {
+  const connectionWebsocket = async () => {
     const {dispatch, commonModel } = props;
     if (commonUtils.isEmpty(stompClientRef.current) || !stompClientRef.current.connected) {
-      const stompClient = commonUtils.getWebSocketData(stompClientRef.current, commonModel.token);
-      dispatch({
-        type: 'commonModel/saveStompClient',
-        payload: stompClient,
-      });
+      const stompClient = commonUtils.getWebSocketData(stompClientRef.current, () => {
+        dispatch({
+          type: 'commonModel/saveStompClient',
+          payload: stompClient,
+        });
+      }, commonModel.token);
     }
   }
 

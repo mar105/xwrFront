@@ -53,11 +53,12 @@ const Login = ({ dispatch }) => {
         type: 'commonModel/gotoNewPage',
         payload: { newPage: '/xwrManage' },
       });
-      const stompClient = commonUtils.getWebSocketData(null, interfaceReturn.data.token);
-      dispatch({
-        type: 'commonModel/saveStompClient',
-        payload: stompClient,
-      });
+      const stompClient = commonUtils.getWebSocketData(null, () => {
+        dispatch({
+          type: 'commonModel/saveStompClient',
+          payload: stompClient,
+        });
+      }, interfaceReturn.data.token);
     } else {
       dispatch({
         type: 'commonModel/gotoError',

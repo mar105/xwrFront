@@ -149,18 +149,19 @@ const commonListEvent = (WrapComponent) => {
     const onModalOk = async () => {
       const { commonModel, dispatch, slaveContainer, importData, tabId, dispatchModifyState } = props;
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('master', importData, [], [], false));
+      saveData.push(commonUtils.mergeData('import', importData, [], [], false));
 
-      const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'addButton');
-      const params = { tabId, routeId: slaveContainer.slaveData[index].popupSelectId, groupId: commonModel.userInfo.groupId,
+      const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'importExcelButton');
+      const params = { tabId, routeId: slaveContainer.slaveData[index].popupActiveId, groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId, saveData, handleType: 'add' };
       const url: string = `${application.urlPrefix}/getData/saveData`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         dispatchModifyState({ pageLoading: true });
         const returnState = await props.getAllData({ pageNum: 1});
+        props.gotoSuccess(dispatch, interfaceReturn);
         dispatchModifyState({ ...returnState, importIsVisible: false });
-      } if (interfaceReturn.code === 10) {
+      } else if (interfaceReturn.code === 10) {
         dispatchModifyState({ pageLoading: true });
       } else {
         props.gotoError(dispatch, interfaceReturn);

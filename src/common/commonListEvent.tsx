@@ -125,7 +125,6 @@ const commonListEvent = (WrapComponent) => {
     const onUploadSuccess = (buttonName, interfaceReturn) => {
       const { dispatch, dispatchModifyState } = props;
       const addState = {};
-      console.log(buttonName, interfaceReturn);
       if (interfaceReturn.code === 1) {
         const { container, data } = interfaceReturn.data;
         const columns: any = [];

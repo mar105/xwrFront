@@ -26,11 +26,11 @@ const ProductCategory = (props) => {
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'processCategory');
         if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
           const processCategory = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true })).list;
-          processCategory.forEach(dataRow => {
+          processCategory.forEach((dataRow, rowIndex) => {
             let data = props.onAdd(processCategoryContainer);
             data = { ...data, ...commonUtils.getAssignFieldValue(masterContainer.slaveData[index].assignField, dataRow)};
             data.superiorId = params.masterData.id;
-            data.sortNum = index + 1;
+            data.sortNum = rowIndex + 1;
             processCategoryData.push(data);
           });
         }
@@ -90,6 +90,8 @@ const ProductCategory = (props) => {
         return saveData;
       }
       props.onButtonClick(key, config, e, {childCallback});
+    } else {
+      props.onButtonClick(key, config, e);
     }
   }
 

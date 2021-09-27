@@ -24,7 +24,7 @@ export const routeInfo: any[] = [
     }, {
       path: '/xwrBasic/team', title: '班组信息', name: 'team', component: () => import('./routes/team/Team'),
     }, {
-      path: '/xwrBasic/currency', title: '币别信息', name: 'currency', component: () => import('./routes/currency/Currency'),
+      path: '/xwrBasic/exchange', title: '汇率信息', name: 'currency', component: () => import('./routes/exchange/Exchange'),
     }]
   },
 ];

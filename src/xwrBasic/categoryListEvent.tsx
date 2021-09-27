@@ -4,19 +4,37 @@ import * as application from "./application";
 import * as request from "../utils/request";
 import categoryListButtonEvent from "./categoryListButtonEvent";
 import {useEffect} from "react";
+import {useRef} from "react";
 
 const categoryListEvent = (WrapComponent) => {
   return function ChildComponent(props) {
+    const masterDataRef: any = useRef();
     let form;
     const onSetForm = (formNew) => {
       form = formNew;
       props.onSetForm(form);
     }
+
+    useEffect(() => {
+      masterDataRef.current = props.masterData;
+    }, [props.masterData]);
+
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
         && props.commonModel.stompClient.connected) {
         props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveAfterSyncToMongo', saveAfterSyncToMongoResult);
       }
+      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+        && props.commonModel.stompClient.connected) {
+        props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+      }
+      return () => {
+        if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+          && props.commonModel.stompClient.connected) {
+          props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/saveAfterSyncToMongo');
+          props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId);
+        }
+      };
     }, [props.commonModel.stompClient]);
 
     const saveAfterSyncToMongoResult = async (data) => {
@@ -26,6 +44,20 @@ const categoryListEvent = (WrapComponent) => {
         const returnState = await props.getAllData({ pageNum: 1 });
         dispatchModifyState({ ...returnState });
         props.gotoSuccess(dispatch, returnBody);
+      }
+    }
+
+    const saveDataReturn = async (data) => {
+      const { dispatch, dispatchModifyState } = props;
+      const returnBody = JSON.parse(data.body);
+      if (returnBody.code === 1) {
+        const returnState: any = await props.getAllData({ dataId: masterDataRef.current.id });
+        dispatchModifyState({...returnState});
+        props.gotoSuccess(dispatch, returnBody);
+      } else {
+        dispatchModifyState({ pageLoading: false });
+        props.gotoError(dispatch, returnBody);
+        throw new Error(returnBody.msg);
       }
     }
 

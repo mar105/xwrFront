@@ -22,11 +22,11 @@ const FormulaParam = (props) => {
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'formulaCategory');
         if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
           const formulaCategory = commonUtils.objectToArr(commonUtils.stringToObj(masterContainer.slaveData[index].viewDrop));
-          formulaCategory.forEach(dataRow => {
+          formulaCategory.forEach((dataRow, rowIndex) => {
             const data = props.onAdd(categoryContainer);
             data.superiorId = params.masterData.id;
             data.paramCategory = dataRow.id;
-            data.sortNum = index + 1;
+            data.sortNum = rowIndex + 1;
             categoryData.push(data);
           });
         }
@@ -60,13 +60,13 @@ const FormulaParam = (props) => {
             rowIndex += 1;
           }
 
-          formulaCategory.forEach((dataRow, index)  => {
+          formulaCategory.forEach((dataRow, rowIndex)  => {
             const indexCategory = categoryDataOld.findIndex(item => item.paramCategory === dataRow.id);
             if (!(indexCategory > -1)) {
               const data = props.onAdd(categoryContainer);
               data.superiorId = params.masterData.id;
               data.paramCategory = dataRow.id;
-              data.sortNum = index + 1;
+              data.sortNum = rowIndex + 1;
               categoryData.push(data);
             } else {
               categoryData.push(categoryDataOld[indexCategory]);
@@ -86,6 +86,8 @@ const FormulaParam = (props) => {
         return saveData;
       }
       props.onButtonClick(key, config, e, {childCallback});
+    } else {
+      props.onButtonClick(key, config, e);
     }
   }
 

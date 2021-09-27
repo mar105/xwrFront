@@ -8,7 +8,7 @@ import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import Search from "../../../common/Search";
 import categoryListEvent from "../../categoryListEvent";
-const Currency = (props) => {
+const Exchange = (props) => {
   const propsRef: any = useRef();
   useEffect(() => {
     propsRef.current = props;
@@ -18,18 +18,29 @@ const Currency = (props) => {
   props.onSetForm(form);
 
   const onButtonClick = async (key, config, e) => {
-    const { slaveSelectedRows, rateContainer } = props;
+    const { slaveSelectedRows, masterContainer, exchangeRateContainer } = props;
 
     if (key === 'addButton' || key === 'addChildButton') {
       const childCallback = async (params) => {
-        const rateData: any = [];
-        return { rateData, rateSelectedRowKeys: [] };
+        const exchangeRateData: any = [];
+        const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'exchangeRate');
+        if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
+          const exchangeRate = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true })).list;
+          exchangeRate.forEach((dataRow, rowIndex) => {
+            let data = props.onAdd(exchangeRateContainer);
+            data = { ...data, ...commonUtils.getAssignFieldValue(masterContainer.slaveData[index].assignField, dataRow)};
+            data.superiorId = params.masterData.id;
+            data.sortNum = rowIndex + 1;
+            exchangeRateData.push(data);
+          });
+        }
+        return { exchangeRateData, exchangeRateSelectedRowKeys: [] };
       }
       props.onButtonClick(key, config, e, {childCallback});
     }
     else if (key === 'modifyButton') {
       const childCallback = async (params) => {
-        let returnData = await props.getDataList({ name: 'rate', containerId: rateContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
+        let returnData = await props.getDataList({ name: 'exchangeRate', containerId: exchangeRateContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
         const addState = {...returnData};
         return addState;
       }
@@ -38,19 +49,21 @@ const Currency = (props) => {
     } else if (key === 'delButton') {
       const childCallback = async (params) => {
         const saveData: any = [];
-        const returnData = await props.getDataList({ name: 'rate', containerId: rateContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
-        saveData.push(commonUtils.mergeData('rate', returnData.rateData, [], [], true));
+        const returnData = await props.getDataList({ name: 'exchangeRate', containerId: exchangeRateContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
+        saveData.push(commonUtils.mergeData('exchangeRate', returnData.exchangeRateData, [], [], true));
         return saveData;
       }
       props.onButtonClick(key, config, e, {childCallback});
+    } else {
+      props.onButtonClick(key, config, e);
     }
   }
 
   const onModalOk = async (e) => {
-    const { rateData, rateModifyData, rateDelData } = props;
+    const { exchangeRateData, exchangeRateModifyData, exchangeRateDelData } = props;
     const childCallback = (params) => {
       const saveData: any = [];
-      saveData.push(commonUtils.mergeData('rate', rateData, rateModifyData, rateDelData, false));
+      saveData.push(commonUtils.mergeData('exchangeRate', exchangeRateData, exchangeRateModifyData, exchangeRateDelData, false));
       return saveData;
     }
     props.onModalOk(e, {childCallback});
@@ -63,9 +76,9 @@ const Currency = (props) => {
   tableParam.isLastColumn = false;
   tableParam.enabled = false;
 
-  const rateParam: any = commonUtils.getTableProps('rate', props);
-  rateParam.pagination = false;
-  rateParam.width = 500;
+  const exchangeRateParam: any = commonUtils.getTableProps('exchangeRate', props);
+  exchangeRateParam.pagination = false;
+  exchangeRateParam.width = 500;
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 
@@ -85,7 +98,7 @@ const Currency = (props) => {
       >
         <Form form={form} >
           <CommonExhibit name="master" {...props} />
-          <TableComponent {...rateParam} />
+          <TableComponent {...exchangeRateParam} />
         </Form>
       </Drawer>
     </div>
@@ -93,4 +106,4 @@ const Currency = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(categoryListEvent(Currency)));
+export default connect(commonUtils.mapStateToProps)(commonBase(categoryListEvent(Exchange)));

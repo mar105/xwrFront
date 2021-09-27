@@ -42,17 +42,21 @@ const categoryListEvent = (WrapComponent) => {
       const returnBody = JSON.parse(data.body);
       if (returnBody.code === 1) {
         const returnState = await props.getAllData({ pageNum: 1 });
-        dispatchModifyState({ ...returnState });
+        dispatchModifyState({ ...returnState, pageLoading: false });
         props.gotoSuccess(dispatch, returnBody);
       }
     }
 
     const saveDataReturn = async (data) => {
-      const { dispatch, dispatchModifyState } = props;
+      const { dispatch, dispatchModifyState, slaveContainer } = props;
       const returnBody = JSON.parse(data.body);
       if (returnBody.code === 1) {
-        const returnState: any = await props.getAllData({ dataId: masterDataRef.current.id });
-        dispatchModifyState({...returnState});
+        let addState = {};
+        if (commonUtils.isEmpty(slaveContainer.virtualName)) {
+          const returnState: any = await props.getAllData({ dataId: masterDataRef.current.id });
+          addState = { ...returnState};
+        }
+        dispatchModifyState({...addState, pageLoading: false, masterIsVisible: false, enabled: false });
         props.gotoSuccess(dispatch, returnBody);
       } else {
         dispatchModifyState({ pageLoading: false });
@@ -210,6 +214,8 @@ const categoryListEvent = (WrapComponent) => {
         const returnState = await props.getAllData({ testMongo: true, pageNum: 1 });
         dispatchModifyState({ masterIsVisible: false, enabled: false, ...returnState });
         props.gotoSuccess(dispatch, interfaceReturn);
+      } else if (interfaceReturn.code === 10) {
+        dispatchModifyState({ pageLoading: true });
       } else {
         props.gotoError(dispatch, interfaceReturn);
         return;

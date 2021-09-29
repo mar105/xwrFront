@@ -43,7 +43,7 @@ const Login = ({ dispatch }) => {
         userInfo.shopId = interfaceReturn.data.userShop[0].shopId;
         userInfo.shopName = interfaceReturn.data.userShop[0].shopName;
         userInfo.isManage = interfaceReturn.data.userShop[0].isManage;
-        userInfo.userShop = interfaceReturn.data.userShop;
+        userInfo.userShopInfo = interfaceReturn.data.userShop[0];
       }
       dispatch({
         type: 'commonModel/saveToken',

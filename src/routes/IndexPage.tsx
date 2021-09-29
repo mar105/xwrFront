@@ -54,6 +54,11 @@ function IndexPage(props) {
     }
   }
 
+  const onSet = () => {
+    const { commonModel } = props;
+    const routeId = '1394810844327579648'; // 公司信息
+    callbackAddPane(routeId, { dataId: commonModel.userInfo.shopId });
+  }
 
   const onClear = async () => {
     const {dispatch, commonModel} = props;
@@ -158,12 +163,13 @@ function IndexPage(props) {
   const onClick = ({ key }) => {
     const { dispatch, commonModel, dispatchModifyState } = props;
     const userInfo = {...commonModel.userInfo};
-    const index = userInfo.userShop.findIndex(item => item.id === key);
-    userInfo.groupId = userInfo.userShop[index].groupId;
-    userInfo.groupName = userInfo.userShop[index].groupName;
-    userInfo.shopId = userInfo.userShop[index].shopId;
-    userInfo.shopName = userInfo.userShop[index].shopName;
-    userInfo.isManage = userInfo.userShop[index].isManage;
+    const index = commonModel.userShop.findIndex(item => item.id === key);
+    userInfo.groupId = commonModel.userShop[index].groupId;
+    userInfo.groupName = commonModel.userShop[index].groupName;
+    userInfo.shopId = commonModel.userShop[index].shopId;
+    userInfo.shopName = commonModel.userShop[index].shopName;
+    userInfo.isManage = commonModel.userShop[index].isManage;
+    userInfo.userShopInfo = commonModel.userShop[index];
     dispatch({
       type: 'commonModel/saveUserInfo',
       payload: userInfo,
@@ -180,21 +186,23 @@ function IndexPage(props) {
   const { commonModel } = props;
   const shop = useMemo(()=>{
     const menu = <Menu onClick={onClick}>
-      { commonModel.userInfo && commonModel.userInfo.userShop ? commonModel.userInfo.userShop.map(item => {
+      { commonModel.userShop ? commonModel.userShop.map(item => {
         return <Menu.Item key={item.id}>{item.shopName}</Menu.Item>
       }) : '' }
     </Menu>;
     return (
     <div>{commonModel.userInfo.userName}
       {
-        commonModel.userInfo && commonModel.userInfo.userShop && commonModel.userInfo.userShop.length === 1 ?
+        commonModel.userInfo && commonModel.userShop && commonModel.userShop.length === 1 ?
           commonModel.userInfo.shopName :
           <Dropdown overlay={menu}>
             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
               {commonModel.userInfo.shopName}  <DownOutlined />
             </a>
           </Dropdown>
-      }</div>)}, [commonModel.userInfo]);
+      }
+      <button onClick={onSet}> 设置</button>
+      </div>)}, [commonModel.userInfo]);
   return (
     <div>
       <Row>

@@ -10,7 +10,7 @@ import categoryListEvent from "../../../common/categoryListEvent";
 import Search from "../../../common/Search";
 import * as application from "../../application";
 import * as request from "../../../utils/request";
-const CategoryList = (props) => {
+const InitCustomer = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
 
@@ -69,4 +69,4 @@ const CategoryList = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(categoryListEvent(CategoryList)));
+export default connect(commonUtils.mapStateToProps)(commonBase(categoryListEvent(InitCustomer)));

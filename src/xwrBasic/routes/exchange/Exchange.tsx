@@ -7,7 +7,7 @@ import {ButtonGroup} from "../../../common/ButtonGroup";
 import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import Search from "../../../common/Search";
-import categoryListEvent from "../../categoryListEvent";
+import categoryListEvent from "../../../common/categoryListEvent";
 const Exchange = (props) => {
   const propsRef: any = useRef();
   useEffect(() => {
@@ -45,7 +45,6 @@ const Exchange = (props) => {
         return addState;
       }
       props.onButtonClick(key, config, e, {childCallback});
-
     } else if (key === 'delButton') {
       const childCallback = async (params) => {
         const saveData: any = [];

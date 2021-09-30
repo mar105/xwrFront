@@ -7,7 +7,7 @@ import {ButtonGroup} from "../../../common/ButtonGroup";
 import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import Search from "../../../common/Search";
-import categoryListEvent from "../../categoryListEvent";
+import categoryListEvent from "../../../common/categoryListEvent";
 const ProductCategory = (props) => {
   const propsRef: any = useRef();
   useEffect(() => {

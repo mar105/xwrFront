@@ -1,8 +1,7 @@
 import * as React from "react";
 import * as commonUtils from "../utils/commonUtils";
-import * as application from "./application";
+import * as application from "../xwrBasic/application";
 import * as request from "../utils/request";
-import categoryListButtonEvent from "./categoryListButtonEvent";
 import {useEffect} from "react";
 import {useRef} from "react";
 
@@ -177,8 +176,6 @@ const categoryListEvent = (WrapComponent) => {
         dispatchModifyState({ pageLoading: true });
         const returnState = await props.getAllData({ pageNum: 1});
         dispatchModifyState({ ...returnState });
-      } else {
-        categoryListButtonEvent(key, config, e, childParams, props);
       }
     }
     const onModalCancel = async (e) => {

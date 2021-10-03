@@ -21,7 +21,6 @@ const InitCustomer = (props) => {
         const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'isAR');
         if (index > -1 && commonUtils.isNotEmpty(slaveContainer.slaveData[index].viewDrop)) {
           const isAR = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true })).list;
-          console.log('111', isAR);
           dispatchModifyState({ isAR: isAR.isAR });
         }
       }

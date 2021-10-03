@@ -1,4 +1,5 @@
 import * as xwrBasicRouteInfo from "./xwrBasic/routeInfo";
+import * as xwrInitRouteInfo from "./xwrInit/routeInfo";
 
 const xwrMainRouteInfo: any[] = [{
     path: '/login', name: 'login', component: () => import('./routes/Login'),
@@ -20,6 +21,7 @@ const xwrMainRouteInfo: any[] = [{
 export const replacePath = (pathOld) => {
   let path = pathOld;
   path = path.replace('/xwrBasic/', '/');
+  path = path.replace('/xwrInit/', '/');
   return path;
 }
 const mergeRouteInfo = (routeInfo, childRouteInfo) => {
@@ -40,5 +42,6 @@ const mergeRouteInfo = (routeInfo, childRouteInfo) => {
 const routeInfoNew: any = [];
 routeInfoNew.push(...xwrMainRouteInfo);
 mergeRouteInfo(routeInfoNew, xwrBasicRouteInfo.routeInfo);
+mergeRouteInfo(routeInfoNew, xwrInitRouteInfo.routeInfo);
 
 export const routeInfo: any[] = [...routeInfoNew];

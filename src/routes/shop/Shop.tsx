@@ -29,19 +29,14 @@ const Shop = (props) => {
     }
   }
 
-  const getButtonGroup = () => {
-    const buttonGroup: any = [];
-    buttonGroup.push({ key: 'addButton', caption: '增加', htmlType: 'button', sortNum: 10, disabled: props.enabled });
-    buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 20, disabled: props.enabled });
-    buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 30, disabled: !props.enabled });
-    buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 40, disabled: !props.enabled });
-    buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 50, disabled: props.enabled });
-    buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 100, disabled: props.enabled });
-    return buttonGroup;
-  }
+  const buttonAddGroup: any = props.getButtonGroup();
+  buttonAddGroup.splice(buttonAddGroup.findIndex(item => item.key === 'firstButton'), 1);
+  buttonAddGroup.splice(buttonAddGroup.findIndex(item => item.key === 'priorButton'), 1);
+  buttonAddGroup.splice(buttonAddGroup.findIndex(item => item.key === 'nextButton'), 1);
+  buttonAddGroup.splice(buttonAddGroup.findIndex(item => item.key === 'lastButton'), 1);
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, buttonGroup: getButtonGroup() };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, buttonGroup: buttonAddGroup };
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (

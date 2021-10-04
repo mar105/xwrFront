@@ -99,6 +99,22 @@ export function isNotEmptyObj(value) {
   return !isEmptyObj(value);
 }
 
+export function isEmptyorZero(value) {
+  return value === null || value === undefined || value === '' || value === 0;
+}
+
+export function isNotEmptyorZero(value) {
+  return !isEmptyorZero(value);
+}
+
+export function isEmptyDefault(value, defaultValue) {
+  return isEmpty(value) ? defaultValue : value;
+}
+
+export function isEmptyorZeroDefault(value, defaultValue) {
+  return isEmptyorZero(value) ? defaultValue : value;
+}
+
 //  websocket 推送消息
 export function getWebSocketData(stompClientOld, onSuccess, authorization) {
   let socket;

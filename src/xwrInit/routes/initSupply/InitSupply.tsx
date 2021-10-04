@@ -20,8 +20,10 @@ const InitSupply = (props) => {
         const { dispatchModifyState, slaveContainer } = props;
         const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'isAP');
         if (index > -1 && commonUtils.isNotEmpty(slaveContainer.slaveData[index].viewDrop)) {
-          const isAP = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true })).list;
-          dispatchModifyState({ isAP: isAP.isAP });
+          const returnData = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true })).list;
+          if (commonUtils.isNotEmptyArr(returnData)) {
+            dispatchModifyState({ isAP: returnData[0].isAP });
+          }
         }
       }
       fetchData();
@@ -60,10 +62,10 @@ const InitSupply = (props) => {
       commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
         { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
     if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-      if (fieldName === 'notReceiptMoney') {
-        data.notReceiptBaseMoney = data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1);
+      if (fieldName === 'notPaymentMoney') {
+        data.notPaymentBaseMoney = data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1);
         if (data.handleType === 'modify') {
-          dataModify.notReceiptBaseMoney = data.notReceiptBaseMoney;
+          dataModify.notPaymentBaseMoney = data.notPaymentBaseMoney;
         }
       } else if (fieldName === 'notInvoiceMoney') {
         data.notInvoiceBaseMoney = data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1);

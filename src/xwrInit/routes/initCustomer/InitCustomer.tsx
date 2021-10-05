@@ -40,6 +40,7 @@ const InitCustomer = (props) => {
         shopId: commonModel.userInfo.shopId,
         containerId: config.superiorId,
         containerSlaveId: config.id,
+        forceType: key,
       }
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {

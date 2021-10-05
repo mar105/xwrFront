@@ -147,7 +147,7 @@ export function TableComponent(params: any) {
   // 标题列宽度拖动
   const handleResize = index => (e, { size }) => {
     // index 取值包含 行号列，列拖动要减掉
-    const  selectionMinus = params.config.isRowNum === null ? 0 : 1;
+    const selectionMinus = params.config.isRowNum ? 1 : 0;
     const columns: any = [...params.property.columns];
     columns[index - selectionMinus] = {
       ...columns[index - selectionMinus],
@@ -516,9 +516,10 @@ export function TableComponent(params: any) {
 
   return <div style={{width: params.width ? params.width: 1000}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
-      <Table
-        {...tableParams}
-      />
+
     </ReactDragListView.DragColumn>
+    <Table
+      {...tableParams}
+    />
   </div>;
 }

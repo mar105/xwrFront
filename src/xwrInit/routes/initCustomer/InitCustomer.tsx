@@ -61,7 +61,7 @@ const InitCustomer = (props) => {
     const dataModify = data.handleType === 'modify' ?
       commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
         { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
-    const moneyPlace = props.commonModel.userShop.moneyPlace;
+    const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
     if (typeof dataOld === 'object' && dataOld.constructor === Object) {
       if (fieldName === 'notReceiptMoney') {
         data.notReceiptBaseMoney = commonUtils.round(data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
@@ -92,7 +92,7 @@ const InitCustomer = (props) => {
     const dataModify = data.handleType === 'modify' ?
       commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
         { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
-    const moneyPlace = props.commonModel.userShop.moneyPlace;
+    const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
     if (typeof dataOld === 'object' && dataOld.constructor === Object) {
       if (fieldName === 'customerName') {
         data.notReceiptBaseMoney = commonUtils.round(data.notReceiptMoney / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);

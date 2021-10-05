@@ -21,7 +21,7 @@ const Shop = (props) => {
       userInfo.shopId = returnState.masterData.id;
       userInfo.shopName = returnState.masterData.shopName;
       userInfo.isManage = returnState.masterData.isManage;
-      userInfo.userShopInfo = returnState.masterData;
+      userInfo.shopInfo = returnState.masterData;
       dispatch({
         type: 'commonModel/saveUserInfo',
         payload: userInfo,

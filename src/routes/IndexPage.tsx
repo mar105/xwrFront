@@ -169,7 +169,7 @@ function IndexPage(props) {
     userInfo.shopId = commonModel.userShop[index].shopId;
     userInfo.shopName = commonModel.userShop[index].shopName;
     userInfo.isManage = commonModel.userShop[index].isManage;
-    userInfo.userShopInfo = commonModel.userShop[index];
+    userInfo.shopInfo = commonModel.userShop[index].shopInfo;
     dispatch({
       type: 'commonModel/saveUserInfo',
       payload: userInfo,

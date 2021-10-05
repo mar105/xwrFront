@@ -17,8 +17,19 @@ export function NumberComponent(params) {
   if (params.config.isRequired) {
     rules.push({ required: params.config.isRequired, message: commonUtils.isEmpty(params.property.placeholder) ? '请输入' + params.config.viewName : params.property.placeholder })
   }
+  const addState: any = {};
+  if (params.config.fieldType === 'smallint' || params.config.fieldType === 'int') {
+    addState.precision = 0;
+  }
+  if (commonUtils.isNotEmpty(params.config.maxValue)) {
+    addState.max = params.config.maxValue.trim();
+  }
+  if (commonUtils.isNotEmpty(params.config.minValue)) {
+    addState.min = params.config.minValue.trim();
+  }
+
   if (params.componentType === componentType.Soruce) {
-    return <InputNumber bordered={false} {...params.property} { ...event }/>;
+    return <InputNumber bordered={false} {...addState } {...params.property} { ...event }/>;
   } else {
     return <Form.Item
       label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}
@@ -27,7 +38,7 @@ export function NumberComponent(params) {
       shouldUpdate={(prevValues, currentValues) => { return prevValues[params.config.fieldName] !== currentValues[params.config.fieldName]
       }
       }>
-      <InputNumber {...params.property} { ...event }/>
+      <InputNumber {...addState } {...params.property} { ...event }/>
     </Form.Item>;
   }
 

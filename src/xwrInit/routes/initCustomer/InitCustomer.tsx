@@ -94,7 +94,7 @@ const InitCustomer = (props) => {
         { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
     const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
     if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-      if (fieldName === 'customerName') {
+      if (fieldName === 'customerName' || fieldName === 'currencyName') {
         data.notReceiptBaseMoney = commonUtils.round(data.notReceiptMoney * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         data.notInvoiceBaseMoney = commonUtils.round(data.notInvoiceMoney * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {

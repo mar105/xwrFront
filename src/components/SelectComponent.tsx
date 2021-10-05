@@ -45,7 +45,7 @@ export function SelectComponent(params) {
 
   const onDropdownVisibleChange = async (open) => {
     if (open) {
-      const dropParam = { pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id };
+      const dropParam = { pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition };
       if (params.config.dropType === 'sql') {
         dispatchModifySelfState({ loading: true });
         const selectList = await params.event.getSelectList(dropParam);
@@ -57,13 +57,13 @@ export function SelectComponent(params) {
   const onPopupScroll = async (e) => {
     const { target } = e;
     if (Math.ceil(target.scrollTop + target.offsetHeight) >= target.scrollHeight && params.config.dropType === 'sql' && !modifySelfState.isLastPage) {
-      const dropParam = { pageNum: modifySelfState.pageNum + 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, condition: { searchValue: modifySelfState.searchValue } };
+      const dropParam = { pageNum: modifySelfState.pageNum + 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { searchValue: modifySelfState.searchValue } };
       const selectList = await params.event.getSelectList(dropParam);
       dispatchModifySelfState({ ...selectList, viewDrop: [...modifySelfState.viewDrop, ...selectList.list]});
     }
   };
   const debounceSearch = async (value) => {
-    const dropParam = { pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, condition: { searchValue: value } };
+    const dropParam = { pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { searchValue: value } };
     const selectList = await params.event.getSelectList(dropParam);
     dispatchModifySelfState({ ...selectList, viewDrop: selectList.list, searchValue: value});
   };

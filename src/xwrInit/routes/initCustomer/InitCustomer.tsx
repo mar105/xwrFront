@@ -20,7 +20,7 @@ const InitCustomer = (props) => {
         const { dispatchModifyState, slaveContainer } = props;
         const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'isAR');
         if (index > -1 && commonUtils.isNotEmpty(slaveContainer.slaveData[index].viewDrop)) {
-          const returnData = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true })).list;
+          const returnData = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true, sqlCondition: slaveContainer.slaveData[index].sqlCondition })).list;
           if (commonUtils.isNotEmptyArr(returnData)) {
             dispatchModifyState({isAR: returnData[0].isAR});
           }
@@ -58,18 +58,47 @@ const InitCustomer = (props) => {
     const returnData = props.onNumberChange(name, fieldName, record, value, true);
     const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = returnData;
     const data: any = { ...dataOld };
-    let dataModify = data.handleType === 'modify' ?
+    const dataModify = data.handleType === 'modify' ?
       commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
         { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+    const moneyPlace = props.commonModel.userShop.moneyPlace;
     if (typeof dataOld === 'object' && dataOld.constructor === Object) {
       if (fieldName === 'notReceiptMoney') {
-        data.notReceiptBaseMoney = data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1);
+        data.notReceiptBaseMoney = commonUtils.round(data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {
           dataModify.notReceiptBaseMoney = data.notReceiptBaseMoney;
         }
       } else if (fieldName === 'notInvoiceMoney') {
-        data.notInvoiceBaseMoney = data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1);
+        data.notInvoiceBaseMoney = commonUtils.round(data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {
+          dataModify.notInvoiceBaseMoney = data.notInvoiceBaseMoney;
+        }
+      }
+    }
+    if (isWait) {
+      return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+    } else {
+      if (name === 'master') {
+        form.setFieldsValue(data);
+      }
+      props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+    }
+  }
+
+  const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
+    const returnData = props.onSelectChange(name, fieldName, record, assignField, valueOld, option, true);
+    const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = returnData;
+    const data: any = { ...dataOld };
+    const dataModify = data.handleType === 'modify' ?
+      commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+        { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+    const moneyPlace = props.commonModel.userShop.moneyPlace;
+    if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+      if (fieldName === 'customerName') {
+        data.notReceiptBaseMoney = commonUtils.round(data.notReceiptMoney / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
+        data.notInvoiceBaseMoney = commonUtils.round(data.notInvoiceMoney / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
+        if (data.handleType === 'modify') {
+          dataModify.notReceiptBaseMoney = data.notReceiptBaseMoney;
           dataModify.notInvoiceBaseMoney = data.notInvoiceBaseMoney;
         }
       }
@@ -121,7 +150,7 @@ const InitCustomer = (props) => {
         </div>}
       >
         <Form form={form} >
-          <CommonExhibit name="master" {...props} onNumberChange={onNumberChange}/>
+          <CommonExhibit name="master" {...props} onNumberChange={onNumberChange} onSelectChange={onSelectChange} />
         </Form>
       </Drawer>
     </div>

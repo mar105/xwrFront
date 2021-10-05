@@ -124,8 +124,8 @@ const BusinessPermission = (props) => {
       const index = container.slaveData.findIndex(item => item.fieldName === name);
       if (indexTree > -1 && commonUtils.isNotEmpty(container.slaveData[indexTree].viewDrop) &&
           index > -1 && commonUtils.isNotEmpty(container.slaveData[index].viewDrop)) {
-        const tableTree = (await props.getSelectList({containerSlaveId: container.slaveData[indexTree].id, isWait: true })).list;
-        const tableSlave = (await props.getSelectList({containerSlaveId: container.slaveData[index].id, isWait: true })).list;
+        const tableTree = (await props.getSelectList({containerSlaveId: container.slaveData[indexTree].id, isWait: true, sqlCondition: container.slaveData[index].sqlCondition })).list;
+        const tableSlave = (await props.getSelectList({containerSlaveId: container.slaveData[index].id, isWait: true, sqlCondition: container.slaveData[index].sqlCondition })).list;
         const table = [...tableTree, ...tableSlave];
         // 通过treeKey, treeSlaveKey 重新生成数据
         table.filter(item => commonUtils.isEmpty(item[container.treeSlaveKey])).forEach((dataRow, indexTable) => {

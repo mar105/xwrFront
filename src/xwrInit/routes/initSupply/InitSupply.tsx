@@ -20,7 +20,7 @@ const InitSupply = (props) => {
         const { dispatchModifyState, slaveContainer } = props;
         const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'isAP');
         if (index > -1 && commonUtils.isNotEmpty(slaveContainer.slaveData[index].viewDrop)) {
-          const returnData = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true })).list;
+          const returnData = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true, sqlCondition: slaveContainer.slaveData[index].sqlCondition })).list;
           if (commonUtils.isNotEmptyArr(returnData)) {
             dispatchModifyState({ isAP: returnData[0].isAP });
           }

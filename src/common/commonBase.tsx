@@ -171,6 +171,7 @@ const commonBase = (WrapComponent) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
       const url: string = `${application.urlPrefix}/getData/getSelectList`;
+      const condition = commonUtils.getCondition(params.sqlCondition, modifyState);
       const requestParam = {
         routeId: modifyState.routeId,
         groupId: commonModel.userInfo.groupId,
@@ -178,7 +179,7 @@ const commonBase = (WrapComponent) => {
         containerSlaveId: params.containerSlaveId,
         pageNum: params.pageNum,
         pageSize: application.pageSize,
-        condition: params.condition,
+        condition: { ...condition, ...params.condition},
       }
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;
       if (interfaceReturn.code === 1) {

@@ -296,6 +296,7 @@ export function paramGet(param) {
 
 /** 转换成相应小数位的数字 */
 export function round(value, num) {
+  num = isEmpty(num) ? 6 : num;
   const fix = '10000000000'.substring(0, num + 1);
   return Math.round(value * parseFloat(fix)) / parseFloat(fix);
 }
@@ -382,8 +383,23 @@ export function copeDataSetValue(assignValueField, allDataset) {
       return allDataset[dataSetName][oldTableFieldName];
     }
   } else {
-    return '';
+    return undefined;
   }
+}
+
+// 处理赋值赋值字段、默认值赋值字段 其他数据集value;
+export function getCondition(conditions, allDataset) {
+  const returnCondition = {};
+  if (isNotEmpty(conditions)) {
+    conditions.split(',').forEach(condition => {
+      if (condition.split('.').length > 2) {
+        returnCondition[condition.split('.')[2]] = copeDataSetValue(condition, allDataset);
+      } else if (condition.split('.').length > 1) {
+        returnCondition[condition.split('.')[1]] = copeDataSetValue(condition, allDataset);
+      }
+    });
+  }
+  return returnCondition;
 }
 
 export function getViewName(container, fieldName) {

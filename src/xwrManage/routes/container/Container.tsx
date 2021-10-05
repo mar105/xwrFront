@@ -503,9 +503,9 @@ const Container = (props) => {
     event: { onChange: props.onInputChange }
   };
 
-  const billNumField = {
+  const serialCodeField = {
     name: 'master',
-    config: { fieldName: 'billNumField', viewName: '单据号字段' },
+    config: { fieldName: 'serialCodeField', viewName: '单据号字段' },
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange }
   };
@@ -616,7 +616,7 @@ const Container = (props) => {
       </Row>
       <Row>
         <Col><NumberComponent {...sortNum} /></Col>
-        <Col><InputComponent {...billNumField} /></Col>
+        <Col><InputComponent {...serialCodeField} /></Col>
       </Row>
       <Row>
         <Col><SwitchComponent {...isVisible} /></Col>

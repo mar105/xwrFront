@@ -56,15 +56,15 @@ const Formula = (props) => {
     let config = index > -1 ? masterContainer.slaveData[index] : {};
     treeData.push({title: config.viewName, key: config.id, children: formulaParam});
 
-    index = masterContainer.slaveData.findIndex(item => item.fieldName === 'billNumParam'); // 流水号参数
+    index = masterContainer.slaveData.findIndex(item => item.fieldName === 'serialCodeParam'); // 流水号参数
     config = index > -1 ? masterContainer.slaveData[index] : {};
-    const billNumParam: any = {title: config.viewName, key: config.id, children: []};
+    const serialCodeParam: any = {title: config.viewName, key: config.id, children: []};
 
     // 年，月、日、流水号
     masterContainer.slaveData.filter(item => item.viewName.indexOf('[') > -1 && item.viewName.indexOf(']') > -1).forEach(config => {
-      billNumParam.children.push({title: config.viewName, key: config.id});
+      serialCodeParam.children.push({title: config.viewName, key: config.id});
     });
-    treeData.push(billNumParam);
+    treeData.push(serialCodeParam);
 
     index = masterContainer.slaveData.findIndex(item => item.fieldName === 'systemParam'); // 系统参数
     config = index > -1 ? masterContainer.slaveData[index] : {};
@@ -105,7 +105,7 @@ const Formula = (props) => {
 
   const verifyFormula = () => {
     const { dispatch, masterData } = props;
-    if (masterData.formulaType !== 'billNum') {
+    if (masterData.formulaType !== 'serialCode') {
       let formula = masterData.formula;
       if (commonUtils.isNotEmptyArr(treeData)) {  //流水号公式不校验
         treeData.forEach(tree => {

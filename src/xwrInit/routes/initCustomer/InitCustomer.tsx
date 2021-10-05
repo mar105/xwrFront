@@ -64,12 +64,12 @@ const InitCustomer = (props) => {
     const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
     if (typeof dataOld === 'object' && dataOld.constructor === Object) {
       if (fieldName === 'notReceiptMoney') {
-        data.notReceiptBaseMoney = commonUtils.round(data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
+        data.notReceiptBaseMoney = commonUtils.round(data[fieldName] * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {
           dataModify.notReceiptBaseMoney = data.notReceiptBaseMoney;
         }
       } else if (fieldName === 'notInvoiceMoney') {
-        data.notInvoiceBaseMoney = commonUtils.round(data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
+        data.notInvoiceBaseMoney = commonUtils.round(data[fieldName] * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {
           dataModify.notInvoiceBaseMoney = data.notInvoiceBaseMoney;
         }
@@ -95,8 +95,8 @@ const InitCustomer = (props) => {
     const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
     if (typeof dataOld === 'object' && dataOld.constructor === Object) {
       if (fieldName === 'customerName') {
-        data.notReceiptBaseMoney = commonUtils.round(data.notReceiptMoney / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
-        data.notInvoiceBaseMoney = commonUtils.round(data.notInvoiceMoney / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
+        data.notReceiptBaseMoney = commonUtils.round(data.notReceiptMoney * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
+        data.notInvoiceBaseMoney = commonUtils.round(data.notInvoiceMoney * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {
           dataModify.notReceiptBaseMoney = data.notReceiptBaseMoney;
           dataModify.notInvoiceBaseMoney = data.notInvoiceBaseMoney;

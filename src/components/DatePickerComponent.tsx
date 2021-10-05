@@ -20,7 +20,7 @@ export function DatePickerComponent(params) {
     rules.push({ required: params.config.isRequired, message: commonUtils.isEmpty(params.property.placeholder) ? '请输入' + params.config.viewName : params.property.placeholder })
   }
   if (params.componentType === componentType.Soruce) {
-    return <DatePicker {...params.property} value={value} { ...event }/>;
+    return <DatePicker bordered={false} {...params.property} value={value} { ...event }/>;
   } else {
     return <Form.Item
       label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}

@@ -61,15 +61,44 @@ const InitSupply = (props) => {
     let dataModify = data.handleType === 'modify' ?
       commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
         { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+    const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
     if (typeof dataOld === 'object' && dataOld.constructor === Object) {
       if (fieldName === 'notPaymentMoney') {
-        data.notPaymentBaseMoney = data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1);
+        data.notPaymentBaseMoney = commonUtils.round(data[fieldName] * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {
           dataModify.notPaymentBaseMoney = data.notPaymentBaseMoney;
         }
       } else if (fieldName === 'notInvoiceMoney') {
-        data.notInvoiceBaseMoney = data[fieldName] / commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1);
+        data.notInvoiceBaseMoney = commonUtils.round(data[fieldName] * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {
+          dataModify.notInvoiceBaseMoney = data.notInvoiceBaseMoney;
+        }
+      }
+    }
+    if (isWait) {
+      return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+    } else {
+      if (name === 'master') {
+        form.setFieldsValue(data);
+      }
+      props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+    }
+  }
+
+  const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
+    const returnData = props.onSelectChange(name, fieldName, record, assignField, valueOld, option, true);
+    const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = returnData;
+    const data: any = { ...dataOld };
+    const dataModify = data.handleType === 'modify' ?
+      commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
+        { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+    const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
+    if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+      if (fieldName === 'customerName') {
+        data.notPaymentBaseMoney = commonUtils.round(data.notPaymentMoney * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
+        data.notInvoiceBaseMoney = commonUtils.round(data.notInvoiceMoney * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
+        if (data.handleType === 'modify') {
+          dataModify.notPaymentBaseMoney = data.notPaymentBaseMoney;
           dataModify.notInvoiceBaseMoney = data.notInvoiceBaseMoney;
         }
       }
@@ -121,7 +150,7 @@ const InitSupply = (props) => {
         </div>}
       >
         <Form form={form} >
-          <CommonExhibit name="master" {...props} onNumberChange={onNumberChange} />
+          <CommonExhibit name="master" {...props} onNumberChange={onNumberChange} onSelectChange={onSelectChange} />
         </Form>
       </Drawer>
     </div>

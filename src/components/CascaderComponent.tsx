@@ -26,7 +26,7 @@ export function CascaderComponent(params) {
   params.property.placeholder = '';
   params.property.showSearch = (inputValue, path) => path.some(option => option.label.toLowerCase().indexOf(inputValue.toLowerCase()) > -1);
   if (params.componentType === componentType.Soruce) {
-    return <Cascader {...params.property} {...event}>{params.caption}</Cascader>;
+    return <Cascader bordered={false} {...params.property} {...event}>{params.caption}</Cascader>;
   }
   return (<Form.Item
     label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}

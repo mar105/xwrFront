@@ -68,7 +68,7 @@ export function InputComponent(params) {
     }
   } else {
     if (params.componentType === componentType.Soruce) {
-      return <Input {...params.property} { ...event } />;
+      return <Input bordered={false} {...params.property} { ...event } />;
     } else {
       return <Form.Item
         label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}

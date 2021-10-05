@@ -18,7 +18,7 @@ export function NumberComponent(params) {
     rules.push({ required: params.config.isRequired, message: commonUtils.isEmpty(params.property.placeholder) ? '请输入' + params.config.viewName : params.property.placeholder })
   }
   if (params.componentType === componentType.Soruce) {
-    return <InputNumber {...params.property} { ...event }/>;
+    return <InputNumber bordered={false} {...params.property} { ...event }/>;
   } else {
     return <Form.Item
       label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}

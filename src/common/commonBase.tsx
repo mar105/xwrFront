@@ -395,8 +395,11 @@ const commonBase = (WrapComponent) => {
       }
     }
 
-    const onNumberChange = (name, fieldName, record, value, isWait) => {
+    const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
+      const pricePlace = props.commonModel.userInfo.shopInfo.pricePlace;
+      const value = fieldName.endsWith('Money') ? commonUtils.round(valueOld, moneyPlace) : fieldName.endsWith('Price') ? commonUtils.round(valueOld, pricePlace) : valueOld;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;

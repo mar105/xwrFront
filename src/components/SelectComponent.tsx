@@ -125,7 +125,7 @@ export function SelectComponent(params) {
   params.property.dropdownRender = params.config.isDropAdd ? dropdownRender : null;
 
   if (params.componentType === componentType.Soruce) {
-    return <Select {...params.property} {...addProperty} { ...event }>{dropOptions}</Select>;
+    return <Select bordered={false} {...params.property} {...addProperty} { ...event }>{dropOptions}</Select>;
   } else {
     return <Form.Item
       label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}

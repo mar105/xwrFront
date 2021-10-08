@@ -88,6 +88,7 @@ const SlaveContainer = (props) => {
       data.sortNum = slaveDataOld.length + 1;
       data.assignField = '';
       data.fieldRelevance = '';
+      data.assignFieldRelevance = '';
       data.chineseDrop = '';
       data.traditionalDrop = '';
       data.englishDrop = '';
@@ -131,6 +132,7 @@ const SlaveContainer = (props) => {
               data.sortNum = sortNum + rowIndex;
               data.assignField = '';
               data.fieldRelevance = '';
+              data.assignFieldRelevance = '';
               data.chineseDrop = '';
               data.traditionalDrop = '';
               data.englishDrop = '';

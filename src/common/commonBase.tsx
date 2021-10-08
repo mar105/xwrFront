@@ -204,6 +204,8 @@ const commonBase = (WrapComponent) => {
       dataRow.groupId = commonModel.userInfo.groupId;
       dataRow.shopId = commonModel.userInfo.shopId;
       dataRow.routeId = modifyState.routeId;
+      dataRow.createUserId = commonModel.userInfo.userId;
+      dataRow.createUserName = commonModel.userInfo.userName;
       return dataRow;
     }
     const onModify = () => {

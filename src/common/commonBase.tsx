@@ -242,6 +242,29 @@ const commonBase = (WrapComponent) => {
 
     };
 
+    const onTableConfigSaveClick = async (name, e, isWait = false) => {
+      const { [name + 'Container']: container, [name + 'Columns']: columns }: any = stateRef.current;
+      const { dispatch, commonModel, tabId } = props;
+      const saveData: any = [];
+      const slaveData: any = [];
+      saveData.push(commonUtils.mergeData('master', [], [{ id: container.id, sortNum: container.sortNum, handleType: 'modify' }], [], false));
+      container.slaveData.filter(item => item.isVisible === 1).forEach(config => {
+        const index = columns.findIndex(item => item.dataIndex === config.fieldName);
+        if (index > -1) {
+          slaveData.push({id: config.id, width: commonUtils.round(columns[index].width, 0), handleType: 'modify'});
+        }
+      });
+      saveData.push(commonUtils.mergeData('slave', [], slaveData, [], false));
+      const params = { id: container.id, tabId, saveData };
+      const url: string = `${application.urlManage}/container/saveContainer`;
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        gotoSuccess(dispatch, interfaceReturn);
+      } else {
+        gotoError(dispatch, interfaceReturn);
+      }
+    };
+
     const onTableAddClick = (name, e, isWait = false) => {
       const { [name + 'Data']: dataOld, masterData, [name + 'Container']: container }: any = stateRef.current;
       const tableData = dataOld === undefined ? [] : [...dataOld];
@@ -856,6 +879,7 @@ const commonBase = (WrapComponent) => {
       onModify={onModify}
       onDel={onDel}
       onTableAddClick={onTableAddClick}
+      onTableConfigSaveClick={onTableConfigSaveClick}
       onLastColumnClick={onLastColumnClick}
       gotoError={gotoError}
       gotoSuccess={gotoSuccess}

@@ -5,7 +5,7 @@ import moment from 'moment';
 import dynamic from "dva/dynamic";
 import * as React from "react";
 import {Tooltip} from "antd";
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
 
 var Snowflake = (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
@@ -184,6 +184,9 @@ export function panesComponent(pane, routeData, callbackAddPane, callbackRemoveP
 
 
 export function getTableProps(name, props) {
+  //标准配置配置，直接把配置保存后后台配置表
+  const configSetting = props.commonModel.userInfo.shopId === '1395719229487058944' ?
+    <a onClick={props.onTableConfigSaveClick.bind(this, name)}> <Tooltip placement="top" title="列宽保存"><SaveOutlined /> </Tooltip></a> : '';
   const tableParam ={
     name,
     enabled: props.enabled,
@@ -205,7 +208,7 @@ export function getTableProps(name, props) {
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange, onNumberChange: props.onNumberChange,
       onSelectChange: props.onSelectChange, onDatePickerChange: props.onDatePickerChange, getSelectList: props.getSelectList,
       onCascaderChange: props.onCascaderChange },
-    lastTitle: <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>,
+    lastTitle: <div> <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> {configSetting} </div>,
     lastColumn: { title: 'o',
       render: (text,record, index)=> {
         return <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, name, 'delButton', record) : null}>

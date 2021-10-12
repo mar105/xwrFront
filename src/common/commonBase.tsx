@@ -251,7 +251,7 @@ const commonBase = (WrapComponent) => {
       container.slaveData.filter(item => item.isVisible === 1).forEach(config => {
         const index = columns.findIndex(item => item.dataIndex === config.fieldName);
         if (index > -1) {
-          slaveData.push({id: config.id, width: commonUtils.round(columns[index].width, 0), handleType: 'modify'});
+          slaveData.push({id: config.id, width: commonUtils.round(columns[index].width, 0), sortNum: index + 1,  handleType: 'modify'});
         }
       });
       saveData.push(commonUtils.mergeData('slave', [], slaveData, [], false));

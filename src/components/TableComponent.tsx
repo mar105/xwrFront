@@ -471,9 +471,9 @@ export function TableComponent(params: any) {
     const div = commonUtils.isEmptyObj(params.sum) ? undefined : (
       <Table.Summary fixed>
         <Table.Summary.Row>
-          <TableSummaryCell>Total: {params.sum.total}</TableSummaryCell>
-          {modifySelfState.columns.map(item => {
-            return <TableSummaryCell>{params.sum[item.dataIndex]}</TableSummaryCell>
+          <TableSummaryCell index={0}>Total: {params.sum.total}</TableSummaryCell>
+          {modifySelfState.columns.map((item, index) => {
+            return <TableSummaryCell index={index + 1}>{params.sum[item.dataIndex]}</TableSummaryCell>
           })}
         </Table.Summary.Row>
       </Table.Summary>

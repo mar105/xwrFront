@@ -43,7 +43,7 @@ const SlaveContainer = (props) => {
     { title: '下拉|英文', dataIndex: 'englishDrop', fieldType: 'varchar', sortNum: 230, width: 150 },
     { title: '下拉|关键字', dataIndex: 'keyUpFieldDrop', fieldType: 'varchar', sortNum: 240, width: 150 },
     { title: '下拉|赋值字段', dataIndex: 'assignField', fieldType: 'varchar', sortNum: 241, width: 150 },
-    { title: '下拉|虚拟名称', dataIndex: 'virtualDrop', fieldType: 'varchar', sortNum: 250, width: 150 },
+    { title: '下拉|虚拟方式', dataIndex: 'virtualDrop', fieldType: 'varchar', sortNum: 250, width: 150 },
     { title: '下拉|条件', dataIndex: 'sqlCondition', fieldType: 'varchar', sortNum: 260, width: 150 },
     { title: '下拉|是否新增', dataIndex: 'isDropAdd', fieldType: 'tinyint', sortNum: 261, width: 150 },
     { title: '下拉|是否空数据', dataIndex: 'isDropEmpty', fieldType: 'tinyint', sortNum: 270, width: 150 },

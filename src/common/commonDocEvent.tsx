@@ -172,6 +172,7 @@ const commonDocEvent = (WrapComponent) => {
       } else if (interfaceReturn.code === 10) {
         dispatchModifyState({ pageLoading: true });
       } else {
+        dispatchModifyState({ pageLoading: false });
         props.gotoError(dispatch, interfaceReturn);
       }
     }

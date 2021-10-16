@@ -517,6 +517,13 @@ const Container = (props) => {
     event: { onChange: props.onInputChange }
   };
 
+  const tableSyncKey = {
+    name: 'master',
+    config: { fieldName: 'tableSyncKey', viewName: '表格异步数据Key' },
+    property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
+  };
+
   const isTree = {
     name: 'master',
     config: { fieldName: 'isTree', viewName: '是否展现树型' },
@@ -632,6 +639,7 @@ const Container = (props) => {
           </Row>
           <Row>
             <Col><InputComponent {...tableKey} /></Col>
+            <Col><InputComponent {...tableSyncKey} /></Col>
             <Col><SwitchComponent {...isRowNum} /></Col>
             <Col><SwitchComponent {...isTree} /></Col>
           </Row>

@@ -745,57 +745,59 @@ const commonBase = (WrapComponent) => {
 
 
       // 第二步上传文件
-      fileList.filter(item => item.status !== 'done').forEach(async fileObj => {
-        fileObj.percent = 1;
-        fileObj.status = 'uploading';
-        const file = fileObj.originFileObj;
-        const formData = new FormData();
-        const size = file.size;
-        //文件分片 以10MB去分片
-        const shardSize: any = 10 * 1024 * 1024;
-        //总片数
-        const shardTotal: any = Math.ceil(size / shardSize);
-        //文件的后缀名
-        const fileName = file.name;
-        const suffix = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length).toLowerCase();
-        //把视频的信息存储为一个字符串
-        const fileDetails = file.name + file.size + file.type + file.lastModifiedDate;
-        //使用当前文件的信息用md5加密生成一个key 这个加密是根据文件的信息来加密的 如果相同的文件 加的密还是一样的
-        const key: any = Md5.hashAsciiStr(Md5.hashAsciiStr(fileDetails).toString());
-        formData.append('fileName', fileName);
-        formData.append('suffix', suffix);
-        formData.append('shardSize', shardSize);
-        formData.append('shardTotal', shardTotal);
-        formData.append('size', size);
-        formData.append('routeId', modifyState.routeId);
-        formData.append('groupId', commonModel.userInfo.groupId);
-        formData.append('shopId', commonModel.userInfo.shopId);
-        formData.append('dataId', modifyState.dataId);
-        formData.append('key', key);
-        await reqwest({
-          url: application.urlUpload + '/checkFile',
-          method: 'post',
-          processData: false,
-          data: formData,
-          headers: {
-            authorization: commonModel.token,
-          },
-          success: (data) => {
-            if (data.code === 1) {
-              if (data.data === -1) {
-                gotoSuccess(dispatch, data);
-                fileObj.percent = 100;
-                fileObj.status = 'done';
-                dispatchModifyState({ [name + 'FileList']: fileList, pageLoading: false });
-              } else {
-                // 通过分片文件继续上传。
-                uploadFile(name, fileObj, modifyState.routeName, modifyState.dataId, data.data);
+      if (commonUtils.isNotEmptyArr(fileList)) {
+        fileList.filter(item => item.status !== 'done').forEach(async fileObj => {
+          fileObj.percent = 1;
+          fileObj.status = 'uploading';
+          const file = fileObj.originFileObj;
+          const formData = new FormData();
+          const size = file.size;
+          //文件分片 以10MB去分片
+          const shardSize: any = 10 * 1024 * 1024;
+          //总片数
+          const shardTotal: any = Math.ceil(size / shardSize);
+          //文件的后缀名
+          const fileName = file.name;
+          const suffix = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length).toLowerCase();
+          //把视频的信息存储为一个字符串
+          const fileDetails = file.name + file.size + file.type + file.lastModifiedDate;
+          //使用当前文件的信息用md5加密生成一个key 这个加密是根据文件的信息来加密的 如果相同的文件 加的密还是一样的
+          const key: any = Md5.hashAsciiStr(Md5.hashAsciiStr(fileDetails).toString());
+          formData.append('fileName', fileName);
+          formData.append('suffix', suffix);
+          formData.append('shardSize', shardSize);
+          formData.append('shardTotal', shardTotal);
+          formData.append('size', size);
+          formData.append('routeId', modifyState.routeId);
+          formData.append('groupId', commonModel.userInfo.groupId);
+          formData.append('shopId', commonModel.userInfo.shopId);
+          formData.append('dataId', modifyState.dataId);
+          formData.append('key', key);
+          await reqwest({
+            url: application.urlUpload + '/checkFile',
+            method: 'post',
+            processData: false,
+            data: formData,
+            headers: {
+              authorization: commonModel.token,
+            },
+            success: (data) => {
+              if (data.code === 1) {
+                if (data.data === -1) {
+                  gotoSuccess(dispatch, data);
+                  fileObj.percent = 100;
+                  fileObj.status = 'done';
+                  dispatchModifyState({[name + 'FileList']: fileList, pageLoading: false});
+                } else {
+                  // 通过分片文件继续上传。
+                  uploadFile(name, fileObj, modifyState.routeName, modifyState.dataId, data.data);
+                }
               }
             }
-          }
-        });
+          });
 
-      });
+        });
+      }
 
       dispatchModifyState({ pageLoading: true, [name + 'FileList']: fileList, [name + 'DelFileList']: [] });
     };

@@ -171,7 +171,14 @@ const commonBase = (WrapComponent) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
       const url: string = `${application.urlPrefix}/getData/getSelectList`;
-      const condition = commonUtils.getCondition(params.sqlCondition, modifyState);
+      let record = params.record;
+      if (typeof stateRef.current[params.name + 'Data'] === 'object' && stateRef.current[params.name + 'Data'].constructor === Object) {
+        record = stateRef.current[params.name + 'Data'];
+      } else {
+        const index = stateRef.current[params.name + 'Data'].findIndex(item => item.id === params.record.id);
+        record = stateRef.current[params.name + 'Data'][index];
+      }
+      const condition = commonUtils.getCondition(params.name, record, params.sqlCondition, stateRef.current);
       const requestParam = {
         routeId: modifyState.routeId,
         groupId: commonModel.userInfo.groupId,
@@ -471,7 +478,7 @@ const commonBase = (WrapComponent) => {
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
 
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const assignValue = commonUtils.getAssignFieldValue(assignField, assignOption);
+        const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
         const data = { ...dataOld, ...assignValue };
         if (form) {
           form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
@@ -491,12 +498,11 @@ const commonBase = (WrapComponent) => {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
         if (index > -1) {
-          const assignValue = commonUtils.getAssignFieldValue(assignField, assignOption);
+          const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
           const rowData = { ...data[index], ...assignValue };
           rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           rowData[fieldName] = value;
           data[index] = rowData;
-
           const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
@@ -521,7 +527,7 @@ const commonBase = (WrapComponent) => {
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const assignValue = commonUtils.getAssignFieldValue(config.assignField, assignOption);
+        const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
         const data = { ...dataOld, ...assignValue };
         if (form) {
           form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
@@ -541,7 +547,7 @@ const commonBase = (WrapComponent) => {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
         if (index > -1) {
-          const assignValue = commonUtils.getAssignFieldValue(config.assignField, assignOption);
+          const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
           const rowData = { ...data[index], ...assignValue };
           rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           rowData[fieldName] = value;

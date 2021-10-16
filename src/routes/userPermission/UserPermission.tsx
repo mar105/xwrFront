@@ -107,7 +107,7 @@ const UserPermission = (props) => {
         table.filter(item => commonUtils.isEmpty(item[container.treeSlaveKey])).forEach((dataRow, indexTable) => {
           const indexCategory = tableDataOld.findIndex(item => item[name + 'Id'] === dataRow.id);
           let data: any = !(indexCategory > -1) ? props.onAdd(container) : tableDataOld[indexCategory];
-          data = { ...data, ...commonUtils.getAssignFieldValue(container.slaveData[index].assignField, dataRow)};
+          data = { ...data, ...commonUtils.getAssignFieldValue(name, container.slaveData[index].assignField, dataRow)};
           data.userId = masterData.userId;
           data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
           data.sortNum = indexTable + 1;
@@ -141,7 +141,7 @@ const UserPermission = (props) => {
         table.forEach((dataRow, indexTable)  => {
           const indexCategory = tableDataOld.findIndex(item => item[name + 'Id'] === dataRow.id);
           let data: any = !(indexCategory > -1) ? props.onAdd(container) : tableDataOld[indexCategory];
-          data = { ...data, ...commonUtils.getAssignFieldValue(container.slaveData[index].assignField, dataRow)};
+          data = { ...data, ...commonUtils.getAssignFieldValue(name, container.slaveData[index].assignField, dataRow)};
           data.userId = masterData.userId;
           data.sortNum = indexTable + 1;
           tableData.push(data);
@@ -159,7 +159,7 @@ const UserPermission = (props) => {
     table.filter(item => item[container.treeSlaveKey] === masterKeyValue).forEach((dataRow, indexTable) => {
       const indexCategory = tableDataOld.findIndex(item => item[name + 'Id'] === dataRow.id);
       let data: any = !(indexCategory > -1) ? props.onAdd(container) : tableDataOld[indexCategory];
-      data = { ...data, ...commonUtils.getAssignFieldValue(assignField, dataRow)};
+      data = { ...data, ...commonUtils.getAssignFieldValue(name, assignField, dataRow)};
       data.userId = masterData.userId;
       data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
       data.sortNum = indexTable + 1;

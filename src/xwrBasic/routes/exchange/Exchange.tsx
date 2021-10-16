@@ -28,7 +28,7 @@ const Exchange = (props) => {
           const exchangeRate = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true, sqlCondition: masterContainer.slaveData[index].sqlCondition })).list;
           exchangeRate.forEach((dataRow, rowIndex) => {
             let data = props.onAdd(exchangeRateContainer);
-            data = { ...data, ...commonUtils.getAssignFieldValue(masterContainer.slaveData[index].assignField, dataRow)};
+            data = { ...data, ...commonUtils.getAssignFieldValue('master', masterContainer.slaveData[index].assignField, dataRow)};
             data.superiorId = params.masterData.id;
             data.sortNum = rowIndex + 1;
             exchangeRateData.push(data);

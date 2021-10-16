@@ -33,7 +33,7 @@ const Customer = (props) => {
       if (props.handleType === 'add') {
         const childParams = {};
         if (props.copyToData) {
-          const masterData = {...commonUtils.getAssignFieldValue(props.copyToData.config.assignField, props.copyToData.masterData), ...props.onAdd() };
+          const masterData = {...commonUtils.getAssignFieldValue('master', props.copyToData.config.assignField, props.copyToData.masterData), ...props.onAdd() };
           childParams['masterData'] = masterData;
           for(const config of props.copyToData.config.children) {
             const fieldNameSplit = config.fieldName.split('.');
@@ -41,7 +41,7 @@ const Customer = (props) => {
             if (commonUtils.isNotEmptyArr(props.copyToData[dataSetName + 'Data'])) {
               const copyData: any = [];
               for(const data of props.copyToData[dataSetName + 'Data']) {
-                copyData.push({...commonUtils.getAssignFieldValue(config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
+                copyData.push({...commonUtils.getAssignFieldValue(dataSetName, config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
               }
               childParams[dataSetName + 'Data'] = copyData;
               childParams[dataSetName + 'ModifyData'] = [];

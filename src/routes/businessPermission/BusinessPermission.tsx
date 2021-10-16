@@ -129,7 +129,7 @@ const BusinessPermission = (props) => {
         const table = [...tableTree, ...tableSlave];
         // 通过treeKey, treeSlaveKey 重新生成数据
         table.filter(item => commonUtils.isEmpty(item[container.treeSlaveKey])).forEach((dataRow, indexTable) => {
-          const data = { ...props.onAdd(container), ...commonUtils.getAssignFieldValue(container.slaveData[index].assignField, dataRow)};
+          const data = { ...props.onAdd(container), ...commonUtils.getAssignFieldValue(name, container.slaveData[index].assignField, dataRow)};
           data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
           data.sortNum = indexTable + 1;
           const children = getSlaveData(name, table, container, dataRow[container.treeKey], container.slaveData[index].assignField);
@@ -148,7 +148,7 @@ const BusinessPermission = (props) => {
   const getSlaveData = (name, table, container, masterKeyValue, assignField) => {
     const tableData: any = [];
     table.filter(item => item[container.treeSlaveKey] === masterKeyValue).forEach((dataRow, indexTable) => {
-      const data = { ...props.onAdd(container), ...commonUtils.getAssignFieldValue(assignField, dataRow)};
+      const data = { ...props.onAdd(container), ...commonUtils.getAssignFieldValue(name, assignField, dataRow)};
       data[container.treeSlaveKey] = dataRow[container.treeSlaveKey];
       data.sortNum = indexTable + 1;
       const children = getSlaveData(name, table, container, dataRow.id, assignField);

@@ -28,7 +28,7 @@ const ProductCategory = (props) => {
           const processCategory = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true, sqlCondition: masterContainer.slaveData[index].sqlCondition })).list;
           processCategory.forEach((dataRow, rowIndex) => {
             let data = props.onAdd(processCategoryContainer);
-            data = { ...data, ...commonUtils.getAssignFieldValue(masterContainer.slaveData[index].assignField, dataRow)};
+            data = { ...data, ...commonUtils.getAssignFieldValue('master', masterContainer.slaveData[index].assignField, dataRow)};
             data.superiorId = params.masterData.id;
             data.sortNum = rowIndex + 1;
             processCategoryData.push(data);
@@ -68,7 +68,7 @@ const ProductCategory = (props) => {
             const indexCategory = processCategoryDataOld.findIndex(item => item.processCategoryId === dataRow.id);
             if (!(indexCategory > -1)) {
               let data = props.onAdd(processCategoryContainer);
-              data = { ...data, ...commonUtils.getAssignFieldValue(masterContainer.slaveData[index].assignField, dataRow)};
+              data = { ...data, ...commonUtils.getAssignFieldValue('processCategory', masterContainer.slaveData[index].assignField, dataRow)};
               data.superiorId = params.masterData.id;
               data.sortNum = indexProcessCategory + 1;
               processCategoryData.push(data);

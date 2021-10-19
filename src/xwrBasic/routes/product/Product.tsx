@@ -85,8 +85,17 @@ const Product = (props) => {
   }
 
   const onButtonClick = async (key, config, e, childParams: any = undefined) => {
-    if (key === 'addButton') {
-      props.onButtonClick(key, config, e, childParams);
+    if (key === 'delButton') {
+      const { customerData, customerModifyData, customerDelData, inventoryData, inventoryModifyData,
+        inventorySumDelData, inventorySumData, inventorySumModifyData, inventoryDelData } = props;
+      const childCallback = (params) => {
+        const saveData: any = [];
+        saveData.push(commonUtils.mergeData('customer', customerData, customerModifyData, customerDelData, true));
+        saveData.push(commonUtils.mergeData('inventory', inventoryData, inventoryModifyData, inventoryDelData, true));
+        saveData.push(commonUtils.mergeData('inventorySum', inventorySumData, inventorySumModifyData, inventorySumDelData, true));
+        return saveData;
+      };
+      props.onButtonClick(key, config, e, { childCallback });
     } else {
       props.onButtonClick(key, config, e);
     }

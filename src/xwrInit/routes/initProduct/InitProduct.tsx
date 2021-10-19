@@ -48,17 +48,23 @@ const InitProduct = (props) => {
             }
           }
         }
-        onButtonClick('addButton', null, null, childParams);
+        props.onButtonClick('addButton', null, null, childParams);
       }
       else if (props.handleType === 'modify') {
-        onButtonClick('modifyButton', null, null);
+        props.onButtonClick('modifyButton', null, null);
       }
     }
   }, [props.masterContainer.dataSetName]);
 
   const onButtonClick = async (key, config, e, childParams: any = undefined) => {
-    if (key === 'addButton') {
-      props.onButtonClick(key, config, e, childParams);
+    if (key === 'delButton') {
+      const { slaveData, slaveModifyData, slaveDelData } = props;
+      const childCallback = (params) => {
+        const saveData: any = [];
+        saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, true));
+        return saveData;
+      }
+      props.onButtonClick(key, config, e, { childCallback });
     } else {
       props.onButtonClick(key, config, e);
     }

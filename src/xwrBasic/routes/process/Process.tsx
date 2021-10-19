@@ -51,17 +51,26 @@ const Process = (props) => {
             }
           }
         }
-        onButtonClick('addButton', null, null, childParams);
+        props.onButtonClick('addButton', null, null, childParams);
       }
       else if (props.handleType === 'modify') {
-        onButtonClick('modifyButton', null, null);
+        props.onButtonClick('modifyButton', null, null);
       }
     }
   }, [props.masterContainer.dataSetName]);
 
   const onButtonClick = async (key, config, e, childParams: any = undefined) => {
-    if (key === 'addButton') {
-      props.onButtonClick(key, config, e, childParams);
+    if (key === 'delButton') {
+      const { machineData, machineModifyData, machineDelData, matchData, matchModifyData,
+        outsourceDelData, outsourceData, outsourceModifyData, matchDelData } = props;
+      const childCallback = (params) => {
+        const saveData: any = [];
+        saveData.push(commonUtils.mergeData('machine', machineData, machineModifyData, machineDelData, true));
+        saveData.push(commonUtils.mergeData('match', matchData, matchModifyData, matchDelData, true));
+        saveData.push(commonUtils.mergeData('outsource', outsourceData, outsourceModifyData, outsourceDelData, true));
+        return saveData;
+      }
+      props.onButtonClick(key, config, e, { childCallback });
     } else {
       props.onButtonClick(key, config, e);
     }

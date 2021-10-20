@@ -487,8 +487,8 @@ const commonBase = (WrapComponent) => {
         data[fieldName] = value;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, ...assignValue, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: data.id, ...assignValue, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName], ...assignValue } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName], ...assignValue } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {

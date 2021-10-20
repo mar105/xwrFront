@@ -85,15 +85,16 @@ function IndexPage(props) {
 
   const callbackRemovePane = useCallback((targetKey) => {
     const {dispatch, dispatchModifyState, commonModel } = props;
+    const panesOld = commonUtils.isEmptyArr(panesRef.current) ? [] : panesRef.current;
     let lastIndex = -1;
-    commonModel.panes.forEach((pane, i) => {
+    panesOld.forEach((pane, i) => {
       if (pane.key === targetKey) {
         lastIndex = i - 1;
       }
     });
     const panesComponentsOld = commonUtils.isEmptyArr(panesComponentsRef.current) ? [] : panesComponentsRef.current;
     const panesComponents = panesComponentsOld.filter(pane => pane.key.toString() !== targetKey);
-    const panes = commonModel.panes.filter(pane => pane.key.toString() !== targetKey);
+    const panes = panesOld.filter(pane => pane.key.toString() !== targetKey);
     let activePane = {};
 
     if (panes.length > 0 && commonModel.activePane.key === targetKey) {

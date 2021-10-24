@@ -71,33 +71,34 @@ const TabsPages = (props) => {
   };
 
   const onRemove = targetKey => {
-    const { dispatch, commonModel, panesComponents: panesComponentsOld, dispatchModifyState } = props;
-    let lastIndex = -1;
-    commonModel.panes.forEach((pane, i) => {
-      if (pane.key === targetKey) {
-        lastIndex = i - 1;
-      }
-    });
-    const panesComponents = panesComponentsOld.filter(pane => pane.key.toString() !== targetKey);
-    const panes = commonModel.panes.filter(pane => pane.key.toString() !== targetKey);
-    let activePane = {};
-
-    if (panes.length > 0 && commonModel.activePane.key === targetKey) {
-      if (lastIndex > -1) {
-        activePane = panes[lastIndex];
-      } else {
-        activePane = panes[0];
-      }
-    }
-    dispatch({
-      type: 'commonModel/saveActivePane',
-      payload: activePane,
-    });
-    dispatch({
-      type: 'commonModel/savePanes',
-      payload: panes,
-    });
-    dispatchModifyState({ panesComponents });
+    props.callbackRemovePane(targetKey);
+    // const { dispatch, commonModel, panesComponents: panesComponentsOld, dispatchModifyState } = props;
+    // let lastIndex = -1;
+    // commonModel.panes.forEach((pane, i) => {
+    //   if (pane.key === targetKey) {
+    //     lastIndex = i - 1;
+    //   }
+    // });
+    // const panesComponents = panesComponentsOld.filter(pane => pane.key.toString() !== targetKey);
+    // const panes = commonModel.panes.filter(pane => pane.key.toString() !== targetKey);
+    // let activePane = {};
+    //
+    // if (panes.length > 0 && commonModel.activePane.key === targetKey) {
+    //   if (lastIndex > -1) {
+    //     activePane = panes[lastIndex];
+    //   } else {
+    //     activePane = panes[0];
+    //   }
+    // }
+    // dispatch({
+    //   type: 'commonModel/saveActivePane',
+    //   payload: activePane,
+    // });
+    // dispatch({
+    //   type: 'commonModel/savePanes',
+    //   payload: panes,
+    // });
+    // dispatchModifyState({ panesComponents });
   };
 
   const onEdit = (targetKey, action) => {

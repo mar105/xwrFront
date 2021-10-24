@@ -194,8 +194,38 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
-      const returnData = props.onNumberChange(name, fieldName, record, valueOld, true);
-      if (fieldName === 'measureQty') {
+      let returnData = props.onNumberChange(name, fieldName, record, valueOld, true);
+      returnData = calcOperation({name, fieldName, record, returnData});
+      if (isWait) {
+        return { [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] };
+      } else {
+        props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] });
+      }
+    }
+
+    const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
+      let returnData = props.onSelectChange(name, fieldName, record, assignField, valueOld, option, true);
+      returnData = calcOperation({name, fieldName, record, returnData});
+      if (isWait) {
+        return { [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] };
+      } else {
+        props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] });
+      }
+    }
+
+    const onInputChange = (name, fieldName, record, e, isWait) => {
+      let returnData = props.onInputChange(name, fieldName, record, e, true);
+      returnData = calcOperation({name, fieldName, record, returnData});
+      if (isWait) {
+        return { [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] };
+      } else {
+        props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] });
+      }
+    }
+
+    const calcOperation = (params) => {
+      const {name, fieldName, record, returnData } = params;
+      if (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle') {
         if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
           const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(returnData[name + 'Data'],'product', fieldName, props.commonModel);
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...qtyCalcData};
@@ -214,11 +244,7 @@ const commonDocEvent = (WrapComponent) => {
           }
         }
       }
-      if (isWait) {
-        return { [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] };
-      } else {
-        props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] });
-      }
+      return returnData;
     }
 
     return <WrapComponent
@@ -228,6 +254,8 @@ const commonDocEvent = (WrapComponent) => {
       onSetForm={onSetForm}
       getButtonGroup={getButtonGroup}
       onNumberChange={onNumberChange}
+      onSelectChange={onSelectChange}
+      onInputChange={onInputChange}
     />
   };
 };

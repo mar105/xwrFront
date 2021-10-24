@@ -11,6 +11,7 @@ export default {
     stompClient: null,
     panes: JSON.parse(localStorage.getItem(`${application.prefix}panes`) || '[]'),
     activePane: JSON.parse(localStorage.getItem(`${application.prefix}activePane`) || '{}'),
+    commonConstant: JSON.parse(localStorage.getItem(`${application.prefix}commonConstant`) || '[]'),
   },
   reducers: {
     saveToken(state, { payload: token }) {
@@ -35,6 +36,10 @@ export default {
     saveActivePane(state, { payload: activePane }) {
       localStorage.setItem(`${application.prefix}activePane`, JSON.stringify(activePane));
       return { ...state, activePane };
+    },
+    saveCommonConstant(state, { payload: commonConstant }) {
+      localStorage.setItem(`${application.prefix}commonConstant`, JSON.stringify(commonConstant));
+      return { ...state, commonConstant };
     },
   },
   effects: {

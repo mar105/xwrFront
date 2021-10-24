@@ -61,6 +61,10 @@ const Login = ({ dispatch }) => {
         type: 'commonModel/gotoNewPage',
         payload: { newPage: '/' },
       });
+      dispatch({
+        type: 'commonModel/saveCommonConstant',
+        payload: interfaceReturn.data.commonConstant,
+      });
       const stompClient = commonUtils.getWebSocketData(null, () => {
         dispatch({
           type: 'commonModel/saveStompClient',

@@ -193,12 +193,41 @@ const commonDocEvent = (WrapComponent) => {
       return buttonGroup;
     }
 
+    const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
+      const returnData = props.onNumberChange(name, fieldName, record, valueOld, true);
+      if (fieldName === 'measureQty') {
+        if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
+          const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(returnData[name + 'Data'],'product', fieldName, props.commonModel);
+          returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...qtyCalcData};
+          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData} : returnData[name + 'ModifyData'];
+        } else {
+          const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
+          if (index > -1) {
+            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(returnData[name + 'Data'][index], 'product', fieldName, props.commonModel);
+            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...qtyCalcData};
+            if (returnData[name + 'Data'][index].handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData};
+              }
+            }
+          }
+        }
+      }
+      if (isWait) {
+        return { [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] };
+      } else {
+        props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] });
+      }
+    }
+
     return <WrapComponent
       {...props}
       onButtonClick={onButtonClick}
       onFinish={onFinish}
       onSetForm={onSetForm}
       getButtonGroup={getButtonGroup}
+      onNumberChange={onNumberChange}
     />
   };
 };

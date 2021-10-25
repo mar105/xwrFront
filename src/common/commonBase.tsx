@@ -13,11 +13,9 @@ const commonBase = (WrapComponent) => {
   return function ChildComponent(props) {
     const stateRef: any = useRef();
     let form;
-    const activeConfigInfo = props.callbackAddPane == null ? props.state : props.commonModel.activePane;
-    console.log('AAAAAAAA', props.callbackAddPane, activeConfigInfo);
     const [modifyState, dispatchModifyState] = useReducer((state, action) => {
       return {...state, ...action };
-    },{ masterContainer: {}, ...activeConfigInfo });
+    },{ masterContainer: {}, ...props.commonModel.activePane, ...props.modalState });
     useEffect(() => {
       stateRef.current = modifyState;
     }, [modifyState]);
@@ -173,15 +171,18 @@ const commonBase = (WrapComponent) => {
     const getSelectList = async (params) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
+      const modifyStateNew = stateRef.current ? stateRef.current : modifyState;
       const url: string = `${application.urlPrefix}/getData/getSelectList`;
       let record = params.record;
-      if (typeof stateRef.current[params.name + 'Data'] === 'object' && stateRef.current[params.name + 'Data'].constructor === Object) {
-        record = stateRef.current[params.name + 'Data'];
-      } else {
-        const index = stateRef.current[params.name + 'Data'].findIndex(item => item.id === params.record.id);
-        record = stateRef.current[params.name + 'Data'][index];
+      if (modifyStateNew[params.name + 'Data']) {
+        if (typeof modifyStateNew[params.name + 'Data'] === 'object' && modifyStateNew[params.name + 'Data'].constructor === Object) {
+          record = modifyStateNew[params.name + 'Data'];
+        } else {
+          const index = modifyStateNew[params.name + 'Data'].findIndex(item => item.id === params.record.id);
+          record = modifyStateNew[params.name + 'Data'][index];
+        }
       }
-      const condition = commonUtils.getCondition(params.name, record, params.sqlCondition, stateRef.current);
+      const condition = commonUtils.getCondition(params.name, record, params.sqlCondition, modifyStateNew);
       const requestParam = {
         routeId: modifyState.routeId,
         groupId: commonModel.userInfo.groupId,
@@ -887,12 +888,10 @@ const commonBase = (WrapComponent) => {
       const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
-        const state = { routeId: config.popupActiveId, ...interfaceReturn.data };
-
+        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: 'add' };
         const path = replacePath(state.routeData.routeName);
         const route: any = commonUtils.getRouteComponent(routeInfo, path);
-        console.log('1111', state, route, path);
-        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({}, route, null, null).component });
+        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, null, state).component });
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }

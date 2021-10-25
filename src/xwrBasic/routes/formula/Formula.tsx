@@ -184,7 +184,7 @@ const Formula = (props) => {
 
   const { enabled, masterContainer, masterData: masterDataOld, treeData, treeSelectedKeys, commonModel } = props;
   const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
-  const buttonAddGroup: any = [];
+  const buttonAddGroup: any = props.getButtonGroup();
   buttonAddGroup.push({ key: 'verifyButton', caption: '验证', htmlType: 'button', onClick: onButtonClick, sortNum: 100, disabled: !props.enabled });
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, buttonGroup: buttonAddGroup };
   const index = commonUtils.isEmptyObj(masterContainer) ? -1 : masterContainer.slaveData.findIndex(item => item.fieldName === 'formula');

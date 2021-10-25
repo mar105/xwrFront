@@ -4,6 +4,7 @@ import * as commonUtils from "../utils/commonUtils";
 import * as application from "../xwrBasic/application";
 import * as request from "../utils/request";
 import {useRef} from "react";
+import CommonModal from "./commonModal";
 
 const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -247,16 +248,28 @@ const commonDocEvent = (WrapComponent) => {
       return returnData;
     }
 
-    return <WrapComponent
-      {...props}
-      onButtonClick={onButtonClick}
-      onFinish={onFinish}
-      onSetForm={onSetForm}
-      getButtonGroup={getButtonGroup}
-      onNumberChange={onNumberChange}
-      onSelectChange={onSelectChange}
-      onInputChange={onInputChange}
-    />
+    return <div>
+      <WrapComponent
+        {...props}
+        onButtonClick={onButtonClick}
+        onFinish={onFinish}
+        onSetForm={onSetForm}
+        getButtonGroup={getButtonGroup}
+        onNumberChange={onNumberChange}
+        onSelectChange={onSelectChange}
+        onInputChange={onInputChange}
+      />
+      <CommonModal
+        {...props}
+        onButtonClick={onButtonClick}
+        onFinish={onFinish}
+        onSetForm={onSetForm}
+        getButtonGroup={getButtonGroup}
+        onNumberChange={onNumberChange}
+        onSelectChange={onSelectChange}
+        onInputChange={onInputChange}
+      />
+    </div>
   };
 };
 

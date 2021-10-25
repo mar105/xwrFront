@@ -130,6 +130,7 @@ function IndexPage(props) {
       const panes = [...panesRef.current];
       const path = replacePath(state.routeData.routeName);
       const key = commonUtils.newId();
+      const params = 'routeId=' + state.routeId + '&tabId=' + key + (state.dataId ? '&dataId=' + state.dataId : '');
       const route: any = commonUtils.getRouteComponent(routeInfo, path);
       if (commonUtils.isNotEmptyObj(route) && route.title) {
         const pane = {key, title: state.routeData.viewName, route: path, ...state };
@@ -147,7 +148,7 @@ function IndexPage(props) {
         });
         dispatch({
           type: 'commonModel/gotoNewPage',
-          payload: {newPage: path, state},
+          payload: {newPage: path + '?' + params, state},
         });
       } else {
         state = { routeId, ...interfaceReturn.data};

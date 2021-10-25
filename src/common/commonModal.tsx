@@ -6,8 +6,10 @@ const commonModal = (props) => {
     visible={props.modalVisible}
     title={props.modalTitle}
     footer={null}
+    width={1500}
     onCancel={props.onModalCancel}
   >
+    {props.modalPane}
   </Modal>
 }
 

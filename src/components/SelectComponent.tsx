@@ -3,7 +3,7 @@ import {Divider, Form, Input, message, Select} from 'antd';
 import { componentType } from '../utils/commonTypes';
 import * as commonUtils from '../utils/commonUtils';
 import debounce from 'lodash/debounce';
-import { PlusOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { SaveOutlined, PlusSquareOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 export function SelectComponent(params) {
@@ -91,7 +91,8 @@ export function SelectComponent(params) {
 
     }
     else if (name === 'popup') {
-
+      const dropParam = { config: params.config };
+      params.event.onDropAdd(dropParam);
     }
   };
 
@@ -102,7 +103,7 @@ export function SelectComponent(params) {
         <Divider style={{ margin: '4px 0' }} />
         <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
           <Input style={{ flex: 'auto' }} value={modifySelfState.dropAddName} onChange={onDropAddNameChange} />
-          <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'addItem')} > <PlusOutlined /> </a>
+          <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'addItem')} > <SaveOutlined /> </a>
           <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'popup')} > <PlusSquareOutlined /> </a>
         </div>
       </div>

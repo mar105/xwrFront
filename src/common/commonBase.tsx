@@ -6,15 +6,18 @@ import {Spin} from "antd";
 import arrayMove from "array-move";
 import reqwest from 'reqwest';
 import {Md5} from "ts-md5";
+import {replacePath, routeInfo} from "../routeInfo";
 
 
 const commonBase = (WrapComponent) => {
   return function ChildComponent(props) {
     const stateRef: any = useRef();
     let form;
+    const activeConfigInfo = props.callbackAddPane == null ? props.state : props.commonModel.activePane;
+    console.log('AAAAAAAA', props.callbackAddPane, activeConfigInfo);
     const [modifyState, dispatchModifyState] = useReducer((state, action) => {
       return {...state, ...action };
-    },{ masterContainer: {}, ...props.commonModel.activePane });
+    },{ masterContainer: {}, ...activeConfigInfo });
     useEffect(() => {
       stateRef.current = modifyState;
     }, [modifyState]);
@@ -874,6 +877,31 @@ const commonBase = (WrapComponent) => {
       });
     };
 
+    const onDropAdd = async (params) => {
+      const { dispatch, commonModel } = props;
+      const { config } = params;
+      if (commonUtils.isEmpty(config.popupActiveId)) {
+        props.gotoError(dispatch, { code: '6002', msg: '路由Id不能为空！' });
+        return;
+      }
+      const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        const state = { routeId: config.popupActiveId, ...interfaceReturn.data };
+
+        const path = replacePath(state.routeData.routeName);
+        const route: any = commonUtils.getRouteComponent(routeInfo, path);
+        console.log('1111', state, route, path);
+        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({}, route, null, null).component });
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
+    }
+
+    const onModalCancel = () => {
+      dispatchModifyState({ modalVisible: false });
+    }
+
     return <Spin spinning={modifyState.pageLoading ? true : false}>
       <WrapComponent
       {...props}
@@ -905,6 +933,8 @@ const commonBase = (WrapComponent) => {
       onSortEnd={onSortEnd}
       draggableBodyRow={draggableBodyRow}
       onUpload={onUpload}
+      onDropAdd={onDropAdd}
+      onModalCancel={onModalCancel}
     />
     </Spin>
   };

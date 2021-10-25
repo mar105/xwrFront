@@ -63,9 +63,14 @@ const TabsPages = (props) => {
     const index = commonModel.panes.findIndex(item => item.key === activeKey);
     if (index > -1) {
       const activePane = panes[index];
+      const params = 'routeId=' + activePane.routeId + '&tabId=' + activePane.key + (activePane.dataId ? '&dataId=' + activePane.dataId : '');
       dispatch({
         type: 'commonModel/saveActivePane',
         payload: activePane,
+      });
+      dispatch({
+        type: 'commonModel/gotoNewPage',
+        payload: {newPage: activePane.route + '?' + params },
       });
     }
   };

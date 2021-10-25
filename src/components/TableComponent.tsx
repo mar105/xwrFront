@@ -293,7 +293,7 @@ export function TableComponent(params: any) {
               config,
               property: {value: text},
               record,
-              event: {onChange: params.event.onSelectChange, getSelectList: params.event.getSelectList }
+              event: {onChange: params.event.onSelectChange, getSelectList: params.event.getSelectList, onDropAdd: params.event.onDropAdd }
             };
             const inputParams = {
               name: params.name,

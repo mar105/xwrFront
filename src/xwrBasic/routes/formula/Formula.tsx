@@ -133,7 +133,7 @@ const Formula = (props) => {
   }
 
 
-  const onDoubleClick = async (key, e) => {
+  const onClick = async (key, e) => {
     const { dispatchModifyState, masterData: masterDataOld } = props;
     if (key === 'ACButton') {
       form.setFieldsValue(commonUtils.setFieldsValue({ formula: ''}));
@@ -186,7 +186,8 @@ const Formula = (props) => {
   const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
   const buttonAddGroup: any = props.getButtonGroup();
   buttonAddGroup.push({ key: 'verifyButton', caption: '验证', htmlType: 'button', onClick: onButtonClick, sortNum: 100, disabled: !props.enabled });
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, buttonGroup: buttonAddGroup };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const index = commonUtils.isEmptyObj(masterContainer) ? -1 : masterContainer.slaveData.findIndex(item => item.fieldName === 'formula');
   const inputParams = {
     name: 'master',
@@ -208,76 +209,76 @@ const Formula = (props) => {
     <TreeComponent {...treeParam} />)}, [treeData, treeSelectedKeys]);
   const paramButton = useMemo(()=>{
     const buttonGroup: any = [];
-    buttonGroup.push({ key: 'ACButton', caption: 'AC', htmlType: 'button', sortNum: 10, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '+/-Button', caption: '+/-', htmlType: 'button', sortNum: 20, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '%Button', caption: '%', htmlType: 'button', sortNum: 30, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '/Button', caption: '/', htmlType: 'button', sortNum: 40, onDoubleClick, disabled: !enabled });
+    buttonGroup.push({ key: 'ACButton', caption: 'AC', htmlType: 'button', sortNum: 10, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '+/-Button', caption: '+/-', htmlType: 'button', sortNum: 20, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '%Button', caption: '%', htmlType: 'button', sortNum: 30, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '/Button', caption: '/', htmlType: 'button', sortNum: 40, onClick, disabled: !enabled });
 
-    buttonGroup.push({ key: '7Button', caption: '7', htmlType: 'button', sortNum: 10, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '8Button', caption: '8', htmlType: 'button', sortNum: 20, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '9Button', caption: '9', htmlType: 'button', sortNum: 30, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '*Button', caption: '*', htmlType: 'button', sortNum: 40, onDoubleClick, disabled: !enabled });
+    buttonGroup.push({ key: '7Button', caption: '7', htmlType: 'button', sortNum: 10, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '8Button', caption: '8', htmlType: 'button', sortNum: 20, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '9Button', caption: '9', htmlType: 'button', sortNum: 30, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '*Button', caption: '*', htmlType: 'button', sortNum: 40, onClick, disabled: !enabled });
 
-    buttonGroup.push({ key: '4Button', caption: '4', htmlType: 'button', sortNum: 50, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '5Button', caption: '5', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '6Button', caption: '6', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '-Button', caption: '-', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+    buttonGroup.push({ key: '4Button', caption: '4', htmlType: 'button', sortNum: 50, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '5Button', caption: '5', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '6Button', caption: '6', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '-Button', caption: '-', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
-    buttonGroup.push({ key: '1Button', caption: '1', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '2Button', caption: '2', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '3Button', caption: '3', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '+Button', caption: '+', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+    buttonGroup.push({ key: '1Button', caption: '1', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '2Button', caption: '2', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '3Button', caption: '3', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '+Button', caption: '+', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
-    buttonGroup.push({ key: '0Button', caption: '0', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '00Button', caption: '00', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '.Button', caption: '.', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '=Button', caption: '=', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+    buttonGroup.push({ key: '0Button', caption: '0', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '00Button', caption: '00', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '.Button', caption: '.', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '=Button', caption: '=', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
-    buttonGroup.push({ key: '>Button', caption: '>', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '>=Button', caption: '>=', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '<Button', caption: '<', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '<=Button', caption: '<=', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+    buttonGroup.push({ key: '>Button', caption: '>', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '>=Button', caption: '>=', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '<Button', caption: '<', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '<=Button', caption: '<=', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
-    buttonGroup.push({ key: '!=Button', caption: '!=', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: '(Button', caption: '(', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
-    buttonGroup.push({ key: ')Button', caption: ')', htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+    buttonGroup.push({ key: '!=Button', caption: '!=', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: '(Button', caption: '(', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
+    buttonGroup.push({ key: ')Button', caption: ')', htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
     if (commonUtils.isNotEmptyObj(masterContainer)) {
     let index = masterContainer.slaveData.findIndex(item => item.fieldName === 'if'); // 如果
     let config = index > -1 ? masterContainer.slaveData[index] : {};
-      buttonGroup.push({ key: 'ifButton', caption: config.viewName, htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+      buttonGroup.push({ key: 'ifButton', caption: config.viewName, htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
       index = masterContainer.slaveData.findIndex(item => item.fieldName === '{'); // 那么
       config = index > -1 ? masterContainer.slaveData[index] : {};
-      buttonGroup.push({ key: '{Button', caption: config.viewName, htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+      buttonGroup.push({ key: '{Button', caption: config.viewName, htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
       index = masterContainer.slaveData.findIndex(item => item.fieldName === 'else'); // 否则
       config = index > -1 ? masterContainer.slaveData[index] : {};
-      buttonGroup.push({ key: 'elseButton', caption: config.viewName, htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+      buttonGroup.push({ key: 'elseButton', caption: config.viewName, htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
       index = masterContainer.slaveData.findIndex(item => item.fieldName === 'else'); // 那么
       config = index > -1 ? masterContainer.slaveData[index] : {};
-      buttonGroup.push({ key: '}Button', caption: config.viewName, htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+      buttonGroup.push({ key: '}Button', caption: config.viewName, htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
       index = masterContainer.slaveData.findIndex(item => item.fieldName === '&&'); // 并且
       config = index > -1 ? masterContainer.slaveData[index] : {};
-      buttonGroup.push({ key: '&&Button', caption: config.viewName, htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+      buttonGroup.push({ key: '&&Button', caption: config.viewName, htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
 
       index = masterContainer.slaveData.findIndex(item => item.fieldName === '||'); // 或者
       config = index > -1 ? masterContainer.slaveData[index] : {};
-      buttonGroup.push({ key: '||Button', caption: config.viewName, htmlType: 'button', sortNum: 60, onDoubleClick, disabled: !enabled });
+      buttonGroup.push({ key: '||Button', caption: config.viewName, htmlType: 'button', sortNum: 60, onClick, disabled: !enabled });
     }
     const buttonGroupNew = buttonGroup.map(item => {
       const button = {
         caption: item.caption,
         property: { name: item.key, htmlType: item.htmlType, disabled: item.disabled },
-        event: { onDoubleClick: commonUtils.isEmpty(item.onDoubleClick) ? undefined : item.onDoubleClick.bind(this, item.key) },
+        event: { onClick: commonUtils.isEmpty(item.onClick) ? undefined : item.onClick.bind(this, item.key) },
         componentType: componentType.Soruce,
       };
       return <Col span={6}><ButtonComponent {...button} /></Col>;
     });
 
-    return buttonGroupNew}, [masterContainer, enabled]);
+    return buttonGroupNew}, [masterContainer, masterData, enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>
       <Row style={{height: 'auto', overflow: 'auto' }}>

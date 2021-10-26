@@ -50,10 +50,13 @@ export function ButtonGroup(params) {
   //先找到通用按钮，取配置
   const buttonGroup = buttonGroupOld.map(buttonOld => {
     const index = buttons.findIndex(button => button.fieldName === buttonOld.key);
-    let buttonConfig: any = {isVisible: true};
+    let buttonConfig: any = {fieldName: buttonOld.key, isVisible: true};
     if (index > -1) {
       buttonConfig = buttons[index];
       buttons.splice(index, 1);
+    }
+    if (params.isModal && buttonConfig.fieldName !== 'postButton') {
+      buttonConfig.isVisible = false;
     }
     if (buttonConfig.isVisible) {
       let isDropDown = false;

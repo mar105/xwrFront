@@ -87,7 +87,8 @@ const Material = (props) => {
   };
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const supplyParam: any = commonUtils.getTableProps('supply', props);
   supplyParam.pagination = false;
   supplyParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultSupplyId,

@@ -112,7 +112,8 @@ const Product = (props) => {
   };
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, container: masterContainer, buttonGroup: props.getButtonGroup() };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const customerParam: any = commonUtils.getTableProps('customer', props);
   customerParam.pagination = false;
   customerParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultCustomerId,

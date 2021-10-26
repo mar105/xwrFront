@@ -137,7 +137,7 @@ const categoryListEvent = (WrapComponent) => {
           if (childParams && childParams.childCallback) {
             addState = await childParams.childCallback({masterData});
           }
-          dispatchModifyState({ masterData, ...addState, masterIsVisible: true, enabled: true });
+          dispatchModifyState({ masterData, ...addState, masterModifyData: {}, masterIsVisible: true, enabled: true });
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
@@ -186,7 +186,10 @@ const categoryListEvent = (WrapComponent) => {
         shopId: commonModel.userInfo.shopId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        dispatchModifyState({ masterIsVisible: false, enabled: false });
+        dispatchModifyState({masterIsVisible: false, enabled: false});
+        if (props.isModal) {
+          props.callbackRemovePane();
+        }
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
@@ -208,8 +211,12 @@ const categoryListEvent = (WrapComponent) => {
       const url: string = `${application.urlMain}/getData/saveData`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        const returnState = await props.getAllData({ testMongo: true, pageNum: 1 });
-        dispatchModifyState({ masterIsVisible: false, enabled: false, ...returnState });
+        if (props.isModal) {
+          props.callbackRemovePane();
+        } else {
+          const returnState = await props.getAllData({testMongo: true, pageNum: 1});
+          dispatchModifyState({masterIsVisible: false, enabled: false, ...returnState});
+        }
         props.gotoSuccess(dispatch, interfaceReturn);
       } else if (interfaceReturn.code === 10) {
         dispatchModifyState({ pageLoading: true });

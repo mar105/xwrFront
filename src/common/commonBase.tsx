@@ -888,16 +888,20 @@ const commonBase = (WrapComponent) => {
       const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
-        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: 'add' };
+        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: 'add', isModal: true };
         const path = replacePath(state.routeData.routeName);
         const route: any = commonUtils.getRouteComponent(routeInfo, path);
-        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, null, state).component });
+        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, state).component });
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
     }
 
     const onModalCancel = () => {
+      dispatchModifyState({ modalVisible: false });
+    }
+
+    const onModalOk = () => {
       dispatchModifyState({ modalVisible: false });
     }
 

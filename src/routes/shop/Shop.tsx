@@ -36,7 +36,8 @@ const Shop = (props) => {
   buttonAddGroup.splice(buttonAddGroup.findIndex(item => item.key === 'lastButton'), 1);
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, buttonGroup: buttonAddGroup };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (

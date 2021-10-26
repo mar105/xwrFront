@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import * as commonUtils from "../../../utils/commonUtils";
 import commonBase from "../../../common/commonBase";
-import React, {useMemo} from "react";
+import React, {useEffect, useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
 import {ButtonGroup} from "../../../common/ButtonGroup";
 import {Button, Drawer, Form} from "antd";
@@ -13,6 +13,35 @@ import * as request from "../../../utils/request";
 const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
+
+  useEffect(() => {
+    if (commonUtils.isNotEmptyObj(props.masterContainer)) {
+      if (props.handleType === 'add') {
+        const childParams = {};
+        if (props.copyToData) {
+          const masterData = {...commonUtils.getAssignFieldValue('master', props.copyToData.config.assignField, props.copyToData.masterData), ...props.onAdd() };
+          childParams['masterData'] = masterData;
+          for(const config of props.copyToData.config.children) {
+            const fieldNameSplit = config.fieldName.split('.');
+            const dataSetName = fieldNameSplit[fieldNameSplit.length - 1];
+            if (commonUtils.isNotEmptyArr(props.copyToData[dataSetName + 'Data'])) {
+              const copyData: any = [];
+              for(const data of props.copyToData[dataSetName + 'Data']) {
+                copyData.push({...commonUtils.getAssignFieldValue(dataSetName, config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
+              }
+              childParams[dataSetName + 'Data'] = copyData;
+              childParams[dataSetName + 'ModifyData'] = [];
+              childParams[dataSetName + 'DelData'] = [];
+            }
+          }
+        }
+        props.onButtonClick('addButton', null, null, childParams);
+      }
+      else if (props.handleType === 'modify') {
+        props.onButtonClick('modifyButton', null, null);
+      }
+    }
+  }, [props.masterContainer.dataSetName]);
 
   const onButtonClick = async (key, config, e) => {
     const { dispatch, dispatchModifyState, commonModel, routeId } = props;
@@ -39,7 +68,8 @@ const CategoryList = (props) => {
   }
 
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup() };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer,
+    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;

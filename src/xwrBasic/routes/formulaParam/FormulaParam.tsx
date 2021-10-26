@@ -113,8 +113,9 @@ const FormulaParam = (props) => {
 
 
 
-  const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, slaveContainer, buttonGroup: props.getButtonGroup() };
+  const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel, masterContainer } = props;
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;
@@ -133,7 +134,7 @@ const FormulaParam = (props) => {
           <TableComponent {...tableParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} onClick={onButtonClick}/>
-      <Drawer width={600} visible={masterIsVisible} maskClosable={false} onClose={props.onModalCancel} footer={
+      <Drawer width={900} visible={masterIsVisible} maskClosable={false} onClose={props.onModalCancel} footer={
         <div>
           <Button onClick={onModalOk} type="primary">Submit</Button>
           <Button onClick={props.onModalCancel} style={{ marginRight: 8 }}>Cancel</Button>

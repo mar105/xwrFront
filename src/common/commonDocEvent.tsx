@@ -163,12 +163,16 @@ const commonDocEvent = (WrapComponent) => {
       const url: string = `${application.urlMain}/getData/saveData`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        let returnState: any = await props.getAllData({ dataId: masterData.id });
-        if (commonUtils.isNotEmptyObj(childParams) && childParams.getAllData) {
-          const returnChild: any = await childParams.getAllData(true);
-          returnState = {...returnState, ...returnChild};
+        if (props.isModal) {
+          props.callbackRemovePane();
+        } else {
+          let returnState: any = await props.getAllData({ dataId: masterData.id });
+          if (commonUtils.isNotEmptyObj(childParams) && childParams.getAllData) {
+            const returnChild: any = await childParams.getAllData(true);
+            returnState = {...returnState, ...returnChild};
+          }
+          dispatchModifyState({...returnState });
         }
-        dispatchModifyState({...returnState});
         props.gotoSuccess(dispatch, interfaceReturn);
       } else if (interfaceReturn.code === 10) {
         dispatchModifyState({ pageLoading: true });

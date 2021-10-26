@@ -14,8 +14,8 @@ const CommonList = (props) => {
 
   const { commonModel, enabled, slaveContainer, searchRowKeys, searchData, importIsVisible } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, token: commonModel.token, routeId: props.routeId, groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId,
-    onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup(), onUploadSuccess: props.onUploadSuccess,
-    dispatchModifyState: props.dispatchModifyState };
+    onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup(), isModal: props.isModal,
+    onUploadSuccess: props.onUploadSuccess, dispatchModifyState: props.dispatchModifyState };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;

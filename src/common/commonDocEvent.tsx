@@ -130,7 +130,7 @@ const commonDocEvent = (WrapComponent) => {
         }
         const returnData: any = await props.getDataList({ name: 'slave', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
         if (commonUtils.isNotEmptyArr(returnData.slaveData)) {
-          const returnState: any = await props.getAllData({ dataId: returnData.slaveData[0].id });
+          const returnState: any = await props.getAllData({ dataId: returnData.slaveData[0][props.listTableKey] });
           dispatchModifyState({...returnState, listRowIndex});
         }
 

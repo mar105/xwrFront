@@ -95,7 +95,7 @@ const commonListEvent = (WrapComponent) => {
         const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === record[container.tableKey]);
         const key = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? container.tableKey : container.slaveData[index].popupSelectKey;
         props.callbackAddPane(container.slaveData[index].popupSelectId, {
-          listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: container.tableKey,
+          listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: key,
           listRowIndex: slaveIndex > -1 ? slaveIndex + 1 : 1, listRowTotal: slaveSum.total,
           dataId: record[key] });
       }

@@ -84,7 +84,6 @@ const InitProduct = (props) => {
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const slaveParam: any = commonUtils.getTableProps('slave', props);
-  slaveParam.pagination = false;
   slaveParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultslaveId,
     render: (text,record, index)=> {
     return <div>
@@ -98,12 +97,12 @@ const InitProduct = (props) => {
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>
-      <Row style={{ height: 'auto', overflow: 'auto' }}>
+      <Row>
         <Col>
           {component}
         </Col>
       </Row>
-      <Row style={{ height: 'auto', overflow: 'auto' }}>
+      <Row>
         <Col>
           {commonUtils.isNotEmptyObj(props.slaveContainer) ? <TableComponent {...slaveParam} /> : '' }
         </Col>

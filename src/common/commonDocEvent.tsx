@@ -164,7 +164,7 @@ const commonDocEvent = (WrapComponent) => {
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         if (props.isModal) {
-          props.callbackRemovePane();
+          props.callbackRemovePane({...props.modalParams, newRecord: masterData });
         } else {
           let returnState: any = await props.getAllData({ dataId: masterData.id });
           if (commonUtils.isNotEmptyObj(childParams) && childParams.getAllData) {

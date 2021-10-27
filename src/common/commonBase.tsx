@@ -888,7 +888,7 @@ const commonBase = (WrapComponent) => {
       const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
-        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: 'add', isModal: true };
+        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: 'add', isModal: true, modalParams: params };
         const path = replacePath(state.routeData.routeName);
         const route: any = commonUtils.getRouteComponent(routeInfo, path);
         dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, state).component });
@@ -901,8 +901,17 @@ const commonBase = (WrapComponent) => {
       dispatchModifyState({ modalVisible: false });
     }
 
-    const onModalOk = () => {
-      dispatchModifyState({ modalVisible: false });
+    const onModalOk = async (params) => {
+      const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { newRecordId: params.newRecord.id } };
+      const selectList = await getSelectList(dropParam);
+      if (commonUtils.isNotEmpty(selectList) && commonUtils.isNotEmptyArr(selectList.list)) {
+        const returnData: any = onSelectChange(params.name, params.config.fieldName, params.record, params.config.assignField, selectList.list[0].id, selectList.list[0], true);
+        dispatchModifyState({ ...returnData, modalVisible: false });
+        if (form && typeof returnData[params.name + 'Data'] === 'object' && returnData[params.name + 'Data'].constructor === Object) {
+          form.resetFields();
+          form.setFieldsValue(commonUtils.setFieldsValue(returnData[params.name + 'Data'],  modifyState[params.name + 'Container']));
+        }
+      }
     }
 
     return <Spin spinning={modifyState.pageLoading ? true : false}>

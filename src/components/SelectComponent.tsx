@@ -91,7 +91,7 @@ export function SelectComponent(params) {
 
     }
     else if (name === 'popup') {
-      const dropParam = { config: params.config };
+      const dropParam = { name: params.name, type: name, config: params.config };
       params.event.onDropAdd(dropParam);
     }
   };

@@ -212,7 +212,8 @@ const categoryListEvent = (WrapComponent) => {
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         if (props.isModal) {
-          props.callbackRemovePane();
+          dispatchModifyState({masterIsVisible: false, enabled: false});
+          props.callbackRemovePane({...props.modalParams, newRecord: masterData });
         } else {
           const returnState = await props.getAllData({testMongo: true, pageNum: 1});
           dispatchModifyState({masterIsVisible: false, enabled: false, ...returnState});

@@ -55,8 +55,13 @@ export function ButtonGroup(params) {
       buttonConfig = buttons[index];
       buttons.splice(index, 1);
     }
-    if (params.isModal && buttonConfig.fieldName !== 'postButton') {
-      buttonConfig.isVisible = false;
+    if (params.isModal) {
+        //选择框处理
+       if (params.modalType === 'select' && buttonConfig.fieldName !== 'selectButton' && buttonConfig.fieldName !== 'cancelButton' && buttonConfig.fieldName !== 'refreshButton') {
+         buttonConfig.isVisible = false;
+       } else if (params.modalType !== 'select' && buttonConfig.fieldName !== 'postButton') { //新记录处理
+         buttonConfig.isVisible = false;
+       }
     }
     if (buttonConfig.isVisible) {
       let isDropDown = false;

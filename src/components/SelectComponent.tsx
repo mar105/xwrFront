@@ -3,7 +3,7 @@ import {Divider, Form, Input, message, Select} from 'antd';
 import { componentType } from '../utils/commonTypes';
 import * as commonUtils from '../utils/commonUtils';
 import debounce from 'lodash/debounce';
-import { SaveOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { SaveOutlined, PlusSquareOutlined, SelectOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 export function SelectComponent(params) {
@@ -17,6 +17,14 @@ export function SelectComponent(params) {
   addProperty.mode = params.config.isMultiChoise ? 'multiple' : '';
   addProperty.value = params.config.isMultiChoise ?
     commonUtils.isEmpty(params.property.value) ? undefined : params.property.value.split(',') : params.property.value;
+
+  const onPopup = () => {
+    if (params.config.dropType === 'popup') {
+      const dropParam = { name: params.name, type: 'popupActive', config: params.config, record: params.record };
+      params.event.onDropPopup(dropParam);
+    }
+  };
+
   if (params.config.dropType === 'const') {
     const array: any = typeof params.config.viewDrop === 'string' ?
       commonUtils.objectToArr(commonUtils.stringToObj(params.config.viewDrop)) : params.config.viewDrop;
@@ -25,7 +33,7 @@ export function SelectComponent(params) {
       dropOptions.push(option);
     };
     addProperty.filterOption = (input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-  } else {
+  } else if (params.config.dropType === 'sql') {
     const array: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
     for (const optionObj of array) {
       const viewOption = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? optionObj.id : optionObj[params.config.keyUpFieldDrop];
@@ -35,6 +43,9 @@ export function SelectComponent(params) {
     addProperty.filterOption = (input, option) => {
       return !modifySelfState.isLastPage || commonUtils.isEmpty(option.children) ? true : option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     }
+  } else if (params.config.dropType === 'popup') {
+    addProperty.open = false;
+    addProperty.suffixIcon = <SelectOutlined onClick={onPopup} />
   }
 
   const onKeyUp = (e) => {
@@ -91,8 +102,8 @@ export function SelectComponent(params) {
 
     }
     else if (name === 'popup') {
-      const dropParam = { name: params.name, type: name, config: params.config };
-      params.event.onDropAdd(dropParam);
+      const dropParam = { name: params.name, type: 'popupAdd', config: params.config, record: params.record };
+      params.event.onDropPopup(dropParam);
     }
   };
 

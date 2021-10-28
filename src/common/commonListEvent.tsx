@@ -63,6 +63,14 @@ const commonListEvent = (WrapComponent) => {
         dispatchModifyState({ pageLoading: true });
         const returnState = await props.getAllData({ pageNum: 1});
         dispatchModifyState({ ...returnState });
+      } else if (key === 'selectButton') {
+        if (commonUtils.isEmptyArr(props.slaveSelectedRows)) {
+          props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+          return;
+        }
+        props.callbackRemovePane({...props.modalParams, selectList: props.slaveSelectedRows });
+      } else if (key === 'cancelButton') {
+        props.callbackRemovePane();
       } else if (key === 'exportExcelButton') {
         const url: string = `${application.urlUpload}/excel/exportExcel`;
         const requestParam = {
@@ -76,6 +84,7 @@ const commonListEvent = (WrapComponent) => {
         const interfaceReturn = await request.postExcelRequest(url, commonModel.token, application.paramInit(requestParam));
         commonUtils.downloadExcel(interfaceReturn);
       } else if (key === 'importExcelButton') {
+        //放在ButtonGroup中。
         // const url: string = `${application.urlUpload}/excel/importExcel`;
         // const requestParam = {
         //   routeId: routeId,
@@ -89,16 +98,21 @@ const commonListEvent = (WrapComponent) => {
     }
 
     const onRowDoubleClick = async (name, record, e) => {
-      const {[name + 'Container']: container, routeId, slaveSum, slaveSearchCondition: searchCondition, slaveData, slaveSorterInfo: sorterInfo } = props;
-      const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
-      if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {
-        const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === record[container.tableKey]);
-        const key = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? container.tableKey : container.slaveData[index].popupSelectKey;
-        props.callbackAddPane(container.slaveData[index].popupSelectId, {
-          listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: key,
-          listRowIndex: slaveIndex > -1 ? slaveIndex + 1 : 1, listRowTotal: slaveSum.total,
-          dataId: record[key] });
+      if (props.isModal) {
+        props.callbackRemovePane({...props.modalParams, selectList: [record] });
+      } else {
+        const {[name + 'Container']: container, routeId, slaveSum, slaveSearchCondition: searchCondition, slaveData, slaveSorterInfo: sorterInfo } = props;
+        const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
+        if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {
+          const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === record[container.tableKey]);
+          const key = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? container.tableKey : container.slaveData[index].popupSelectKey;
+          props.callbackAddPane(container.slaveData[index].popupSelectId, {
+            listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: key,
+            listRowIndex: slaveIndex > -1 ? slaveIndex + 1 : 1, listRowTotal: slaveSum.total,
+            dataId: record[key] });
+        }
       }
+
     }
 
     const getButtonGroup = () => {
@@ -141,11 +155,11 @@ const commonListEvent = (WrapComponent) => {
       }
     }
 
-    const onModalCancel = () => {
+    const onImportModalCancel = () => {
       props.dispatchModifyState({ pageLoading: false, importIsVisible: false });
     };
 
-    const onModalOk = async () => {
+    const onImportModalOk = async () => {
       const { commonModel, dispatch, slaveContainer, importData, tabId, dispatchModifyState } = props;
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('import', importData, [], [], false));
@@ -175,8 +189,8 @@ const commonListEvent = (WrapComponent) => {
       getButtonGroup={getButtonGroup}
       onTableChange={onTableChange}
       onUploadSuccess={onUploadSuccess}
-      onModalCancel={onModalCancel}
-      onModalOk={onModalOk}
+      onImportModalCancel={onImportModalCancel}
+      onImportModalOk={onImportModalOk}
     />
   };
 };

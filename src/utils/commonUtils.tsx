@@ -207,7 +207,7 @@ export function getTableProps(name, props) {
     pagination: true, // 是否分页
     event: { onInputChange: props.onInputChange, onCheckboxChange: props.onCheckboxChange, onNumberChange: props.onNumberChange,
       onSelectChange: props.onSelectChange, onDatePickerChange: props.onDatePickerChange, getSelectList: props.getSelectList,
-      onCascaderChange: props.onCascaderChange, onDropAdd: props.onDropAdd },
+      onCascaderChange: props.onCascaderChange, onDropPopup: props.onDropPopup },
     lastTitle: <div> <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> {configSetting} </div>,
     lastColumn: { title: 'o',
       render: (text,record, index)=> {

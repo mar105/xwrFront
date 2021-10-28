@@ -293,7 +293,7 @@ export function TableComponent(params: any) {
               config,
               property: {value: text},
               record,
-              event: {onChange: params.event.onSelectChange, getSelectList: params.event.getSelectList, onDropAdd: params.event.onDropAdd }
+              event: {onChange: params.event.onSelectChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
             };
             const inputParams = {
               name: params.name,
@@ -340,7 +340,7 @@ export function TableComponent(params: any) {
             } else if (column.fieldType === 'varchar' || column.fieldType === 'text') {
               if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
                 return <ProvinceCityArea {...provinceCityAreaParams}  />;
-              } else if (config.dropType === 'sql' || config.dropType === 'const') {
+              } else if (config.dropType === 'sql' || config.dropType === 'const' || config.dropType === 'popup') {
                 const component = useMemo(() => {
                   return <SelectComponent {...selectParams}  />
                 }, [text]);

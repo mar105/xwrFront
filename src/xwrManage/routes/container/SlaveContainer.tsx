@@ -37,7 +37,7 @@ const SlaveContainer = (props) => {
     { title: '查询界面', dataIndex: 'popupSelectName', fieldType: 'varchar', sortNum: 180, width: 150, dropType: 'sql', keyUpFieldDrop: 'viewName', assignField: 'popupSelectId=id' },
     { title: '查询界面Key', dataIndex: 'popupSelectKey', fieldType: 'varchar', sortNum: 190, width: 150 },
 
-    { title: '下拉|类型', dataIndex: 'dropType', fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "sql": "sql语句", "const": "常量", "popupActive": "选择框", "popupSelect": "定位", "popupActiveSelect": "选择框与定位" }', sortNum: 200, width: 150 },
+    { title: '下拉|类型', dataIndex: 'dropType', fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "sql": "sql语句", "const": "常量", "popup": "选择框与定位" }', sortNum: 200, width: 150 },
     { title: '下拉|中文', dataIndex: 'chineseDrop', fieldType: 'varchar', sortNum: 210, width: 150 },
     { title: '下拉|繁体', dataIndex: 'traditionalDrop', fieldType: 'varchar', sortNum: 220, width: 150 },
     { title: '下拉|英文', dataIndex: 'englishDrop', fieldType: 'varchar', sortNum: 230, width: 150 },

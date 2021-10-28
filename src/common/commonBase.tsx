@@ -483,12 +483,11 @@ const commonBase = (WrapComponent) => {
 
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
-        const data = { ...dataOld, ...assignValue };
+        const data = { ...dataOld, [fieldName]: value, ...assignValue };
         if (form) {
           form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
         }
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = value;
 
         const dataModify = data.handleType === 'modify' ?
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName], ...assignValue } :
@@ -503,18 +502,16 @@ const commonBase = (WrapComponent) => {
         const index = data.findIndex(item => item.id === record.id);
         if (index > -1) {
           const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
-          const rowData = { ...data[index], ...assignValue };
+          const rowData = { ...data[index], [fieldName]: value, ...assignValue };
           rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = value;
           data[index] = rowData;
           const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], ...assignValue };
-              dataModify[indexModify][fieldName] = data[index][fieldName];
+              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, ...assignValue, [fieldName]: data[index][fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
             }
           }
           if (isWait) {
@@ -878,22 +875,22 @@ const commonBase = (WrapComponent) => {
       });
     };
 
-    const onDropAdd = async (params) => {
+    const onDropPopup = async (params) => {
       const { dispatch, commonModel } = props;
-      const { config } = params;
+      const { config, type } = params;
       if (commonUtils.isEmpty(config.popupActiveId)) {
-        props.gotoError(dispatch, { code: '6002', msg: '路由Id不能为空！' });
+        gotoError(dispatch, { code: '6002', msg: '路由Id不能为空！' });
         return;
       }
       const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
-        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: 'add', isModal: true, modalParams: params };
+        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: type === 'popupAdd' ? 'add' : undefined, isModal: true, modalParams: params };
         const path = replacePath(state.routeData.routeName);
         const route: any = commonUtils.getRouteComponent(routeInfo, path);
         dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, state).component });
       } else {
-        props.gotoError(dispatch, interfaceReturn);
+        gotoError(dispatch, interfaceReturn);
       }
     }
 
@@ -901,17 +898,80 @@ const commonBase = (WrapComponent) => {
       dispatchModifyState({ modalVisible: false });
     }
 
-    const onModalOk = async (params) => {
-      const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { newRecordId: params.newRecord.id } };
-      const selectList = await getSelectList(dropParam);
-      if (commonUtils.isNotEmpty(selectList) && commonUtils.isNotEmptyArr(selectList.list)) {
-        const returnData: any = onSelectChange(params.name, params.config.fieldName, params.record, params.config.assignField, selectList.list[0].id, selectList.list[0], true);
-        dispatchModifyState({ ...returnData, modalVisible: false });
-        if (form && typeof returnData[params.name + 'Data'] === 'object' && returnData[params.name + 'Data'].constructor === Object) {
-          form.resetFields();
-          form.setFieldsValue(commonUtils.setFieldsValue(returnData[params.name + 'Data'],  modifyState[params.name + 'Container']));
+    const onModalOk = async (params, isWait) => {
+      if (commonUtils.isEmpty(params)) {
+        dispatchModifyState({ modalVisible: false });
+      } else if (params.type === 'popupAdd') {
+        const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { newRecordId: params.newRecord.id } };
+        const selectList = await getSelectList(dropParam);
+        if (commonUtils.isNotEmpty(selectList) && commonUtils.isNotEmptyArr(selectList.list)) {
+          const returnData: any = onSelectChange(params.name, params.config.fieldName, params.record, params.config.assignField, selectList.list[0].id, { optionObj: params.selectList[0] }, true);
+          dispatchModifyState({ ...returnData, modalVisible: false });
+          if (form && typeof returnData[params.name + 'Data'] === 'object' && returnData[params.name + 'Data'].constructor === Object) {
+            form.resetFields();
+            form.setFieldsValue(commonUtils.setFieldsValue(returnData[params.name + 'Data'],  modifyState[params.name + 'Container']));
+          }
+        }
+      } else if (params.type === 'popupActive') {
+        if (commonUtils.isNotEmptyArr(params.selectList)) {
+          const name = params.name;
+          const { [name + 'Container']: container, masterData, [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+          const assignOption = params.selectList[0];
+          const assignField = params.config.assignField;
+          const fieldName = params.config.fieldName;
+          const value = params.selectList[0].id;
+          const record = params.record;
+
+          if (typeof dataOld === 'object' && dataOld.constructor === Object) {
+            const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+            const data = { ...dataOld, [fieldName]: value, ...assignValue };
+            if (form) {
+              form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
+            }
+            data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
+
+            const dataModify = data.handleType === 'modify' ?
+              commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName], ...assignValue } :
+                { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName], ...assignValue } : dataModifyOld;
+            if (isWait) {
+              return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false };
+            } else {
+              dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false });
+            }
+          } else {
+            const data = [...dataOld];
+            const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+            params.selectList.forEach((selectItem, selectIndex) => {
+              const index = data.findIndex(item => item.id === record.id);
+              if (selectIndex === 0 && ((params.selectList.length === 1) || (index > -1 && commonUtils.isEmpty(data[index][fieldName])))) {
+                const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem);
+                const rowData = { ...data[index], [fieldName]: value, ...assignValue };
+                rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+                data[index] = rowData;
+                if (data[index].handleType === 'modify') {
+                  const indexModify = dataModify.findIndex(item => item.id === record.id);
+                  if (indexModify > -1) {
+                    dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
+                  } else {
+                    dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
+                  }
+                }
+              } else {
+                const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem);
+                const rowData = { ...onAdd(container), [fieldName]: value, ...assignValue, superiorId: masterData.id };
+                data.push(rowData);
+              }
+            });
+            if (isWait) {
+              return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false };
+            } else {
+              dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false });
+            }
+          }
+
         }
       }
+
     }
 
     return <Spin spinning={modifyState.pageLoading ? true : false}>
@@ -945,7 +1005,7 @@ const commonBase = (WrapComponent) => {
       onSortEnd={onSortEnd}
       draggableBodyRow={draggableBodyRow}
       onUpload={onUpload}
-      onDropAdd={onDropAdd}
+      onDropPopup={onDropPopup}
       onModalCancel={onModalCancel}
     />
     </Spin>

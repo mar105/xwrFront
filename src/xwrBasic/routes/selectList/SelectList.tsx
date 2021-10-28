@@ -4,41 +4,50 @@ import commonBase from "../../../common/commonBase";
 import React, {useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
 import {ButtonGroup} from "../../../common/ButtonGroup";
-import { Form, Modal} from "antd";
+import { Form} from "antd";
 import Search from "../../../common/Search";
 import commonListEvent from "../../../common/commonListEvent";
-import ImportList from "./ImportList";
-const CommonList = (props) => {
+const SelectList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
 
-  const { commonModel, enabled, slaveContainer, searchRowKeys, searchData, importIsVisible } = props;
+  const getButtonGroup = () => {
+    const buttonGroup: any = [];
+    buttonGroup.push({ key: 'selectButton', caption: '选择', htmlType: 'button', sortNum: 10, disabled: props.enabled });
+    buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: props.enabled });
+    buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 70, disabled: props.enabled });
+    return buttonGroup;
+  }
+
+  const { commonModel, enabled, slaveContainer, searchRowKeys, searchData } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, token: commonModel.token, routeId: props.routeId, groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId,
-    onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup(), isModal: props.isModal,
+    onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: getButtonGroup(), isModal: props.isModal, modalType: 'select',
     onUploadSuccess: props.onUploadSuccess, dispatchModifyState: props.dispatchModifyState };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;
   tableParam.eventOnRow = { ...tableParam.eventOnRow, onRowDoubleClick: props.onRowDoubleClick };
+
+  const selectParam: any = commonUtils.getTableProps('slave', props);
+  selectParam.isLastColumn = false;
+  selectParam.enabled = false;
+  selectParam.property.dataSource = props.slaveSelectedRows;
+
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 
-  console.log('tableParam', tableParam);
   return (
     <div>
       {props.slaveContainer ?
         <div>
           {search}
           <TableComponent {...tableParam} />
+          <TableComponent {...selectParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} />
-      <Modal width={1500} maskClosable={false}  visible={importIsVisible} onCancel={props.onImportModalCancel.bind(this, 'import')} onOk={props.onImportModalOk.bind(this, 'import')}>
-        <ImportList {...props } />
-      </Modal>
-
     </div>
 
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonListEvent(CommonList)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonListEvent(SelectList)));

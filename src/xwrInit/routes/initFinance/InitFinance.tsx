@@ -121,9 +121,9 @@ const InitFinance = (props) => {
     return buttonGroup;
   }
 
-  const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel } = props;
+  const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel, masterContainer } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
-    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
+    isModal: props.isModal, buttonGroup: getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;

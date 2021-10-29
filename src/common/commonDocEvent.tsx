@@ -36,8 +36,12 @@ const commonDocEvent = (WrapComponent) => {
       const { dispatch, dispatchModifyState } = props;
       const returnBody = JSON.parse(data.body);
       if (returnBody.code === 1) {
-        const returnState: any = await props.getAllData({ dataId: masterDataRef.current.id });
-        dispatchModifyState({...returnState});
+        if (props.isModal) {
+          props.callbackRemovePane({...props.modalParams, newRecord: masterDataRef.current });
+        } else {
+          const returnState: any = await props.getAllData({ dataId: masterDataRef.current.id });
+          dispatchModifyState({...returnState});
+        }
         props.gotoSuccess(dispatch, returnBody);
       } else {
         dispatchModifyState({ pageLoading: false });

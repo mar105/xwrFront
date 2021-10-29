@@ -914,20 +914,24 @@ const commonBase = (WrapComponent) => {
       dispatchModifyState({ modalVisible: false });
     }
 
-    const onModalOk = async (params, isWait) => {
+    const onModalOk = (params, isWait) => {
       if (commonUtils.isEmpty(params)) {
         dispatchModifyState({ modalVisible: false });
       } else if (params.type === 'popupAdd') {
-        const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { newRecordId: params.newRecord.id } };
-        const selectList = await getSelectList(dropParam);
-        if (commonUtils.isNotEmpty(selectList) && commonUtils.isNotEmptyArr(selectList.list)) {
-          const returnData: any = onSelectChange(params.name, params.config.fieldName, params.record, params.config.assignField, selectList.list[0].id, { optionObj: params.selectList[0] }, true);
-          dispatchModifyState({ ...returnData, modalVisible: false });
-          if (form && typeof returnData[params.name + 'Data'] === 'object' && returnData[params.name + 'Data'].constructor === Object) {
-            form.resetFields();
-            form.setFieldsValue(commonUtils.setFieldsValue(returnData[params.name + 'Data'],  modifyState[params.name + 'Container']));
+        setTimeout(async () => { //延时2秒的原因是等待rocket任务处理完成。
+          const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { newRecordId: params.newRecord.id } };
+          const selectList = await getSelectList(dropParam);
+          if (commonUtils.isNotEmpty(selectList) && commonUtils.isNotEmptyArr(selectList.list)) {
+            const returnData: any = onSelectChange(params.name, params.config.fieldName, params.record, params.config.assignField, selectList.list[0].id, { optionObj: selectList.list[0] }, true);
+            dispatchModifyState({ ...returnData, modalVisible: false });
+            if (form && typeof returnData[params.name + 'Data'] === 'object' && returnData[params.name + 'Data'].constructor === Object) {
+              form.resetFields();
+              form.setFieldsValue(commonUtils.setFieldsValue(returnData[params.name + 'Data'],  modifyState[params.name + 'Container']));
+            }
+          } else {
+            dispatchModifyState({ modalVisible: false });
           }
-        }
+        }, 2000);
       } else if (params.type === 'popupActive') {
         if (commonUtils.isNotEmptyArr(params.selectList)) {
           const name = params.name;

@@ -4,9 +4,11 @@ import commonBase from "../../../common/commonBase";
 import React, {useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
 import {ButtonGroup} from "../../../common/ButtonGroup";
-import { Form} from "antd";
+import {Form, Tooltip} from "antd";
 import Search from "../../../common/Search";
 import commonListEvent from "../../../common/commonListEvent";
+import { DeleteOutlined } from '@ant-design/icons';
+
 const SelectList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
@@ -35,6 +37,12 @@ const SelectList = (props) => {
   selectParam.enabled = false;
   selectParam.property.dataSource = props.slaveSelectedRows;
   selectParam.property.rowSelection = undefined;
+  selectParam.isViewLastColumn = true;
+  selectParam.lastColumn = { title: 'o',
+    render: (text,record, index)=> {
+    return <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, 'slave', 'delSelectButton', record) : null}>
+      <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
+  }, width: 50 , fixed: 'right' };
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 

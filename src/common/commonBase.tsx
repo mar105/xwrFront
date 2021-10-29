@@ -232,7 +232,7 @@ const commonBase = (WrapComponent) => {
     };
 
     const onLastColumnClick = (name, key, record, e, isWait = false) => {
-      const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld, [name + 'SelectedRows']: dataSelectedRows, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
       if (key === 'delButton') {
         const data = [...dataOld];
         const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
@@ -248,6 +248,22 @@ const commonBase = (WrapComponent) => {
           } else {
             dispatchModifyState({ [name + 'Data']: data, [name + 'DelData']: delData });
           }
+        }
+      } else if (key === 'delSelectButton') {
+        const data = [...dataSelectedRows];
+        const index = data.findIndex(item => item.id === record.id);
+        if (index > -1) {
+          data.splice(index, 1);
+        }
+        const dataKeys = [...dataSelectedRowKeys];
+        const indexKeys = dataKeys.findIndex(item => item === record.id);
+        if (indexKeys > -1) {
+          dataKeys.splice(indexKeys, 1);
+        }
+        if (isWait) {
+          return { [name + 'SelectedRows']: data, [name + 'SelectedRowKeys']: dataKeys };
+        } else {
+          dispatchModifyState({ [name + 'SelectedRows']: data, [name + 'SelectedRowKeys']: dataKeys });
         }
       }
 

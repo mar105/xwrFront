@@ -238,7 +238,7 @@ export function TableComponent(params: any) {
             params.property.dataSource.length < 1000 ? 60 :
               params.property.dataSource.length < 10000 ? 70 : 80 , fixed: 'left' };
     const columnsOld: any = params.config.isRowNum ? [firstColumn, ...resizeColumns] : [ ...resizeColumns];
-    if (params.isLastColumn && params.enabled) {
+    if ((params.isLastColumn && params.enabled) || params.isViewLastColumn) {
       columnsOld.push(params.lastColumn);
     }
 

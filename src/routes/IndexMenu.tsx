@@ -40,7 +40,7 @@ const IndexMenu = (props) => {
   }, [props.commonModel.userInfo.userId]);
 
   const subMenu = (menu, userPermission) => {
-    if (commonUtils.isNotEmptyArr(menu.children) ) {
+    if (commonUtils.isNotEmptyArr(menu.children) && menu.isVisible) {
       return <SubMenu key={menu.id} title={menu.viewName}>
         {menu.children.map(menu => {
           return subMenu(menu, userPermission);

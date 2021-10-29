@@ -26,13 +26,15 @@ const SelectList = (props) => {
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;
+  tableParam.rowSelection.preserveSelectedRowKeys = true;
   tableParam.eventOnRow = { ...tableParam.eventOnRow, onRowDoubleClick: props.onRowDoubleClick };
+
 
   const selectParam: any = commonUtils.getTableProps('slave', props);
   selectParam.isLastColumn = false;
   selectParam.enabled = false;
   selectParam.property.dataSource = props.slaveSelectedRows;
-
+  selectParam.property.rowSelection = undefined;
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 

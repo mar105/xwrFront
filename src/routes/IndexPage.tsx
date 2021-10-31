@@ -79,7 +79,7 @@ function IndexPage(props) {
       }
       dispatch({
         type: 'commonModel/saveFormulaParamList',
-        payload: { formulaParamList },
+        payload: formulaParamList,
       });
     }
     else if (returnBody.type === 'formula') {
@@ -101,7 +101,7 @@ function IndexPage(props) {
       }
       dispatch({
         type: 'commonModel/saveFormulaList',
-        payload: { formulaList },
+        payload: formulaList,
       });
     }
   }

@@ -219,11 +219,12 @@ const categoryListEvent = (WrapComponent) => {
           dispatchModifyState({masterIsVisible: false, enabled: false, ...returnState});
         }
         props.gotoSuccess(dispatch, interfaceReturn);
+        return 1;
       } else if (interfaceReturn.code === 10) {
         dispatchModifyState({ pageLoading: true });
       } else {
         props.gotoError(dispatch, interfaceReturn);
-        return;
+        return 0;
       }
     }
 

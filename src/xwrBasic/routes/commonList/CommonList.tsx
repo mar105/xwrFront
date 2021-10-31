@@ -23,7 +23,6 @@ const CommonList = (props) => {
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 
-  console.log('tableParam', tableParam);
   return (
     <div>
       {props.slaveContainer ?

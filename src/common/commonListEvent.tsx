@@ -54,10 +54,11 @@ const commonListEvent = (WrapComponent) => {
             return;
           }
           const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === slaveSelectedRowKeys[0]);
+          const selectKey = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? 'id' : container.slaveData[index].popupSelectKey;
           props.callbackAddPane(container.slaveData[index].popupSelectId, { handleType: 'modify',
             listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: container.tableKey,
             listRowIndex: slaveIndex > -1 ? slaveIndex + 1 : 1, listRowTotal: slaveSum.total,
-            dataId: slaveSelectedRowKeys[0] });
+            dataId: slaveData[slaveIndex][selectKey] });
         }
       } else if (key === 'refreshButton') {
         dispatchModifyState({ pageLoading: true });

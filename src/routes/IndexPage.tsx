@@ -39,8 +39,72 @@ function IndexPage(props) {
       connectionWebsocket();
     }, 5000);
     dispatchModifySelfState({intervalWebsocket});
+    syncRefreshData({ body: JSON.stringify({type: 'formulaParam'})});
+    syncRefreshData({ body: JSON.stringify({type: 'formula'})});
     return () => clearInterval(intervalWebsocket);
   }, []);
+
+  useEffect(() => {
+    if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+      && props.commonModel.stompClient.connected) {
+      props.commonModel.stompClient.subscribe('/topic-websocket/syncRefreshData', syncRefreshData);
+    }
+    return () => {
+      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+        && props.commonModel.stompClient.connected) {
+        props.commonModel.stompClient.unsubscribe('/topic-websocket/syncRefreshData');
+      }
+    };
+  }, [props.commonModel.stompClient]);
+
+  const syncRefreshData = async (data) => {
+    const { dispatch } = props;
+    const returnBody = JSON.parse(data.body);
+    if (returnBody.type === 'formulaParam') {
+      const formulaParamList: any = [];
+      let pageNum = 1;
+      let dropParam = { name: 'formulaParam', pageNum, isWait: true, containerSlaveId: '1454410376715309056' }; //公式参数
+      let returnData: any = await props.getSelectList(dropParam);
+      if (commonUtils.isNotEmptyObj(returnData)) {
+        formulaParamList.push(...returnData.list);
+        while(!returnData.isLastPage) {
+          dropParam = { name: 'formulaParam', pageNum: pageNum + 1, isWait: true, containerSlaveId: '1454410376715309056' };
+          returnData = await props.getSelectList(dropParam);
+          if (commonUtils.isEmptyArr(returnData.list)) {
+            break;
+          } else {
+            formulaParamList.push(...returnData.list);
+          }
+        }
+      }
+      dispatch({
+        type: 'commonModel/saveFormulaParamList',
+        payload: { formulaParamList },
+      });
+    }
+    else if (returnBody.type === 'formula') {
+      const formulaList: any = [];
+      let pageNum = 1;
+      let dropParam = { name: 'formula', pageNum, isWait: true, containerSlaveId: '1454411898979225600' }; //公式
+      let returnData = await props.getSelectList(dropParam);
+      if (commonUtils.isNotEmptyObj(returnData)) {
+        formulaList.push(...returnData.list);
+        while(!returnData.isLastPage) {
+          dropParam = { name: 'formula', pageNum: pageNum + 1, isWait: true, containerSlaveId: '1454411898979225600' };
+          returnData = await props.getSelectList(dropParam);
+          if (commonUtils.isEmptyArr(returnData.list)) {
+            break;
+          } else {
+            formulaList.push(...returnData.list);
+          }
+        }
+      }
+      dispatch({
+        type: 'commonModel/saveFormulaList',
+        payload: { formulaList },
+      });
+    }
+  }
 
   const connectionWebsocket = async () => {
     const {dispatch, commonModel } = props;

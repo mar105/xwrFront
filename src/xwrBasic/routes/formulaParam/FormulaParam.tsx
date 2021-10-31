@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import * as commonUtils from "../../../utils/commonUtils";
 import commonBase from "../../../common/commonBase";
-import React, {useMemo} from "react";
+import React, {useEffect, useMemo} from "react";
 import {TableComponent} from "../../../components/TableComponent";
 import {ButtonGroup} from "../../../common/ButtonGroup";
 import {Button, Drawer, Form} from "antd";
@@ -12,6 +12,26 @@ import categoryListEvent from "../../../common/categoryListEvent";
 const FormulaParam = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
+
+  useEffect(() => {
+    if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+      && props.commonModel.stompClient.connected) {
+      props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+    }
+    return () => {
+      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+        && props.commonModel.stompClient.connected) {
+        props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId);
+      }
+    };
+  }, [props.commonModel.stompClient]);
+
+  const saveDataReturn = async (data) => {
+    const returnBody = JSON.parse(data.body);
+    if (returnBody.code === 1) {
+      props.commonModel.stompClient.send('/websocket/syncRefreshData', {}, JSON.stringify({ userName: props.commonModel.userInfo.userName, type: 'formulaParam'}));
+    }
+  }
 
   const onButtonClick = async (key, config, e) => {
     const { slaveSelectedRows, masterContainer, categoryContainer, categoryDelData: categoryDelDataOld } = props;
@@ -30,7 +50,7 @@ const FormulaParam = (props) => {
             categoryData.push(data);
           });
         }
-        return { categoryData };
+        return { categoryData, categorySelectedRowKeys: [] };
       }
       props.onButtonClick(key, config, e, {childCallback});
     }
@@ -107,7 +127,10 @@ const FormulaParam = (props) => {
       saveData.push(commonUtils.mergeData('category', categoryData.filter(item => commonUtils.isNotEmpty(item.handleType)), [], categoryDelData, true));
       return saveData;
     }
-    props.onModalOk(e, {childCallback});
+    const returnData = await props.onModalOk(e, {childCallback});
+    if (returnData) {
+      props.commonModel.stompClient.send('/websocket/syncRefreshData', {}, JSON.stringify({ userName: props.commonModel.userInfo.userName, type: 'formulaParam'}));
+    }
   }
 
 

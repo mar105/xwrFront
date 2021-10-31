@@ -12,6 +12,8 @@ export default {
     panes: JSON.parse(localStorage.getItem(`${application.prefix}panes`) || '[]'),
     activePane: JSON.parse(localStorage.getItem(`${application.prefix}activePane`) || '{}'),
     commonConstant: JSON.parse(localStorage.getItem(`${application.prefix}commonConstant`) || '[]'),
+    formulaParamList: JSON.parse(localStorage.getItem(`${application.prefix}formulaParamList`) || '[]'),
+    formulaList: JSON.parse(localStorage.getItem(`${application.prefix}formulaList`) || '[]'),
   },
   reducers: {
     saveToken(state, { payload: token }) {
@@ -40,6 +42,14 @@ export default {
     saveCommonConstant(state, { payload: commonConstant }) {
       localStorage.setItem(`${application.prefix}commonConstant`, JSON.stringify(commonConstant));
       return { ...state, commonConstant };
+    },
+    saveFormulaParamList(state, { payload: formulaParamList }) {
+      localStorage.setItem(`${application.prefix}formulaParamList`, JSON.stringify(formulaParamList));
+      return { ...state, formulaParamList };
+    },
+    saveFormulaList(state, { payload: formulaList }) {
+      localStorage.setItem(`${application.prefix}formulaList`, JSON.stringify(formulaList));
+      return { ...state, formulaList };
     },
   },
   effects: {

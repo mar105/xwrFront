@@ -391,7 +391,8 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
             if (allDataset[dataSetName][tableFieldName] !== undefined) {
               // 加括号处理当值为负数时的异常
               formula = formula.replace(tableFieldName, `(${allDataset[dataSetName][tableFieldName]})`);
-
+            } else {
+              formula = formula.replace(tableFieldName, '0');
             }
           }
         });
@@ -539,8 +540,12 @@ export function getMeasureQtyToQtyCalc(dataRow, type, fieldName, commonModel) {
     commonConstant[indexM].englishName === dataRow[type + 'Unit'] ||
     commonConstant[indexM].traditionalName === dataRow[type + 'Unit']);
 
+  if (isNotEmpty(dataRow.measureToProductFormulaId)) {
+    returnRow[type + 'Qty'] = getFormulaValue(dataRow, dataRow.measureToProductFormulaId, commonModel);
+    returnRow.measureUnit = dataRow.measureStoreUnit;
+  }
   // 单位相同 数量相同
-  if (dataRow.measureUnit === dataRow[type + 'Unit']) {
+  else if (dataRow.measureUnit === dataRow[type + 'Unit']) {
     returnRow[type + 'Qty'] = round(dataRow.measureQty, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
@@ -593,4 +598,33 @@ export function getMeasureQtyToQtyCalc(dataRow, type, fieldName, commonModel) {
   }
 
   return returnRow;
+}
+
+//数量转换到换算数量
+export function getFormulaValue(dataRow, formulaId, commonModel) {
+  const { formulaParamList, formulaList } = commonModel;
+  const index = formulaList.findIndex(item => item.id === formulaId);
+  if (index > -1) {
+    let formula = formulaList[index].formula;
+    formulaParamList.filter(item => item.paramType === 'billSlave').forEach(formulaParam => {
+      const splitField = formulaParam.fieldName.split('.');
+      if (splitField.length > 1) {
+        const value = dataRow[splitField[0]];
+        if (isNotEmpty(value)) {
+          if (splitField[1] === 'left') {
+            formula = formula.replace(formulaParam.paramName, value.split('*')[0]);
+          } else if (value.split('*').length > 1 && splitField[1] === 'right') {
+            formula = formula.replace(formulaParam.paramName, value.split('*')[1]);
+          }
+        }
+      } else if (isNotEmpty(dataRow[formulaParam.fieldName])) {
+        formula = formula.replace(formulaParam.paramName, dataRow[formulaParam.fieldName]);
+      } else {
+        formula = formula.replace(formulaParam.paramName, 0);
+      }
+    });
+    return eval(formula);
+  } else {
+    return 0;
+  }
 }

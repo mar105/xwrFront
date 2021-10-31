@@ -45,6 +45,26 @@ const Formula = (props) => {
     }
   }, [props.masterContainer.dataSetName]);
 
+  useEffect(() => {
+    if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+      && props.commonModel.stompClient.connected) {
+      props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+    }
+    return () => {
+      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
+        && props.commonModel.stompClient.connected) {
+        props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId);
+      }
+    };
+  }, [props.commonModel.stompClient]);
+
+  const saveDataReturn = async (data) => {
+    const returnBody = JSON.parse(data.body);
+    if (returnBody.code === 1) {
+      props.commonModel.stompClient.send('/websocket/syncRefreshData', {}, JSON.stringify({ userName: props.commonModel.userInfo.userName, type: 'formula'}));
+    }
+  }
+
   const getTreeData = (formulaType) => {
     const { masterContainer } = props;
     const treeData: any = [];
@@ -89,7 +109,9 @@ const Formula = (props) => {
   }
   const onFinish = async (values: any) => {
     if (verifyFormula() === 1) {
-      props.onFinish(values);
+      if (await props.onFinish(values)) {
+        props.commonModel.stompClient.send('/websocket/syncRefreshData', {}, JSON.stringify({ userName: props.commonModel.userInfo.userName, type: 'formula'}));
+      }
     }
   }
 

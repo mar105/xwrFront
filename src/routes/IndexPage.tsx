@@ -148,7 +148,7 @@ function IndexPage(props) {
   }
 
   const callbackRemovePane = useCallback((targetKey) => {
-    const {dispatch, dispatchModifyState, commonModel } = props;
+    const {dispatch, dispatchModifyState } = props;
     const panesOld = commonUtils.isEmptyArr(panesRef.current) ? [] : panesRef.current;
     let lastIndex = -1;
     panesOld.forEach((pane, i) => {
@@ -159,15 +159,18 @@ function IndexPage(props) {
     const panesComponentsOld = commonUtils.isEmptyArr(panesComponentsRef.current) ? [] : panesComponentsRef.current;
     const panesComponents = panesComponentsOld.filter(pane => pane.key.toString() !== targetKey);
     const panes = panesOld.filter(pane => pane.key.toString() !== targetKey);
-    let activePane = {};
+    let activePane: any = {};
 
-    if (panes.length > 0 && commonModel.activePane.key === targetKey) {
+    if (panes.length > 0) { // && commonModel.activePane.key === targetKey 20211031不知为何加这一句，先去除。
       if (lastIndex > -1) {
         activePane = panes[lastIndex];
       } else {
         activePane = panes[0];
       }
     }
+
+    dispatchModifyState({ panesComponents });
+    const params = 'routeId=' + activePane.routeId + '&tabId=' + activePane.key + (activePane.dataId ? '&dataId=' + activePane.dataId : '');
     dispatch({
       type: 'commonModel/saveActivePane',
       payload: activePane,
@@ -176,7 +179,10 @@ function IndexPage(props) {
       type: 'commonModel/savePanes',
       payload: panes,
     });
-    dispatchModifyState({ panesComponents });
+    dispatch({
+      type: 'commonModel/gotoNewPage',
+      payload: {newPage: activePane.route + '?' + params},
+    });
 
   }, [panesComponentsRef.current]);
 

@@ -237,18 +237,22 @@ const commonDocEvent = (WrapComponent) => {
       const {name, fieldName, record, returnData } = params;
       if (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle') {
         if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
-          const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(returnData[name + 'Data'],'product', fieldName, props.commonModel);
+          const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'],'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...qtyCalcData};
-          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData} : returnData[name + 'ModifyData'];
+          const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'],'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+          returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...convertCalcData};
+          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData} : returnData[name + 'ModifyData'];
         } else {
           const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
           if (index > -1) {
-            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(returnData[name + 'Data'][index], 'product', fieldName, props.commonModel);
+            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'][index],'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...qtyCalcData};
+            const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'][index],'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...convertCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
               const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
               if (indexModify > -1) {
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData};
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
               }
             }
           }

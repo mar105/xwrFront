@@ -480,7 +480,7 @@ export function downloadExcel(interfaceReturn) {
 }
 
 //数量转换到换算数量
-export function getMeasureQtyToQtyCalc(dataRow, type, fieldName, commonModel) {
+export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaId, coefficient) {
   const returnRow: any = {};
   let styleWidth = 0;
   let styleLength = 0;
@@ -540,65 +540,84 @@ export function getMeasureQtyToQtyCalc(dataRow, type, fieldName, commonModel) {
     commonConstant[indexM].englishName === dataRow[type + 'Unit'] ||
     commonConstant[indexM].traditionalName === dataRow[type + 'Unit']);
 
-  if (isNotEmpty(dataRow.measureToProductFormulaId)) {
-    returnRow[type + 'Qty'] = getFormulaValue(dataRow, dataRow.measureToProductFormulaId, commonModel);
+  if (isNotEmpty(dataRow[formulaId])) {
+    returnRow[calcFieldName] = getFormulaValue(dataRow, dataRow[formulaId], commonModel);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
   // 单位相同 数量相同
   else if (dataRow.measureUnit === dataRow[type + 'Unit']) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
   //平张材料处理
   // 1张 门幅*长度 889*1194
   else if (count === 1 && dataRow.gramWeight > 0 && !dataRow.isReel && isTon) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * styleWidth * styleLength * dataRow.gramWeight / toM2 / 1000000, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength * dataRow.gramWeight / toM2 / 1000000, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   } else if (count === 1 && dataRow.gramWeight > 0 && !dataRow.isReel && isKg) {
-    dataRow[type + 'Qty'] = round(dataRow.measureQty * styleWidth * styleLength * dataRow.gramWeight / toM2  / 1000, 6);
+    dataRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength * dataRow.gramWeight / toM2  / 1000, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   } else if (count === 1 && !dataRow.isReel && isM2) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * styleWidth * styleLength / toM2, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / toM2, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
 
   // 卷筒材料处理
   // 1张 门幅*长度 889*1194
   else if (count === 1 && dataRow.gramWeight > 0 && dataRow.isReel && isTon) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * styleWidth * styleLength * dataRow.gramWeight / toM2 / 1000000, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength * dataRow.gramWeight / toM2 / 1000000, 6);
     returnRow.measureUnit = paperUnit;
   } else if (count === 1 && dataRow.gramWeight > 0 && dataRow.isReel && isKg) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * styleWidth * styleLength * dataRow.gramWeight / toM2  / 1000, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength * dataRow.gramWeight / toM2  / 1000, 6);
     returnRow.measureUnit = paperUnit;
   }
   // 1卷 门幅*长度m 889*500m
   else if (count === 1 && dataRow.isReel && isM2) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * styleWidth * styleLength / 1000, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / 1000, 6);
     returnRow.measureUnit = reelUnit;
   }
   // 1m 门幅889
   else if (isNotEmpty(dataRow[type + 'Style']) && dataRow.gramWeight > 0 && dataRow.isReel && isM && isTon) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * styleWidth * dataRow.gramWeight / toM2 / 1000000, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * dataRow.gramWeight / toM2 / 1000000, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   } else if (isNotEmpty(dataRow[type + 'Style']) && dataRow.gramWeight > 0 && dataRow.isReel && isM && isKg) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * styleWidth * dataRow.gramWeight / toM2  / 1000, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * dataRow.gramWeight / toM2  / 1000, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
   // 纸箱材料处理
   // 100*200*300 长宽高
   else if (count === 2 && !dataRow.isReel && isM2) {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * (styleLength + styleWidth + cartonLength) * (styleWidth + styleHeight + cartonWidth) * 2 / toCartonM2, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * (styleLength + styleWidth + cartonLength) * (styleWidth + styleHeight + cartonWidth) * 2 / toCartonM2, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
   // 普通材料处理
   // 1 * 系数
   else {
-    returnRow[type + 'Qty'] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow['measureTo' + type + 'Coefficient'], 1), 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow[coefficient], 1), 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
 
   return returnRow;
 }
+
+//数量转换到换算数量
+export function getMeasureQtyToConvertCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaId, coefficient) {
+  const returnRow: any = {};
+  if (isNotEmpty(dataRow[formulaId])) {
+    returnRow[calcFieldName] = getFormulaValue(dataRow, dataRow[formulaId], commonModel);
+  }
+  // 单位相同 数量相同
+  else if (dataRow.measureUnit === dataRow.convertUnit) {
+    returnRow[calcFieldName] = round(dataRow.measureQty, 6);
+  }
+  // 普通材料处理
+  // 1 * 系数
+  else {
+    returnRow[calcFieldName] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow[coefficient], 1), 6);
+  }
+  return returnRow;
+}
+
 
 //数量转换到换算数量
 export function getFormulaValue(dataRow, formulaId, commonModel) {

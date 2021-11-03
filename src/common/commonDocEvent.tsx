@@ -235,27 +235,54 @@ const commonDocEvent = (WrapComponent) => {
 
     const calcOperation = (params) => {
       const {name, fieldName, record, returnData } = params;
-      if (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle') {
-        if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
+      if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
+        if (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle') {
           const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'],'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...qtyCalcData};
           const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'],'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...convertCalcData};
-          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData} : returnData[name + 'ModifyData'];
-        } else {
-          const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
-          if (index > -1) {
+          const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'],'product', fieldName, 'costMoney');
+          returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...moneyCalcData};
+          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, moneyCalcData} : returnData[name + 'ModifyData'];
+        }
+      } else {
+        const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
+        if (index > -1) {
+          if (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle') {
             const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'][index],'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...qtyCalcData};
             const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'][index],'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...convertCalcData};
+            const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'][index],'product', fieldName, 'costMoney');
+            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
               const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
               if (indexModify > -1) {
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData, ...moneyCalcData };
               }
             }
           }
+          else if (fieldName === 'costPrice') {
+            const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'][index],'product', fieldName, 'costMoney');
+            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
+            if (returnData[name + 'Data'][index].handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+              }
+            }
+          }
+          else if (fieldName === 'costMoney') {
+            const moneyCalcData = commonUtils.getPrice(props.commonModel, returnData[name + 'Data'][index],'product', fieldName, 'costPrice');
+            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
+            if (returnData[name + 'Data'][index].handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+              }
+            }
+          }
+
         }
       }
       return returnData;

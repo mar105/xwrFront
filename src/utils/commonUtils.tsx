@@ -541,7 +541,7 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
     commonConstant[indexM].traditionalName === dataRow[type + 'Unit']);
 
   if (isNotEmpty(dataRow[formulaId])) {
-    returnRow[calcFieldName] = getFormulaValue(dataRow, dataRow[formulaId], commonModel);
+    returnRow[calcFieldName] = round(getFormulaValue(dataRow, dataRow[formulaId], commonModel), 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
   // 单位相同 数量相同
@@ -615,6 +615,20 @@ export function getMeasureQtyToConvertCalc(commonModel, dataRow, type, fieldName
   else {
     returnRow[calcFieldName] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow[coefficient], 1), 6);
   }
+  return returnRow;
+}
+
+export function getMoney(commonModel, dataRow, type, fieldName, calcFieldName) {
+  const moneyPlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.moneyPlace : 6;
+  const returnRow: any = {};
+  returnRow[calcFieldName] = round(isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) * isEmptyorZeroDefault(dataRow.costPrice, 0), moneyPlace);
+  return returnRow;
+}
+
+export function getPrice(commonModel, dataRow, type, fieldName, calcFieldName) {
+  const pricePlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.pricePlace : 6;
+  const returnRow: any = {};
+  returnRow[calcFieldName] = round(isEmptyorZeroDefault(dataRow.costMoney, 0) / isEmptyorZeroDefault(dataRow[type + 'Qty'], 1), pricePlace);
   return returnRow;
 }
 

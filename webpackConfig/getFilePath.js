@@ -23,7 +23,7 @@ module.exports = function getFilePath(path){
       }
     });
     fileArr.push('index');
-    console.log('getFilePath', fileArr);
+    console.debug('getFilePath', fileArr);
     return fileArr;
   }
 };

@@ -22,6 +22,6 @@ module.exports = function getEntry(pathOld){
       entry[`${item}/${item}`] = `${path}/${item}/index.tsx`;
     }
   });
-  console.log('getEntry', entry);
+  console.debug('getEntry', entry);
   return entry;
 };

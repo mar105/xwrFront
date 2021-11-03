@@ -656,7 +656,13 @@ export function getFormulaValue(dataRow, formulaId, commonModel) {
         formula = formula.replace(formulaParam.paramName, 0);
       }
     });
-    return eval(formula);
+    try {
+      return eval(formula);
+    }
+    catch (e) {
+      console.error(e);
+      return 0;
+    }
   } else {
     return 0;
   }

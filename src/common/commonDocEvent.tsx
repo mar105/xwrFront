@@ -8,7 +8,7 @@ import CommonModal from "./commonModal";
 
 const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {
-    const masterDataRef: any = useRef();
+    const propsRef: any = useRef();
     let form;
     const onSetForm = (formNew) => {
       form = formNew;
@@ -16,8 +16,8 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     useEffect(() => {
-      masterDataRef.current = props.masterData;
-    }, [props.masterData]);
+      propsRef.current = props;
+    }, [props]);
 
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
@@ -37,9 +37,9 @@ const commonDocEvent = (WrapComponent) => {
       const returnBody = JSON.parse(data.body);
       if (returnBody.code === 1) {
         if (props.isModal) {
-          props.callbackRemovePane({...props.modalParams, newRecord: masterDataRef.current });
+          props.callbackRemovePane({...props.modalParams, newRecord: propsRef.current.masterData.id });
         } else {
-          const returnState: any = await props.getAllData({ dataId: masterDataRef.current.id });
+          const returnState: any = await props.getAllData({ dataId: propsRef.current.masterData.id });
           dispatchModifyState({...returnState});
         }
         props.gotoSuccess(dispatch, returnBody);
@@ -207,9 +207,9 @@ const commonDocEvent = (WrapComponent) => {
       let returnData = props.onNumberChange(name, fieldName, record, valueOld, true);
       returnData = calcOperation({name, fieldName, record, returnData});
       if (isWait) {
-        return { [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] };
+        return { ...returnData };
       } else {
-        props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] });
+        props.dispatchModifyState({ ...returnData });
       }
     }
 
@@ -217,9 +217,9 @@ const commonDocEvent = (WrapComponent) => {
       let returnData = props.onSelectChange(name, fieldName, record, assignField, valueOld, option, true);
       returnData = calcOperation({name, fieldName, record, returnData});
       if (isWait) {
-        return { [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] };
+        return { ...returnData };
       } else {
-        props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] });
+        props.dispatchModifyState({ ...returnData });
       }
     }
 
@@ -227,9 +227,9 @@ const commonDocEvent = (WrapComponent) => {
       let returnData = props.onInputChange(name, fieldName, record, e, true);
       returnData = calcOperation({name, fieldName, record, returnData});
       if (isWait) {
-        return { [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] };
+        return { ...returnData };
       } else {
-        props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], [name + 'ModifyData']: returnData[name + 'ModifyData'] });
+        props.dispatchModifyState({ ...returnData });
       }
     }
 
@@ -245,6 +245,29 @@ const commonDocEvent = (WrapComponent) => {
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...moneyCalcData};
           returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, moneyCalcData} : returnData[name + 'ModifyData'];
         }
+        // 主表仓库数据带到从表
+        else if (fieldName === 'warehouseLocationName') {
+          const { slaveData: slaveDataOld, slaveModifyData: slaveModifyDataOld } = propsRef.current;
+          const slaveData: any = [];
+          const slaveModifyData: any = commonUtils.isEmptyArr(slaveModifyDataOld) ? [] : slaveModifyDataOld;
+          if (commonUtils.isNotEmptyObj(slaveDataOld)) {
+            slaveDataOld.forEach(slave => {
+              const warehoseLocationData = { warehouseLocationName: returnData[name + 'Data'].warehouseLocationName, warehouseLocationCode: returnData[name + 'Data'].warehouseLocationCode, warehouseLocationId: returnData[name + 'Data'].warehouseLocationId };
+              slaveData.push({...slave, ...warehoseLocationData});
+              if (slave.handleType === 'modify') {
+                const indexModify = slaveModifyData.findIndex(item => item.id === record.id);
+                if (indexModify > -1) {
+                  slaveModifyData[indexModify] = { ...slaveModifyData[indexModify], ...warehoseLocationData };
+                } else {
+                  slaveModifyData.push({ id: record.id, handleType: slave.handleType, ...warehoseLocationData });
+                }
+              }
+            });
+            returnData.slaveData = slaveData;
+            returnData.slaveModifyData = slaveModifyData;
+          }
+
+        }
       } else {
         const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
         if (index > -1) {
@@ -257,7 +280,7 @@ const commonDocEvent = (WrapComponent) => {
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
               const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-              if (indexModify > -1) {
+              if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
                 returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData, ...moneyCalcData };
               }
             }

@@ -208,7 +208,7 @@ const commonBase = (WrapComponent) => {
     const onAdd = (containerOld?) => {
       const { commonModel } = props;
       const container = commonUtils.isEmpty(containerOld) ? modifyState.masterContainer : containerOld;
-      const dataRow: any = {...commonUtils.getDefaultValue(container, modifyState)};
+      const dataRow: any = {...commonUtils.getDefaultValue(container, commonUtils.isEmptyObj(stateRef.current) ? modifyState: stateRef.current)};
       dataRow.handleType = 'add';
       dataRow.id = commonUtils.newId();
       dataRow.key = dataRow.id;

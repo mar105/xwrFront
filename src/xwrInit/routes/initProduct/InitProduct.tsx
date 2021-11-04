@@ -86,6 +86,7 @@ const InitProduct = (props) => {
   const slaveParam: any = commonUtils.getTableProps('slave', props);
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;
+  slaveParam.width = 2000;
   slaveParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultslaveId,
     render: (text,record, index)=> {
     return <div>

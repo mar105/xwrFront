@@ -8,7 +8,6 @@ export function TreeSelectComponent(params) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
     return {...state, ...action };
   },{});
-  let dropOptions: any = [];
   const addProperty: any = {};
   addProperty.showSearch = true;
   addProperty.treeNodeFilterProp = params.config.treeColumnNameDrop;
@@ -57,7 +56,8 @@ export function TreeSelectComponent(params) {
 
     }
     else if (name === 'popup') {
-
+      const dropParam = { name: params.name, type: 'popupAdd', config: params.config, record: params.record };
+      params.event.onDropPopup(dropParam);
     }
   };
 
@@ -89,7 +89,7 @@ export function TreeSelectComponent(params) {
   params.property.dropdownRender = params.config.isDropAdd ? dropdownRender : null;
 
   if (params.componentType === componentType.Soruce) {
-    return <TreeSelect {...params.property} {...addProperty} { ...event }>{dropOptions}</TreeSelect>;
+    return <TreeSelect treeDefaultExpandAll bordered={false} {...params.property} {...addProperty} { ...event } />;
   } else {
     return <Form.Item
       label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}

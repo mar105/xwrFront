@@ -16,6 +16,7 @@ import ReactDragListView from 'react-drag-listview';
 import Highlighter from 'react-highlight-words';
 import moment from 'moment';
 import ProvinceCityArea from "../common/ProvinceCityArea";
+import {TreeSelectComponent} from "./TreeSelectComponent";
 
 const TableSummaryCell: any = Table.Summary.Cell;
 
@@ -295,6 +296,14 @@ export function TableComponent(params: any) {
               record,
               event: {onChange: params.event.onSelectChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
             };
+            const treeSelectParams = {
+              name: params.name,
+              componentType: componentType.Soruce,
+              config,
+              property: {value: text},
+              record,
+              event: {onChange: params.event.onTreeSelectChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
+            };
             const inputParams = {
               name: params.name,
               componentType: componentType.Soruce,
@@ -341,9 +350,16 @@ export function TableComponent(params: any) {
               if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
                 return <ProvinceCityArea {...provinceCityAreaParams}  />;
               } else if (config.dropType === 'sql' || config.dropType === 'const' || config.dropType === 'popup') {
-                const component = useMemo(() => {
-                  return <SelectComponent {...selectParams}  />
-                }, [text]);
+                let component;
+                if (config.isTreeDrop) {
+                  component = useMemo(() => {
+                    return <TreeSelectComponent {...treeSelectParams}  />
+                  }, [text]);
+                } else {
+                  component = useMemo(() => {
+                    return <SelectComponent {...selectParams}  />
+                  }, [text]);
+                }
                 return component;
               } else {
                 const component = useMemo(() => {

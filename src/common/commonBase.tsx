@@ -507,7 +507,7 @@ const commonBase = (WrapComponent) => {
 
         const dataModify = data.handleType === 'modify' ?
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName], ...assignValue } :
-            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName], ...assignValue } : dataModifyOld;
+            { ...dataModifyOld, id: data.id, [fieldName]: value, ...assignValue } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -550,11 +550,10 @@ const commonBase = (WrapComponent) => {
           form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
         }
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = value;
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, ...assignValue, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: data.id, ...assignValue, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: value, ...assignValue } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName], ...assignValue } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -574,10 +573,9 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[indexModify] = { ...dataModify[indexModify], ...dataModify[index], ...assignValue };
-              dataModify[indexModify][fieldName] = data[index][fieldName];
+              dataModify[indexModify] = { ...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, ...assignValue, [fieldName]: data[index][fieldName] })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
             }
           }
 

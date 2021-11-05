@@ -27,7 +27,7 @@ export const CommonExhibit = (props) => {
         config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
-        event: {onChange: props.onTreeSelectChange, getSelectList: props.getSelectList}
+        event: {onChange: props.onTreeSelectChange, getSelectList: props.getSelectList, onDropPopup: props.onDropPopup}
       };
       const inputParams = {
         name: props.name,

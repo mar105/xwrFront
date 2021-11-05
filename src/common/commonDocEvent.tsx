@@ -233,6 +233,16 @@ const commonDocEvent = (WrapComponent) => {
       }
     }
 
+    const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
+      let returnData = props.onTreeSelectChange(name, fieldName, record, config, valueOld, extra, true);
+      returnData = calcOperation({name, fieldName, record, returnData});
+      if (isWait) {
+        return { ...returnData };
+      } else {
+        props.dispatchModifyState({ ...returnData });
+      }
+    }
+
     const calcOperation = (params) => {
       const {name, fieldName, record, returnData } = params;
       if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
@@ -311,6 +321,8 @@ const commonDocEvent = (WrapComponent) => {
       return returnData;
     }
 
+
+
     return <div>
       <WrapComponent
         {...props}
@@ -321,6 +333,7 @@ const commonDocEvent = (WrapComponent) => {
         onNumberChange={onNumberChange}
         onSelectChange={onSelectChange}
         onInputChange={onInputChange}
+        onTreeSelectChange={onTreeSelectChange}
       />
       <CommonModal
         {...props}
@@ -331,6 +344,7 @@ const commonDocEvent = (WrapComponent) => {
         onNumberChange={onNumberChange}
         onSelectChange={onSelectChange}
         onInputChange={onInputChange}
+        onTreeSelectChange={onTreeSelectChange}
       />
     </div>
   };

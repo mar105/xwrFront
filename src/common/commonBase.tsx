@@ -217,6 +217,7 @@ const commonBase = (WrapComponent) => {
       dataRow.routeId = modifyState.routeId;
       dataRow.createUserId = commonModel.userInfo.userId;
       dataRow.createUserName = commonModel.userInfo.userName;
+      dataRow.sortNum = 1;
       return dataRow;
     }
     const onModify = () => {
@@ -298,6 +299,7 @@ const commonBase = (WrapComponent) => {
 
       const data = onAdd(container);
       data.superiorId = masterData.id;
+      data.sortNum = tableData.length + 1;
       tableData.push(data);
 
       if (isWait) {

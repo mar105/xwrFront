@@ -261,15 +261,16 @@ const commonDocEvent = (WrapComponent) => {
           const slaveData: any = [];
           const slaveModifyData: any = commonUtils.isEmptyArr(slaveModifyDataOld) ? [] : slaveModifyDataOld;
           if (commonUtils.isNotEmptyObj(slaveDataOld)) {
-            slaveDataOld.forEach(slave => {
+            slaveDataOld.forEach(slaveOld => {
               const warehoseLocationData = { warehouseLocationName: returnData[name + 'Data'].warehouseLocationName, warehouseLocationCode: returnData[name + 'Data'].warehouseLocationCode, warehouseLocationId: returnData[name + 'Data'].warehouseLocationId };
-              slaveData.push({...slave, ...warehoseLocationData});
+              const slave = {...slaveOld, handleType: commonUtils.isEmpty(slaveOld.handleType) ? 'modify' : slaveOld.handleType, ...warehoseLocationData};
+              slaveData.push(slave);
               if (slave.handleType === 'modify') {
-                const indexModify = slaveModifyData.findIndex(item => item.id === record.id);
+                const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
                 if (indexModify > -1) {
                   slaveModifyData[indexModify] = { ...slaveModifyData[indexModify], ...warehoseLocationData };
                 } else {
-                  slaveModifyData.push({ id: record.id, handleType: slave.handleType, ...warehoseLocationData });
+                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, ...warehoseLocationData });
                 }
               }
             });

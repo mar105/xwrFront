@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
-import * as application from "../xwrBasic/application";
+import * as application from "../application";
 import * as request from "../utils/request";
 import {useRef} from "react";
 import CommonModal from "./commonModal";
@@ -114,7 +114,7 @@ const commonDocEvent = (WrapComponent) => {
           }
           const params = { id: masterDataOld.id, tabId, routeId: props.routeId, saveData, groupId: commonModel.userInfo.groupId,
             shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
-          const url: string = `${application.urlMain}/getData/saveData`;
+          const url: string = `${application.urlPrefix}/getData/saveData`;
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
             props.gotoSuccess(dispatch, interfaceReturn);
@@ -151,6 +151,32 @@ const commonDocEvent = (WrapComponent) => {
             listRouteId: routeId, listContainerId: props.listContainerId, listCondition: props.listCondition, listTableKey: props.listTableKey,
             listRowIndex: props.listRowTotal, listRowTotal: props.listRowTotal, copyToData });
         }
+      } else if (key === 'examineButton' || key === 'cancelExamineButton') {
+        if (commonUtils.isNotEmpty(masterDataOld.id)) {
+          const saveData: any = [];
+          saveData.push(commonUtils.mergeData('master', [masterDataOld], [], [], true));
+          if (childParams && childParams.childCallback) {
+            const saveChildData = await childParams.childCallback({masterDataOld});
+            saveData.push(...saveChildData);
+          }
+          const params = { id: masterDataOld.id, tabId, routeId: props.routeId, saveData, groupId: commonModel.userInfo.groupId,
+            shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
+          const url: string = `${application.urlPrefix}/getData/examineOrCancel`;
+          const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+          if (interfaceReturn.code === 1) {
+            props.gotoSuccess(dispatch, interfaceReturn);
+            let returnState: any = await props.getAllData({ dataId: masterDataOld.id });
+            if (commonUtils.isNotEmptyObj(childParams) && childParams.getAllData) {
+              const returnChild: any = await childParams.getAllData(true);
+              returnState = {...returnState, ...returnChild};
+            }
+            dispatchModifyState({...returnState });
+          } else {
+            props.gotoError(dispatch, interfaceReturn);
+          }
+        } else {
+          props.callbackRemovePane(tabId);
+        }
       }
     }
 
@@ -165,7 +191,7 @@ const commonDocEvent = (WrapComponent) => {
       }
       const params = { id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId, saveData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType };
-      const url: string = `${application.urlMain}/getData/saveData`;
+      const url: string = `${application.urlPrefix}/getData/saveData`;
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         if (props.isModal) {
@@ -189,18 +215,23 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     const getButtonGroup = () => {
+      const { masterData: masterDataOld } = props;
+      const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
+      const { isExamine, isInvalid } = masterData;
       const buttonGroup: any = [];
       buttonGroup.push({ key: 'addButton', caption: '增加', htmlType: 'button', sortNum: 10, disabled: props.enabled });
-      buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 20, disabled: props.enabled });
+      buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 20, disabled: props.enabled || isInvalid });
       buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 30, disabled: !props.enabled });
       buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 40, disabled: !props.enabled });
       buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 50, disabled: props.enabled });
+      buttonGroup.push({ key: 'examineButton', caption: '审核', htmlType: 'button', sortNum: 60, disabled: props.enabled || isExamine });
+      buttonGroup.push({ key: 'cancelExamineButton', caption: '消审', htmlType: 'button', sortNum: 60, disabled: props.enabled || !isExamine });
       buttonGroup.push({ key: 'firstButton', caption: '首条', htmlType: 'button', sortNum: 60, disabled: props.enabled });
       buttonGroup.push({ key: 'priorButton', caption: '上一条', htmlType: 'button', sortNum: 70, disabled: props.enabled });
       buttonGroup.push({ key: 'nextButton', caption: '下一条', htmlType: 'button', sortNum: 80, disabled: props.enabled });
       buttonGroup.push({ key: 'lastButton', caption: '末条', htmlType: 'button', sortNum: 90, disabled: props.enabled });
-      buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled });
-      buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 100, disabled: props.enabled });
+      buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled || isInvalid });
+      buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 100, disabled: props.enabled || isInvalid });
       return buttonGroup;
     }
 

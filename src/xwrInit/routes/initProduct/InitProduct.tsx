@@ -57,7 +57,7 @@ const InitProduct = (props) => {
   }, [props.masterContainer.dataSetName]);
 
   const onButtonClick = async (key, config, e, childParams: any = undefined) => {
-    if (key === 'delButton') {
+    if (key === 'delButton' || key === 'invalidButton') {
       const { slaveData, slaveModifyData, slaveDelData } = props;
       const childCallback = (params) => {
         const saveData: any = [];

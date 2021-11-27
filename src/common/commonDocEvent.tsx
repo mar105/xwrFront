@@ -70,8 +70,8 @@ const commonDocEvent = (WrapComponent) => {
       } else if (key === 'modifyButton') {
         const data = props.onModify();
         const masterData = {...masterDataOld, ...data };
-        const url: string = `${application.urlCommon}/verify/isExistModifying`;
-        const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
+        const url: string = `${application.urlPrefix}/getData/getIsCanModify`;
+        const params = {id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
           shopId: commonModel.userInfo.shopId};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
@@ -125,6 +125,10 @@ const commonDocEvent = (WrapComponent) => {
         } else {
           props.callbackRemovePane(tabId);
         }
+      } else if (key === 'refreshButton') {
+        dispatchModifyState({ pageLoading: true });
+        const returnState = await props.getAllData({dataId: masterDataOld.id });
+        dispatchModifyState({ ...returnState, enabled: false, pageLoading: false });
       } else if (key === 'firstButton' || key === 'priorButton' || key === 'nextButton' || key === 'lastButton') {
         let listRowIndex = key === 'firstButton' ? 1 :
           key === 'priorButton' ? props.listRowIndex - 1 :
@@ -220,18 +224,19 @@ const commonDocEvent = (WrapComponent) => {
       const { isExamine, isInvalid } = masterData;
       const buttonGroup: any = [];
       buttonGroup.push({ key: 'addButton', caption: '增加', htmlType: 'button', sortNum: 10, disabled: props.enabled });
-      buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 20, disabled: props.enabled || isInvalid });
+      buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 20, disabled: props.enabled || isInvalid || isExamine });
       buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 30, disabled: !props.enabled });
       buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 40, disabled: !props.enabled });
-      buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 50, disabled: props.enabled });
+      buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 50, disabled: props.enabled || isExamine });
       buttonGroup.push({ key: 'examineButton', caption: '审核', htmlType: 'button', sortNum: 60, disabled: props.enabled || isExamine });
       buttonGroup.push({ key: 'cancelExamineButton', caption: '消审', htmlType: 'button', sortNum: 60, disabled: props.enabled || !isExamine });
       buttonGroup.push({ key: 'firstButton', caption: '首条', htmlType: 'button', sortNum: 60, disabled: props.enabled });
       buttonGroup.push({ key: 'priorButton', caption: '上一条', htmlType: 'button', sortNum: 70, disabled: props.enabled });
       buttonGroup.push({ key: 'nextButton', caption: '下一条', htmlType: 'button', sortNum: 80, disabled: props.enabled });
       buttonGroup.push({ key: 'lastButton', caption: '末条', htmlType: 'button', sortNum: 90, disabled: props.enabled });
-      buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled || isInvalid });
-      buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 100, disabled: props.enabled || isInvalid });
+      buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled });
+      buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 100, disabled: props.enabled || isInvalid || isExamine });
+      buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 70, disabled: props.enabled });
       return buttonGroup;
     }
 

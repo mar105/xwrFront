@@ -9,7 +9,7 @@ import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 
-const InitProduct = (props) => {
+const InitMaterial = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
@@ -103,4 +103,4 @@ const InitProduct = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(InitProduct)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(InitMaterial)));

@@ -224,10 +224,14 @@ const commonDocEvent = (WrapComponent) => {
       const { isInvalid } = masterData;
       let { isExamine } = masterData;
       const buttonGroup: any = [];
+
+      // 审核按钮配置不显示认为没有审核功能。
       if (commonUtils.isNotEmptyObj(masterContainer)) {
-        const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'isExamine' && item.isVisible);
-        if (!(index > -1)) {
-          isExamine = false;
+        const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'examineButton');
+        if (index > -1) {
+          isExamine = isExamine && masterContainer.slaveData[index].isVisible;
+        } else {
+          isExamine = isExamine;
         }
       }
 
@@ -236,11 +240,8 @@ const commonDocEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 30, disabled: !props.enabled });
       buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 40, disabled: !props.enabled });
       buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 50, disabled: props.enabled || isExamine });
-
-      if (isExamine) {
-        buttonGroup.push({ key: 'examineButton', caption: '审核', htmlType: 'button', sortNum: 60, disabled: props.enabled || isExamine });
-        buttonGroup.push({ key: 'cancelExamineButton', caption: '消审', htmlType: 'button', sortNum: 60, disabled: props.enabled || !isExamine });
-      }
+      buttonGroup.push({ key: 'examineButton', caption: '审核', htmlType: 'button', sortNum: 60, disabled: props.enabled || isExamine });
+      buttonGroup.push({ key: 'cancelExamineButton', caption: '消审', htmlType: 'button', sortNum: 60, disabled: props.enabled || !isExamine });
 
       buttonGroup.push({ key: 'firstButton', caption: '首条', htmlType: 'button', sortNum: 60, disabled: props.enabled });
       buttonGroup.push({ key: 'priorButton', caption: '上一条', htmlType: 'button', sortNum: 70, disabled: props.enabled });

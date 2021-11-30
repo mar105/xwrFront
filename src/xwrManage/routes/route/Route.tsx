@@ -23,7 +23,7 @@ import commonManage from "../../commonManage";
 //   traditionalName;
 //   englishName: string,
 //   isVisible: boolean,
-//   modelsType: string,
+//   modelType: string,
 //   allId: string,
 // }
 
@@ -255,9 +255,9 @@ const Route = (props) => {
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange },
   };
-  const modelsType = {
+  const modelType = {
     name: 'master',
-    config: { fieldName: 'modelsType', viewName: '模块类型' },
+    config: { fieldName: 'modelType', viewName: '模块类型' },
     property: { disabled: !enabled },
     event: { onChange: props.onInputChange },
   };
@@ -282,7 +282,7 @@ const Route = (props) => {
       <InputComponent {...chineseName} />
       <InputComponent {...traditionalName} />
       <InputComponent {...englishName} />
-      <InputComponent {...modelsType} />
+      <InputComponent {...modelType} />
       <SwitchComponent {...isVisible} />
     </div>)}, [masterData, enabled]);
   return (

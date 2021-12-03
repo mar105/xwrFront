@@ -22,14 +22,12 @@ const commonDocEvent = (WrapComponent) => {
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
         && props.commonModel.stompClient.connected) {
-        props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+        const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+        return () => {
+          saveDataReturn.unsubscribe();
+        };
       }
-      return () => {
-        if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
-          && props.commonModel.stompClient.connected) {
-          props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId);
-        }
-      };
+
     }, [props.commonModel.stompClient]);
 
     const saveDataReturn = async (data) => {

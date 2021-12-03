@@ -40,16 +40,14 @@ const Container = (props) => {
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
       && props.commonModel.stompClient.connected) {
-      props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongo', syncToMongoResult);
-      props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongoIndex', syncToMongoResult);
+      const syncToMongo = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongo', syncToMongoResult);
+      const syncToMongoIndex = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongoIndex', syncToMongoResult);
+      return () => {
+        syncToMongo.unsubscribe();
+        syncToMongoIndex.unsubscribe();
+      };
     }
-    return () => {
-      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
-        && props.commonModel.stompClient.connected) {
-        props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/syncToMongo');
-        props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/syncToMongoIndex');
-      }
-    };
+
   }, [props.commonModel.stompClient]);
 
   const syncToMongoResult = (data) => {

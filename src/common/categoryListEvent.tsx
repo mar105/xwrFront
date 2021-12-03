@@ -21,19 +21,13 @@ const categoryListEvent = (WrapComponent) => {
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
         && props.commonModel.stompClient.connected) {
-        props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveAfterSyncToMongo', saveAfterSyncToMongoResult);
+        const saveAfterSyncToMongo = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveAfterSyncToMongo', saveAfterSyncToMongoResult);
+        const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+        return () => {
+          saveAfterSyncToMongo.unsubscribe();
+          saveDataReturn.unsubscribe();
+        };
       }
-      if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
-        && props.commonModel.stompClient.connected) {
-        props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
-      }
-      return () => {
-        if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
-          && props.commonModel.stompClient.connected) {
-          props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/saveAfterSyncToMongo');
-          props.commonModel.stompClient.unsubscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId);
-        }
-      };
     }, [props.commonModel.stompClient]);
 
     const saveAfterSyncToMongoResult = async (data) => {

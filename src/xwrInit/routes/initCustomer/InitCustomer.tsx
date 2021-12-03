@@ -31,7 +31,7 @@ const InitCustomer = (props) => {
   }, [props.slaveContainer]);
 
   const onButtonClick = async (key, config, e) => {
-    const { dispatch, dispatchModifyState, commonModel, routeId } = props;
+    const { dispatch, dispatchModifyState, commonModel, routeId, slaveData } = props;
     if (key === 'setForceButton' || key === 'resetForceButton') { //强制完工设置处理
       const url: string = `${application.urlCommon}/button/forceSet`;
       const params = {
@@ -41,6 +41,8 @@ const InitCustomer = (props) => {
         containerId: config.superiorId,
         containerSlaveId: config.id,
         forceType: key,
+        id: routeId,                                    // 用于 期初客户->收款单 未清刷新数据。
+        saveData: [{ name: 'slave', data: slaveData }], // 用于 生成 期初客户->收款单 数据。
       }
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {

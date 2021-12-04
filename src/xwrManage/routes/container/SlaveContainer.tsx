@@ -32,9 +32,9 @@ const SlaveContainer = (props) => {
     { title: '字段|关联性条件', dataIndex: 'conditionRelevance', fieldType: 'varchar', sortNum: 60, width: 150 },
     { title: '字段|关联性赋值', dataIndex: 'assignFieldRelevance', fieldType: 'varchar', sortNum: 70, width: 150 },
     { title: '字段|虚拟名称', dataIndex: 'virtualRelevance', fieldType: 'varchar', sortNum: 80, width: 150 },
-    { title: '弹出界面', dataIndex: 'popupActiveName', fieldType: 'varchar', sortNum: 160, width: 150, dropType: 'sql', keyUpFieldDrop: 'viewName', assignField: 'popupActiveId=id' },
+    { title: '弹出界面', dataIndex: 'popupActiveName', fieldType: 'varchar', sortNum: 160, width: 150, dropType: 'sql', isDropEmpty: true, keyUpFieldDrop: 'viewName', assignField: 'popupActiveId=id' },
     { title: '弹出界面Key', dataIndex: 'popupActiveKey', fieldType: 'varchar', sortNum: 170, width: 150 },
-    { title: '查询界面', dataIndex: 'popupSelectName', fieldType: 'varchar', sortNum: 180, width: 150, dropType: 'sql', keyUpFieldDrop: 'viewName', assignField: 'popupSelectId=id' },
+    { title: '查询界面', dataIndex: 'popupSelectName', fieldType: 'varchar', sortNum: 180, width: 150, dropType: 'sql', isDropEmpty: true, keyUpFieldDrop: 'viewName', assignField: 'popupSelectId=id' },
     { title: '查询界面Key', dataIndex: 'popupSelectKey', fieldType: 'varchar', sortNum: 190, width: 150 },
 
     { title: '下拉|类型', dataIndex: 'dropType', fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "sql": "sql语句", "const": "常量", "popup": "选择框与定位" }', sortNum: 200, width: 150 },
@@ -75,12 +75,13 @@ const SlaveContainer = (props) => {
       const config = {...item, viewName: item.title, fieldName: item.dataIndex };
       slaveConfig.push(config);
     });
+    slaveContainer.isMultiChoise = true;
     slaveContainer.slaveData = slaveConfig;
     dispatchModifyState({slaveColumns: columns, slaveContainer, slaveIsLastPage: true });
   }, []);
 
   const onClick = async (name, e) => {
-    const { commonModel, dispatch, dispatchModifyState, slaveContainer, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld } = propsRef.current;
+    const { commonModel, dispatch, dispatchModifyState, slaveContainer, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld, slaveSelectedRows } = propsRef.current;
     if (name === 'slaveAddButton') {
       const data = props.onAdd(slaveContainer);
       data.superiorId = propsRef.current.masterData.id;
@@ -152,18 +153,31 @@ const SlaveContainer = (props) => {
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
+    } else if (name === 'slaveCopyToMultiButton') {
+      copy(JSON.stringify(slaveSelectedRows));
+      props.gotoSuccess(dispatch, {code: '1', msg: '已复制到剪贴板'});
     } else if (name === 'slavePasteButton') {
       //本地127.0.0.1可以测试，其他不能测试，如 192.168.1.3 属于不安全访问
       if (navigator.clipboard) {
-        let data = props.onAdd({}); // 不要默认值。
-        data.superiorId = propsRef.current.masterData.id;
-        data.sortNum = slaveDataOld.length + 1;
         const clipboardText: any = await navigator.clipboard.readText();
         if (isJson(clipboardText)) {
-          const clipboardValue = JSON.parse(clipboardText);
-          data = { ...clipboardValue, ...data };
           const slaveData = [...slaveDataOld];
-          slaveData.push(data);
+          const clipboardValue = JSON.parse(clipboardText);
+          if (commonUtils.isNotEmptyArr(clipboardValue)) {
+            clipboardValue.forEach(item => {
+              let data = props.onAdd({}); // 不要默认值。
+              data.superiorId = propsRef.current.masterData.id;
+              data.sortNum = slaveDataOld.length + 1;
+              data = { ...item, ...data };
+              slaveData.push(data);
+            });
+          } else {
+            let data = props.onAdd({}); // 不要默认值。
+            data.superiorId = propsRef.current.masterData.id;
+            data.sortNum = slaveDataOld.length + 1;
+            data = { ...clipboardValue, ...data };
+            slaveData.push(data);
+          }
           dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
         } else {
           props.gotoError(dispatch, {code: '5000', msg: '不能复制其他数据！'});
@@ -185,6 +199,7 @@ const SlaveContainer = (props) => {
     }
   };
 
+
   const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.isDragRow = true;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
@@ -199,10 +214,12 @@ const SlaveContainer = (props) => {
     </div>
   }, width: 50 , fixed: 'right' }
   tableParam.lastTitle = <div>
-    <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a>
-    <a onClick={onClick.bind(this, name + 'PasteButton')} > <Tooltip placement="top" title="粘贴增加行"><SnippetsOutlined /> </Tooltip></a>
-    <a onClick={onClick.bind(this, name + 'SyncDataButton')}> <Tooltip placement="top" title="同步字段"><CloudSyncOutlined /> </Tooltip></a>
+    <a onClick={onClick.bind(this, name + 'CopyToMultiButton')} > <Tooltip placement="top" title="复制到剪贴版"><CopyOutlined /> </Tooltip></a>
+    { !props.enabled ? '' : <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> }
+    { !props.enabled ? '' : <a onClick={onClick.bind(this, name + 'PasteButton')} > <Tooltip placement="top" title="粘贴增加行"><SnippetsOutlined /> </Tooltip></a> }
+    { !props.enabled ? '' : <a onClick={onClick.bind(this, name + 'SyncDataButton')}> <Tooltip placement="top" title="同步字段"><CloudSyncOutlined /> </Tooltip></a> }
   </div>;
+
   return (
     <div>
       {props.slaveContainer ? <TableComponent {...tableParam} /> : ''}

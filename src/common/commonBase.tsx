@@ -532,6 +532,7 @@ const commonBase = (WrapComponent) => {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
             }
           }
+
           if (isWait) {
             return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
           } else {

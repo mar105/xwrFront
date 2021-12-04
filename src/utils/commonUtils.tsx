@@ -306,13 +306,13 @@ export function round(value, num) {
 
 export function getAssignFieldValue(name, assignField, option, allDataset = undefined) {
   const returnField = {};
-  if (isNotEmptyObj(option) && isNotEmpty(assignField)) {
+  if (isNotEmpty(assignField)) {
     assignField.split(',').forEach(item => {
       const arrAssign = item.split('=');
       if (item.indexOf('=') > -1 && item.indexOf('.') > -1) {
-        returnField[arrAssign[0].trim()] = copeDataSetValue(name, option, arrAssign[1].trim(), allDataset);
+        returnField[arrAssign[0].trim()] = isNotEmptyObj(option) ? copeDataSetValue(name, option, arrAssign[1].trim(), allDataset): '';
       } else {
-        returnField[arrAssign[0].trim()] = option[arrAssign[1].trim()];
+        returnField[arrAssign[0].trim()] = isNotEmptyObj(option) ? option[arrAssign[1].trim()] : '';
       }
     });
   }

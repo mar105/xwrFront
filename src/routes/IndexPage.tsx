@@ -47,6 +47,7 @@ function IndexPage(props) {
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
       && props.commonModel.stompClient.connected) {
+      // @ts-ignore
       const syncRefreshData = props.commonModel.stompClient.subscribe('/topic-websocket/syncRefreshData', syncRefreshData);
       return () => {
         syncRefreshData.unsubscribe();

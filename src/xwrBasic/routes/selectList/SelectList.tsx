@@ -26,7 +26,7 @@ const SelectList = (props) => {
     onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: getButtonGroup(), isModal: props.isModal, modalType: 'select',
     onUploadSuccess: props.onUploadSuccess, dispatchModifyState: props.dispatchModifyState };
   const tableParam: any = commonUtils.getTableProps('slave', props);
-  tableParam.isLastColumn = false;
+  // tableParam.isLastColumn = false;
   tableParam.enabled = false;
   tableParam.rowSelection.preserveSelectedRowKeys = true;
   tableParam.eventOnRow = { ...tableParam.eventOnRow, onRowDoubleClick: props.onRowDoubleClick };

@@ -5,7 +5,7 @@ import moment from 'moment';
 import dynamic from "dva/dynamic";
 import * as React from "react";
 import {Tooltip} from "antd";
-import { PlusOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined, SaveOutlined, CopyOutlined } from '@ant-design/icons';
 
 var Snowflake = (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
@@ -208,11 +208,15 @@ export function getTableProps(name, props) {
     event: { onInputChange: props.onInputChange, onTreeSelectChange: props.onTreeSelectChange, onCheckboxChange: props.onCheckboxChange, onNumberChange: props.onNumberChange,
       onSelectChange: props.onSelectChange, onDatePickerChange: props.onDatePickerChange, getSelectList: props.getSelectList,
       onCascaderChange: props.onCascaderChange, onDropPopup: props.onDropPopup },
-    lastTitle: <div> <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> {configSetting} </div>,
+    lastTitle: <div> {!props.enabled ? '' : <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> }{configSetting} </div>,
     lastColumn: { title: 'o',
       render: (text,record, index)=> {
-        return <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, name, 'delButton', record) : null}>
-          <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
+        return <div>
+          <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, name, 'copyButton', record) : null}>
+            <Tooltip placement="top" title="复制"><CopyOutlined /></Tooltip></a>
+          {!props.enabled ? '' : <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, name, 'delButton', record) : null}>
+      <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>}
+      </div>
       }, width: 50 , fixed: 'right' }
   }
   return tableParam;

@@ -503,7 +503,7 @@ const commonBase = (WrapComponent) => {
         const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
         const data = { ...dataOld, [fieldName]: value, ...assignValue };
         if (form) {
-          form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
+          form.setFieldsValue(commonUtils.setFieldsValue(assignValue, modifyState[name + 'Container']));
         }
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
 
@@ -550,7 +550,7 @@ const commonBase = (WrapComponent) => {
         const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
         const data = { ...dataOld, ...assignValue };
         if (form) {
-          form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
+          form.setFieldsValue(commonUtils.setFieldsValue(assignValue, modifyState[name + 'Container']));
         }
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
 
@@ -601,6 +601,7 @@ const commonBase = (WrapComponent) => {
             data[field] = value[fieldIndex];
           });
         }
+
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
 
@@ -927,7 +928,7 @@ const commonBase = (WrapComponent) => {
             dispatchModifyState({ ...returnData, modalVisible: false });
             if (form && typeof returnData[params.name + 'Data'] === 'object' && returnData[params.name + 'Data'].constructor === Object) {
               form.resetFields();
-              form.setFieldsValue(commonUtils.setFieldsValue(returnData[params.name + 'Data'],  modifyState[params.name + 'Container']));
+              form.setFieldsValue(commonUtils.setFieldsValue(returnData[params.name + 'Data'], modifyState[params.name + 'Container']));
             }
           } else {
             dispatchModifyState({ modalVisible: false });
@@ -947,7 +948,7 @@ const commonBase = (WrapComponent) => {
             const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
             const data = { ...dataOld, [fieldName]: value, ...assignValue };
             if (form) {
-              form.setFieldsValue(commonUtils.setFieldsValue(assignValue));
+              form.setFieldsValue(commonUtils.setFieldsValue(assignValue, modifyState[params.name + 'Container']));
             }
             data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
 

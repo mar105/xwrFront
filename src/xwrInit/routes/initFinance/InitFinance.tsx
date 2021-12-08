@@ -77,7 +77,7 @@ const InitFinance = (props) => {
       return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
     } else {
       if (name === 'master') {
-        form.setFieldsValue(data);
+        form.setFieldsValue(commonUtils.setFieldsValue(data, props.masterContainer));
       }
       props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
     }
@@ -103,7 +103,7 @@ const InitFinance = (props) => {
       return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
     } else {
       if (name === 'master') {
-        form.setFieldsValue(data);
+        form.setFieldsValue(commonUtils.setFieldsValue(data, props.masterContainer));
       }
       props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
     }

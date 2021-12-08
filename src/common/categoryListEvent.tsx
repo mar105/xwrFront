@@ -22,6 +22,7 @@ const categoryListEvent = (WrapComponent) => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
         && props.commonModel.stompClient.connected) {
         const saveAfterSyncToMongo = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveAfterSyncToMongo', saveAfterSyncToMongoResult);
+        // @ts-ignore
         const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
         return () => {
           saveAfterSyncToMongo.unsubscribe();
@@ -40,6 +41,7 @@ const categoryListEvent = (WrapComponent) => {
       }
     }
 
+    // @ts-ignore
     const saveDataReturn = async (data) => {
       const { dispatch, dispatchModifyState, slaveContainer } = props;
       const returnBody = JSON.parse(data.body);
@@ -78,7 +80,7 @@ const categoryListEvent = (WrapComponent) => {
           masterData.allId = masterData.id;
         }
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+        form.setFieldsValue(commonUtils.setFieldsValue(masterData, masterContainer));
 
         let addState = {};
         if (childParams && childParams.childCallback) {
@@ -101,7 +103,7 @@ const categoryListEvent = (WrapComponent) => {
           masterData = {...masterData, ...commonUtils.getAssignFieldValue('master', config.assignField, slaveSelectedRows[0])}
         }
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+        form.setFieldsValue(commonUtils.setFieldsValue(masterData, masterContainer));
         let addState = {};
         if (childParams && childParams.childCallback) {
           addState = await childParams.childCallback({masterData});
@@ -126,7 +128,7 @@ const categoryListEvent = (WrapComponent) => {
           let masterData = await props.getDataOne({ containerId: masterContainer.id, condition: { dataId: slaveSelectedRows[0].id }, isWait: true });
           masterData = {...masterData, ...data };
           form.resetFields();
-          form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+          form.setFieldsValue(commonUtils.setFieldsValue(masterData, masterContainer));
           let addState = {};
           if (childParams && childParams.childCallback) {
             addState = await childParams.childCallback({masterData});

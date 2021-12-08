@@ -82,7 +82,7 @@ const InitSupply = (props) => {
       return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
     } else {
       if (name === 'master') {
-        form.setFieldsValue(data);
+        form.setFieldsValue(commonUtils.setFieldsValue(data, props.masterContainer));
       }
       props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
     }
@@ -110,7 +110,7 @@ const InitSupply = (props) => {
       return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
     } else {
       if (name === 'master') {
-        form.setFieldsValue(data);
+        form.setFieldsValue(commonUtils.setFieldsValue(data, props.masterContainer));
       }
       props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
     }

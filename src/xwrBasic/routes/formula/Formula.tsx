@@ -48,6 +48,7 @@ const Formula = (props) => {
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
       && props.commonModel.stompClient.connected) {
+      // @ts-ignore
       const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
       return () => {
         saveDataReturn.unsubscribe();
@@ -56,6 +57,7 @@ const Formula = (props) => {
 
   }, [props.commonModel.stompClient]);
 
+  // @ts-ignore
   const saveDataReturn = async (data) => {
     const returnBody = JSON.parse(data.body);
     if (returnBody.code === 1) {
@@ -154,9 +156,9 @@ const Formula = (props) => {
 
 
   const onClick = async (key, e) => {
-    const { dispatchModifyState, masterData: masterDataOld } = props;
+    const { dispatchModifyState, masterContainer, masterData: masterDataOld } = props;
     if (key === 'ACButton') {
-      form.setFieldsValue(commonUtils.setFieldsValue({ formula: ''}));
+      form.setFieldsValue(commonUtils.setFieldsValue({ formula: ''}, masterContainer));
       dispatchModifyState({ masterData: {...masterDataOld, formula: ''} });
       formulaOperation('', true);
     } else {
@@ -183,7 +185,7 @@ const Formula = (props) => {
   }
 
   const formulaOperation = (text, isSelection) => {
-    const { dispatchModifyState, masterData: masterDataOld } = props;
+    const { dispatchModifyState, masterContainer, masterData: masterDataOld } = props;
     const indexStart = formulaRef.current.resizableTextArea.textArea.selectionStart;
     const indexEnd = formulaRef.current.resizableTextArea.textArea.selectionEnd;
     if (isSelection) {
@@ -194,7 +196,7 @@ const Formula = (props) => {
       const strEnd = commonUtils.isEmpty(formulaOld.substring(indexEnd, formulaOld.length)) ? '' : formulaOld.substring(indexEnd, formulaOld.length);
       const formula = strStart + text + strEnd;
       const masterData = {...masterDataOld, formula};
-      form.setFieldsValue(commonUtils.setFieldsValue({ formula }));
+      form.setFieldsValue(commonUtils.setFieldsValue({ formula }, masterContainer));
       dispatchModifyState({masterData});
       setTimeout(() => {
         formulaRef.current.resizableTextArea.textArea.setSelectionRange(indexStart + text.length, indexStart + text.length);

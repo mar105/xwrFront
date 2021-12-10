@@ -14,6 +14,7 @@ import {NumberComponent} from "../../../components/NumberComponent";
 import {SwitchComponent} from "../../../components/SwitchComponent";
 import SlaveContainer from "./SlaveContainer";
 import {TreeSelectComponent} from "../../../components/TreeSelectComponent";
+import SyncContainer from "./SyncContainer";
 
 const Container = (props) => {
   const [form] = Form.useForm();
@@ -75,11 +76,12 @@ const Container = (props) => {
   }
 
   const onFinish = async (values: any) => {
-    const { commonModel, dispatch, masterData, masterModifyData, slaveData, slaveModifyData, slaveDelData, dispatchModifyState, tabId } = props;
+    const { commonModel, dispatch, masterData, masterModifyData, slaveData, slaveModifyData, slaveDelData, dispatchModifyState, tabId, syncData, syncModifyData, syncDelData } = props;
     const saveData: any = [];
     saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }],
       commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], [], false));
     saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, false));
+    saveData.push(commonUtils.mergeData('sync', syncData, syncModifyData, syncDelData, false));
     const params = { id: masterData.id, tabId, saveData };
     const url: string = `${application.urlPrefix}/container/saveContainer`;
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -95,6 +97,17 @@ const Container = (props) => {
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }
+
+      const urlSync: string = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + masterData.id;
+      const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
+      if (interfaceReturnSync.code === 1) {
+        addState.syncData = interfaceReturnSync.data;
+        addState.syncModifyData = [];
+        addState.syncDelData = [];
+      } else {
+        props.gotoError(dispatch, interfaceReturnSync);
+      }
+
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
       addState.masterModifyData = {};
       form.resetFields();
@@ -129,7 +142,11 @@ const Container = (props) => {
       addState.slaveModifyData = [];
       addState.slaveSelectedRows = [];
       addState.slaveSelectedRowKeys = [];
-      addState.slaveDelData = [];
+      addState.syncData = [];
+      addState.syncModifyData = [];
+      addState.syncSelectedRows = [];
+      addState.syncSelectedRowKeys = [];
+      addState.syncDelData = [];
       form.resetFields();
       form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), saveAfterMessage: commonUtils.isEmpty(masterData.saveAfterMessage) ? [] : masterData.saveAfterMessage.split(',')});
       dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true, ...addState });
@@ -160,6 +177,10 @@ const Container = (props) => {
       addState.slaveSelectedRows = [];
       addState.slaveSelectedRowKeys = [];
       addState.slaveDelData = [];
+      addState.syncModifyData = [];
+      addState.syncSelectedRows = [];
+      addState.syncSelectedRowKeys = [];
+      addState.syncDelData = [];
       form.resetFields();
       form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), saveAfterMessage: commonUtils.isEmpty(masterData.saveAfterMessage) ? [] : masterData.saveAfterMessage.split(',')});
       dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys, ...addState });
@@ -198,27 +219,43 @@ const Container = (props) => {
         addState.slaveSelectedRows = [];
         addState.slaveSelectedRowKeys = [];
         addState.slaveDelData = [];
+        addState.syncModifyData = [];
+        addState.syncSelectedRows = [];
+        addState.syncSelectedRowKeys = [];
+        addState.syncDelData = [];
         form.resetFields();
         form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), saveAfterMessage: commonUtils.isEmpty(addState.masterData.saveAfterMessage) ? [] : addState.masterData.saveAfterMessage.split(',')});
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
-        let url: string = `${application.urlCommon}/verify/removeModifying`;
+        const url: string = `${application.urlCommon}/verify/removeModifying`;
         const params = {id: masterData.id, tabId};
         let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
-        url = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
-        interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-        if (interfaceReturn.code === 1) {
-          addState.slaveData = interfaceReturn.data;
+        const urlSlave = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
+        const interfaceReturnSlave = (await request.getRequest(urlSlave, commonModel.token)).data;
+        if (interfaceReturnSlave.code === 1) {
+          addState.slaveData = interfaceReturnSlave.data;
           addState.slaveModifyData = [];
           addState.slaveSelectedRows = [];
           addState.slaveSelectedRowKeys = [];
           addState.slaveDelData = [];
         } else {
-          props.gotoError(dispatch, interfaceReturn);
+          props.gotoError(dispatch, interfaceReturnSlave);
+        }
+
+        const urlSync = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + masterData.id;
+        const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
+        if (interfaceReturnSync.code === 1) {
+          addState.syncData = interfaceReturnSync.data;
+          addState.syncModifyData = [];
+          addState.syncSelectedRows = [];
+          addState.syncSelectedRowKeys = [];
+          addState.syncDelData = [];
+        } else {
+          props.gotoError(dispatch, interfaceReturnSync);
         }
       }
       dispatchModifyState({...addState, treeData, enabled: false});
@@ -241,6 +278,7 @@ const Container = (props) => {
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [masterData], [], [], true));
       saveData.push(commonUtils.mergeData('slave', slaveData, [], [], true));
+      saveData.push(commonUtils.mergeData('sync', syncData, [], [], true));
       const params = { id: masterData.id, tabId, saveData, handleType: 'del' };
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
@@ -257,6 +295,11 @@ const Container = (props) => {
         addState.slaveSelectedRows = [];
         addState.slaveSelectedRowKeys = [];
         addState.slaveDelData = [];
+        addState.slaveDelData = [];
+        addState.syncModifyData = [];
+        addState.syncSelectedRows = [];
+        addState.syncSelectedRowKeys = [];
+        addState.syncDelData = [];
         dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
       } else {
         props.gotoError(dispatch, interfaceReturn);
@@ -297,14 +340,24 @@ const Container = (props) => {
         addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
         addState.masterModifyData = {};
 
-        const url: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
-        const interfaceReturnSlave = (await request.getRequest(url, commonModel.token)).data;
+        const urlSlave: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
+        const interfaceReturnSlave = (await request.getRequest(urlSlave, commonModel.token)).data;
         if (interfaceReturnSlave.code === 1) {
           addState.slaveData = interfaceReturnSlave.data;
           addState.slaveModifyData = [];
           addState.slaveDelData = [];
         } else {
           props.gotoError(dispatch, interfaceReturnSlave);
+        }
+
+        const urlSync: string = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + masterData.id;
+        const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
+        if (interfaceReturnSync.code === 1) {
+          addState.syncData = interfaceReturnSync.data;
+          addState.syncModifyData = [];
+          addState.syncDelData = [];
+        } else {
+          props.gotoError(dispatch, interfaceReturnSync);
         }
 
         form.resetFields();
@@ -331,13 +384,26 @@ const Container = (props) => {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
+
+        const urlSync: string = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + e.node.id;
+        const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
+        if (interfaceReturnSync.code === 1) {
+          addState.syncData = interfaceReturnSync.data;
+        } else {
+          props.gotoError(dispatch, interfaceReturnSync);
+        }
       } else {
         addState.slaveData = [];
+        addState.syncData = [];
       }
       addState.slaveModifyData = [];
       addState.slaveSelectedRows = [];
       addState.slaveSelectedRowKeys = [];
       addState.slaveDelData = [];
+      addState.syncModifyData = [];
+      addState.syncSelectedRows = [];
+      addState.syncSelectedRowKeys = [];
+      addState.syncDelData = [];
       form.resetFields();
       form.setFieldsValue({ ...commonUtils.setFieldsValue(e.node), saveAfterMessage: commonUtils.isEmpty(e.node.saveAfterMessage) ? [] : e.node.saveAfterMessage.split(',')});
       dispatchModifyState(addState);
@@ -366,10 +432,10 @@ const Container = (props) => {
         props.gotoError(dispatch, interfaceReturn);
         return {};
       }
-    } else if (params.fieldName === 'saveAfterMessage') {
+    } else if (params.fieldName === 'saveAfterMessage' || params.fieldName === 'containerViewName') {
       const requestParam = {
         routeId: props.routeId
-      }
+      };
       const url: string = `${application.urlPrefix}/container/getAllContainer` + commonUtils.paramGet(requestParam);
 
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
@@ -385,7 +451,7 @@ const Container = (props) => {
     return {};
   }
 
-  const { enabled, masterData, slaveData, slaveColumns, slaveSelectedRowKeys,
+  const { enabled, masterData, slaveData, slaveColumns, slaveSelectedRowKeys, syncData, syncColumns, syncSelectedRowKeys,
     treeSelectedKeys, treeData, treeExpandedKeys, treeSearchData, treeSearchIsVisible, treeSearchValue, treeSearchSelectedRowKeys, commonModel } = props;
 
   const createDate = {
@@ -655,6 +721,9 @@ const Container = (props) => {
     </div>)}, [masterData, enabled]);
 
   const containerNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.containerName) ? masterData.containerName : '';
+  const syncTable = useMemo(()=>{ return (
+    <SyncContainer name='sync' {...props} getSelectList={getSelectList} onClick={onClick} />
+  )}, [syncColumns, syncData, enabled, syncSelectedRowKeys]);
   const slaveTable = useMemo(()=>{ return (
     <SlaveContainer name='slave' {...props} getSelectList={getSelectList} onClick={onClick} />
   )}, [containerNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
@@ -671,6 +740,7 @@ const Container = (props) => {
         <Col>
           <Row>
             {component}
+            {syncTable}
           </Row>
           <Row>
             {slaveTable}

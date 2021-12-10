@@ -16,9 +16,9 @@ const SlaveContainer = (props) => {
   }, [props]);
   const { name } = props;
   const columns = [
-    { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 80, fixed: 'left' },
+    { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 100, fixed: 'left' },
     { title: '名称', dataIndex: 'fieldName', isRequired: true, fieldType: 'varchar', sortNum: 20, width: 300, fixed: 'left' },
-        { title: '名称|中文', dataIndex: 'chineseName', isRequired: true, fieldType: 'varchar', sortNum: 31, width: 150 },
+    { title: '名称|中文', dataIndex: 'chineseName', isRequired: true, fieldType: 'varchar', sortNum: 31, width: 150 },
     { title: '名称|繁体', dataIndex: 'traditionalName', fieldType: 'varchar', sortNum: 32, width: 150 },
     { title: '名称|英文', dataIndex: 'englishName', fieldType: 'varchar', sortNum: 33, width: 150 },
     { title: '是否显示', dataIndex: 'isVisible', fieldType: 'tinyint', sortNum: 34, width: 150 },
@@ -212,7 +212,7 @@ const SlaveContainer = (props) => {
       <a onClick={onLastColumnClick.bind(this, name, 'delButton', record)}>
       <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
     </div>
-  }, width: 50 , fixed: 'right' }
+  }, width: 50 , fixed: 'right' };
   tableParam.lastTitle = <div>
     <a onClick={onClick.bind(this, name + 'CopyToMultiButton')} > <Tooltip placement="top" title="复制到剪贴版"><CopyOutlined /> </Tooltip></a>
     { !props.enabled ? '' : <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> }

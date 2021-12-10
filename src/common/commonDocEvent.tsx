@@ -5,6 +5,7 @@ import * as application from "../application";
 import * as request from "../utils/request";
 import {useRef} from "react";
 import CommonModal from "./commonModal";
+import moment from 'moment';
 
 const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -265,6 +266,7 @@ const commonDocEvent = (WrapComponent) => {
 
     const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
       let returnData = props.onSelectChange(name, fieldName, record, assignField, valueOld, option, true);
+      console.log('33333');
       returnData = calcOperation({name, fieldName, record, returnData});
       if (isWait) {
         return { ...returnData };
@@ -297,14 +299,40 @@ const commonDocEvent = (WrapComponent) => {
       const {name, fieldName, record, returnData } = params;
       //成品计算
       if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
-        if (props.routeData.modelType.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle')) {
+        console.log('11111', fieldName);
+        if (fieldName === 'customerName' || fieldName === 'settleName') {
+          let settleDate = moment().format('YYYY-MM-DD');
+          if (returnData[name + 'Data'].settleType === 'moment') {
+
+          } else if (returnData.settleType === 'month') {
+            moment(settleDate).add(returnData.monthValue, 'months').format('YYYY-MM-DD');
+            const day = moment(settleDate).get('date');
+            if (returnData.settleDay > day) {
+              settleDate = moment(settleDate).add(1, 'months').format('YYYY-MM-DD');
+            }
+            const endDay = moment(settleDate).endOf('day').get('date');
+            if (returnData.settleDay > endDay) {
+              settleDate = moment(settleDate).endOf('day').format('YYYY-MM-DD');
+            }
+            returnData[name + 'Data'] = { ...returnData[name + 'Data'], settleDate};
+          } else if (returnData.settleType === 'deliverAfter') {
+            if (commonUtils.isNotEmpty(returnData.deliverDate)) {
+              settleDate = moment(returnData.deliverDate).add(1, 'months').format('YYYY-MM-DD');
+            } else {
+              settleDate = moment(settleDate).add(returnData.deliverAfterDay, 'days').format('YYYY-MM-DD');
+            }
+          }
+          returnData[name + 'Data'] = { ...returnData[name + 'Data'], settleDate};
+          console.log('returnData.settleType', returnData);
+          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], settleDate} : returnData[name + 'ModifyData'];
+        } else if (props.routeData.modelType.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle')) {
           const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'],'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...qtyCalcData};
           const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'],'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...convertCalcData};
           const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'],'product', fieldName, 'costMoney');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...moneyCalcData};
-          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, moneyCalcData} : returnData[name + 'ModifyData'];
+          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, ...moneyCalcData} : returnData[name + 'ModifyData'];
         }
         //材料计算
         else if (props.routeData.modelType.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialName' || fieldName === 'materialStyle')) {
@@ -314,7 +342,7 @@ const commonDocEvent = (WrapComponent) => {
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...convertCalcData};
           const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'],'material', fieldName, 'costMoney');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...moneyCalcData};
-          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, moneyCalcData} : returnData[name + 'ModifyData'];
+          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, ...moneyCalcData} : returnData[name + 'ModifyData'];
         }
         // 主表仓库数据带到从表
         else if (fieldName === 'warehouseLocationName') {
@@ -338,7 +366,9 @@ const commonDocEvent = (WrapComponent) => {
             returnData.slaveData = slaveData;
             returnData.slaveModifyData = slaveModifyData;
           }
-
+        }
+        if (form) {
+          form.setFieldsValue(commonUtils.setFieldsValue(returnData[name + 'Data'], props[name + 'Container']));
         }
       } else {
         const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);

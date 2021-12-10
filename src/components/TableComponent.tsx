@@ -300,7 +300,7 @@ export function TableComponent(params: any) {
               name: params.name,
               componentType: componentType.Soruce,
               config,
-              property: {value: text},
+              property: {value: text, dropdownMatchSelectWidth: config.dropdownMatchSelectWidth},
               record,
               event: {onChange: params.event.onTreeSelectChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
             };

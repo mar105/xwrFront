@@ -266,7 +266,6 @@ const commonDocEvent = (WrapComponent) => {
 
     const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
       let returnData = props.onSelectChange(name, fieldName, record, assignField, valueOld, option, true);
-      console.log('33333');
       returnData = calcOperation({name, fieldName, record, returnData});
       if (isWait) {
         return { ...returnData };
@@ -299,7 +298,6 @@ const commonDocEvent = (WrapComponent) => {
       const {name, fieldName, record, returnData } = params;
       //成品计算
       if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
-        console.log('11111', fieldName);
         if (fieldName === 'customerName' || fieldName === 'settleName') {
           let settleDate = moment().format('YYYY-MM-DD');
           if (returnData[name + 'Data'].settleType === 'moment') {
@@ -323,7 +321,6 @@ const commonDocEvent = (WrapComponent) => {
             }
           }
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], settleDate};
-          console.log('returnData.settleType', returnData);
           returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], settleDate} : returnData[name + 'ModifyData'];
         } else if (props.routeData.modelType.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle')) {
           const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'],'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');

@@ -13,7 +13,6 @@ import {InputComponent} from "../../../components/InputComponent";
 import {NumberComponent} from "../../../components/NumberComponent";
 import {SwitchComponent} from "../../../components/SwitchComponent";
 import SlaveContainer from "./SlaveContainer";
-import {TreeSelectComponent} from "../../../components/TreeSelectComponent";
 import SyncContainer from "./SyncContainer";
 
 const Container = (props) => {
@@ -31,7 +30,7 @@ const Container = (props) => {
         const {treeData} = returnRoute;
         const selectedKeys = [treeData[0].id];
         form.resetFields();
-        form.setFieldsValue({ ...commonUtils.setFieldsValue(treeData[0]), saveAfterMessage: commonUtils.isEmpty(treeData[0].saveAfterMessage) ? [] : treeData[0].saveAfterMessage.split(',') });
+        form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
         dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], masterModifyData: {}, enabled: false});
       }
     }
@@ -111,7 +110,7 @@ const Container = (props) => {
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
       addState.masterModifyData = {};
       form.resetFields();
-      form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), saveAfterMessage: commonUtils.isEmpty(addState.masterData.saveAfterMessage) ? [] : addState.masterData.saveAfterMessage.split(',')  });
+      form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
     } else {
       props.gotoError(dispatch, interfaceReturn);
@@ -148,7 +147,7 @@ const Container = (props) => {
       addState.syncSelectedRowKeys = [];
       addState.syncDelData = [];
       form.resetFields();
-      form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), saveAfterMessage: commonUtils.isEmpty(masterData.saveAfterMessage) ? [] : masterData.saveAfterMessage.split(',')});
+      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
       dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true, ...addState });
     } else if (key === 'addChildButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
@@ -182,7 +181,7 @@ const Container = (props) => {
       addState.syncSelectedRowKeys = [];
       addState.syncDelData = [];
       form.resetFields();
-      form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), saveAfterMessage: commonUtils.isEmpty(masterData.saveAfterMessage) ? [] : masterData.saveAfterMessage.split(',')});
+      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
       dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys, ...addState });
 
     } else if (key === 'modifyButton') {
@@ -224,7 +223,7 @@ const Container = (props) => {
         addState.syncSelectedRowKeys = [];
         addState.syncDelData = [];
         form.resetFields();
-        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), saveAfterMessage: commonUtils.isEmpty(addState.masterData.saveAfterMessage) ? [] : addState.masterData.saveAfterMessage.split(',')});
+        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
         const url: string = `${application.urlCommon}/verify/removeModifying`;
@@ -288,7 +287,7 @@ const Container = (props) => {
           addState.treeSelectedKeys = [returnRoute.treeData[0].id];
           addState.masterData = {...returnRoute.treeData[0]};
           form.resetFields();
-          form.setFieldsValue({ ...commonUtils.setFieldsValue(returnRoute.treeData[0]), saveAfterMessage: commonUtils.isEmpty(returnRoute.treeData[0].saveAfterMessage) ? [] : returnRoute.treeData[0].saveAfterMessage.split(',') });
+          form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
         }
         addState.slaveData = [];
         addState.slaveModifyData = [];
@@ -361,7 +360,7 @@ const Container = (props) => {
         }
 
         form.resetFields();
-        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), saveAfterMessage: commonUtils.isEmpty(addState.masterData.saveAfterMessage) ? [] : addState.masterData.saveAfterMessage.split(',')  });
+        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
         dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [addState.masterData.id], ...addState });
       } else {
         props.gotoError(dispatch, interfaceReturn);
@@ -405,7 +404,7 @@ const Container = (props) => {
       addState.syncSelectedRowKeys = [];
       addState.syncDelData = [];
       form.resetFields();
-      form.setFieldsValue({ ...commonUtils.setFieldsValue(e.node), saveAfterMessage: commonUtils.isEmpty(e.node.saveAfterMessage) ? [] : e.node.saveAfterMessage.split(',')});
+      form.setFieldsValue(commonUtils.setFieldsValue(e.node));
       dispatchModifyState(addState);
     }
   }
@@ -432,7 +431,7 @@ const Container = (props) => {
         props.gotoError(dispatch, interfaceReturn);
         return {};
       }
-    } else if (params.fieldName === 'saveAfterMessage' || params.fieldName === 'containerViewName') {
+    } else if (params.fieldName === 'containerViewName') {
       const requestParam = {
         routeId: props.routeId
       };
@@ -581,13 +580,6 @@ const Container = (props) => {
     event: { onChange: props.onInputChange }
   };
 
-  const tableSyncKey = {
-    name: 'master',
-    config: { fieldName: 'tableSyncKey', viewName: '表格异步数据Key' },
-    property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
-  };
-
   const isTree = {
     name: 'master',
     config: { fieldName: 'isTree', viewName: '是否展现树型' },
@@ -623,34 +615,6 @@ const Container = (props) => {
     event: { onChange: props.onSwitchChange }
   };
 
-  const saveCallMessage = {
-    name: 'master',
-    config: { fieldName: 'saveCallMessage', viewName: '保存调用消息' },
-    property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
-  };
-
-  const saveAfterMessage = {
-    name: 'master',
-    config: { fieldName: 'saveAfterMessage', viewName: '保存后调用消息', dropType: 'sql', multiple: true },
-    property: { disabled: !enabled, dropdownMatchSelectWidth: 400 },
-    event: { onChange: props.onTreeSelectChange, getSelectList }
-  };
-
-  const examineAfterMessage = {
-    name: 'master',
-    config: { fieldName: 'examineAfterMessage', viewName: '审核后调用消息' },
-    property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
-  };
-
-  const delAfterMessage = {
-    name: 'master',
-    config: { fieldName: 'delAfterMessage', viewName: '删除后调用消息' },
-    property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
-  };
-
   const buttonAddGroup: any = props.getButtonGroup();
   buttonAddGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
   buttonAddGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick, sortNum: 101, disabled: props.enabled });
@@ -676,12 +640,6 @@ const Container = (props) => {
         <Col><InputComponent {...entitySort} /></Col>
       </Row>
       <Row>
-        <Col><InputComponent {...saveCallMessage} /></Col>
-        <Col><TreeSelectComponent {...saveAfterMessage} /></Col>
-        <Col><InputComponent {...examineAfterMessage} /></Col>
-      </Row>
-      <Row>
-        <Col><InputComponent {...delAfterMessage} /></Col>
         <Col><InputComponent {...virtualName} /></Col>
         <Col><InputComponent {...virtualIndex} /></Col>
       </Row>
@@ -703,7 +661,6 @@ const Container = (props) => {
           </Row>
           <Row>
             <Col><InputComponent {...tableKey} /></Col>
-            <Col><InputComponent {...tableSyncKey} /></Col>
             <Col><SwitchComponent {...isRowNum} /></Col>
             <Col><SwitchComponent {...isTree} /></Col>
           </Row>

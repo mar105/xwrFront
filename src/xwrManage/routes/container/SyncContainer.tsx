@@ -16,7 +16,7 @@ const SyncContainer = (props) => {
   const columns = [
     { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 100, fixed: 'left' },
     { title: '类型', dataIndex: 'syncType', isRequired: true, fieldType: 'varchar',  dropType: 'const',
-      viewDrop: '{ "save": "保存时", "saveAfter": "保存后", "examineAfter": "审核后", "delAfter": "删除后" }', defaultValue: 'saveAfter', sortNum: 38, width: 150 },
+      viewDrop: '{ "save": "保存时", "saveAfter": "保存后", "saveAfterRelevance": "保存后关联", "examineAfter": "审核后", "delAfter": "删除后" }', defaultValue: 'saveAfter', sortNum: 38, width: 150 },
     { title: '容器名称', dataIndex: 'containerViewName', isRequired: true, fieldType: 'varchar', dropType: 'sql',
       isTreeDrop: true, dropdownMatchSelectWidth: 400, assignField: 'containerViewName=viewName,containerId=id', treeColumnNameDrop: 'viewName', sortNum: 31, width: 150 },
     { title: '异步key', dataIndex: 'tableSyncKey', fieldType: 'varchar', sortNum: 32, width: 150 },

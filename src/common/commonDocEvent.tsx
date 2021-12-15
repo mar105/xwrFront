@@ -306,7 +306,7 @@ const commonDocEvent = (WrapComponent) => {
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...qtyCalcData};
           const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'],'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...convertCalcData};
-          const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'],'product', fieldName, 'costMoney');
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, returnData[name + 'Data'],'product', fieldName, 'costMoney');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...moneyCalcData};
           returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, ...moneyCalcData} : returnData[name + 'ModifyData'];
         }
@@ -316,7 +316,7 @@ const commonDocEvent = (WrapComponent) => {
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...qtyCalcData};
           const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'],'material', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...convertCalcData};
-          const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'],'material', fieldName, 'costMoney');
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, returnData[name + 'Data'],'material', fieldName, 'costMoney');
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...moneyCalcData};
           returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, ...moneyCalcData} : returnData[name + 'ModifyData'];
         }
@@ -355,32 +355,37 @@ const commonDocEvent = (WrapComponent) => {
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...qtyCalcData};
             const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'][index],'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...convertCalcData};
-            const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'][index],'product', fieldName, 'costMoney');
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
               const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
               if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData, ...moneyCalcData };
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
               }
             }
           }
+
           //材料计算
           else if (props.routeData.modelType.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialName' || fieldName === 'materialStyle')) {
             const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'][index],'material', 'measureQty', 'materialQty', 'measureToMaterialFormulaId', 'measureToMaterialCoefficient');
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...qtyCalcData};
             const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'][index],'material', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...convertCalcData};
-            const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'][index],'material', fieldName, 'costMoney');
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
+            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index]};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
               const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
               if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData, ...moneyCalcData };
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
               }
             }
           }
-          else if (fieldName === 'costPrice') {
-            const moneyCalcData = commonUtils.getMoney(props.commonModel, returnData[name + 'Data'][index],'product', fieldName, 'costMoney');
+
+
+
+
+          //算完数量后还需要计算金额价格。
+          //成品计算
+          if (props.routeData.modelType.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle' ||
+            fieldName === 'productStdPrice' || fieldName === 'costPrice')) {
+            const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
               const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
@@ -389,8 +394,10 @@ const commonDocEvent = (WrapComponent) => {
               }
             }
           }
-          else if (fieldName === 'costMoney') {
-            const moneyCalcData = commonUtils.getPrice(props.commonModel, returnData[name + 'Data'][index],'product', fieldName, 'costPrice');
+          else if (props.routeData.modelType.includes('/product') && (fieldName === 'productStdMoney'
+            || fieldName === 'knifePlateMoney' || fieldName === 'makePlateMoney' || fieldName === 'proofingMoney' || fieldName === 'freightMoney' || fieldName === 'businessMoney'
+            || fieldName === 'costMoney')) {
+            const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
               const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
@@ -399,6 +406,40 @@ const commonDocEvent = (WrapComponent) => {
               }
             }
           }
+
+
+          //材料计算
+          else if (props.routeData.modelType.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialName' || fieldName === 'materialStyle'
+            || fieldName === 'materialStdPrice' || fieldName === 'costPrice')) {
+            const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, returnData[name + 'Data'][index],'material', fieldName);
+            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
+            if (returnData[name + 'Data'][index].handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+              }
+            }
+          }
+          else if (props.routeData.modelType.includes('/material') && (fieldName === 'materialStdMoney' || fieldName === 'costMoney')) {
+            const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
+            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
+            if (returnData[name + 'Data'][index].handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+              }
+            }
+          }
+          // else if (fieldName === 'costMoney') {
+          //   const moneyCalcData = commonUtils.getPrice(props.commonModel, returnData[name + 'Data'][index],'product', fieldName, 'costPrice');
+          //   returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
+          //   if (returnData[name + 'Data'][index].handleType === 'modify') {
+          //     const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+          //     if (indexModify > -1) {
+          //       returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+          //     }
+          //   }
+          // }
 
         }
       }

@@ -622,17 +622,90 @@ export function getMeasureQtyToConvertCalc(commonModel, dataRow, type, fieldName
   return returnRow;
 }
 
-export function getMoney(commonModel, dataRow, type, fieldName, calcFieldName) {
+export function getStdPriceToMoney(commonModel, masterData, dataRow, type, fieldName) {
   const moneyPlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.moneyPlace : 6;
+  const pricePlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.pricePlace : 6;
   const returnRow: any = {};
-  returnRow[calcFieldName] = round(isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) * isEmptyorZeroDefault(dataRow.costPrice, 0), moneyPlace);
+  const stdQty = isEmptyorZeroDefault(dataRow[type + 'Qty'], 0);
+  returnRow[type + 'StdPrice'] = round(isEmptyorZeroDefault(dataRow[type + 'StdPrice'], 0), pricePlace);
+
+  // 计算金额
+  returnRow[type + 'StdMoney'] = round(stdQty * isEmptyorZeroDefault(dataRow[type + 'StdPrice'], 0), moneyPlace);
+  returnRow[type + 'Money'] = round(returnRow[type + 'StdMoney']
+    + isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.makePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.proofingMoney, 0)
+    + isEmptyorZeroDefault(dataRow.freightMoney, 0)
+    + isEmptyorZeroDefault(dataRow.businessMoney, 0), moneyPlace);
+  returnRow[type + 'Price'] = stdQty === 0 ? 0 : round(returnRow[type + 'Money'] / stdQty, pricePlace);
+
+  returnRow[type + 'WithoutTaxMoney'] = round(returnRow[type + 'Money'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
+  returnRow[type + 'WithoutTaxPrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxMoney'] / stdQty, pricePlace);
+
+  returnRow[type + 'TaxMoney'] = round(returnRow[type + 'Money'] - returnRow[type + 'WithoutTaxMoney'], moneyPlace);
+
+  // 计算金额（本位币）
+  const exchangeRate = isEmptyorZeroDefault(masterData.exchangeRate, 1);
+  returnRow[type + 'StdBaseMoney'] = round(returnRow[type + 'StdMoney'] / exchangeRate, moneyPlace);
+  returnRow[type + 'BaseMoney'] = round((returnRow[type + 'Money']
+    + isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.makePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.proofingMoney, 0)
+    + isEmptyorZeroDefault(dataRow.freightMoney, 0)
+    + isEmptyorZeroDefault(dataRow.businessMoney, 0)) / exchangeRate, moneyPlace);
+  returnRow[type + 'BasePrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'BaseMoney'] / stdQty, pricePlace);
+
+  returnRow[type + 'WithoutTaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
+  returnRow[type + 'WithoutTaxBasePrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxBaseMoney'] / stdQty, pricePlace);
+
+  returnRow[type + 'TaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] - returnRow[type + 'WithoutTaxBaseMoney'], moneyPlace);
+
+  //计算成本金额
+  returnRow.costMoney = round(stdQty * isEmptyorZeroDefault(dataRow.costPrice, 0), moneyPlace);
+
   return returnRow;
 }
 
-export function getPrice(commonModel, dataRow, type, fieldName, calcFieldName) {
+export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, fieldName) {
+  const moneyPlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.moneyPlace : 6;
   const pricePlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.pricePlace : 6;
+
   const returnRow: any = {};
-  returnRow[calcFieldName] = round(isEmptyorZeroDefault(dataRow.costMoney, 0) / isEmptyorZeroDefault(dataRow[type + 'Qty'], 1), pricePlace);
+  const stdQty = isEmptyorZeroDefault(dataRow[type + 'Qty'], 0);
+  returnRow[type + 'StdMoney'] = round(isEmptyorZeroDefault(dataRow[type + 'StdMoney'], 0), moneyPlace);
+
+  // 计算价格
+  returnRow[type + 'StdPrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'StdMoney'] / stdQty, pricePlace);
+  returnRow[type + 'Money'] = round(returnRow[type + 'StdMoney']
+    + isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.makePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.proofingMoney, 0)
+    + isEmptyorZeroDefault(dataRow.freightMoney, 0)
+    + isEmptyorZeroDefault(dataRow.businessMoney, 0), moneyPlace);
+  returnRow[type + 'Price'] = stdQty === 0 ? 0 : round(returnRow[type + 'Money'] / stdQty, pricePlace);
+
+  returnRow[type + 'WithoutTaxMoney'] = round(returnRow[type + 'Money'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
+  returnRow[type + 'WithoutTaxPrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxMoney'] / stdQty, pricePlace);
+
+  returnRow[type + 'TaxMoney'] = round(returnRow[type + 'Money'] - returnRow[type + 'WithoutTaxMoney'], moneyPlace);
+
+  // 计算金额（本位币）
+  const exchangeRate = isEmptyorZeroDefault(masterData.exchangeRate, 1);
+  returnRow[type + 'StdBaseMoney'] = round(returnRow[type + 'StdMoney'] / exchangeRate, moneyPlace);
+  returnRow[type + 'BaseMoney'] = round((returnRow[type + 'Money']
+    + isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.makePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.proofingMoney, 0)
+    + isEmptyorZeroDefault(dataRow.freightMoney, 0)
+    + isEmptyorZeroDefault(dataRow.businessMoney, 0)) / exchangeRate, moneyPlace);
+  returnRow[type + 'BasePrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'BaseMoney'] / stdQty, pricePlace);
+
+  returnRow[type + 'WithoutTaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
+  returnRow[type + 'WithoutTaxBasePrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxBaseMoney'] / stdQty, pricePlace);
+
+  returnRow[type + 'TaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] - returnRow[type + 'WithoutTaxBaseMoney'], moneyPlace);
+
+  returnRow.costPrice = round(isEmptyorZeroDefault(dataRow.costMoney, 0) / isEmptyorZeroDefault(stdQty, 1), pricePlace);
   return returnRow;
 }
 

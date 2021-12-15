@@ -671,3 +671,28 @@ export function getFormulaValue(dataRow, formulaId, commonModel) {
     return 0;
   }
 }
+
+export function getSettleDate(dataRow) {
+  let settleDate = moment().format('YYYY-MM-DD');
+  if (dataRow.settleType === 'moment') {
+
+  } else if (dataRow.settleType === 'month') {
+    //按设置加月份。
+    settleDate = moment(settleDate).add(dataRow.monthValue, 'months').format('YYYY-MM-DD');
+    const day = moment(settleDate).get('date');
+    //日期超过结账日加一月。
+    if ( day > dataRow.settleDay) {
+      settleDate = moment(settleDate).add(1, 'months').format('YYYY-MM-DD');
+    }
+    //结账日超过 月 的最后一天以最后一天为主。
+    const endDay = moment(settleDate).endOf('month').get('date');
+    settleDate = moment(settleDate).set('date', dataRow.settleDay > endDay ? endDay : dataRow.settleDay).format('YYYY-MM-DD');
+  } else if (dataRow.settleType === 'deliverAfter') {
+    if (isNotEmpty(dataRow.deliverDate)) {
+      settleDate = moment(dataRow.deliverDate).add(1, 'months').format('YYYY-MM-DD');
+    } else {
+      settleDate = moment(settleDate).add(dataRow.deliverAfterDay, 'days').format('YYYY-MM-DD');
+    }
+  }
+  return settleDate;
+}

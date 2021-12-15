@@ -299,27 +299,7 @@ const commonDocEvent = (WrapComponent) => {
       //成品计算
       if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
         if (fieldName === 'customerName' || fieldName === 'settleName') {
-          let settleDate = moment().format('YYYY-MM-DD');
-          if (returnData[name + 'Data'].settleType === 'moment') {
-
-          } else if (returnData.settleType === 'month') {
-            moment(settleDate).add(returnData.monthValue, 'months').format('YYYY-MM-DD');
-            const day = moment(settleDate).get('date');
-            if (returnData.settleDay > day) {
-              settleDate = moment(settleDate).add(1, 'months').format('YYYY-MM-DD');
-            }
-            const endDay = moment(settleDate).endOf('day').get('date');
-            if (returnData.settleDay > endDay) {
-              settleDate = moment(settleDate).endOf('day').format('YYYY-MM-DD');
-            }
-            returnData[name + 'Data'] = { ...returnData[name + 'Data'], settleDate};
-          } else if (returnData.settleType === 'deliverAfter') {
-            if (commonUtils.isNotEmpty(returnData.deliverDate)) {
-              settleDate = moment(returnData.deliverDate).add(1, 'months').format('YYYY-MM-DD');
-            } else {
-              settleDate = moment(settleDate).add(returnData.deliverAfterDay, 'days').format('YYYY-MM-DD');
-            }
-          }
+          let settleDate = commonUtils.getSettleDate(returnData[name + 'Data']);
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], settleDate};
           returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], settleDate} : returnData[name + 'ModifyData'];
         } else if (props.routeData.modelType.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle')) {

@@ -21,10 +21,20 @@ const Product = (props) => {
   };
 
   const onFinish = async (values: any) => {
-    const { customerData, customerModifyData, customerDelData, inventoryData, inventoryModifyData,
+    const { masterData, customerData: customerDataOld, customerModifyData: customerModifyDataOld, customerDelData: customerDelDataOld, inventoryData, inventoryModifyData,
       inventorySumDelData, inventorySumData, inventorySumModifyData, inventoryDelData } = props;
     const childCallback = (params) => {
       const saveData: any = [];
+      let customerData = commonUtils.isEmptyArr(customerDataOld) ? [] : customerDataOld;
+      let customerModifyData = commonUtils.isEmptyArr(customerModifyDataOld) ? [] : customerModifyDataOld;
+      let customerDelData = commonUtils.isEmptyArr(customerDelDataOld) ? [] : customerDelDataOld;
+      if (masterData.productType === 'common') {
+        customerData = [];
+        customerModifyData = [];
+        customerDataOld.forEach(item => {
+          customerDelData.push({...item, handleType: 'del'});
+        })
+      }
       saveData.push(commonUtils.mergeData('customer', customerData, customerModifyData, customerDelData, false));
       saveData.push(commonUtils.mergeData('inventory', inventoryData, inventoryModifyData, inventoryDelData, false));
       saveData.push(commonUtils.mergeData('inventorySum', inventorySumData, inventorySumModifyData, inventorySumDelData, false));

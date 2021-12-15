@@ -5,7 +5,6 @@ import * as application from "../application";
 import * as request from "../utils/request";
 import {useRef} from "react";
 import CommonModal from "./commonModal";
-import moment from 'moment';
 
 const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {

@@ -50,9 +50,6 @@ const commonDocEvent = (WrapComponent) => {
       }
     }
 
-
-
-
     const onButtonClick = async (key, config, e, childParams) => {
       const { commonModel, tabId, dispatch, dispatchModifyState, masterContainer, masterData: masterDataOld } = props;
       if (key === 'addButton') {
@@ -396,7 +393,7 @@ const commonDocEvent = (WrapComponent) => {
           }
           else if (props.routeData.modelType.includes('/product') && (fieldName === 'productStdMoney'
             || fieldName === 'knifePlateMoney' || fieldName === 'makePlateMoney' || fieldName === 'proofingMoney' || fieldName === 'freightMoney' || fieldName === 'businessMoney'
-            || fieldName === 'costMoney')) {
+            || fieldName === 'costMoney' || fieldName === 'taxName')) {
             const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
@@ -420,7 +417,7 @@ const commonDocEvent = (WrapComponent) => {
               }
             }
           }
-          else if (props.routeData.modelType.includes('/material') && (fieldName === 'materialStdMoney' || fieldName === 'costMoney')) {
+          else if (props.routeData.modelType.includes('/material') && (fieldName === 'materialStdMoney' || fieldName === 'costMoney' || fieldName === 'taxName')) {
             const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {

@@ -325,12 +325,13 @@ export function getAssignFieldValue(name, assignField, option, allDataset = unde
 
 /** 获取数据默认值  取消其他表值数据时  sTaxId:master.sTaxId */
 export function getDefaultValue(container, allDataset) {
-  const returnData = {};
+  let returnData = {};
   if (isNotEmptyObj(container)) {
     container.slaveData.filter(item => isNotEmpty(item.defaultValue)).forEach((childConfig) => {
       const {defaultValue, fieldName, fieldType} = childConfig;
-      if (defaultValue.indexOf('=') > -1 && defaultValue.indexOf('.') > -1) {
-        returnData[fieldName] = copeDataSetValue('', {}, defaultValue.split('=')[1].trim(), allDataset);
+      if (defaultValue.indexOf('=') > -1) { // && defaultValue.indexOf('.') > -1
+        returnData = { ...returnData, ...getAssignFieldValue('', defaultValue, { default: ''}, allDataset) };
+        // returnData[fieldName] = copeDataSetValue('', {}, defaultValue.split('=')[1].trim(), allDataset);
       } else {
         if (fieldType === 'tinyint') {
           returnData[fieldName] = parseInt(defaultValue);

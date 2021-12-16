@@ -39,16 +39,15 @@ function IndexPage(props) {
       connectionWebsocket();
     }, 5000);
     dispatchModifySelfState({intervalWebsocket});
-    syncRefreshData({ body: JSON.stringify({type: 'formulaParam'})});
-    syncRefreshData({ body: JSON.stringify({type: 'formula'})});
+    syncRefreshDataResult({ body: JSON.stringify({type: 'formulaParam'})});
+    syncRefreshDataResult({ body: JSON.stringify({type: 'formula'})});
     return () => clearInterval(intervalWebsocket);
   }, []);
 
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
       && props.commonModel.stompClient.connected) {
-      // @ts-ignore
-      const syncRefreshData = props.commonModel.stompClient.subscribe('/topic-websocket/syncRefreshData', syncRefreshData);
+      const syncRefreshData = props.commonModel.stompClient.subscribe('/topic-websocket/syncRefreshData', syncRefreshDataResult);
       return () => {
         syncRefreshData.unsubscribe();
       };
@@ -56,7 +55,7 @@ function IndexPage(props) {
 
   }, [props.commonModel.stompClient]);
 
-  const syncRefreshData = async (data) => {
+  const syncRefreshDataResult = async (data) => {
     const { dispatch } = props;
     const returnBody = JSON.parse(data.body);
     if (returnBody.type === 'formulaParam') {

@@ -16,7 +16,7 @@ const FormulaParam = (props) => {
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
       && props.commonModel.stompClient.connected) {
-      const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+      const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturnResult);
       return () => {
         saveDataReturn.unsubscribe();
       };
@@ -24,7 +24,7 @@ const FormulaParam = (props) => {
 
   }, [props.commonModel.stompClient]);
 
-  const saveDataReturn = async (data) => {
+  const saveDataReturnResult = async (data) => {
     const returnBody = JSON.parse(data.body);
     if (returnBody.code === 1) {
       props.commonModel.stompClient.send('/websocket/syncRefreshData', {}, JSON.stringify({ userName: props.commonModel.userInfo.userName, type: 'formulaParam'}));

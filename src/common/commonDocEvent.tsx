@@ -22,8 +22,7 @@ const commonDocEvent = (WrapComponent) => {
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
         && props.commonModel.stompClient.connected) {
-        // @ts-ignore
-        const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturn);
+        const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturnResult);
         return () => {
           saveDataReturn.unsubscribe();
         };
@@ -31,8 +30,8 @@ const commonDocEvent = (WrapComponent) => {
 
     }, [props.commonModel.stompClient]);
 
-    // @ts-ignore
-    const saveDataReturn = async (data) => {
+
+    const saveDataReturnResult = async (data) => {
       const { dispatch, dispatchModifyState } = props;
       const returnBody = JSON.parse(data.body);
       if (returnBody.code === 1) {

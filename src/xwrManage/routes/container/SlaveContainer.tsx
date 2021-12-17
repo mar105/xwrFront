@@ -90,6 +90,7 @@ const SlaveContainer = (props) => {
       data.assignField = '';
       data.fieldRelevance = '';
       data.assignFieldRelevance = '';
+      data.virtualRelevance = '';
       data.virtualDrop = '';
       data.chineseDrop = '';
       data.traditionalDrop = '';
@@ -135,6 +136,7 @@ const SlaveContainer = (props) => {
               data.assignField = '';
               data.fieldRelevance = '';
               data.assignFieldRelevance = '';
+              data.virtualRelevance = '';
               data.virtualDrop = '';
               data.chineseDrop = '';
               data.traditionalDrop = '';

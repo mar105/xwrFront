@@ -57,7 +57,7 @@ const SaleOrder = (props) => {
   }, [props.masterContainer.dataSetName]);
 
   const onButtonClick = async (key, config, e, childParams: any = undefined) => {
-    if (key === 'delButton' || key === 'invalidButton') {
+    if (key === 'delButton' || key === 'invalidButton' || key === 'examineButton'  || key === 'cancelExamineButton') {
       const { slaveData, slaveModifyData, slaveDelData } = props;
       const childCallback = (params) => {
         const saveData: any = [];

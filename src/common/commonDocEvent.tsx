@@ -379,8 +379,9 @@ const commonDocEvent = (WrapComponent) => {
 
           //算完数量后还需要计算金额价格。
           //成品计算
-          if (props.routeData.modelType.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle' ||
-            fieldName === 'productStdPrice' || fieldName === 'costPrice')) {
+          if (props.routeData.modelType.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productQty' || fieldName === 'convertQty'
+            || fieldName === 'productName' || fieldName === 'productStyle'
+            || fieldName === 'productStdPrice' || fieldName === 'costPrice')) {
             const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
             if (returnData[name + 'Data'][index].handleType === 'modify') {
@@ -405,7 +406,8 @@ const commonDocEvent = (WrapComponent) => {
 
 
           //材料计算
-          else if (props.routeData.modelType.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialName' || fieldName === 'materialStyle'
+          else if (props.routeData.modelType.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialQty' || fieldName === 'convertQty'
+            || fieldName === 'materialName' || fieldName === 'materialStyle'
             || fieldName === 'materialStdPrice' || fieldName === 'costPrice')) {
             const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, returnData[name + 'Data'][index],'material', fieldName);
             returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};

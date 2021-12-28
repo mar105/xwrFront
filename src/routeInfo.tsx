@@ -1,6 +1,7 @@
 import * as xwrBasicRouteInfo from "./xwrBasic/routeInfo";
 import * as xwrInitRouteInfo from "./xwrInit/routeInfo";
 import * as xwrSaleRouteInfo from "./xwrSale/routeInfo";
+import * as xwrProductioneRouteInfo from "./xwrProduction/routeInfo";
 
 const xwrMainRouteInfo: any[] = [{
     path: '/login', name: 'login', component: () => import('./routes/Login'),
@@ -21,9 +22,10 @@ const xwrMainRouteInfo: any[] = [{
 //替换的原因是因为分模块打包后，再刷新会根据路由直接跳转到子模块路由上去。为了能在panes上展现。
 export const replacePath = (pathOld) => {
   let path = pathOld;
-  path = path.replace('/xwrBasic/', '/');
-  path = path.replace('/xwrInit/', '/');
-  path = path.replace('/xwrSale/', '/');
+  path = path.replace('/xwrBasic/', '/');   // 基础
+  path = path.replace('/xwrInit/', '/');    // 期初
+  path = path.replace('/xwrSale/', '/');    // 销售
+  path = path.replace('/xwrProduction/', '/'); // 生产
   return path;
 }
 const mergeRouteInfo = (routeInfo, childRouteInfo) => {
@@ -46,5 +48,6 @@ routeInfoNew.push(...xwrMainRouteInfo);
 mergeRouteInfo(routeInfoNew, xwrBasicRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrInitRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrSaleRouteInfo.routeInfo);
+mergeRouteInfo(routeInfoNew, xwrProductioneRouteInfo.routeInfo);
 
 export const routeInfo: any[] = [...routeInfoNew];

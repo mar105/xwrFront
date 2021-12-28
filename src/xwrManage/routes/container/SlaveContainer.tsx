@@ -166,10 +166,10 @@ const SlaveContainer = (props) => {
           const slaveData = [...slaveDataOld];
           const clipboardValue = JSON.parse(clipboardText);
           if (commonUtils.isNotEmptyArr(clipboardValue)) {
-            clipboardValue.forEach(item => {
+            clipboardValue.forEach((item, index) => {
               let data = props.onAdd({}); // 不要默认值。
               data.superiorId = propsRef.current.masterData.id;
-              data.sortNum = slaveDataOld.length + 1;
+              data.sortNum = slaveDataOld.length + index + 1;
               data = { ...item, ...data };
               slaveData.push(data);
             });
@@ -214,7 +214,7 @@ const SlaveContainer = (props) => {
       <a onClick={onLastColumnClick.bind(this, name, 'delButton', record)}>
       <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
     </div>
-  }, width: 50 , fixed: 'right' };
+  }, width: 100, fixed: 'right' };
   tableParam.lastTitle = <div>
     <a onClick={onClick.bind(this, name + 'CopyToMultiButton')} > <Tooltip placement="top" title="复制到剪贴版"><CopyOutlined /> </Tooltip></a>
     { !props.enabled ? '' : <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> }

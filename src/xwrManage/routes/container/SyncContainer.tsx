@@ -14,7 +14,7 @@ const SyncContainer = (props) => {
   }, [props]);
   const { name } = props;
   const columns = [
-    { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 100, fixed: 'left' },
+    { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 120, fixed: 'left' },
     { title: '类型', dataIndex: 'syncType', isRequired: true, fieldType: 'varchar',  dropType: 'const',
       viewDrop: '{ "save": "保存时", "saveAfter": "保存后", "saveAfterRelevance": "保存后关联", "examineAfter": "审核后", "delAfter": "删除后" }', defaultValue: 'saveAfter', sortNum: 38, width: 150 },
     { title: '容器名称', dataIndex: 'containerViewName', isRequired: true, fieldType: 'varchar', dropType: 'sql',
@@ -56,10 +56,10 @@ const SyncContainer = (props) => {
           const syncData = [...syncDataOld];
           const clipboardValue = JSON.parse(clipboardText);
           if (commonUtils.isNotEmptyArr(clipboardValue)) {
-            clipboardValue.forEach(item => {
+            clipboardValue.forEach((item, index) => {
               let data = props.onAdd({}); // 不要默认值。
               data.superiorId = propsRef.current.masterData.id;
-              data.sortNum = syncDataOld.length + 1;
+              data.sortNum = syncDataOld.length + index + 1;
               data = { ...item, ...data };
               syncData.push(data);
             });
@@ -104,7 +104,7 @@ const SyncContainer = (props) => {
       <a onClick={onLastColumnClick.bind(this, name, 'delButton', record)}>
       <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
     </div>
-  }, width: 50 , fixed: 'right' };
+  }, width: 80, fixed: 'right' };
   tableParam.lastTitle = <div>
     <a onClick={onClick.bind(this, name + 'CopyToMultiButton')} > <Tooltip placement="top" title="复制到剪贴版"><CopyOutlined /> </Tooltip></a>
     { !props.enabled ? '' : <a onClick={onClick.bind(this, name + 'AddButton')}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> }

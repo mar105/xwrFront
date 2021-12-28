@@ -24,7 +24,7 @@ function RouterConfig({ history, app }) {
     <ConnectedRouter history={history}>
       <Switch>
         {mapRouteMethod(routeInfo)}
-        <Redirect to="/xwrSale"/>
+        <Redirect to="/xwrProduction"/>
       </Switch>
     </ConnectedRouter>
   );

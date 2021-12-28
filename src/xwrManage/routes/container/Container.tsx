@@ -339,7 +339,7 @@ const Container = (props) => {
         addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
         addState.masterModifyData = {};
 
-        const urlSlave: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
+        const urlSlave: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + addState.masterData.id;
         const interfaceReturnSlave = (await request.getRequest(urlSlave, commonModel.token)).data;
         if (interfaceReturnSlave.code === 1) {
           addState.slaveData = interfaceReturnSlave.data;
@@ -349,7 +349,7 @@ const Container = (props) => {
           props.gotoError(dispatch, interfaceReturnSlave);
         }
 
-        const urlSync: string = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + masterData.id;
+        const urlSync: string = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + addState.masterData.id;
         const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
         if (interfaceReturnSync.code === 1) {
           addState.syncData = interfaceReturnSync.data;
@@ -573,6 +573,13 @@ const Container = (props) => {
     event: { onChange: props.onInputChange }
   };
 
+  const containerModel = {
+    name: 'master',
+    config: { fieldName: 'containerModel', viewName: '容器模型' },
+    property: { disabled: !enabled },
+    event: { onChange: props.onInputChange }
+  };
+
   const tableKey = {
     name: 'master',
     config: { fieldName: 'tableKey', viewName: '表格Key' },
@@ -646,6 +653,7 @@ const Container = (props) => {
       <Row>
         <Col><NumberComponent {...sortNum} /></Col>
         <Col><InputComponent {...serialCodeField} /></Col>
+        <Col><InputComponent {...containerModel} /></Col>
       </Row>
       <Row>
         <Col><SwitchComponent {...isVisible} /></Col>

@@ -114,6 +114,7 @@ export function TableComponent(params: any) {
     //-----列宽拖拽结束------------------------------
     dispatchModifySelfState({components, ...addState });
     //params.lastColumn.changeValue 判断是否需要重新渲染最后一列。
+    //filteredInfo 用于包含搜索的变黄色
   }, [params.lastColumn.changeValue, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
 
   // useEffect(() => {
@@ -175,9 +176,12 @@ export function TableComponent(params: any) {
   }
   const getColumnSearchConstProps = (column, config) => ({
     filters: objectToArrFilter(commonUtils.stringToObj(config.viewDrop)),
-    filteredValue: commonUtils.isEmpty(modifySelfState.filteredInfo) ? '' : modifySelfState.filteredInfo[column.dataIndex],
+    //filteredValue不要用，直接用onFilter，不然不能多个字段筛选。
+    // filteredValue: commonUtils.isEmpty(modifySelfState.filteredInfo) ? '' : modifySelfState.filteredInfo[column.dataIndex],
     // filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) => record[column.dataIndex].includes(value),
+    onFilter: (value, record) => {
+      return record[column.dataIndex].includes(value);
+    }
   });
 
   //搜索小面板

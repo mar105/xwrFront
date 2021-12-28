@@ -126,7 +126,7 @@ export function TableComponent(params: any) {
   // 数据行拖动
   const onSortEnd = ({ oldIndex, newIndex }) => {
     params.onSortEnd(params.name, oldIndex, newIndex);
-    dispatchModifySelfState({ rowSort: !modifySelfState.rowSort });
+    // dispatchModifySelfState({ rowSort: !modifySelfState.rowSort });
   };
 
 
@@ -349,7 +349,10 @@ export function TableComponent(params: any) {
               event: {onChange: params.event.onCascaderChange}
             };
             if (column.dataIndex === 'sortNum' && params.isDragRow) {
-              return <div><DragHandle/> {text}</div>;
+              const component = useMemo(() => {
+                return <div><DragHandle/> <NumberComponent {...numberParams}  /></div>
+              }, [text]);
+              return component;
             } else if (column.fieldType === 'varchar' || column.fieldType === 'text') {
               if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
                 return <ProvinceCityArea {...provinceCityAreaParams}  />;
@@ -392,9 +395,7 @@ export function TableComponent(params: any) {
           }
         } else {
           column.render = (text, record, index) => {
-            if (column.dataIndex === 'sortNum' && params.isDragRow) {
-              return <div><DragHandle /> {text}</div>;
-            } else if (config.dropType === 'const') {
+            if (config.dropType === 'const') {
               const dropObject: any = commonUtils.stringToObj(config.viewDrop);
               return dropObject[text];
             } else if (config.fieldType === 'tinyint') {

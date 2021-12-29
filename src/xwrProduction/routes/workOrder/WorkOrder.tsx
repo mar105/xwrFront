@@ -109,8 +109,7 @@ const WorkOrder = (props) => {
       const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
       returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
       addState[name + 'SelectedRowKeys'] = [returnData.data.id];
-    }
-    else if (name === 'material' || name === 'process') {
+    } else if (name === 'material') {
       if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
         const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
         if (index > -1) {
@@ -120,22 +119,46 @@ const WorkOrder = (props) => {
         }
         return;
       }
+      const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
+      returnData[name + 'Data'][index].slaveId = slaveSelectedRowKeys[0];
+
+      const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
+      returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
+
       if (commonUtils.isEmptyArr(partSelectedRowKeys)) {
-        const index = props.constantData.filter(item => item.constantName === 'pleaseChoosePart');
+        returnData[name + 'Data'][index].partId = '';
+        returnData[name + 'Data'][index].materialGenre = '2product';
+      } else {
+        const partIndex = partData.filter(item => item.id === partSelectedRowKeys[0]);
+        returnData[name + 'Data'][index].partName = partIndex > -1 ? partData[slaveIndex].partName : '';
+        returnData[name + 'Data'][index].partId = partSelectedRowKeys[0];
+        returnData[name + 'Data'][index].materialGenre = '0main';
+      }
+    } else if (name === 'process') {
+      if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+        const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
         if (index > -1) {
           props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
         } else {
-          props.gotoError(dispatch, { code: '6001', msg: '请选择部件！' });
+          props.gotoError(dispatch, { code: '6001', msg: '请选择从表！' });
         }
         return;
       }
       const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
       returnData[name + 'Data'][index].slaveId = slaveSelectedRowKeys[0];
-      returnData[name + 'Data'][index].partId = partSelectedRowKeys[0];
+
       const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
       returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
-      const partIndex = partData.filter(item => item.id === partSelectedRowKeys[0]);
-      returnData[name + 'Data'][index].partName = partIndex > -1 ? partData[slaveIndex].partName : '';
+
+      if (commonUtils.isEmptyArr(partSelectedRowKeys)) {
+        returnData[name + 'Data'][index].partId = '';
+        returnData[name + 'Data'][index].processGenre = '3product';
+      } else {
+        const partIndex = partData.filter(item => item.id === partSelectedRowKeys[0]);
+        returnData[name + 'Data'][index].partName = partIndex > -1 ? partData[slaveIndex].partName : '';
+        returnData[name + 'Data'][index].partId = partSelectedRowKeys[0];
+        returnData[name + 'Data'][index].processGenre = '0prepress';
+      }
     }
 
     if (isWait) {

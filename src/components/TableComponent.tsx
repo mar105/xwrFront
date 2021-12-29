@@ -184,6 +184,7 @@ export function TableComponent(params: any) {
     }
   });
 
+
   //搜索小面板
   const getColumnSearchProps = column => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -215,10 +216,7 @@ export function TableComponent(params: any) {
       </div>
     ),
     filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-      record[column.dataIndex]
-        ? record[column.dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-        : '',
+    onFilter: (value, record) => record[column.dataIndex] ? record[column.dataIndex].toString().toLowerCase().includes(value.toLowerCase()) : '',
     onFilterDropdownVisibleChange: visible => {
       if (visible) {
         setTimeout(() => searchInput.select(), 100);
@@ -251,6 +249,10 @@ export function TableComponent(params: any) {
     columnsOld.forEach((columnOld, columnIndex) => {
       if (columnOld.title === '#') {
         const column = {...columnOld};
+        if (params.onFilter) {
+          column.onFilter = params.onFilter.bind(this, params.name, column.dataIndex);
+          column.filteredValue = ['#'];
+        }
         columns.push(column);
       } else if (columnOld.title === 'o') {
         const column = {...columnOld};
@@ -260,7 +262,6 @@ export function TableComponent(params: any) {
         const index = params.config.slaveData.findIndex(item => item.fieldName === columnOld.dataIndex);
         const config = index > -1 ? params.config.slaveData[index] : {};
         const column = config.dropType === 'const' ? {...columnOld, ...getColumnSearchConstProps(columnOld, config)} : {...columnOld, ...getColumnSearchProps(columnOld)};
-
         column.onHeaderCell = columnHeader => ({
           width: columnHeader.width,
           onResize: handleResize(columnIndex),

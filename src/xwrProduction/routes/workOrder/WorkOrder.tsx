@@ -1,5 +1,5 @@
 import { connect } from 'dva';
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {Col, Form, Row, Tooltip} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
@@ -11,21 +11,16 @@ import { DeleteOutlined } from '@ant-design/icons';
 
 const WorkOrder = (props) => {
   const [form] = Form.useForm();
+  const propsRef: any = useRef();
   props.onSetForm(form);
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
 
-  const onFinish = async (values: any) => {
-    const { slaveData, slaveModifyData, slaveDelData } = props;
-    const childCallback = (params) => {
-      const saveData: any = [];
-      saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, false));
-      return saveData;
-    }
-    props.onFinish(values, { childCallback });
-  }
+  useEffect(() => {
+    propsRef.current = props;
+  }, [props]);
 
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.masterContainer)) {
@@ -56,6 +51,16 @@ const WorkOrder = (props) => {
     }
   }, [props.masterContainer.dataSetName]);
 
+  const onFinish = async (values: any) => {
+    const { slaveData, slaveModifyData, slaveDelData } = props;
+    const childCallback = (params) => {
+      const saveData: any = [];
+      saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, false));
+      return saveData;
+    }
+    props.onFinish(values, { childCallback });
+  }
+
   const onButtonClick = async (key, config, e, childParams: any = undefined) => {
     if (key === 'delButton' || key === 'invalidButton' || key === 'examineButton'  || key === 'cancelExamineButton') {
       const { slaveData, slaveModifyData, slaveDelData } = props;
@@ -70,53 +75,135 @@ const WorkOrder = (props) => {
     }
   }
 
+  const onFilter = (name, fieldName, value, record) => {
+    const { slaveSelectedRowKeys, partSelectedRowKeys }: any = propsRef.current;
+    const slaveId = commonUtils.isEmptyArr(slaveSelectedRowKeys) ? '' : slaveSelectedRowKeys.toString();
+    const partId = commonUtils.isEmptyArr(partSelectedRowKeys) ? '' : partSelectedRowKeys.toString();
+    if (name === 'part') {
+      return record.slaveId === slaveId;
+    } else if (name === 'material') {
+      return (record.slaveId === slaveId && record.partId === partId) || record.materialGenre === '2product';
+    } else if (name === 'process') {
+      return (record.slaveId === slaveId && record.partId === partId) || record.processGenre === '3product';
+    }
+  }
+
+  const onTableAddClick = (name, e, isWait = false) => {
+    const { dispatch, slaveData, partData, slaveSelectedRowKeys, partSelectedRowKeys }: any = propsRef.current;
+    const addState = {};
+    const returnData = props.onTableAddClick(name, e, true);
+    if (name === 'slave') {
+      addState[name + 'SelectedRowKeys'] = [returnData.data.id];
+    } else if (name === 'part') {
+      if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+        const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
+        if (index > -1) {
+          props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
+        } else {
+          props.gotoError(dispatch, { code: '6001', msg: '请选择从表！' });
+        }
+        return;
+      }
+      const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
+      returnData[name + 'Data'][index].slaveId = slaveSelectedRowKeys[0];
+      const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
+      returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
+      addState[name + 'SelectedRowKeys'] = [returnData.data.id];
+    }
+    else if (name === 'material' || name === 'process') {
+      if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+        const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
+        if (index > -1) {
+          props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
+        } else {
+          props.gotoError(dispatch, { code: '6001', msg: '请选择从表！' });
+        }
+        return;
+      }
+      if (commonUtils.isEmptyArr(partSelectedRowKeys)) {
+        const index = props.constantData.filter(item => item.constantName === 'pleaseChoosePart');
+        if (index > -1) {
+          props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
+        } else {
+          props.gotoError(dispatch, { code: '6001', msg: '请选择部件！' });
+        }
+        return;
+      }
+      const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
+      returnData[name + 'Data'][index].slaveId = slaveSelectedRowKeys[0];
+      returnData[name + 'Data'][index].partId = partSelectedRowKeys[0];
+      const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
+      returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
+      const partIndex = partData.filter(item => item.id === partSelectedRowKeys[0]);
+      returnData[name + 'Data'][index].partName = partIndex > -1 ? partData[slaveIndex].partName : '';
+    }
+
+    if (isWait) {
+      return { [name + 'Data']: returnData[name + 'Data'], ...addState };
+    } else {
+      props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], ...addState });
+    }
+  };
+
+  const onRowClick = async (name, record, rowKey) => {
+    const { dispatchModifyState } = props;
+    dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]] });
+  }
+
   const { enabled, masterContainer, masterData, commonModel } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
-  const slaveParam: any = commonUtils.getTableProps('slave', props);
+  const slaveParam: any = commonUtils.getTableProps('slave', { ...props, onTableAddClick });
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;
   slaveParam.width = 2000;
-  slaveParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultslaveId,
+  slaveParam.lastColumn = { title: 'o',
     render: (text,record, index)=> {
       return <div>
         <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
+  slaveParam.eventOnRow.onRowClick = onRowClick;
 
 
-  const partParam: any = commonUtils.getTableProps('part', props);
+  const partParam: any = commonUtils.getTableProps('part', { ...props, onTableAddClick });
   partParam.isDragRow = true;
   partParam.pagination = false;
   partParam.width = 2000;
-  partParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultslaveId,
+  partParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys,
     render: (text,record, index)=> {
       return <div>
         <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
+  partParam.onFilter = onFilter;
+  partParam.eventOnRow.onRowClick = onRowClick;
 
-  const materialParam: any = commonUtils.getTableProps('material', props);
+  const materialParam: any = commonUtils.getTableProps('material', { ...props, onTableAddClick });
   materialParam.isDragRow = true;
   materialParam.pagination = false;
   materialParam.width = 2000;
-  materialParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultslaveId,
+  materialParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys && props.partSelectedRowKeys ? [...props.slaveSelectedRowKeys, ...props.partSelectedRowKeys] :
+      props.slaveSelectedRowKeys ? props.slaveSelectedRowKeys : props.partSelectedRowKeys ? props.partSelectedRowKeys : '',
     render: (text,record, index)=> {
       return <div>
         <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
+  materialParam.onFilter = onFilter;
 
-  const processParam: any = commonUtils.getTableProps('process', props);
+  const processParam: any = commonUtils.getTableProps('process',{ ...props, onTableAddClick });
   processParam.isDragRow = true;
   processParam.pagination = false;
   processParam.width = 2000;
-  processParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultslaveId,
+  processParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys && props.partSelectedRowKeys ? [...props.slaveSelectedRowKeys, ...props.partSelectedRowKeys] :
+      props.slaveSelectedRowKeys ? props.slaveSelectedRowKeys : props.partSelectedRowKeys ? props.partSelectedRowKeys : '',
     render: (text,record, index)=> {
       return <div>
         <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
+  processParam.onFilter = onFilter;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);

@@ -303,7 +303,7 @@ const commonBase = (WrapComponent) => {
       tableData.push(data);
 
       if (isWait) {
-        return { [name + 'Data']: tableData };
+        return { [name + 'Data']: tableData, data };
       } else {
         dispatchModifyState({ [name + 'Data']: tableData });
       }

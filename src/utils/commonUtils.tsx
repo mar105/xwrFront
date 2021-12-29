@@ -346,7 +346,11 @@ export function getDefaultValue(container, allDataset) {
         } else if (fieldType === 'decimal') {
           returnData[fieldName] = parseFloat(defaultValue);
         } else {
-          returnData[fieldName] = defaultValue;
+          if (defaultValue === 'empty') {
+            returnData[fieldName] = '';
+          } else {
+            returnData[fieldName] = defaultValue;
+          }
         }
       }
     });

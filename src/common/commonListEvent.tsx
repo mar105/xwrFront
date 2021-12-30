@@ -48,7 +48,12 @@ const commonListEvent = (WrapComponent) => {
         const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
         if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {
           if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
-            props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
+            const index = commonModel.commonConstant.filter(item => item.constantName === 'pleaseChooseData');
+            if (index > -1) {
+              props.gotoError(dispatch, { code: '6001', msg: commonModel.constantData[index].viewName });
+            } else {
+              props.gotoError(dispatch, { code: '6001', msg: '请选择数据！' });
+            }
             return;
           }
           const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === slaveSelectedRowKeys[0]);

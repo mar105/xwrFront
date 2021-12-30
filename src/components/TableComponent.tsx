@@ -54,8 +54,8 @@ export function TableComponent(params: any) {
 
     // 树形通过配置展开列名找到展开列
     if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
-      let selectionMinus = params.property.rowSelection === null ? 0 : 2;
-      selectionMinus = params.config.isRowNum ? selectionMinus + 1 : selectionMinus;
+      let selectionMinus = params.property.rowSelection === null ? 0 : 2;  // 为2的原因 index从0开始，要多加1
+      // selectionMinus = params.config.isRowNum ? selectionMinus + 1 : selectionMinus; // addState.columns已经包含了rowNum
       const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
       addState.expandable = { expandIconColumnIndex: index + selectionMinus }
     }
@@ -533,9 +533,9 @@ export function TableComponent(params: any) {
     onChange
   }
   if (commonUtils.isNotEmptyObj(modifySelfState.expandable)) {
-    tableParams.expandable = modifySelfState.expandable;
+    tableParams.expandable = { ...modifySelfState.expandable, ...params.expandable,
+      onExpand: (expanded, record) => { params.expandable.onExpand(params.name, expanded, record) } };
   }
-
   return <div style={{width: params.width ? params.width: 1000}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
 

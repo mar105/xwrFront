@@ -7,7 +7,7 @@ import {ButtonGroup} from "../../../common/ButtonGroup";
 import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusSquareOutlined } from '@ant-design/icons';
 
 const WorkOrder = (props) => {
   const [form] = Form.useForm();
@@ -93,6 +93,8 @@ const WorkOrder = (props) => {
     const addState = {};
     const returnData = props.onTableAddClick(name, e, true);
     if (name === 'slave') {
+      const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
+      returnData[name + 'Data'][index].allId = returnData.data.id;
       addState[name + 'SelectedRowKeys'] = [returnData.data.id];
     } else if (name === 'part') {
       if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
@@ -173,6 +175,8 @@ const WorkOrder = (props) => {
     dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]] });
   }
 
+
+
   const { enabled, masterContainer, masterData, commonModel } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
@@ -180,14 +184,20 @@ const WorkOrder = (props) => {
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;
   slaveParam.width = 2000;
+
   slaveParam.lastColumn = { title: 'o',
     render: (text,record, index)=> {
       return <div>
         <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
-      </div>
-    }, width: 50 , fixed: 'right' };
-  slaveParam.eventOnRow.onRowClick = onRowClick;
 
+      </div>
+    }, width: 100, fixed: 'right' };
+  slaveParam.lastTitle =
+    <div> {slaveParam.lastTitle}
+      <a onClick={props.onTableAddChildClick.bind(this, 'slave')}> <Tooltip placement="top" title="增加子产品"><PlusSquareOutlined /> </Tooltip></a>
+    </div>,
+
+    slaveParam.eventOnRow.onRowClick = onRowClick;
 
   const partParam: any = commonUtils.getTableProps('part', { ...props, onTableAddClick });
   partParam.isDragRow = true;

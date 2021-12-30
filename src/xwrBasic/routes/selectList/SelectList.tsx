@@ -35,7 +35,7 @@ const SelectList = (props) => {
   const selectParam: any = commonUtils.getTableProps('slave', props);
   selectParam.enabled = false;
   selectParam.property.dataSource = props.slaveSelectedRows;
-  selectParam.property.rowSelection = undefined;
+  selectParam.property.rowSelection = null;
   selectParam.lastColumn = { title: 'o',
     render: (text,record, index)=> {
     return <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, 'slave', 'delSelectButton', record) : null}>

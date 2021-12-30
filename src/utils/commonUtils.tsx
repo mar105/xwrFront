@@ -204,6 +204,7 @@ export function getTableProps(name, props) {
     isLastColumn: true,
     onLastColumnClick: props.onLastColumnClick,
     onTableChange: props.onTableChange,
+    expandable: {onExpand: props.onExpand, expandedRowKeys: props[name + 'ExpandedRowKeys']},
     pagination: true, // 是否分页
     event: { onInputChange: props.onInputChange, onTreeSelectChange: props.onTreeSelectChange, onCheckboxChange: props.onCheckboxChange, onNumberChange: props.onNumberChange,
       onSelectChange: props.onSelectChange, onDatePickerChange: props.onDatePickerChange, getSelectList: props.getSelectList,

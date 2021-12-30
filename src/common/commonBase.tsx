@@ -309,6 +309,48 @@ const commonBase = (WrapComponent) => {
       }
     };
 
+    const onTableAddChildClick = (name, e, isWait = false) => {
+      const { [name + 'Data']: dataOld, masterData, [name + 'Container']: container, [name + 'ExpandedRowKeys']: expandedRowKeysOld, [name + 'SelectedRowKeys']: selectedRowKeysOld, commonModel }: any = stateRef.current;
+      const { dispatch } = props;
+      const tableData = dataOld === undefined ? [] : [...dataOld];
+      const expandedRowKeys = commonUtils.isEmptyArr(expandedRowKeysOld) ? [] : [...expandedRowKeysOld];
+      const selectedRowKeys = commonUtils.isEmptyArr(selectedRowKeysOld) ? [] : [...selectedRowKeysOld];
+
+      if (commonUtils.isEmptyArr(selectedRowKeys)) {
+        const index = commonModel.commonConstant.filter(item => item.constantName === 'pleaseChooseData');
+        if (index > -1) {
+          props.gotoError(dispatch, { code: '6001', msg: commonModel.constantData[index].viewName });
+        } else {
+          props.gotoError(dispatch, { code: '6001', msg: '请选择数据！' });
+        }
+        return;
+      }
+
+      const data = onAdd(container);
+      const index = tableData.findIndex(item => item.id === selectedRowKeys[0]);
+      const addState = {};
+
+      data.superiorId = masterData.id;
+      data.sortNum = tableData.length + 1;
+      data.allId = tableData[index].allId + ',' + data.id;
+      data.superiorId = tableData[index].id;
+
+      if (commonUtils.isEmptyArr(tableData[index].children)) {
+        tableData[index].children = [data];
+      } else {
+        tableData[index].children.push(data);
+      }
+      addState[name + 'SelectedRowKeys'] = [data.id];
+      expandedRowKeys.push(tableData[index].id);
+      addState[name + 'ExpandedRowKeys'] = expandedRowKeys;
+
+      if (isWait) {
+        return { [name + 'Data']: tableData, data, ...addState };
+      } else {
+        dispatchModifyState({ [name + 'Data']: tableData, ...addState });
+      }
+    };
+
     const gotoError = (dispatch, interfaceData) => {
       dispatch({ type: 'commonModel/gotoError', payload: interfaceData });
     };
@@ -517,7 +559,10 @@ const commonBase = (WrapComponent) => {
         }
       } else {
         const data = [...dataOld];
-        const index = data.findIndex(item => item.id === record.id);
+        let index = data.findIndex(item => item.id === record.id);
+        // if (commonUtils.isNotEmpty(record.allId)) {
+        //   index = data.findIndex(item => item.id === record.allId.split(',')[0]);
+        // }
         if (index > -1) {
           const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
           const rowData = { ...data[index], [fieldName]: value, ...assignValue };
@@ -996,6 +1041,18 @@ const commonBase = (WrapComponent) => {
 
     }
 
+    const onExpand = (name, expanded, record) => {
+      const { [name + 'ExpandedRowKeys']: expandedRowKeysOld } = stateRef.current;
+      const expandedRowKeys = commonUtils.isEmptyArr(expandedRowKeysOld) ? [] : [...expandedRowKeysOld];
+      if (expanded) {
+        expandedRowKeys.push(record.id);
+      } else {
+        const index = expandedRowKeys.findIndex(item => item.id === record.id);
+        expandedRowKeys.splice(index, 1);
+      }
+      dispatchModifyState({ [name + 'ExpandedRowKeys']: expandedRowKeys });
+    }
+
     return <Spin spinning={modifyState.pageLoading ? true : false}>
       <WrapComponent
       {...props}
@@ -1009,6 +1066,7 @@ const commonBase = (WrapComponent) => {
       onModify={onModify}
       onDel={onDel}
       onTableAddClick={onTableAddClick}
+      onTableAddChildClick={onTableAddChildClick}
       onTableConfigSaveClick={onTableConfigSaveClick}
       onLastColumnClick={onLastColumnClick}
       gotoError={gotoError}
@@ -1029,6 +1087,7 @@ const commonBase = (WrapComponent) => {
       onUpload={onUpload}
       onDropPopup={onDropPopup}
       onModalCancel={onModalCancel}
+      onExpand={onExpand}
     />
     </Spin>
   };

@@ -333,7 +333,7 @@ const commonBase = (WrapComponent) => {
       data.superiorId = masterData.id;
       data.sortNum = tableData.length + 1;
       data.allId = tableData[index].allId + ',' + data.id;
-      data.superiorId = tableData[index].id;
+      data[container.treeSlaveKey] = tableData[index].id;
 
       if (commonUtils.isEmptyArr(tableData[index].children)) {
         tableData[index].children = [data];
@@ -358,6 +358,55 @@ const commonBase = (WrapComponent) => {
     const gotoSuccess = (dispatch, interfaceData) => {
       dispatch({ type: 'commonModel/gotoSuccess', payload: interfaceData });
     };
+
+    const getTreeNode = (treeData, allId) => {
+      let treeNode: any = {};
+      allId.split(',').forEach((key, allIdIndex) => {
+        if (allIdIndex === 0) {
+          const index = treeData.findIndex(item => item.id === key);
+          if (index > -1) {
+            treeNode = treeData[index];
+          }
+        } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
+          treeNode = getChildTreeNode(treeNode.children, key);
+        }
+      });
+      return treeNode;
+    }
+
+    const getChildTreeNode = (treeNode, key) => {
+      if (commonUtils.isNotEmptyArr(treeNode)) {
+        const index = treeNode.findIndex(item => item.id === key);
+        if (index > -1) {
+          return treeNode[index];
+        }
+      }
+    }
+
+    const setTreeNode = (treeData, dataRow, allId) => {
+      let treeNode: any = {};
+      allId.split(',').forEach((key, allIdIndex) => {
+        if (allIdIndex === 0) {
+          const index = treeData.findIndex(item => item.id === key);
+          if (index > -1) {
+            treeNode = treeData[index];
+          }
+        } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
+          treeNode = setChildTreeNode(treeNode.children, dataRow, key);
+        }
+      });
+    }
+
+    const setChildTreeNode = (treeNode, dataRow, key) => {
+      if (commonUtils.isNotEmptyArr(treeNode)) {
+        const index = treeNode.findIndex(item => item.id === key);
+        if (index > -1) {
+          treeNode[index] = dataRow;
+        }
+      }
+    }
+
+
 
     const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
       dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys, [name + 'SelectedRows']: selectedRows });
@@ -532,6 +581,25 @@ const commonBase = (WrapComponent) => {
           } else {
             dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
           }
+        } else {
+          const dataRow = getTreeNode(data, record.allId);
+          const rowData = { ...dataRow, [fieldName]: value };
+          rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+          setTreeNode(data, rowData, record.allId);
+          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+          if (rowData.handleType === 'modify') {
+            const indexModify = dataModify.findIndex(item => item.id === record.id);
+            if (indexModify > -1) {
+              dataModify[indexModify][fieldName] = rowData[fieldName];
+            } else {
+              dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
+            }
+          }
+          if (isWait) {
+            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+          } else {
+            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+          }
         }
       }
     }
@@ -560,10 +628,7 @@ const commonBase = (WrapComponent) => {
       } else {
         const data = [...dataOld];
         let index = data.findIndex(item => item.id === record.id);
-        // if (commonUtils.isNotEmpty(record.allId)) {
-        //   index = data.findIndex(item => item.id === record.allId.split(',')[0]);
-        // }
-        if (index > -1) {
+        if (index > -1) { // 正常数据
           const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
           const rowData = { ...data[index], [fieldName]: value, ...assignValue };
           rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
@@ -575,6 +640,27 @@ const commonBase = (WrapComponent) => {
               dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
+            }
+          }
+
+          if (isWait) {
+            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+          } else {
+            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+          }
+        } else if (commonUtils.isNotEmpty(record.allId)) { // 树型数据
+          const dataRow = getTreeNode(data, record.allId);
+          const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+          const rowData = { ...dataRow, [fieldName]: value, ...assignValue };
+          rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+          setTreeNode(data, rowData, record.allId);
+          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+          if (rowData.handleType === 'modify') {
+            const indexModify = dataModify.findIndex(item => item.id === record.id);
+            if (indexModify > -1) {
+              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
+            } else {
+              dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: value, ...assignValue })
             }
           }
 

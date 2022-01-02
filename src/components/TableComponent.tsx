@@ -115,7 +115,7 @@ export function TableComponent(params: any) {
     dispatchModifySelfState({components, ...addState });
     //params.lastColumn.changeValue 判断是否需要重新渲染最后一列。
     //filteredInfo 用于包含搜索的变黄色
-  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
+  }, [params.lastColumn.changeValue, params.property.columns, params.expandable.expandedRowKeys, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
 
   // useEffect(() => {
   //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功
@@ -430,9 +430,9 @@ export function TableComponent(params: any) {
     const splitTitle = newColumn.title.split('|');
     splitTitle.forEach((title, index) => {
       if (index === 0) {
-        const iIndex = columns.findIndex(item => item.title === title && commonUtils.isEmpty(item.dataIndex));
-        if (iIndex > -1) {
-          column = columns[iIndex];
+        const columnIndex = columns.findIndex(item => item.title === title && commonUtils.isEmpty(item.dataIndex));
+        if (columnIndex > -1) {
+          column = columns[columnIndex];
         } else {
           column = {title, children: []};
           columns.push(column);
@@ -445,9 +445,9 @@ export function TableComponent(params: any) {
           column.children.push(newColumn);
         }
       } else {
-        const iIndex = column.children.findIndex(item => item.title === title && commonUtils.isEmpty(item.dataIndex));
-        if (iIndex > -1) {
-          column = column.children[iIndex];
+        const columnIndex = column.children.findIndex(item => item.title === title && commonUtils.isEmpty(item.dataIndex));
+        if (columnIndex > -1) {
+          column = column.children[columnIndex];
         } else {
           const columnTitle = {title, children: []};
           column.children.push(columnTitle);

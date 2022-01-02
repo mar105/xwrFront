@@ -11,11 +11,11 @@ const commonManage = (WrapComponent) => {
       if (allId === '' && commonUtils.isEmpty(delId)) {
         treeData.push(newTreeNode);
       } else {
-        allId.split(',').forEach((key, iAllIdIndex) => {
-          if (iAllIdIndex === 0) {
-            const iIndex = treeData.findIndex(item => item.key === key);
-            if (iIndex > -1) {
-              treeNode = treeData[iIndex];
+        allId.split(',').forEach((key, allIdIndex) => {
+          if (allIdIndex === 0) {
+            const index = treeData.findIndex(item => item.key === key);
+            if (index > -1) {
+              treeNode = treeData[index];
             }
           } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
             treeNode = getChildTreeNode(treeNode.children, key);
@@ -29,14 +29,14 @@ const commonManage = (WrapComponent) => {
           }
         } else {
           if (commonUtils.isNotEmptyArr(treeNode.children)) {
-            const iIndex = treeNode.children.findIndex(item => item.key === delId);
-            if (iIndex > -1) {
-              treeNode.children.splice(iIndex, 1);
+            const index = treeNode.children.findIndex(item => item.key === delId);
+            if (index > -1) {
+              treeNode.children.splice(index, 1);
             }
           } else {
-            const iIndex = treeData.findIndex(item => item.key === delId);
-            if (iIndex > -1) {
-              treeData.splice(iIndex, 1);
+            const index = treeData.findIndex(item => item.key === delId);
+            if (index > -1) {
+              treeData.splice(index, 1);
             }
           }
         }
@@ -46,9 +46,9 @@ const commonManage = (WrapComponent) => {
 
     const getChildTreeNode = (treeNode, key) => {
       if (commonUtils.isNotEmptyArr(treeNode)) {
-        const iIndex = treeNode.findIndex(item => item.key === key);
-        if (iIndex > -1) {
-          return treeNode[iIndex];
+        const index = treeNode.findIndex(item => item.key === key);
+        if (index > -1) {
+          return treeNode[index];
         }
       }
     }
@@ -58,11 +58,11 @@ const commonManage = (WrapComponent) => {
       if (allId === '') {
         treeNode = treeData[0];
       } else {
-        allId.split(',').forEach((key, iAllIdIndex) => {
-          if (iAllIdIndex === 0) {
-            const iIndex = treeData.findIndex(item => item.key === key);
-            if (iIndex > -1) {
-              treeNode = treeData[iIndex];
+        allId.split(',').forEach((key, allIdIndex) => {
+          if (allIdIndex === 0) {
+            const index = treeData.findIndex(item => item.key === key);
+            if (index > -1) {
+              treeNode = treeData[index];
             }
           } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
             treeNode = getChildTreeNode(treeNode.children, key);

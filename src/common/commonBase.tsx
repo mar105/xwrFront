@@ -172,11 +172,14 @@ const commonBase = (WrapComponent) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
       const modifyStateNew = stateRef.current ? stateRef.current : modifyState;
+      const { [params.name + 'Container']: container, [params.name + 'Data']: tableData } = modifyStateNew;
       const url: string = `${application.urlPrefix}/getData/getSelectList`;
       let record = params.record;
-      if (modifyStateNew[params.name + 'Data']) {
+      if (modifyStateNew[params.name + 'Data']) { //拿最新的记录
         if (typeof modifyStateNew[params.name + 'Data'] === 'object' && modifyStateNew[params.name + 'Data'].constructor === Object) {
           record = modifyStateNew[params.name + 'Data'];
+        } else if (container.isTree) {
+          record = getTreeNode(tableData, record.allId);
         } else {
           const index = modifyStateNew[params.name + 'Data'].findIndex(item => item.id === params.record.id);
           record = modifyStateNew[params.name + 'Data'][index];
@@ -233,7 +236,7 @@ const commonBase = (WrapComponent) => {
     };
 
     const onLastColumnClick = (name, key, record, e, isWait = false) => {
-      const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld, [name + 'SelectedRows']: dataSelectedRows, [name + 'SelectedRowKeys']: dataSelectedRowKeys }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld, [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
       if (key === 'delButton') {
         const data = [...dataOld];
         const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
@@ -244,27 +247,39 @@ const commonBase = (WrapComponent) => {
             delData.push(data[index]);
           }
           data.splice(index, 1);
+
+          const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
+          const indexRow = selectedRows.findIndex(item => item.id === record.id);
+          if (indexRow > -1) {
+            selectedRows.splice(indexRow, 1);
+          }
+          const selectedRowKeys = commonUtils.isEmptyArr(selectedRowKeysOld) ? [] : [...selectedRowKeysOld];
+          const indexKeys = selectedRowKeys.findIndex(item => item === record.id);
+          if (indexKeys > -1) {
+            selectedRowKeys.splice(indexKeys, 1);
+          }
+
           if (isWait) {
-            return { [name + 'Data']: data, [name + 'DelData']: delData };
+            return { [name + 'Data']: data, [name + 'DelData']: delData, [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys };
           } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'DelData']: delData });
+            dispatchModifyState({ [name + 'Data']: data, [name + 'DelData']: delData, [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys });
           }
         }
       } else if (key === 'delSelectButton') {
-        const data = [...dataSelectedRows];
-        const index = data.findIndex(item => item.id === record.id);
+        const selectedRows = [...selectedRowsOld];
+        const index = selectedRows.findIndex(item => item.id === record.id);
         if (index > -1) {
-          data.splice(index, 1);
+          selectedRows.splice(index, 1);
         }
-        const dataKeys = [...dataSelectedRowKeys];
-        const indexKeys = dataKeys.findIndex(item => item === record.id);
+        const selectedRowKeys = [...selectedRowKeysOld];
+        const indexKeys = selectedRowKeys.findIndex(item => item === record.id);
         if (indexKeys > -1) {
-          dataKeys.splice(indexKeys, 1);
+          selectedRowKeys.splice(indexKeys, 1);
         }
         if (isWait) {
-          return { [name + 'SelectedRows']: data, [name + 'SelectedRowKeys']: dataKeys };
+          return { [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys };
         } else {
-          dispatchModifyState({ [name + 'SelectedRows']: data, [name + 'SelectedRowKeys']: dataKeys });
+          dispatchModifyState({ [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys });
         }
       }
 
@@ -294,54 +309,80 @@ const commonBase = (WrapComponent) => {
     };
 
     const onTableAddClick = (name, e, isWait = false) => {
-      const { [name + 'Data']: dataOld, masterData, [name + 'Container']: container }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, masterData, [name + 'Container']: container,
+        [name + 'SelectedRows']: selectedRowsOld }: any = stateRef.current;
       const tableData = dataOld === undefined ? [] : [...dataOld];
 
+      const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
+      const addState = {};
       const data = onAdd(container);
       data.superiorId = masterData.id;
       data.sortNum = tableData.length + 1;
-      tableData.push(data);
+      data.allId = data.id;
+      data[container.treeSlaveKey] = '';
+      if (container.isTree && commonUtils.isNotEmptyArr(selectedRows)) {
+        const allList = selectedRows[0].allId.split(',');
+        allList.splice(allList.length - 1, 1);
+        if (commonUtils.isNotEmpty(allList.join())) {
+          const tableRow = getTreeNode(tableData, allList.join());
 
-      if (isWait) {
-        return { [name + 'Data']: tableData, data };
+          data.allId = allList.join() + ',' + data.id;
+          data[container.treeSlaveKey] = tableRow.id;
+
+          if (commonUtils.isEmptyArr(tableRow.children)) {
+            tableRow.children = [data];
+          } else {
+            tableRow.children.push(data);
+          }
+        } else {
+          tableData.push(data);
+        }
       } else {
-        dispatchModifyState({ [name + 'Data']: tableData });
+        tableData.push(data);
+      }
+      addState[name + 'SelectedRowKeys'] = [data.id];
+      addState[name + 'SelectedRows'] = [data];
+      if (isWait) {
+        return { ...addState, [name + 'Data']: tableData, data };
+      } else {
+        dispatchModifyState({ ...addState, [name + 'Data']: tableData });
       }
     };
 
     const onTableAddChildClick = (name, e, isWait = false) => {
-      const { [name + 'Data']: dataOld, masterData, [name + 'Container']: container, [name + 'ExpandedRowKeys']: expandedRowKeysOld, [name + 'SelectedRowKeys']: selectedRowKeysOld, commonModel }: any = stateRef.current;
-      const { dispatch } = props;
+      const { [name + 'Data']: dataOld, masterData, [name + 'Container']: container, [name + 'ExpandedRowKeys']: expandedRowKeysOld,
+        [name + 'SelectedRows']: selectedRowsOld }: any = stateRef.current;
+      const { dispatch, commonModel } = props;
       const tableData = dataOld === undefined ? [] : [...dataOld];
       const expandedRowKeys = commonUtils.isEmptyArr(expandedRowKeysOld) ? [] : [...expandedRowKeysOld];
-      const selectedRowKeys = commonUtils.isEmptyArr(selectedRowKeysOld) ? [] : [...selectedRowKeysOld];
+      const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
 
-      if (commonUtils.isEmptyArr(selectedRowKeys)) {
+      if (commonUtils.isEmptyArr(selectedRows)) {
         const index = commonModel.commonConstant.filter(item => item.constantName === 'pleaseChooseData');
         if (index > -1) {
-          props.gotoError(dispatch, { code: '6001', msg: commonModel.constantData[index].viewName });
+          gotoError(dispatch, { code: '6001', msg: commonModel.constantData[index].viewName });
         } else {
-          props.gotoError(dispatch, { code: '6001', msg: '请选择数据！' });
+          gotoError(dispatch, { code: '6001', msg: '请选择数据！' });
         }
         return;
       }
-
       const data = onAdd(container);
-      const index = tableData.findIndex(item => item.id === selectedRowKeys[0]);
+      const tableRow = getTreeNode(tableData, selectedRows[0].allId);
       const addState = {};
 
       data.superiorId = masterData.id;
       data.sortNum = tableData.length + 1;
-      data.allId = tableData[index].allId + ',' + data.id;
-      data[container.treeSlaveKey] = tableData[index].id;
+      data.allId = tableRow.allId + ',' + data.id;
+      data[container.treeSlaveKey] = tableRow.id;
 
-      if (commonUtils.isEmptyArr(tableData[index].children)) {
-        tableData[index].children = [data];
+      if (commonUtils.isEmptyArr(tableRow.children)) {
+        tableRow.children = [data];
       } else {
-        tableData[index].children.push(data);
+        tableRow.children.push(data);
       }
       addState[name + 'SelectedRowKeys'] = [data.id];
-      expandedRowKeys.push(tableData[index].id);
+      addState[name + 'SelectedRows'] = [data];
+      expandedRowKeys.push(tableRow.id);
       addState[name + 'ExpandedRowKeys'] = expandedRowKeys;
 
       if (isWait) {
@@ -366,6 +407,9 @@ const commonBase = (WrapComponent) => {
           const index = treeData.findIndex(item => item.id === key);
           if (index > -1) {
             treeNode = treeData[index];
+            if (key === allId) {
+              return treeNode[index];
+            }
           }
         } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
           treeNode = getChildTreeNode(treeNode.children, key);
@@ -390,6 +434,9 @@ const commonBase = (WrapComponent) => {
           const index = treeData.findIndex(item => item.id === key);
           if (index > -1) {
             treeNode = treeData[index];
+            if (key === dataRow.id) {
+              treeData[index] = dataRow;
+            }
           }
         } else if (commonUtils.isNotEmptyArr(treeNode.children)) {
           treeNode = setChildTreeNode(treeNode.children, dataRow, key);
@@ -401,7 +448,10 @@ const commonBase = (WrapComponent) => {
       if (commonUtils.isNotEmptyArr(treeNode)) {
         const index = treeNode.findIndex(item => item.id === key);
         if (index > -1) {
-          treeNode[index] = dataRow;
+          if (key === dataRow.id) {
+            treeNode[index] = dataRow;
+          }
+          return treeNode[index];
         }
       }
     }
@@ -413,7 +463,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onSwitchChange = (name, fieldName, record, checked, e, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
@@ -428,6 +478,26 @@ const commonBase = (WrapComponent) => {
           dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
         }
 
+      } else if (container.isTree) {
+        const data = [...dataOld];
+        const dataRow = getTreeNode(data, record.allId);
+        const rowData = { ...dataRow, [fieldName]: checked };
+        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+        setTreeNode(data, rowData, record.allId);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        if (rowData.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === record.id);
+          if (indexModify > -1) {
+            dataModify[indexModify][fieldName] = rowData[fieldName];
+          } else {
+            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
+          }
+        }
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        }
       } else {
         const data = [...dataOld];
         const index = data.findIndex(item => item.id === record.id);
@@ -456,7 +526,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onCheckboxChange = (name, fieldName, record, e, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
@@ -467,6 +537,26 @@ const commonBase = (WrapComponent) => {
             { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify }
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        }
+      } else if (container.isTree) {
+        const data = [...dataOld];
+        const dataRow = getTreeNode(data, record.allId);
+        const rowData = { ...dataRow, [fieldName]: e.target.checked };
+        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+        setTreeNode(data, rowData, record.allId);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        if (rowData.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === record.id);
+          if (indexModify > -1) {
+            dataModify[indexModify][fieldName] = rowData[fieldName];
+          } else {
+            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
+          }
+        }
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
           dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
         }
@@ -499,7 +589,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onInputChange = (name, fieldName, record, e, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
@@ -508,6 +598,26 @@ const commonBase = (WrapComponent) => {
         const dataModify = data.handleType === 'modify' ?
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
             { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        }
+      } else if (container.isTree) {
+        const data = [...dataOld];
+        const dataRow = getTreeNode(data, record.allId);
+        const rowData = { ...dataRow, [fieldName]: e.target.value };
+        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+        setTreeNode(data, rowData, record.allId);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        if (rowData.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === record.id);
+          if (indexModify > -1) {
+            dataModify[indexModify][fieldName] = rowData[fieldName];
+          } else {
+            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
+          }
+        }
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -541,7 +651,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       const moneyPlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.moneyPlace : 6;
       const pricePlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.pricePlace : 6;
       const value = fieldName.endsWith('Money') ? commonUtils.round(valueOld, moneyPlace) : fieldName.endsWith('Price') ? commonUtils.round(valueOld, pricePlace) : valueOld;
@@ -553,6 +663,26 @@ const commonBase = (WrapComponent) => {
         const dataModify = data.handleType === 'modify' ?
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
             { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        }
+      } else if (container.isTree) {
+        const data = [...dataOld];
+        const dataRow = getTreeNode(data, record.allId);
+        const rowData = { ...dataRow, [fieldName]: value };
+        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+        setTreeNode(data, rowData, record.allId);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        if (rowData.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === record.id);
+          if (indexModify > -1) {
+            dataModify[indexModify][fieldName] = rowData[fieldName];
+          } else {
+            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
+          }
+        }
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -581,32 +711,13 @@ const commonBase = (WrapComponent) => {
           } else {
             dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
           }
-        } else {
-          const dataRow = getTreeNode(data, record.allId);
-          const rowData = { ...dataRow, [fieldName]: value };
-          rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-          setTreeNode(data, rowData, record.allId);
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (rowData.handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify][fieldName] = rowData[fieldName];
-            } else {
-              dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
-            }
-          }
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
         }
       }
     }
 
     const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
       const value = valueOld === undefined ? '' : Array.isArray(valueOld) ? valueOld.toString() : valueOld;
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
 
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
@@ -625,6 +736,27 @@ const commonBase = (WrapComponent) => {
         } else {
           dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
         }
+      } else if (container.isTree) {
+        const data = [...dataOld];
+        const dataRow = getTreeNode(data, record.allId);
+        const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+        const rowData = { ...dataRow, [fieldName]: value, ...assignValue };
+        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+        setTreeNode(data, rowData, record.allId);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        if (rowData.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === record.id);
+          if (indexModify > -1) {
+            dataModify[indexModify] = {...dataModify[indexModify], [fieldName]: value, ...assignValue };
+          } else {
+            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: value, ...assignValue })
+          }
+        }
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        }
       } else {
         const data = [...dataOld];
         let index = data.findIndex(item => item.id === record.id);
@@ -637,30 +769,9 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
+              dataModify[indexModify] = {...dataModify[indexModify], [fieldName]: value, ...assignValue };
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
-            }
-          }
-
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
-        } else if (commonUtils.isNotEmpty(record.allId)) { // 树型数据
-          const dataRow = getTreeNode(data, record.allId);
-          const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
-          const rowData = { ...dataRow, [fieldName]: value, ...assignValue };
-          rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-          setTreeNode(data, rowData, record.allId);
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (rowData.handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
-            } else {
-              dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: value, ...assignValue })
             }
           }
 
@@ -675,7 +786,7 @@ const commonBase = (WrapComponent) => {
 
     const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
       const value = valueOld === undefined ? '' : valueOld.toString();
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
@@ -688,6 +799,28 @@ const commonBase = (WrapComponent) => {
         const dataModify = data.handleType === 'modify' ?
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: value, ...assignValue } :
             { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName], ...assignValue } : dataModifyOld;
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        }
+      } else if (container.isTree) {
+        const data = [...dataOld];
+        const dataRow = getTreeNode(data, record.allId);
+        const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
+        const rowData = { ...dataRow, [fieldName]: value, ...assignValue };
+        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+        setTreeNode(data, rowData, record.allId);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        if (rowData.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === record.id);
+          if (indexModify > -1) {
+            dataModify[indexModify] = {...dataModify[indexModify], [fieldName]: value, ...assignValue };
+          } else {
+            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: value, ...assignValue })
+          }
+        }
+
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -707,7 +840,7 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[indexModify] = { ...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
+              dataModify[indexModify] = { ...dataModify[indexModify], [fieldName]: value, ...assignValue };
             } else {
               dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
             }
@@ -723,7 +856,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onCascaderChange = (name, fieldName, record, fieldRelevance, value, selectedOptions, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         if (commonUtils.isNotEmpty(fieldRelevance)) {
@@ -739,6 +872,32 @@ const commonBase = (WrapComponent) => {
         const dataModify = data.handleType === 'modify' ?
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
             { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        }
+      } else if (container.isTree) {
+        const data = [...dataOld];
+        const dataRow = getTreeNode(data, record.allId);
+        if (commonUtils.isNotEmpty(fieldRelevance)) {
+          const assignField = fieldRelevance.split(',');
+          assignField.forEach((field, fieldIndex) => {
+            dataRow[field] = value[fieldIndex];
+          });
+        }
+        const rowData = { ...dataRow, [fieldName]: value };
+        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+        setTreeNode(data, rowData, record.allId);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        if (rowData.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === record.id);
+          if (indexModify > -1) {
+            dataModify[indexModify][fieldName] = rowData[fieldName];
+          } else {
+            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
+          }
+        }
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -778,7 +937,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onDatePickerChange = (name, fieldName, record, value, dateString, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;
+      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
@@ -787,6 +946,26 @@ const commonBase = (WrapComponent) => {
         const dataModify = data.handleType === 'modify' ?
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
             { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+        if (isWait) {
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+        } else {
+          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        }
+      } else if (container.isTree) {
+        const data = [...dataOld];
+        const dataRow = getTreeNode(data, record.allId);
+        const rowData = { ...dataRow, [fieldName]: dateString };
+        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
+        setTreeNode(data, rowData, record.allId);
+        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+        if (rowData.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === record.id);
+          if (indexModify > -1) {
+            dataModify[indexModify][fieldName] = rowData[fieldName];
+          } else {
+            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
+          }
+        }
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
@@ -1174,6 +1353,8 @@ const commonBase = (WrapComponent) => {
       onDropPopup={onDropPopup}
       onModalCancel={onModalCancel}
       onExpand={onExpand}
+      getTreeNode={getTreeNode}
+      setTreeNode={setTreeNode}
     />
     </Spin>
   };

@@ -90,13 +90,9 @@ const WorkOrder = (props) => {
 
   const onTableAddClick = (name, e, isWait = false) => {
     const { dispatch, slaveData, partData, slaveSelectedRowKeys, partSelectedRowKeys }: any = propsRef.current;
-    const addState = {};
     const returnData = props.onTableAddClick(name, e, true);
-    if (name === 'slave') {
-      const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-      returnData[name + 'Data'][index].allId = returnData.data.id;
-      addState[name + 'SelectedRowKeys'] = [returnData.data.id];
-    } else if (name === 'part') {
+    const addState = { ...returnData };
+    if (name === 'part') {
       if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
         const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
         if (index > -1) {
@@ -111,6 +107,7 @@ const WorkOrder = (props) => {
       const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
       returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
       addState[name + 'SelectedRowKeys'] = [returnData.data.id];
+      addState[name + 'SelectedRows'] = [{...returnData.data}];
     } else if (name === 'material') {
       if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
         const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
@@ -164,15 +161,15 @@ const WorkOrder = (props) => {
     }
 
     if (isWait) {
-      return { [name + 'Data']: returnData[name + 'Data'], ...addState };
+      return { ...addState, [name + 'Data']: returnData[name + 'Data'] };
     } else {
-      props.dispatchModifyState({ [name + 'Data']: returnData[name + 'Data'], ...addState });
+      props.dispatchModifyState({ ...addState, [name + 'Data']: returnData[name + 'Data'] });
     }
   };
 
   const onRowClick = async (name, record, rowKey) => {
     const { dispatchModifyState } = props;
-    dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]] });
+    dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]], [name + 'SelectedRows']: [record] });
   }
 
 
@@ -196,7 +193,7 @@ const WorkOrder = (props) => {
   slaveParam.lastTitle =
     <div> {slaveParam.lastTitle}
       <a onClick={props.onTableAddChildClick.bind(this, 'slave')}> <Tooltip placement="top" title="增加子产品"><PlusSquareOutlined /> </Tooltip></a>
-    </div>,
+    </div>;
 
     slaveParam.eventOnRow.onRowClick = onRowClick;
 
@@ -207,7 +204,7 @@ const WorkOrder = (props) => {
   partParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys,
     render: (text,record, index)=> {
       return <div>
-        <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+        <a onClick={props.onLastColumnClick.bind(this, 'part', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
   partParam.onFilter = onFilter;
@@ -221,7 +218,7 @@ const WorkOrder = (props) => {
       props.slaveSelectedRowKeys ? props.slaveSelectedRowKeys : props.partSelectedRowKeys ? props.partSelectedRowKeys : '',
     render: (text,record, index)=> {
       return <div>
-        <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+        <a onClick={props.onLastColumnClick.bind(this, 'material', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
   materialParam.onFilter = onFilter;
@@ -234,7 +231,7 @@ const WorkOrder = (props) => {
       props.slaveSelectedRowKeys ? props.slaveSelectedRowKeys : props.partSelectedRowKeys ? props.partSelectedRowKeys : '',
     render: (text,record, index)=> {
       return <div>
-        <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+        <a onClick={props.onLastColumnClick.bind(this, 'process', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
   processParam.onFilter = onFilter;

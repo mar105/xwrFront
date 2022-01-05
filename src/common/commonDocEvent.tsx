@@ -249,6 +249,36 @@ const commonDocEvent = (WrapComponent) => {
       return buttonGroup;
     }
 
+    const onSwitchChange = (name, fieldName, record, checked, e, isWait) => {
+      let returnData = props.onSwitchChange(name, fieldName, record, checked, e, true);
+      returnData = calcOperation({name, fieldName, record, returnData});
+      if (isWait) {
+        return { ...returnData };
+      } else {
+        props.dispatchModifyState({ ...returnData });
+      }
+    }
+
+    const onCheckboxChange = (name, fieldName, record, e, isWait) => {
+      let returnData = props.onCheckboxChange(name, fieldName, record, e, true);
+      returnData = calcOperation({name, fieldName, record, returnData});
+      if (isWait) {
+        return { ...returnData };
+      } else {
+        props.dispatchModifyState({ ...returnData });
+      }
+    }
+
+    const onInputChange = (name, fieldName, record, e, isWait) => {
+      let returnData = props.onInputChange(name, fieldName, record, e, true);
+      returnData = calcOperation({name, fieldName, record, returnData});
+      if (isWait) {
+        return { ...returnData };
+      } else {
+        props.dispatchModifyState({ ...returnData });
+      }
+    }
+
     const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
       let returnData = props.onNumberChange(name, fieldName, record, valueOld, true);
       returnData = calcOperation({name, fieldName, record, returnData});
@@ -269,8 +299,8 @@ const commonDocEvent = (WrapComponent) => {
       }
     }
 
-    const onInputChange = (name, fieldName, record, e, isWait) => {
-      let returnData = props.onInputChange(name, fieldName, record, e, true);
+    const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
+      let returnData = props.onTreeSelectChange(name, fieldName, record, config, valueOld, extra, true);
       returnData = calcOperation({name, fieldName, record, returnData});
       if (isWait) {
         return { ...returnData };
@@ -279,8 +309,18 @@ const commonDocEvent = (WrapComponent) => {
       }
     }
 
-    const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
-      let returnData = props.onTreeSelectChange(name, fieldName, record, config, valueOld, extra, true);
+    const onCascaderChange = (name, fieldName, record, fieldRelevance, value, selectedOptions, isWait) => {
+      let returnData = props.onCascaderChange(name, fieldName, record, fieldRelevance, value, selectedOptions, true);
+      returnData = calcOperation({name, fieldName, record, returnData});
+      if (isWait) {
+        return { ...returnData };
+      } else {
+        props.dispatchModifyState({ ...returnData });
+      }
+    }
+
+    const onDatePickerChange = (name, fieldName, record, value, dateString, isWait) => {
+      let returnData = props.onDatePickerChange(name, fieldName, record, value, dateString, true);
       returnData = calcOperation({name, fieldName, record, returnData});
       if (isWait) {
         return { ...returnData };
@@ -449,80 +489,53 @@ const commonDocEvent = (WrapComponent) => {
       }
       return returnData;
     }
-    //
-    // const calcPaper = (params) => {
-    //   const {name, fieldName, record, returnData } = params;
-    //   const bZfZf = tableDataRow.iPrintMode === 2; // 正反版
-    //   tableDataRow.iPrintModePo = tableDataRow.iPrintMode <= 2 ? 2 : tableDataRow.iPrintMode === 3 ? 0 : -1;
-    //
-    //   if (record.sumPQty >= 4) {
-    //     if (record.singlePQty > 0) {
-    //       record.dPlateQty = Math.ceil(tableDataRow.dSumPQty / tableDataRow.dSinglePQty);
-    //     }
-    //
-    //     if (bZfZf && (tableDataRow.iPrintModePo === 2)) { // 双面样本，正反
-    //       if (tableDataRow.dPlateQty < 2) { // 不管建议放正自翻版了，点方式什么是什么
-    //         tableDataRow.dPlateQty = 2;
-    //         tableDataRow.iStick = Math.ceil(commonUtils.isNull(tableDataRow.dPlateQty, 0) / 2);
-    //         tableDataRow.dSumPlateQty = tableDataRow.iStick * (
-    //           commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
-    //           commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0) +
-    //           commonUtils.isNull(tableDataRow.iOppositeColor, 0) +
-    //           commonUtils.isNull(tableDataRow.iOppositeSpecialColor, 0));
-    //       } else {
-    //         if (tableDataRow.iPrintModePo !== 2) { // 单面样本
-    //           tableDataRow.dPlateQty = (commonUtils.isNull(tableDataRow.dSumPQty, 0) * 0.5) / tableDataRow.dSinglePQty;
-    //         } else {
-    //           tableDataRow.dPlateQty = commonUtils.isNull(tableDataRow.dSumPQty, 0) / commonUtils.isNull(commonUtils.nullIf(tableDataRow.dSinglePQty, 0), 1);
-    //         }
-    //         tableDataRow.iStick = Math.ceil(tableDataRow.dPlateQty);
-    //         tableDataRow.dSumPlateQty = tableDataRow.iStick * (commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
-    //           commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0));
-    //       }
-    //     } else {
-    //       if (tableDataRow.iPrintModePo !== 2) { // 单面样本
-    //         tableDataRow.dPlateQty = (commonUtils.isNull(tableDataRow.dSumPQty, 0) * 0.5) / tableDataRow.dSinglePQty;
-    //       } else {
-    //         tableDataRow.dPlateQty = commonUtils.isNull(tableDataRow.dSumPQty, 0) / commonUtils.isNull(commonUtils.nullIf(tableDataRow.dSinglePQty, 0), 1);
-    //       }
-    //       tableDataRow.iStick = Math.ceil(tableDataRow.dPlateQty);
-    //       tableDataRow.dSumPlateQty = tableDataRow.iStick * (
-    //         commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
-    //         commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0));
-    //     }
-    //     if (tableDataRow.iStick > 0 && tableDataRow.dSinglePQty > 0) {
-    //       tableDataRow.dMachineQty = commonUtils.convertFixNum((commonUtils.isNull(tableDataRow.dPartsQty, 0) * commonUtils.isNull(tableDataRow.dSumPQty, 0) * 0.5) / tableDataRow.dSinglePQty / tableDataRow.iStick, 0);
-    //       tableDataRow.dSumMachineQty = tableDataRow.dMachineQty * tableDataRow.iStick;
-    //     }
-    //   } else {
-    //     tableDataRow.iStick = 1;
-    //     tableDataRow.dSumPlateQty = tableDataRow.iStick * (
-    //       commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
-    //       commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0) +
-    //       commonUtils.isNull(tableDataRow.iOppositeColor, 0) +
-    //       commonUtils.isNull(tableDataRow.iOppositeSpecialColor, 0));
-    //     if (bZfZf && tableDataRow.iPrintModePo === 2) {
-    //       tableDataRow.dPlateQty = 2;
-    //       tableDataRow.dSumPlateQty = tableDataRow.iStick * (commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
-    //         commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0) + commonUtils.isNull(tableDataRow.iOppositeColor, 0) +
-    //         commonUtils.isNull(tableDataRow.iOppositeSpecialColor, 0));
-    //     } else {
-    //       tableDataRow.dPlateQty = 1;
-    //       tableDataRow.dSumPlateQty = tableDataRow.iStick * (commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
-    //         commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0));
-    //     }
-    //
-    //     if (tableDataRow.dSinglePQty > 0) {
-    //       if (tableDataRow.iPage > 1) { // 笔记本  用 非样本 来做， 倍率是每页都一样才可以用      原先 /2 是指页数， 现在直接按张数
-    //         tableDataRow.dMachineQty = commonUtils.convertFixNum((tableDataRow.dPartsQty * tableDataRow.iPage) / tableDataRow.dSinglePQty, 0);
-    //       } else {
-    //         tableDataRow.dMachineQty = commonUtils.convertFixNum(commonUtils.isNull(tableDataRow.dPartsQty, 0) / tableDataRow.dSinglePQty, 0);
-    //         tableDataRow.dSumMachineQty = tableDataRow.dMachineQty * tableDataRow.iStick;
-    //       }
-    //     }
-    //   }
-    //   return tableDataRow;
-    // };
+
+    const calcPaper = (dataRow) => {
+      if (dataRow.totalPQty >= 4) {
+        dataRow.plateQty = Math.ceil(dataRow.totalPQty / commonUtils.isEmptyorZeroDefault(dataRow.singlePQty, 1));
+        if (dataRow.printType === 'frontBack') { // 样本正反
+          if (dataRow.plateQty < 2) {
+            dataRow.plateQty = 2;
+            dataRow.splitQty = 1;
+          } else {
+            dataRow.splitQty = Math.ceil(dataRow.plateQty);
+          }
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0) +
+            commonUtils.isEmptyDefault(dataRow.backColor, 0) + commonUtils.isEmptyDefault(dataRow.backSpecialColor, 0));
+        } else if (dataRow.printType === 'leftRight' || dataRow.printType === 'heavenEarth') { //左右翻 天地翻
+          dataRow.splitQty = Math.ceil(dataRow.plateQty);
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
+        } else { //单面
+          dataRow.plateQty = commonUtils.isEmptyDefault(dataRow.totalPQty, 0) / 2 / dataRow.singlePQty;
+          dataRow.splitQty = Math.ceil(dataRow.plateQty);
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
+        }
+        if (dataRow.splitQty > 0 && dataRow.singlePQty > 0) {
+          dataRow.machineQty = Math.ceil(commonUtils.isEmptyDefault(dataRow.partQty, 0) * commonUtils.isEmptyDefault(dataRow.totalPQty, 0)  / 2 / dataRow.singlePQty / dataRow.splitQty);
+          dataRow.totalMachineQty = dataRow.machineQty * dataRow.splitQty;
+        }
+      } else {
+        if (dataRow.printType === 'frontBack') {
+          dataRow.plateQty = 2;
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0) +
+            commonUtils.isEmptyDefault(dataRow.backColor, 0) + commonUtils.isEmptyDefault(dataRow.backSpecialColor, 0));
+        } else {
+          dataRow.plateQty = 1;
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
+        }
+        dataRow.splitQty = 1;
+        if (dataRow.singlePQty > 0) {
+          dataRow.machineQty = Math.ceil(commonUtils.isEmptyDefault(dataRow.partQty, 0) * commonUtils.isEmptyorZeroDefault(dataRow.magnification, 1) / dataRow.singlePQty);
+          dataRow.totalMachineQty = dataRow.machineQty * dataRow.splitQty;
+        }
+      }
+      return dataRow;
+    };
 
 
 
@@ -533,10 +546,15 @@ const commonDocEvent = (WrapComponent) => {
         onFinish={onFinish}
         onSetForm={onSetForm}
         getButtonGroup={getButtonGroup}
+        onSwitchChange={onSwitchChange}
+        onInputChange={onInputChange}
+        onCheckboxChange={onCheckboxChange}
         onNumberChange={onNumberChange}
         onSelectChange={onSelectChange}
-        onInputChange={onInputChange}
         onTreeSelectChange={onTreeSelectChange}
+        onCascaderChange={onCascaderChange}
+        onDatePickerChange={onDatePickerChange}
+        calcPaper={calcPaper}
       />
       <CommonModal
         {...props}
@@ -544,10 +562,15 @@ const commonDocEvent = (WrapComponent) => {
         onFinish={onFinish}
         onSetForm={onSetForm}
         getButtonGroup={getButtonGroup}
+        onSwitchChange={onSwitchChange}
+        onInputChange={onInputChange}
+        onCheckboxChange={onCheckboxChange}
         onNumberChange={onNumberChange}
         onSelectChange={onSelectChange}
-        onInputChange={onInputChange}
         onTreeSelectChange={onTreeSelectChange}
+        onCascaderChange={onCascaderChange}
+        onDatePickerChange={onDatePickerChange}
+        calcPaper={calcPaper}
       />
     </div>
   };

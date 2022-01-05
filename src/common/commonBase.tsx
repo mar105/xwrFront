@@ -463,36 +463,36 @@ const commonBase = (WrapComponent) => {
     }
 
     const onSwitchChange = (name, fieldName, record, checked, e, isWait) => {
-      return onChange({name, fieldName, record, value: checked, isWait});
+      return onDataChange({name, fieldName, record, value: checked, isWait});
     }
 
     const onCheckboxChange = (name, fieldName, record, e, isWait) => {
-      return onChange({name, fieldName, record, value: e.target.checked, isWait});
+      return onDataChange({name, fieldName, record, value: e.target.checked, isWait});
     }
 
     const onInputChange = (name, fieldName, record, e, isWait) => {
-      return onChange({name, fieldName, record, value: e.target.value, isWait});
+      return onDataChange({name, fieldName, record, value: e.target.value, isWait});
     }
 
     const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
       const moneyPlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.moneyPlace : 6;
       const pricePlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.pricePlace : 6;
       const value = fieldName.endsWith('Money') ? commonUtils.round(valueOld, moneyPlace) : fieldName.endsWith('Price') ? commonUtils.round(valueOld, pricePlace) : valueOld;
-      return onChange({name, fieldName, record, value, isWait});
+      return onDataChange({name, fieldName, record, value, isWait});
     }
 
     const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
       const value = valueOld === undefined ? '' : Array.isArray(valueOld) ? valueOld.toString() : valueOld;
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
       const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
-      return onChange({name, fieldName, record, value, assignValue, isWait});
+      return onDataChange({name, fieldName, record, value, assignValue, isWait});
     }
 
     const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
       const value = valueOld === undefined ? '' : valueOld.toString();
       const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
       const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
-      return onChange({name, fieldName, record, value, assignValue, isWait});
+      return onDataChange({name, fieldName, record, value, assignValue, isWait});
     }
 
     const onCascaderChange = (name, fieldName, record, fieldRelevance, value, selectedOptions, isWait) => {
@@ -503,14 +503,14 @@ const commonBase = (WrapComponent) => {
           assignValue[field] = value[fieldIndex];
         });
       }
-      return onChange({name, fieldName, record, value, assignValue, isWait});
+      return onDataChange({name, fieldName, record, value, assignValue, isWait});
     }
 
     const onDatePickerChange = (name, fieldName, record, value, dateString, isWait) => {
-      return onChange({name, fieldName, record, value: dateString, isWait});
+      return onDataChange({name, fieldName, record, value: dateString, isWait});
     }
 
-    const onChange = (params) => {
+    const onDataChange = (params) => {
       const {name, fieldName, record, isWait, value, assignValue } = params;
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
@@ -894,9 +894,9 @@ const commonBase = (WrapComponent) => {
       onTableAddChildClick={onTableAddChildClick}
       onTableConfigSaveClick={onTableConfigSaveClick}
       onLastColumnClick={onLastColumnClick}
+      onRowSelectChange={onRowSelectChange}
       gotoError={gotoError}
       gotoSuccess={gotoSuccess}
-      onRowSelectChange={onRowSelectChange}
       onSwitchChange={onSwitchChange}
       onInputChange={onInputChange}
       onCheckboxChange={onCheckboxChange}
@@ -915,6 +915,7 @@ const commonBase = (WrapComponent) => {
       onExpand={onExpand}
       getTreeNode={getTreeNode}
       setTreeNode={setTreeNode}
+      onDataChange={onDataChange}
     />
     </Spin>
   };

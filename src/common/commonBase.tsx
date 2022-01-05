@@ -463,409 +463,58 @@ const commonBase = (WrapComponent) => {
     }
 
     const onSwitchChange = (name, fieldName, record, checked, e, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
-      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld };
-        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = checked;
-
-        const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify }
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-
-      } else if (container.isTree) {
-        const data = [...dataOld];
-        const dataRow = getTreeNode(data, record.allId);
-        const rowData = { ...dataRow, [fieldName]: checked };
-        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-        setTreeNode(data, rowData, record.allId);
-        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-        if (rowData.handleType === 'modify') {
-          const indexModify = dataModify.findIndex(item => item.id === record.id);
-          if (indexModify > -1) {
-            dataModify[indexModify][fieldName] = rowData[fieldName];
-          } else {
-            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
-          }
-        }
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else {
-        const data = [...dataOld];
-        const index = data.findIndex(item => item.id === record.id);
-        if (index > -1) {
-          const rowData = { ...data[index] };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = checked;
-          data[index] = rowData;
-
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify][fieldName] = data[index][fieldName];
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
-            }
-          }
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
-        }
-      }
+      return onChange({name, fieldName, record, value: checked, isWait});
     }
 
     const onCheckboxChange = (name, fieldName, record, e, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
-      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld };
-        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = e.target.checked;
-
-        const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify }
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else if (container.isTree) {
-        const data = [...dataOld];
-        const dataRow = getTreeNode(data, record.allId);
-        const rowData = { ...dataRow, [fieldName]: e.target.checked };
-        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-        setTreeNode(data, rowData, record.allId);
-        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-        if (rowData.handleType === 'modify') {
-          const indexModify = dataModify.findIndex(item => item.id === record.id);
-          if (indexModify > -1) {
-            dataModify[indexModify][fieldName] = rowData[fieldName];
-          } else {
-            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
-          }
-        }
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else {
-        const data = [...dataOld];
-        const index = data.findIndex(item => item.id === record.id);
-        if (index > -1) {
-          const rowData = { ...data[index] };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = e.target.checked;
-          data[index] = rowData;
-
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify][fieldName] = data[index][fieldName];
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
-            }
-          }
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
-
-        }
-      }
+      return onChange({name, fieldName, record, value: e.target.checked, isWait});
     }
 
     const onInputChange = (name, fieldName, record, e, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
-      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld };
-        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = e.target.value;
-
-        const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else if (container.isTree) {
-        const data = [...dataOld];
-        const dataRow = getTreeNode(data, record.allId);
-        const rowData = { ...dataRow, [fieldName]: e.target.value };
-        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-        setTreeNode(data, rowData, record.allId);
-        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-        if (rowData.handleType === 'modify') {
-          const indexModify = dataModify.findIndex(item => item.id === record.id);
-          if (indexModify > -1) {
-            dataModify[indexModify][fieldName] = rowData[fieldName];
-          } else {
-            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
-          }
-        }
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else {
-        const data = [...dataOld];
-        const index = data.findIndex(item => item.id === record.id);
-        if (index > -1) {
-          const rowData = { ...data[index] };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = e.target.value;
-          data[index] = rowData;
-
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify][fieldName] = data[index][fieldName];
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
-            }
-          }
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
-        }
-      }
+      return onChange({name, fieldName, record, value: e.target.value, isWait});
     }
 
     const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       const moneyPlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.moneyPlace : 6;
       const pricePlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.pricePlace : 6;
       const value = fieldName.endsWith('Money') ? commonUtils.round(valueOld, moneyPlace) : fieldName.endsWith('Price') ? commonUtils.round(valueOld, pricePlace) : valueOld;
-      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld };
-        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = value;
-
-        const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else if (container.isTree) {
-        const data = [...dataOld];
-        const dataRow = getTreeNode(data, record.allId);
-        const rowData = { ...dataRow, [fieldName]: value };
-        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-        setTreeNode(data, rowData, record.allId);
-        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-        if (rowData.handleType === 'modify') {
-          const indexModify = dataModify.findIndex(item => item.id === record.id);
-          if (indexModify > -1) {
-            dataModify[indexModify][fieldName] = rowData[fieldName];
-          } else {
-            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
-          }
-        }
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else {
-        const data = [...dataOld];
-        const index = data.findIndex(item => item.id === record.id);
-        if (index > -1) {
-          const rowData = { ...data[index] };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = value;
-          data[index] = rowData;
-
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify][fieldName] = data[index][fieldName];
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
-            }
-          }
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
-        }
-      }
+      return onChange({name, fieldName, record, value, isWait});
     }
 
     const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
       const value = valueOld === undefined ? '' : Array.isArray(valueOld) ? valueOld.toString() : valueOld;
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
-
-      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
-        const data = { ...dataOld, [fieldName]: value, ...assignValue };
-        if (form) {
-          form.setFieldsValue(commonUtils.setFieldsValue(assignValue, modifyState[name + 'Container']));
-        }
-        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-
-        const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName], ...assignValue } :
-            { ...dataModifyOld, id: data.id, [fieldName]: value, ...assignValue } : dataModifyOld;
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else if (container.isTree) {
-        const data = [...dataOld];
-        const dataRow = getTreeNode(data, record.allId);
-        const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
-        const rowData = { ...dataRow, [fieldName]: value, ...assignValue };
-        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-        setTreeNode(data, rowData, record.allId);
-        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-        if (rowData.handleType === 'modify') {
-          const indexModify = dataModify.findIndex(item => item.id === record.id);
-          if (indexModify > -1) {
-            dataModify[indexModify] = {...dataModify[indexModify], [fieldName]: value, ...assignValue };
-          } else {
-            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: value, ...assignValue })
-          }
-        }
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else {
-        const data = [...dataOld];
-        let index = data.findIndex(item => item.id === record.id);
-        if (index > -1) { // 正常数据
-          const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
-          const rowData = { ...data[index], [fieldName]: value, ...assignValue };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          data[index] = rowData;
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify] = {...dataModify[indexModify], [fieldName]: value, ...assignValue };
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
-            }
-          }
-
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
-        }
-      }
+      const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+      return onChange({name, fieldName, record, value, assignValue, isWait});
     }
 
     const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
       const value = valueOld === undefined ? '' : valueOld.toString();
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
-      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
-        const data = { ...dataOld, ...assignValue };
-        if (form) {
-          form.setFieldsValue(commonUtils.setFieldsValue(assignValue, modifyState[name + 'Container']));
-        }
-        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-
-        const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: value, ...assignValue } :
-            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName], ...assignValue } : dataModifyOld;
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else if (container.isTree) {
-        const data = [...dataOld];
-        const dataRow = getTreeNode(data, record.allId);
-        const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
-        const rowData = { ...dataRow, [fieldName]: value, ...assignValue };
-        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-        setTreeNode(data, rowData, record.allId);
-        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-        if (rowData.handleType === 'modify') {
-          const indexModify = dataModify.findIndex(item => item.id === record.id);
-          if (indexModify > -1) {
-            dataModify[indexModify] = {...dataModify[indexModify], [fieldName]: value, ...assignValue };
-          } else {
-            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: value, ...assignValue })
-          }
-        }
-
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else {
-        const data = [...dataOld];
-        const index = data.findIndex(item => item.id === record.id);
-        if (index > -1) {
-          const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
-          const rowData = { ...data[index], ...assignValue };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = value;
-          data[index] = rowData;
-
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify] = { ...dataModify[indexModify], [fieldName]: value, ...assignValue };
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
-            }
-          }
-
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
-        }
-      }
+      const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
+      return onChange({name, fieldName, record, value, assignValue, isWait});
     }
 
     const onCascaderChange = (name, fieldName, record, fieldRelevance, value, selectedOptions, isWait) => {
+      const assignValue = {};
+      if (commonUtils.isNotEmpty(fieldRelevance)) {
+        const assignField = fieldRelevance.split(',');
+        assignField.forEach((field, fieldIndex) => {
+          assignValue[field] = value[fieldIndex];
+        });
+      }
+      return onChange({name, fieldName, record, value, assignValue, isWait});
+    }
+
+    const onDatePickerChange = (name, fieldName, record, value, dateString, isWait) => {
+      return onChange({name, fieldName, record, value: dateString, isWait});
+    }
+
+    const onChange = (params) => {
+      const {name, fieldName, record, isWait, value, assignValue } = params;
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
-        if (commonUtils.isNotEmpty(fieldRelevance)) {
-          const assignField = fieldRelevance.split(',');
-          assignField.forEach((field, fieldIndex) => {
-            data[field] = value[fieldIndex];
-          });
-        }
-
         data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
         data[fieldName] = value;
 
@@ -873,127 +522,38 @@ const commonBase = (WrapComponent) => {
           commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
             { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
         if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify }
         } else {
           dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
         }
-      } else if (container.isTree) {
-        const data = [...dataOld];
-        const dataRow = getTreeNode(data, record.allId);
-        if (commonUtils.isNotEmpty(fieldRelevance)) {
-          const assignField = fieldRelevance.split(',');
-          assignField.forEach((field, fieldIndex) => {
-            dataRow[field] = value[fieldIndex];
-          });
-        }
-        const rowData = { ...dataRow, [fieldName]: value };
-        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-        setTreeNode(data, rowData, record.allId);
-        const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-        if (rowData.handleType === 'modify') {
-          const indexModify = dataModify.findIndex(item => item.id === record.id);
-          if (indexModify > -1) {
-            dataModify[indexModify][fieldName] = rowData[fieldName];
-          } else {
-            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
-          }
-        }
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-        } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
+
       } else {
         const data = [...dataOld];
-        const index = data.findIndex(item => item.id === record.id);
-        if (index > -1) {
-          if (commonUtils.isNotEmpty(fieldRelevance)) {
-            const assignField = fieldRelevance.split(',');
-            assignField.forEach((field, fieldIndex) => {
-              data[index][field] = value[fieldIndex];
-            });
-          }
-          const rowData = { ...data[index] };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = value;
-          data[index] = rowData;
-
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify][fieldName] = data[index][fieldName];
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
-            }
-          }
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
-        }
-      }
-    }
-
-    const onDatePickerChange = (name, fieldName, record, value, dateString, isWait) => {
-      const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
-      if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld };
-        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = dateString;
-
-        const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
-        if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+        let dataRow: any = {};
+        if (container.isTree) {
+          dataRow = getTreeNode(data, record.allId);
+          dataRow = { ...dataRow, [fieldName]: value, ...assignValue, handleType: commonUtils.isEmpty(dataRow.handleType) ? 'modify' : dataRow.handleType };
+          setTreeNode(data, dataRow, record.allId);
         } else {
-          dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+          const index = data.findIndex(item => item.id === record.id);
+          if (index > -1) {
+            dataRow = { ...data[index], [fieldName]: value, ...assignValue, handleType: commonUtils.isEmpty(dataRow.handleType) ? 'modify' : dataRow.handleType };
+          }
         }
-      } else if (container.isTree) {
-        const data = [...dataOld];
-        const dataRow = getTreeNode(data, record.allId);
-        const rowData = { ...dataRow, [fieldName]: dateString };
-        rowData.handleType = commonUtils.isEmpty(rowData.handleType) ? 'modify' : rowData.handleType;
-        setTreeNode(data, rowData, record.allId);
+
         const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-        if (rowData.handleType === 'modify') {
+        if (dataRow.handleType === 'modify') {
           const indexModify = dataModify.findIndex(item => item.id === record.id);
           if (indexModify > -1) {
-            dataModify[indexModify][fieldName] = rowData[fieldName];
+            dataModify[indexModify][fieldName] = dataRow[fieldName];
           } else {
-            dataModify.push({ id: record.id, handleType: rowData.handleType, [fieldName]: rowData[fieldName] })
+            dataModify.push({ id: record.id, handleType: dataRow.handleType, [fieldName]: dataRow[fieldName] })
           }
         }
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
         } else {
           dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-        }
-      } else {
-        const data = [...dataOld];
-        const index = data.findIndex(item => item.id === record.id);
-        if (index > -1) {
-          const rowData = { ...data[index] };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          rowData[fieldName] = dateString;
-          data[index] = rowData;
-
-          const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify][fieldName] = data[index][fieldName];
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: data[index][fieldName] })
-            }
-          }
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-          }
         }
       }
     }

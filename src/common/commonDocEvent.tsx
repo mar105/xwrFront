@@ -343,9 +343,17 @@ const commonDocEvent = (WrapComponent) => {
         if (form) {
           form.setFieldsValue(commonUtils.setFieldsValue(returnData[name + 'Data'], props[name + 'Container']));
         }
-      } else if (container.isTree) {
-        let dataRow = props.getTreeNode(returnData[name + 'Data'], record.allId);
-
+      } else {
+        let dataRow: any = {};
+        if (container.isTree) {
+          dataRow = props.getTreeNode(returnData[name + 'Data'], record.allId);
+          props.setTreeNode(returnData[name + 'Data'], dataRow, record.allId);
+        } else {
+          const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
+          if (index > -1) {
+            dataRow = returnData[name + 'Data'][index];
+          }
+        }
         //成品计算
         if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle')) {
           const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
@@ -429,108 +437,92 @@ const commonDocEvent = (WrapComponent) => {
             }
           }
         }
-        props.setTreeNode(returnData[name + 'Data'], dataRow, record.allId);
-      } else {
-        const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
-        if (index > -1) {
-          //成品计算
-          if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle')) {
-            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'][index],'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...qtyCalcData};
-            const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'][index],'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...convertCalcData};
-            if (returnData[name + 'Data'][index].handleType === 'modify') {
-              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-              if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
-              }
-            }
+
+        if (container.isTree) {
+          props.setTreeNode(returnData[name + 'Data'], dataRow, record.allId);
+        } else {
+          const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
+          if (index > -1) {
+            returnData[name + 'Data'][index] = dataRow;
           }
-
-          //材料计算
-          else if (container.containerModel.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialName' || fieldName === 'materialStyle')) {
-            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'][index],'material', 'measureQty', 'materialQty', 'measureToMaterialFormulaId', 'measureToMaterialCoefficient');
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...qtyCalcData};
-            const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'][index],'material', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...convertCalcData};
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index]};
-            if (returnData[name + 'Data'][index].handleType === 'modify') {
-              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-              if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
-              }
-            }
-          }
-
-
-
-
-          //算完数量后还需要计算金额价格。
-          //成品计算
-          if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productQty' || fieldName === 'convertQty'
-            || fieldName === 'productName' || fieldName === 'productStyle'
-            || fieldName === 'productStdPrice' || fieldName === 'costPrice')) {
-            const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
-            if (returnData[name + 'Data'][index].handleType === 'modify') {
-              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-              if (indexModify > -1) {
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
-              }
-            }
-          }
-          else if (container.containerModel.includes('/product') && (fieldName === 'productStdMoney'
-            || fieldName === 'knifePlateMoney' || fieldName === 'makePlateMoney' || fieldName === 'proofingMoney' || fieldName === 'freightMoney' || fieldName === 'businessMoney'
-            || fieldName === 'costMoney' || fieldName === 'taxName')) {
-            const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
-            if (returnData[name + 'Data'][index].handleType === 'modify') {
-              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-              if (indexModify > -1) {
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
-              }
-            }
-          }
-
-
-          //材料计算
-          else if (container.containerModel.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialQty' || fieldName === 'convertQty'
-            || fieldName === 'materialName' || fieldName === 'materialStyle'
-            || fieldName === 'materialStdPrice' || fieldName === 'costPrice')) {
-            const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, returnData[name + 'Data'][index],'material', fieldName);
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
-            if (returnData[name + 'Data'][index].handleType === 'modify') {
-              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-              if (indexModify > -1) {
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
-              }
-            }
-          }
-          else if (container.containerModel.includes('/material') && (fieldName === 'materialStdMoney' || fieldName === 'costMoney' || fieldName === 'taxName')) {
-            const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, returnData[name + 'Data'][index],'product', fieldName);
-            returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
-            if (returnData[name + 'Data'][index].handleType === 'modify') {
-              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-              if (indexModify > -1) {
-                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
-              }
-            }
-          }
-          // else if (fieldName === 'costMoney') {
-          //   const moneyCalcData = commonUtils.getPrice(props.commonModel, returnData[name + 'Data'][index],'product', fieldName, 'costPrice');
-          //   returnData[name + 'Data'][index] = { ...returnData[name + 'Data'][index], ...moneyCalcData};
-          //   if (returnData[name + 'Data'][index].handleType === 'modify') {
-          //     const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-          //     if (indexModify > -1) {
-          //       returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
-          //     }
-          //   }
-          // }
-
         }
       }
       return returnData;
     }
+    //
+    // const calcPaper = (params) => {
+    //   const {name, fieldName, record, returnData } = params;
+    //   const bZfZf = tableDataRow.iPrintMode === 2; // 正反版
+    //   tableDataRow.iPrintModePo = tableDataRow.iPrintMode <= 2 ? 2 : tableDataRow.iPrintMode === 3 ? 0 : -1;
+    //
+    //   if (record.sumPQty >= 4) {
+    //     if (record.singlePQty > 0) {
+    //       record.dPlateQty = Math.ceil(tableDataRow.dSumPQty / tableDataRow.dSinglePQty);
+    //     }
+    //
+    //     if (bZfZf && (tableDataRow.iPrintModePo === 2)) { // 双面样本，正反
+    //       if (tableDataRow.dPlateQty < 2) { // 不管建议放正自翻版了，点方式什么是什么
+    //         tableDataRow.dPlateQty = 2;
+    //         tableDataRow.iStick = Math.ceil(commonUtils.isNull(tableDataRow.dPlateQty, 0) / 2);
+    //         tableDataRow.dSumPlateQty = tableDataRow.iStick * (
+    //           commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
+    //           commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0) +
+    //           commonUtils.isNull(tableDataRow.iOppositeColor, 0) +
+    //           commonUtils.isNull(tableDataRow.iOppositeSpecialColor, 0));
+    //       } else {
+    //         if (tableDataRow.iPrintModePo !== 2) { // 单面样本
+    //           tableDataRow.dPlateQty = (commonUtils.isNull(tableDataRow.dSumPQty, 0) * 0.5) / tableDataRow.dSinglePQty;
+    //         } else {
+    //           tableDataRow.dPlateQty = commonUtils.isNull(tableDataRow.dSumPQty, 0) / commonUtils.isNull(commonUtils.nullIf(tableDataRow.dSinglePQty, 0), 1);
+    //         }
+    //         tableDataRow.iStick = Math.ceil(tableDataRow.dPlateQty);
+    //         tableDataRow.dSumPlateQty = tableDataRow.iStick * (commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
+    //           commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0));
+    //       }
+    //     } else {
+    //       if (tableDataRow.iPrintModePo !== 2) { // 单面样本
+    //         tableDataRow.dPlateQty = (commonUtils.isNull(tableDataRow.dSumPQty, 0) * 0.5) / tableDataRow.dSinglePQty;
+    //       } else {
+    //         tableDataRow.dPlateQty = commonUtils.isNull(tableDataRow.dSumPQty, 0) / commonUtils.isNull(commonUtils.nullIf(tableDataRow.dSinglePQty, 0), 1);
+    //       }
+    //       tableDataRow.iStick = Math.ceil(tableDataRow.dPlateQty);
+    //       tableDataRow.dSumPlateQty = tableDataRow.iStick * (
+    //         commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
+    //         commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0));
+    //     }
+    //     if (tableDataRow.iStick > 0 && tableDataRow.dSinglePQty > 0) {
+    //       tableDataRow.dMachineQty = commonUtils.convertFixNum((commonUtils.isNull(tableDataRow.dPartsQty, 0) * commonUtils.isNull(tableDataRow.dSumPQty, 0) * 0.5) / tableDataRow.dSinglePQty / tableDataRow.iStick, 0);
+    //       tableDataRow.dSumMachineQty = tableDataRow.dMachineQty * tableDataRow.iStick;
+    //     }
+    //   } else {
+    //     tableDataRow.iStick = 1;
+    //     tableDataRow.dSumPlateQty = tableDataRow.iStick * (
+    //       commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
+    //       commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0) +
+    //       commonUtils.isNull(tableDataRow.iOppositeColor, 0) +
+    //       commonUtils.isNull(tableDataRow.iOppositeSpecialColor, 0));
+    //     if (bZfZf && tableDataRow.iPrintModePo === 2) {
+    //       tableDataRow.dPlateQty = 2;
+    //       tableDataRow.dSumPlateQty = tableDataRow.iStick * (commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
+    //         commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0) + commonUtils.isNull(tableDataRow.iOppositeColor, 0) +
+    //         commonUtils.isNull(tableDataRow.iOppositeSpecialColor, 0));
+    //     } else {
+    //       tableDataRow.dPlateQty = 1;
+    //       tableDataRow.dSumPlateQty = tableDataRow.iStick * (commonUtils.isNull(tableDataRow.iPositiveColor, 0) +
+    //         commonUtils.isNull(tableDataRow.iPositiveSpecialColor, 0));
+    //     }
+    //
+    //     if (tableDataRow.dSinglePQty > 0) {
+    //       if (tableDataRow.iPage > 1) { // 笔记本  用 非样本 来做， 倍率是每页都一样才可以用      原先 /2 是指页数， 现在直接按张数
+    //         tableDataRow.dMachineQty = commonUtils.convertFixNum((tableDataRow.dPartsQty * tableDataRow.iPage) / tableDataRow.dSinglePQty, 0);
+    //       } else {
+    //         tableDataRow.dMachineQty = commonUtils.convertFixNum(commonUtils.isNull(tableDataRow.dPartsQty, 0) / tableDataRow.dSinglePQty, 0);
+    //         tableDataRow.dSumMachineQty = tableDataRow.dMachineQty * tableDataRow.iStick;
+    //       }
+    //     }
+    //   }
+    //   return tableDataRow;
+    // };
 
 
 

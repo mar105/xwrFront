@@ -89,11 +89,11 @@ const WorkOrder = (props) => {
   }
 
   const onTableAddClick = (name, e, isWait = false) => {
-    const { dispatch, slaveData, partData, slaveSelectedRowKeys, partSelectedRowKeys }: any = propsRef.current;
+    const { dispatch, slaveSelectedRows, partSelectedRows }: any = propsRef.current;
     const returnData = props.onTableAddClick(name, e, true);
     const addState = { ...returnData };
     if (name === 'part') {
-      if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+      if (commonUtils.isEmptyArr(slaveSelectedRows)) {
         const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
         if (index > -1) {
           props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
@@ -103,13 +103,12 @@ const WorkOrder = (props) => {
         return;
       }
       const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-      returnData[name + 'Data'][index].slaveId = slaveSelectedRowKeys[0];
-      const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
-      returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
+      returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
+      returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
       addState[name + 'SelectedRowKeys'] = [returnData.data.id];
       addState[name + 'SelectedRows'] = [{...returnData.data}];
     } else if (name === 'material') {
-      if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+      if (commonUtils.isEmptyArr(slaveSelectedRows)) {
         const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
         if (index > -1) {
           props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
@@ -119,22 +118,19 @@ const WorkOrder = (props) => {
         return;
       }
       const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-      returnData[name + 'Data'][index].slaveId = slaveSelectedRowKeys[0];
+      returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
+      returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
 
-      const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
-      returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
-
-      if (commonUtils.isEmptyArr(partSelectedRowKeys)) {
+      if (commonUtils.isEmptyArr(partSelectedRows)) {
         returnData[name + 'Data'][index].partId = '';
         returnData[name + 'Data'][index].materialGenre = '2product';
       } else {
-        const partIndex = partData.filter(item => item.id === partSelectedRowKeys[0]);
-        returnData[name + 'Data'][index].partName = partIndex > -1 ? partData[slaveIndex].partName : '';
-        returnData[name + 'Data'][index].partId = partSelectedRowKeys[0];
+        returnData[name + 'Data'][index].partName = partSelectedRows[0].partName;
+        returnData[name + 'Data'][index].partId = partSelectedRows[0].id;
         returnData[name + 'Data'][index].materialGenre = '0main';
       }
     } else if (name === 'process') {
-      if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+      if (commonUtils.isEmptyArr(slaveSelectedRows)) {
         const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
         if (index > -1) {
           props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
@@ -144,18 +140,15 @@ const WorkOrder = (props) => {
         return;
       }
       const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-      returnData[name + 'Data'][index].slaveId = slaveSelectedRowKeys[0];
+      returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
+      returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
 
-      const slaveIndex = slaveData.filter(item => item.id === slaveSelectedRowKeys[0]);
-      returnData[name + 'Data'][index].productName = slaveIndex > -1 ? slaveData[slaveIndex].productName : '';
-
-      if (commonUtils.isEmptyArr(partSelectedRowKeys)) {
+      if (commonUtils.isEmptyArr(partSelectedRows)) {
         returnData[name + 'Data'][index].partId = '';
         returnData[name + 'Data'][index].processGenre = '3product';
       } else {
-        const partIndex = partData.filter(item => item.id === partSelectedRowKeys[0]);
-        returnData[name + 'Data'][index].partName = partIndex > -1 ? partData[slaveIndex].partName : '';
-        returnData[name + 'Data'][index].partId = partSelectedRowKeys[0];
+        returnData[name + 'Data'][index].partName = partSelectedRows[0].partName;
+        returnData[name + 'Data'][index].partId = partSelectedRows[0].id;
         returnData[name + 'Data'][index].processGenre = '0prepress';
       }
     }

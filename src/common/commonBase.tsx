@@ -514,6 +514,7 @@ const commonBase = (WrapComponent) => {
           const index = data.findIndex(item => item.id === record.id);
           if (index > -1) {
             dataRow = { ...data[index], [fieldName]: value, ...assignValue, handleType: commonUtils.isEmpty(dataRow.handleType) ? 'modify' : dataRow.handleType };
+            data[index] = dataRow;
           }
         }
 

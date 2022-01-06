@@ -8,6 +8,7 @@ import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import commonProductionEvent from "../../../common/commonProductionEvent";
 
 const WorkOrder = (props) => {
   const [form] = Form.useForm();
@@ -184,11 +185,10 @@ const WorkOrder = (props) => {
       </div>
     }, width: 100, fixed: 'right' };
   slaveParam.lastTitle =
-    <div> {slaveParam.lastTitle}
+    (<div> {slaveParam.lastTitle}
       <a onClick={props.onTableAddChildClick.bind(this, 'slave')}> <Tooltip placement="top" title="增加子产品"><PlusSquareOutlined /> </Tooltip></a>
-    </div>;
-
-    slaveParam.eventOnRow.onRowClick = onRowClick;
+    </div>);
+  slaveParam.eventOnRow.onRowClick = onRowClick;
 
   const partParam: any = commonUtils.getTableProps('part', { ...props, onTableAddClick });
   partParam.isDragRow = true;
@@ -200,6 +200,10 @@ const WorkOrder = (props) => {
         <a onClick={props.onLastColumnClick.bind(this, 'part', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
+  partParam.lastTitle =
+    <div> {partParam.lastTitle}
+      <a onClick={props.onTableAddChildClick.bind(this, 'part')}> <Tooltip placement="top" title="增加子产品"><PlusSquareOutlined /> </Tooltip></a>
+    </div>;
   partParam.onFilter = onFilter;
   partParam.eventOnRow.onRowClick = onRowClick;
 
@@ -207,7 +211,7 @@ const WorkOrder = (props) => {
   materialParam.isDragRow = true;
   materialParam.pagination = false;
   materialParam.width = 2000;
-  materialParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys && props.partSelectedRowKeys ? [...props.slaveSelectedRowKeys, ...props.partSelectedRowKeys] :
+  materialParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys && props.partSelectedRowKeys ? [...props.slaveSelectedRowKeys, ...props.partSelectedRowKeys].toString() :
       props.slaveSelectedRowKeys ? props.slaveSelectedRowKeys : props.partSelectedRowKeys ? props.partSelectedRowKeys : '',
     render: (text,record, index)=> {
       return <div>
@@ -220,7 +224,7 @@ const WorkOrder = (props) => {
   processParam.isDragRow = true;
   processParam.pagination = false;
   processParam.width = 2000;
-  processParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys && props.partSelectedRowKeys ? [...props.slaveSelectedRowKeys, ...props.partSelectedRowKeys] :
+  processParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys && props.partSelectedRowKeys ? [...props.slaveSelectedRowKeys, ...props.partSelectedRowKeys].toString() :
       props.slaveSelectedRowKeys ? props.slaveSelectedRowKeys : props.partSelectedRowKeys ? props.partSelectedRowKeys : '',
     render: (text,record, index)=> {
       return <div>
@@ -263,4 +267,4 @@ const WorkOrder = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(WorkOrder)));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonProductionEvent(WorkOrder))));

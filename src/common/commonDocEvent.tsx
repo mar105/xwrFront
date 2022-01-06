@@ -1,9 +1,8 @@
 import * as React from "react";
-import {useEffect} from "react";
+import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
-import {useRef} from "react";
 import CommonModal from "./commonModal";
 
 const commonDocEvent = (WrapComponent) => {
@@ -421,54 +420,6 @@ const commonDocEvent = (WrapComponent) => {
       return returnData;
     }
 
-    const calcPaper = (dataRow) => {
-      if (dataRow.totalPQty >= 4) {
-        dataRow.plateQty = Math.ceil(dataRow.totalPQty / commonUtils.isEmptyorZeroDefault(dataRow.singlePQty, 1));
-        if (dataRow.printType === 'frontBack') { // 样本正反
-          if (dataRow.plateQty < 2) {
-            dataRow.plateQty = 2;
-            dataRow.splitQty = 1;
-          } else {
-            dataRow.splitQty = Math.ceil(dataRow.plateQty);
-          }
-          dataRow.totalPlateQty = dataRow.splitQty * (
-            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0) +
-            commonUtils.isEmptyDefault(dataRow.backColor, 0) + commonUtils.isEmptyDefault(dataRow.backSpecialColor, 0));
-        } else if (dataRow.printType === 'leftRight' || dataRow.printType === 'heavenEarth') { //左右翻 天地翻
-          dataRow.splitQty = Math.ceil(dataRow.plateQty);
-          dataRow.totalPlateQty = dataRow.splitQty * (
-            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
-        } else { //单面
-          dataRow.plateQty = commonUtils.isEmptyDefault(dataRow.totalPQty, 0) / 2 / dataRow.singlePQty;
-          dataRow.splitQty = Math.ceil(dataRow.plateQty);
-          dataRow.totalPlateQty = dataRow.splitQty * (
-            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
-        }
-        if (dataRow.splitQty > 0 && dataRow.singlePQty > 0) {
-          dataRow.machineQty = Math.ceil(commonUtils.isEmptyDefault(dataRow.partQty, 0) * commonUtils.isEmptyDefault(dataRow.totalPQty, 0)  / 2 / dataRow.singlePQty / dataRow.splitQty);
-          dataRow.totalMachineQty = dataRow.machineQty * dataRow.splitQty;
-        }
-      } else {
-        if (dataRow.printType === 'frontBack') {
-          dataRow.plateQty = 2;
-          dataRow.totalPlateQty = dataRow.splitQty * (
-            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0) +
-            commonUtils.isEmptyDefault(dataRow.backColor, 0) + commonUtils.isEmptyDefault(dataRow.backSpecialColor, 0));
-        } else {
-          dataRow.plateQty = 1;
-          dataRow.totalPlateQty = dataRow.splitQty * (
-            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
-        }
-        dataRow.splitQty = 1;
-        if (dataRow.singlePQty > 0) {
-          dataRow.machineQty = Math.ceil(commonUtils.isEmptyDefault(dataRow.partQty, 0) * commonUtils.isEmptyorZeroDefault(dataRow.magnification, 1) / dataRow.singlePQty);
-          dataRow.totalMachineQty = dataRow.machineQty * dataRow.splitQty;
-        }
-      }
-      return dataRow;
-    };
-
-
 
     return <div>
       <WrapComponent
@@ -477,7 +428,6 @@ const commonDocEvent = (WrapComponent) => {
         onFinish={onFinish}
         onSetForm={onSetForm}
         getButtonGroup={getButtonGroup}
-        calcPaper={calcPaper}
         onDataChange={onDataChange}
       />
       <CommonModal
@@ -487,7 +437,6 @@ const commonDocEvent = (WrapComponent) => {
         onSetForm={onSetForm}
         getButtonGroup={getButtonGroup}
         onDataChange={onDataChange}
-        calcPaper={calcPaper}
       />
     </div>
   };

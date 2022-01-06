@@ -299,7 +299,7 @@ export function TableComponent(params: any) {
               config,
               property: {value: text},
               record,
-              event: {onChange: params.event.onSelectChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
+              event: {onChange: params.event.onDataChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
             };
             const treeSelectParams = {
               name: params.name,
@@ -307,7 +307,7 @@ export function TableComponent(params: any) {
               config,
               property: {value: text, dropdownMatchSelectWidth: config.dropdownMatchSelectWidth},
               record,
-              event: {onChange: params.event.onTreeSelectChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
+              event: {onChange: params.event.onDataChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
             };
             const inputParams = {
               name: params.name,
@@ -315,7 +315,7 @@ export function TableComponent(params: any) {
               config,
               property: {value: text},
               record,
-              event: {onChange: params.event.onInputChange}
+              event: {onChange: params.event.onDataChange}
             };
             const checkboxParams = {
               name: params.name,
@@ -323,7 +323,7 @@ export function TableComponent(params: any) {
               config,
               property: {checked: text},
               record,
-              event: {onChange: params.event.onCheckboxChange}
+              event: {onChange: params.event.onDataChange}
             };
             const datePickerParams = {
               name: params.name,
@@ -331,7 +331,7 @@ export function TableComponent(params: any) {
               config,
               property: {value: text},
               record,
-              event: {onChange: params.event.onDatePickerChange}
+              event: {onChange: params.event.onDataChange}
             };
             const numberParams = {
               name: params.name,
@@ -339,7 +339,7 @@ export function TableComponent(params: any) {
               config,
               property: {value: text},
               record,
-              event: {onChange: params.event.onNumberChange}
+              event: {onChange: params.event.onDataChange}
             };
             const provinceCityAreaParams = {
               name: params.name,
@@ -347,7 +347,7 @@ export function TableComponent(params: any) {
               config,
               property: {value: text },
               record,
-              event: {onChange: params.event.onCascaderChange}
+              event: {onChange: params.event.onDataChange}
             };
             if (column.dataIndex === 'sortNum' && params.isDragRow) {
               const component = useMemo(() => {

@@ -215,7 +215,7 @@ const Formula = (props) => {
     config: index > -1 ? masterContainer.slaveData[index] : {},
     property: {value: masterData.formula, disabled: !enabled, ref: formulaRef },
     record: masterData,
-    event: {onChange: props.onInputChange}
+    event: {onChange: props.onDataChange}
   };
 
   const treeParam = {

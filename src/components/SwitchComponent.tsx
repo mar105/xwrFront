@@ -8,8 +8,13 @@ export function SwitchComponent(params) {
   if (params.config.isRequired) {
     rules.push({ required: params.config.isRequired, message: commonUtils.isEmpty(params.property.placeholder) ? '请输入' + params.config.viewName : params.property.placeholder })
   }
+  const onChange = (checked) => {
+    if (params.event && params.event.onChange) {
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Switch', record: params.record, value: checked});
+    }
+  }
   if (params.componentType === componentType.Soruce) {
-    return <SwitchComponent {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null } />;
+    return <SwitchComponent {...params.property} onChange={onChange} />;
   } else {
     return <Form.Item
       label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}
@@ -17,7 +22,7 @@ export function SwitchComponent(params) {
       rules={rules}
       shouldUpdate={(prevValues, currentValues) => { return prevValues[params.config.fieldName] !== currentValues[params.config.fieldName]}}
     >
-      <Switch {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null } />
+      <Switch {...params.property} onChange={onChange} />
     </Form.Item>;
   }
 

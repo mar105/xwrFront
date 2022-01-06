@@ -88,7 +88,7 @@ export function SelectComponent(params) {
 
   const onChange = (value, option) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange(params.name, params.config.fieldName, params.record, params.config.assignField, value, option);
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Select', record: params.record, assignField: params.config.assignField, value, option});
     }
     dispatchModifySelfState({ searchValue: '' });
   }

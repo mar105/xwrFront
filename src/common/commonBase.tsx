@@ -462,56 +462,32 @@ const commonBase = (WrapComponent) => {
       dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys, [name + 'SelectedRows']: selectedRows });
     }
 
-    const onSwitchChange = (name, fieldName, record, checked, e, isWait) => {
-      return onDataChange({name, fieldName, record, value: checked, isWait});
-    }
-
-    const onCheckboxChange = (name, fieldName, record, e, isWait) => {
-      return onDataChange({name, fieldName, record, value: e.target.checked, isWait});
-    }
-
-    const onInputChange = (name, fieldName, record, e, isWait) => {
-      return onDataChange({name, fieldName, record, value: e.target.value, isWait});
-    }
-
-    const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
-      const moneyPlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.moneyPlace : 6;
-      const pricePlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.pricePlace : 6;
-      const value = fieldName.endsWith('Money') ? commonUtils.round(valueOld, moneyPlace) : fieldName.endsWith('Price') ? commonUtils.round(valueOld, pricePlace) : valueOld;
-      return onDataChange({name, fieldName, record, value, isWait});
-    }
-
-    const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
-      const value = valueOld === undefined ? '' : Array.isArray(valueOld) ? valueOld.toString() : valueOld;
-      const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
-      const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
-      return onDataChange({name, fieldName, record, value, assignValue, isWait});
-    }
-
-    const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
-      const value = valueOld === undefined ? '' : valueOld.toString();
-      const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
-      const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, assignOption);
-      return onDataChange({name, fieldName, record, value, assignValue, isWait});
-    }
-
-    const onCascaderChange = (name, fieldName, record, fieldRelevance, value, selectedOptions, isWait) => {
-      const assignValue = {};
-      if (commonUtils.isNotEmpty(fieldRelevance)) {
-        const assignField = fieldRelevance.split(',');
-        assignField.forEach((field, fieldIndex) => {
-          assignValue[field] = value[fieldIndex];
-        });
-      }
-      return onDataChange({name, fieldName, record, value, assignValue, isWait});
-    }
-
-    const onDatePickerChange = (name, fieldName, record, value, dateString, isWait) => {
-      return onDataChange({name, fieldName, record, value: dateString, isWait});
-    }
-
     const onDataChange = (params) => {
-      const {name, fieldName, record, isWait, value, assignValue } = params;
+      const {name, fieldName, componentType, record, isWait, value: valueOld, extra, fieldRelevance, assignField, option } = params;
+      let assignValue = {};
+      let value = valueOld;
+      if (componentType === 'Cascader') {
+        if (commonUtils.isNotEmpty(fieldRelevance)) {
+          const assignField = fieldRelevance.split(',');
+          assignField.forEach((field, fieldIndex) => {
+            assignValue[field] = valueOld[fieldIndex];
+          });
+        }
+      } else if (componentType === 'TreeSelect') {
+        value = valueOld === undefined ? '' : valueOld.toString();
+        const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
+        assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+      } else if (componentType === 'Select') {
+        value = valueOld === undefined ? '' : Array.isArray(valueOld) ? valueOld.toString() : valueOld;
+        const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
+        assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+      } else if (componentType === 'Number') {
+        const moneyPlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.moneyPlace : 6;
+        const pricePlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.pricePlace : 6;
+        value = fieldName.endsWith('Money') ? commonUtils.round(valueOld, moneyPlace) : fieldName.endsWith('Price') ? commonUtils.round(valueOld, pricePlace) : valueOld;
+      }
+
+
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
         const data = { ...dataOld };
@@ -794,7 +770,8 @@ const commonBase = (WrapComponent) => {
           const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { newRecordId: params.newRecord.id } };
           const selectList = await getSelectList(dropParam);
           if (commonUtils.isNotEmpty(selectList) && commonUtils.isNotEmptyArr(selectList.list)) {
-            const returnData: any = onSelectChange(params.name, params.config.fieldName, params.record, params.config.assignField, selectList.list[0].id, { optionObj: selectList.list[0] }, true);
+            const returnData: any = onDataChange({ name: params.name, fieldName: params.config.fieldName, record: params.record, assignField: params.config.assignField,
+              value: selectList.list[0].id, option: { optionObj: selectList.list[0] }, isWait: true });
             dispatchModifyState({ ...returnData, modalVisible: false });
             if (form && typeof returnData[params.name + 'Data'] === 'object' && returnData[params.name + 'Data'].constructor === Object) {
               form.resetFields();
@@ -897,14 +874,6 @@ const commonBase = (WrapComponent) => {
       onRowSelectChange={onRowSelectChange}
       gotoError={gotoError}
       gotoSuccess={gotoSuccess}
-      onSwitchChange={onSwitchChange}
-      onInputChange={onInputChange}
-      onCheckboxChange={onCheckboxChange}
-      onNumberChange={onNumberChange}
-      onSelectChange={onSelectChange}
-      onTreeSelectChange={onTreeSelectChange}
-      onCascaderChange={onCascaderChange}
-      onDatePickerChange={onDatePickerChange}
       onReachEnd={onReachEnd}
       onSetForm={onSetForm}
       onSortEnd={onSortEnd}

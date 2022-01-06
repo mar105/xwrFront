@@ -223,50 +223,50 @@ const Route = (props) => {
     name: 'master',
     config: { fieldName: 'createDate', viewName: '创建日期' },
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
-    event: { onChange: props.onDatePickerChange },
+    event: { onChange: props.onDataChange },
   };
   const routeName = {
     name: 'master',
     config: { fieldName: 'routeName', isRequired: true, viewName: '路由名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
   const sortNum = {
     name: 'master',
     config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
-    event: { onChange: props.onNumberChange },
+    event: { onChange: props.onDataChange },
   };
   const chineseName = {
     name: 'master',
     config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
   const traditionalName = {
     name: 'master',
     config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
   const englishName = {
     name: 'master',
     config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
   const modelType = {
     name: 'master',
     config: { fieldName: 'modelType', viewName: '模块类型' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
 
   const isVisible = {
     name: 'master',
     config: { fieldName: 'isVisible', viewName: '是否显示' },
     property: { checkedChildren: '是', unCheckedChildren: '否', disabled: !enabled, checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible },
-    event: { onChange: props.onSwitchChange }
+    event: { onChange: props.onDataChange }
   };
 
   const buttonAddGroup: any = props.getButtonGroup();

@@ -57,8 +57,9 @@ const InitFinance = (props) => {
     }
   }
 
-  const onNumberChange = (name, fieldName, record, value, isWait) => {
-    const returnData = props.onNumberChange(name, fieldName, record, value, true);
+  const onDataChange = (params) => {
+    const { name, fieldName, isWait } = params;
+    const returnData = props.onDataChange({...params, isWait: true});
     const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = returnData;
     const data: any = { ...dataOld };
     const dataModify = data.handleType === 'modify' ?
@@ -71,28 +72,7 @@ const InitFinance = (props) => {
         if (data.handleType === 'modify') {
           dataModify.financeBaseMoney = data.financeBaseMoney;
         }
-      }
-    }
-    if (isWait) {
-      return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
-    } else {
-      if (name === 'master') {
-        form.setFieldsValue(commonUtils.setFieldsValue(data, props.masterContainer));
-      }
-      props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
-    }
-  }
-
-  const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
-    const returnData = props.onSelectChange(name, fieldName, record, assignField, valueOld, option, true);
-    const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = returnData;
-    const data: any = { ...dataOld };
-    const dataModify = data.handleType === 'modify' ?
-      commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-        { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
-    const moneyPlace = props.commonModel.userInfo.shopInfo.moneyPlace;
-    if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-      if (fieldName === 'currencyName') {
+      } else if (fieldName === 'currencyName') {
         data.financeBaseMoney = commonUtils.round(data.financeMoney * commonUtils.isEmptyorZeroDefault(data.exchangeRate, 1), moneyPlace);
         if (data.handleType === 'modify') {
           dataModify.financeBaseMoney = data.financeBaseMoney;
@@ -147,7 +127,7 @@ const InitFinance = (props) => {
         </div>}
       >
         <Form form={form} >
-          <CommonExhibit name="master" {...props} onNumberChange={onNumberChange} onSelectChange={onSelectChange} />
+          <CommonExhibit name="master" {...props} onDataChange={onDataChange} />
         </Form>
       </Drawer>
     </div>

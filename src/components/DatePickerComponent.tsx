@@ -10,9 +10,14 @@ export function DatePickerComponent(params) {
       message.info(params.config.fieldName);
     }
   }
+  const onChange = (date, dateString) => {
+    if (params.event && params.event.onChange) {
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'DatePicker', record: params.record, value: dateString});
+    }
+  }
   const value = commonUtils.isEmpty(params.property.value) ? null : moment(params.property.value);
   const event = {
-    onChange: params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null,
+    onChange,
     onKeyUp,
   }
   const rules: any = [];

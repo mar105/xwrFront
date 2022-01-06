@@ -222,37 +222,37 @@ const Permission = (props) => {
     name: 'master',
     config: { fieldName: 'createDate', viewName: '创建日期' },
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
-    event: { onChange: props.onDatePickerChange },
+    event: { onChange: props.onDataChange },
   };
   const permissionName = {
     name: 'master',
     config: { fieldName: 'permissionName', isRequired: true, viewName: '权限名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
   const sortNum = {
     name: 'master',
     config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
-    event: { onChange: props.onNumberChange }
+    event: { onChange: props.onDataChange }
   };
   const chineseName = {
     name: 'master',
     config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
   const traditionalName = {
     name: 'master',
     config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
   const englishName = {
     name: 'master',
     config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange },
+    event: { onChange: props.onDataChange },
   };
 
 

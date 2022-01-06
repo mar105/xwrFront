@@ -9,8 +9,13 @@ export function NumberComponent(params) {
       message.info(params.config.fieldName);
     }
   }
+  const onChange = (value) => {
+    if (params.event && params.event.onChange) {
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Number', record: params.record, value});
+    }
+  }
   const event = {
-    onChange: params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null,
+    onChange,
     onKeyUp,
   }
   const rules: any = [];

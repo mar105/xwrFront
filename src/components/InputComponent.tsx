@@ -10,8 +10,13 @@ export function InputComponent(params) {
       message.info(params.config.fieldName);
     }
   }
+  const onChange = (e) => {
+    if (params.event && params.event.onChange) {
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Input', record: params.record, value: e.target.value});
+    }
+  }
   const event = {
-    onChange: params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null,
+    onChange,
     onKeyUp,
   }
   if (params.config.isRequired) {

@@ -8,8 +8,13 @@ export function CheckboxComponent(params) {
   if (params.config.isRequired) {
     rules.push({ required: params.config.isRequired, message: commonUtils.isEmpty(params.property.placeholder) ? '请输入' + params.config.viewName : params.property.placeholder })
   }
+  const onChange = (e) => {
+    if (params.event && params.event.onChange) {
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Checkbox', record: params.record, value: e.target.checked});
+    }
+  }
   if (params.componentType === componentType.Soruce) {
-    return <Checkbox {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null } />;
+    return <Checkbox {...params.property} onChange={onChange} />;
   } else {
     return <Form.Item
       label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}
@@ -18,7 +23,7 @@ export function CheckboxComponent(params) {
       shouldUpdate={(prevValues, currentValues) => { return prevValues[params.config.fieldName] !== currentValues[params.config.fieldName]
     }
   }>
-    <Checkbox {...params.property} onChange={ params.event && params.event.onChange ? params.event.onChange.bind(this, params.name, params.config.fieldName, params.record) : null } />
+    <Checkbox {...params.property} onChange={onChange} />
     </Form.Item>;
   }
 

@@ -457,169 +457,169 @@ const Container = (props) => {
     name: 'master',
     config: { fieldName: 'createDate', viewName: '创建日期' },
     property: { disabled: true, format: 'YYYY-MM-DD HH:mm:ss', showTime: true },
-    event: { onChange: props.onDatePickerChange }
+    event: { onChange: props.onDataChange }
   };
   const containerName = {
     name: 'master',
     config: { fieldName: 'containerName', isRequired: true, viewName: '容器名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
   const dataSetName = {
     name: 'master',
     config: { fieldName: 'dataSetName', isRequired: true, viewName: '数据集名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
   const sortNum = {
     name: 'master',
     config: { fieldName: 'sortNum', isRequired: true, viewName: '排序号' },
     property: { disabled: !enabled },
-    event: { onChange: props.onNumberChange }
+    event: { onChange: props.onDataChange }
   };
   const chineseName = {
     name: 'master',
     form,
     config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
   const traditionalName = {
     name: 'master',
     config: { fieldName: 'traditionalName', viewName: '繁体名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
   const englishName = {
     name: 'master',
     config: { fieldName: 'englishName', viewName: '英文名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
   const entitySelect = {
     name: 'master',
     config: { fieldName: 'entitySelect', viewName: '实体查询' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
   const entityWhere = {
     name: 'master',
     config: { fieldName: 'entityWhere', viewName: '实体条件' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
   const entitySort = {
     name: 'master',
     config: { fieldName: 'entitySort', viewName: '实体排序' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
   const isVisible = {
     name: 'master',
     config: { fieldName: 'isVisible', viewName: '是否显示' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVisible, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
+    event: { onChange: props.onDataChange }
   };
   const fixColumnCount = {
     name: 'master',
     config: { fieldName: 'fixColumnCount', viewName: '固定列数' },
     property: { disabled: !enabled },
-    event: { onChange: props.onNumberChange }
+    event: { onChange: props.onDataChange }
   };
 
   const isTable = {
     name: 'master',
     config: { fieldName: 'isTable', viewName: '是否表格' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTable, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
+    event: { onChange: props.onDataChange }
   };
   const isTableHeadSort = {
     name: 'master',
     config: { fieldName: 'isTableHeadSort', viewName: '是否表头排序' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTableHeadSort, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
+    event: { onChange: props.onDataChange }
   };
   const isMultiChoise = {
     name: 'master',
     config: { fieldName: 'isMultiChoise', viewName: '是否多选' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isMultiChoise, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
+    event: { onChange: props.onDataChange }
   };
   const isRowNum = {
     name: 'master',
     config: { fieldName: 'isRowNum', viewName: '是否显示行号' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isRowNum, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
+    event: { onChange: props.onDataChange }
   };
 
   const virtualName = {
     name: 'master',
     config: { fieldName: 'virtualName', viewName: '虚拟名称' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
 
   const virtualIndex = {
     name: 'master',
     config: { fieldName: 'virtualIndex', viewName: '虚拟索引' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
 
   const serialCodeField = {
     name: 'master',
     config: { fieldName: 'serialCodeField', viewName: '单据号字段' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
 
   const containerModel = {
     name: 'master',
     config: { fieldName: 'containerModel', viewName: '容器模型' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
 
   const tableKey = {
     name: 'master',
     config: { fieldName: 'tableKey', viewName: '表格Key' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
 
   const isTree = {
     name: 'master',
     config: { fieldName: 'isTree', viewName: '是否展现树型' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isTree, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
+    event: { onChange: props.onDataChange }
   };
 
   const treeKey = {
     name: 'master',
     config: { fieldName: 'treeKey', viewName: '树型主Key' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
 
   const treeSlaveKey = {
     name: 'master',
     config: { fieldName: 'treeSlaveKey', viewName: '树型从Key' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
 
   const treeColumnName = {
     name: 'master',
     config: { fieldName: 'treeColumnName', viewName: '树型展示列' },
     property: { disabled: !enabled },
-    event: { onChange: props.onInputChange }
+    event: { onChange: props.onDataChange }
   };
 
   const isSelect = {
     name: 'master',
     config: { fieldName: 'isSelect', viewName: '是否查询' },
     property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isSelect, disabled: !enabled },
-    event: { onChange: props.onSwitchChange }
+    event: { onChange: props.onDataChange }
   };
 
   const buttonAddGroup: any = props.getButtonGroup();

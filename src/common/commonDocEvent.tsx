@@ -249,78 +249,9 @@ const commonDocEvent = (WrapComponent) => {
       return buttonGroup;
     }
 
-    const onSwitchChange = (name, fieldName, record, checked, e, isWait) => {
-      let returnData = props.onSwitchChange(name, fieldName, record, checked, e, true);
-      returnData = calcOperation({name, fieldName, record, returnData});
-      if (isWait) {
-        return { ...returnData };
-      } else {
-        props.dispatchModifyState({ ...returnData });
-      }
-    }
-
-    const onCheckboxChange = (name, fieldName, record, e, isWait) => {
-      let returnData = props.onCheckboxChange(name, fieldName, record, e, true);
-      returnData = calcOperation({name, fieldName, record, returnData});
-      if (isWait) {
-        return { ...returnData };
-      } else {
-        props.dispatchModifyState({ ...returnData });
-      }
-    }
-
-    const onInputChange = (name, fieldName, record, e, isWait) => {
-      let returnData = props.onInputChange(name, fieldName, record, e, true);
-      returnData = calcOperation({name, fieldName, record, returnData});
-      if (isWait) {
-        return { ...returnData };
-      } else {
-        props.dispatchModifyState({ ...returnData });
-      }
-    }
-
-    const onNumberChange = (name, fieldName, record, valueOld, isWait) => {
-      let returnData = props.onNumberChange(name, fieldName, record, valueOld, true);
-      returnData = calcOperation({name, fieldName, record, returnData});
-      if (isWait) {
-        return { ...returnData };
-      } else {
-        props.dispatchModifyState({ ...returnData });
-      }
-    }
-
-    const onSelectChange = (name, fieldName, record, assignField, valueOld, option, isWait = false) => {
-      let returnData = props.onSelectChange(name, fieldName, record, assignField, valueOld, option, true);
-      returnData = calcOperation({name, fieldName, record, returnData});
-      if (isWait) {
-        return { ...returnData };
-      } else {
-        props.dispatchModifyState({ ...returnData });
-      }
-    }
-
-    const onTreeSelectChange = (name, fieldName, record, config, valueOld, extra, isWait = false) => {
-      let returnData = props.onTreeSelectChange(name, fieldName, record, config, valueOld, extra, true);
-      returnData = calcOperation({name, fieldName, record, returnData});
-      if (isWait) {
-        return { ...returnData };
-      } else {
-        props.dispatchModifyState({ ...returnData });
-      }
-    }
-
-    const onCascaderChange = (name, fieldName, record, fieldRelevance, value, selectedOptions, isWait) => {
-      let returnData = props.onCascaderChange(name, fieldName, record, fieldRelevance, value, selectedOptions, true);
-      returnData = calcOperation({name, fieldName, record, returnData});
-      if (isWait) {
-        return { ...returnData };
-      } else {
-        props.dispatchModifyState({ ...returnData });
-      }
-    }
-
-    const onDatePickerChange = (name, fieldName, record, value, dateString, isWait) => {
-      let returnData = props.onDatePickerChange(name, fieldName, record, value, dateString, true);
+    const onDataChange = (params) => {
+      const { name, fieldName, record, isWait } = params;
+      let returnData = props.onDataChange({...params, isWait: true});
       returnData = calcOperation({name, fieldName, record, returnData});
       if (isWait) {
         return { ...returnData };
@@ -546,15 +477,8 @@ const commonDocEvent = (WrapComponent) => {
         onFinish={onFinish}
         onSetForm={onSetForm}
         getButtonGroup={getButtonGroup}
-        onSwitchChange={onSwitchChange}
-        onInputChange={onInputChange}
-        onCheckboxChange={onCheckboxChange}
-        onNumberChange={onNumberChange}
-        onSelectChange={onSelectChange}
-        onTreeSelectChange={onTreeSelectChange}
-        onCascaderChange={onCascaderChange}
-        onDatePickerChange={onDatePickerChange}
         calcPaper={calcPaper}
+        onDataChange={onDataChange}
       />
       <CommonModal
         {...props}
@@ -562,14 +486,7 @@ const commonDocEvent = (WrapComponent) => {
         onFinish={onFinish}
         onSetForm={onSetForm}
         getButtonGroup={getButtonGroup}
-        onSwitchChange={onSwitchChange}
-        onInputChange={onInputChange}
-        onCheckboxChange={onCheckboxChange}
-        onNumberChange={onNumberChange}
-        onSelectChange={onSelectChange}
-        onTreeSelectChange={onTreeSelectChange}
-        onCascaderChange={onCascaderChange}
-        onDatePickerChange={onDatePickerChange}
+        onDataChange={onDataChange}
         calcPaper={calcPaper}
       />
     </div>

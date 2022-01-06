@@ -156,7 +156,7 @@ const Search = (props) => {
       config: thirdConfig,
       property: {value: searchData['third' + key]},
       record: searchData,
-      event: {onChange: props.onInputChange}
+      event: {onChange: props.onDataChange}
     };
 
     const firstComponent = <SelectComponent {...firstParams} />;

@@ -206,9 +206,7 @@ export function getTableProps(name, props) {
     onTableChange: props.onTableChange,
     expandable: {onExpand: props.onExpand, expandedRowKeys: props[name + 'ExpandedRowKeys']},
     pagination: true, // 是否分页
-    event: { onInputChange: props.onInputChange, onTreeSelectChange: props.onTreeSelectChange, onCheckboxChange: props.onCheckboxChange, onNumberChange: props.onNumberChange,
-      onSelectChange: props.onSelectChange, onDatePickerChange: props.onDatePickerChange, getSelectList: props.getSelectList,
-      onCascaderChange: props.onCascaderChange, onDropPopup: props.onDropPopup },
+    event: { onDataChange: props.onDataChange, getSelectList: props.getSelectList, onDropPopup: props.onDropPopup },
     lastTitle: <div> {!props.enabled ? '' : <a onClick={props.onTableAddClick.bind(this, name)}> <Tooltip placement="top" title="增加"><PlusOutlined /> </Tooltip></a> }{configSetting} </div>,
     lastColumn: { title: 'o',
       render: (text,record, index)=> {

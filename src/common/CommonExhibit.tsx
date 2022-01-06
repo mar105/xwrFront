@@ -20,49 +20,49 @@ export const CommonExhibit = (props) => {
         config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
-        event: {onChange: props.onSelectChange, getSelectList: props.getSelectList, onDropPopup: props.onDropPopup}
+        event: {onChange: props.onDataChange, getSelectList: props.getSelectList, onDropPopup: props.onDropPopup}
       };
       const treeSelectParams = {
         name: props.name,
         config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
-        event: {onChange: props.onTreeSelectChange, getSelectList: props.getSelectList, onDropPopup: props.onDropPopup}
+        event: {onChange: props.onDataChange, getSelectList: props.getSelectList, onDropPopup: props.onDropPopup}
       };
       const inputParams = {
         name: props.name,
         config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
-        event: {onChange: props.onInputChange}
+        event: {onChange: props.onDataChange}
       };
       const checkboxParams = {
         name: props.name,
         config: item,
         property: {checked: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
-        event: {onChange: props.onCheckboxChange}
+        event: {onChange: props.onDataChange}
       };
       const numberParams = {
         name: props.name,
         config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
-        event: {onChange: props.onNumberChange}
+        event: {onChange: props.onDataChange}
       };
       const dateParams = {
         name: props.name,
         config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
-        event: {onChange: props.onNumberChange}
+        event: {onChange: props.onDataChange}
       };
       const provinceCityAreaParams = {
         name: props.name,
         config: item,
         property: {value: masterData[item.fieldName], disabled: !enabled },
         record: masterData,
-        event: {onChange: props.onCascaderChange}
+        event: {onChange: props.onDataChange}
       };
 
       let component;

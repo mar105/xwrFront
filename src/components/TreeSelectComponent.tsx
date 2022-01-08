@@ -42,6 +42,7 @@ export function TreeSelectComponent(params) {
 
   const onChange = (value, label, extra) => {
     if (params.event && params.event.onChange) {
+      console.log('sss', value, label, extra);
       params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'TreeSelect', record: params.record, assignField: params.config.assignField, value, extra});
     }
     dispatchModifySelfState({ searchValue: '' });
@@ -87,7 +88,7 @@ export function TreeSelectComponent(params) {
   params.property.loading = modifySelfState.loading;
   params.property.allowClear = params.config.isDropEmpty;
   params.property.dropdownRender = params.config.isDropAdd ? dropdownRender : null;
-
+  params.property.fieldNames = { label: params.config.treeColumnNameDrop, value: params.config.treeKeyDrop };
   if (params.componentType === componentType.Soruce) {
     return <TreeSelect treeDefaultExpandAll bordered={false} {...params.property} {...addProperty} { ...event } />;
   } else {

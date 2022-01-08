@@ -487,11 +487,11 @@ const commonBase = (WrapComponent) => {
       } else if (componentType === 'TreeSelect') {
         value = valueOld === undefined ? '' : valueOld.toString();
         const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;
-        assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+        assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption, stateRef.current);
       } else if (componentType === 'Select') {
         value = valueOld === undefined ? '' : Array.isArray(valueOld) ? valueOld.toString() : valueOld;
         const assignOption = commonUtils.isEmptyObj(option) || commonUtils.isEmptyObj(option.optionObj) ? {} : option.optionObj;
-        assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+        assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption, stateRef.current);
       } else if (componentType === 'Number') {
         const moneyPlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.moneyPlace : 6;
         const pricePlace = props.commonModel.userInfo.shopInfo ? props.commonModel.userInfo.shopInfo.pricePlace : 6;
@@ -805,7 +805,7 @@ const commonBase = (WrapComponent) => {
           const record = params.record;
 
           if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-            const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption);
+            const assignValue = commonUtils.getAssignFieldValue(name, assignField, assignOption, stateRef.current);
             const data = { ...dataOld, [fieldName]: value, ...assignValue };
             if (form) {
               form.setFieldsValue(commonUtils.setFieldsValue(assignValue, modifyState[params.name + 'Container']));
@@ -826,7 +826,7 @@ const commonBase = (WrapComponent) => {
             params.selectList.forEach((selectItem, selectIndex) => {
               const index = data.findIndex(item => item.id === record.id);
               if (selectIndex === 0 && ((params.selectList.length === 1) || (index > -1 && commonUtils.isEmpty(data[index][fieldName])))) {
-                const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem);
+                const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, stateRef.current);
                 const rowData = { ...data[index], [fieldName]: value, ...assignValue };
                 rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
                 data[index] = rowData;
@@ -839,7 +839,7 @@ const commonBase = (WrapComponent) => {
                   }
                 }
               } else {
-                const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem);
+                const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, stateRef.current);
                 const rowData = { ...onAdd(container), [fieldName]: value, ...assignValue, superiorId: masterData.id };
                 data.push(rowData);
               }

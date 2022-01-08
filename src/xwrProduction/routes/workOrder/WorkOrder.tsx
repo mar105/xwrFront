@@ -7,7 +7,7 @@ import {ButtonGroup} from "../../../common/ButtonGroup";
 import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
-import { DeleteOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import commonProductionEvent from "../../../common/commonProductionEvent";
 
 const WorkOrder = (props) => {
@@ -150,7 +150,7 @@ const WorkOrder = (props) => {
       } else {
         returnData[name + 'Data'][index].partName = partSelectedRows[0].partName;
         returnData[name + 'Data'][index].partId = partSelectedRows[0].id;
-        returnData[name + 'Data'][index].processGenre = '0prepress';
+        // returnData[name + 'Data'][index].processGenre = '0prepress';
       }
     }
 
@@ -184,10 +184,6 @@ const WorkOrder = (props) => {
 
       </div>
     }, width: 100, fixed: 'right' };
-  slaveParam.lastTitle =
-    (<div> {slaveParam.lastTitle}
-      <a onClick={props.onTableAddChildClick.bind(this, 'slave')}> <Tooltip placement="top" title="增加子产品"><PlusSquareOutlined /> </Tooltip></a>
-    </div>);
   slaveParam.eventOnRow.onRowClick = onRowClick;
 
   const partParam: any = commonUtils.getTableProps('part', { ...props, onTableAddClick });
@@ -200,10 +196,6 @@ const WorkOrder = (props) => {
         <a onClick={props.onLastColumnClick.bind(this, 'part', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
     }, width: 50 , fixed: 'right' };
-  partParam.lastTitle =
-    <div> {partParam.lastTitle}
-      <a onClick={props.onTableAddChildClick.bind(this, 'part')}> <Tooltip placement="top" title="增加子产品"><PlusSquareOutlined /> </Tooltip></a>
-    </div>;
   partParam.onFilter = onFilter;
   partParam.eventOnRow.onRowClick = onRowClick;
 

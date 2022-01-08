@@ -235,35 +235,46 @@ const commonBase = (WrapComponent) => {
       return dataRow;
     };
 
-    const onLastColumnClick = (name, key, record, e, isWait = false) => {
+    const delTableData = (name, keyName, keyValue) => {
       const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld, [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
+
+      const data = [...dataOld];
+      const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
+      const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
+      const selectedRowKeys = commonUtils.isEmptyArr(selectedRowKeysOld) ? [] : [...selectedRowKeysOld];
+      let index = data.findIndex(item => item[keyName] === keyValue);
+      while (index > -1) {
+        /*   删除从表中的数据并存入删除集合中   */
+        const key = data[index].id;
+        if (data[index].handleType !== 'add') {
+          data[index].handleType = 'del';
+          delData.push(data[index]);
+        }
+        data.splice(index, 1);
+
+        const indexRow = selectedRows.findIndex(item => item.id === key);
+        if (indexRow > -1) {
+          selectedRows.splice(indexRow, 1);
+        }
+
+        const indexRowKey = selectedRowKeys.findIndex(item => item === key);
+        if (indexRowKey > -1) {
+          selectedRowKeys.splice(indexRowKey, 1);
+        }
+
+        index = data.findIndex(item => item[keyName] === keyValue);
+      }
+      return { [name + 'Data']: data, [name + 'DelData']: delData, [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys };
+    }
+
+    const onLastColumnClick = (name, key, record, e, isWait = false) => {
+      const { [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
       if (key === 'delButton') {
-        const data = [...dataOld];
-        const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
-        const index = data.findIndex(item => item.id === record.id);
-        if (index > -1) {
-          if (data[index].handleType !== 'add') {
-            data[index].handleType = 'del';
-            delData.push(data[index]);
-          }
-          data.splice(index, 1);
-
-          const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
-          const indexRow = selectedRows.findIndex(item => item.id === record.id);
-          if (indexRow > -1) {
-            selectedRows.splice(indexRow, 1);
-          }
-          const selectedRowKeys = commonUtils.isEmptyArr(selectedRowKeysOld) ? [] : [...selectedRowKeysOld];
-          const indexKeys = selectedRowKeys.findIndex(item => item === record.id);
-          if (indexKeys > -1) {
-            selectedRowKeys.splice(indexKeys, 1);
-          }
-
-          if (isWait) {
-            return { [name + 'Data']: data, [name + 'DelData']: delData, [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys };
-          } else {
-            dispatchModifyState({ [name + 'Data']: data, [name + 'DelData']: delData, [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys });
-          }
+        const returnData = delTableData(name, 'id', record.id);
+        if (isWait) {
+          return { ...returnData };
+        } else {
+          dispatchModifyState({ ...returnData });
         }
       } else if (key === 'delSelectButton') {
         const selectedRows = [...selectedRowsOld];
@@ -522,9 +533,10 @@ const commonBase = (WrapComponent) => {
         if (dataRow.handleType === 'modify') {
           const indexModify = dataModify.findIndex(item => item.id === record.id);
           if (indexModify > -1) {
+            dataModify[indexModify] = {...dataModify[indexModify], [fieldName]: value, ...assignValue };
             dataModify[indexModify][fieldName] = dataRow[fieldName];
           } else {
-            dataModify.push({ id: record.id, handleType: dataRow.handleType, [fieldName]: dataRow[fieldName] })
+            dataModify.push({ id: record.id, handleType: dataRow.handleType, [fieldName]: dataRow[fieldName], ...assignValue })
           }
         }
         if (isWait) {
@@ -886,6 +898,7 @@ const commonBase = (WrapComponent) => {
       getTreeNode={getTreeNode}
       setTreeNode={setTreeNode}
       onDataChange={onDataChange}
+      delTableData={delTableData}
     />
     </Spin>
   };

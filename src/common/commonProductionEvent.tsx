@@ -108,10 +108,39 @@ const commonProductionEvent = (WrapComponent) => {
       }
     }
 
+
+
+    const onLastColumnClick = (name, key, record, e, isWait = false) => {
+      let addState: any = {};
+      if (name === 'slave') {
+        //部件
+        addState = { ...addState, ...props.delTableData('part', 'slaveId', record.id) };
+
+        //材料
+        addState = { ...addState, ...props.delTableData('material', 'slaveId', record.id) };
+
+        //工艺
+        addState = { ...addState, ...props.delTableData('process', 'slaveId', record.id) };
+      } else if (name === 'part') {
+        //材料
+        addState = { ...addState, ...props.delTableData('material', 'partId', record.id) };
+
+        //工艺
+        addState = { ...addState, ...props.delTableData('process', 'partId', record.id) };
+      }
+      const returnData = props.onLastColumnClick(name, key, record, e, true);
+      if (isWait) {
+        return { ...returnData, ...addState  };
+      } else {
+        props.dispatchModifyState({ ...returnData, ...addState });
+      }
+    }
+
     return <div>
       <WrapComponent
         {...props}
         onDataChange={onDataChange}
+        onLastColumnClick={onLastColumnClick}
       />
     </div>
   };

@@ -513,7 +513,7 @@ const commonBase = (WrapComponent) => {
         } else {
           const index = data.findIndex(item => item.id === record.id);
           if (index > -1) {
-            dataRow = { ...data[index], [fieldName]: value, ...assignValue, handleType: commonUtils.isEmpty(dataRow.handleType) ? 'modify' : dataRow.handleType };
+            dataRow = { ...data[index], [fieldName]: value, ...assignValue, handleType: commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType };
             data[index] = dataRow;
           }
         }

@@ -3,7 +3,6 @@ import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
-import CommonModal from "./commonModal";
 
 const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {

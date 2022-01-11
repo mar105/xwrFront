@@ -9,6 +9,7 @@ import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import commonProductionEvent from "../../../common/commonProductionEvent";
+import CommonModal from "../../../common/commonModal";
 
 const WorkOrder = (props) => {
   const [form] = Form.useForm();
@@ -83,14 +84,14 @@ const WorkOrder = (props) => {
     if (name === 'part') {
       return record.slaveId === slaveId;
     } else if (name === 'material') {
-      return (record.slaveId === slaveId && record.partId === partId) || record.materialGenre === '2product';
+      return (record.slaveId === slaveId && (record.partId === partId || record.materialGenre === '2product'));
     } else if (name === 'process') {
-      return (record.slaveId === slaveId && record.partId === partId) || record.processGenre === '3product';
+      return (record.slaveId === slaveId && (record.partId === partId || record.processGenre === '3product'));
     }
   }
 
   const onTableAddClick = (name, e, isWait = false) => {
-    const { dispatch, slaveSelectedRows, partSelectedRows }: any = propsRef.current;
+    const { dispatch, slaveSelectedRows, partSelectedRows, processContainer }: any = propsRef.current;
     const returnData = props.onTableAddClick(name, e, true);
     const addState = { ...returnData };
     if (name === 'part') {
@@ -140,18 +141,25 @@ const WorkOrder = (props) => {
         }
         return;
       }
-      const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-      returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
-      returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
-
-      if (commonUtils.isEmptyArr(partSelectedRows)) {
-        returnData[name + 'Data'][index].partId = '';
-        returnData[name + 'Data'][index].processGenre = '3product';
-      } else {
-        returnData[name + 'Data'][index].partName = partSelectedRows[0].partName;
-        returnData[name + 'Data'][index].partId = partSelectedRows[0].id;
-        // returnData[name + 'Data'][index].processGenre = '0prepress';
+      const index = processContainer.slaveData.findIndex(item => item.fieldName === 'processName');
+      if (index > -1) {
+        const dropParam = { name, type: 'popupActive', config: processContainer.slaveData[index], record: {} };
+        props.onDropPopup(dropParam);
+        returnData[name + 'Data'] = propsRef.current[name + 'Data'];
       }
+
+      // const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
+      // returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
+      // returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
+      //
+      // if (commonUtils.isEmptyArr(partSelectedRows)) {
+      //   returnData[name + 'Data'][index].partId = '';
+      //   returnData[name + 'Data'][index].processGenre = '3product';
+      // } else {
+      //   returnData[name + 'Data'][index].partName = partSelectedRows[0].partName;
+      //   returnData[name + 'Data'][index].partId = partSelectedRows[0].id;
+      //   // returnData[name + 'Data'][index].processGenre = '0prepress';
+      // }
     }
 
     if (isWait) {
@@ -228,34 +236,37 @@ const WorkOrder = (props) => {
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
-    <Form {...layout} name="basic" form={form} onFinish={onFinish}>
-      <Row>
-        <Col>
-          {component}
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          {commonUtils.isNotEmptyObj(props.slaveContainer) ? <TableComponent {...slaveParam} /> : '' }
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          {commonUtils.isNotEmptyObj(props.partContainer) ? <TableComponent {...partParam} /> : '' }
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          {commonUtils.isNotEmptyObj(props.materialContainer) ? <TableComponent {...materialParam} /> : '' }
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          {commonUtils.isNotEmptyObj(props.processContainer) ? <TableComponent {...processParam} /> : '' }
-        </Col>
-      </Row>
-      <ButtonGroup {...buttonGroup} />
-    </Form>
+    <div>
+      <Form {...layout} name="basic" form={form} onFinish={onFinish}>
+        <Row>
+          <Col>
+            {component}
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {commonUtils.isNotEmptyObj(props.slaveContainer) ? <TableComponent {...slaveParam} /> : '' }
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {commonUtils.isNotEmptyObj(props.partContainer) ? <TableComponent {...partParam} /> : '' }
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {commonUtils.isNotEmptyObj(props.materialContainer) ? <TableComponent {...materialParam} /> : '' }
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {commonUtils.isNotEmptyObj(props.processContainer) ? <TableComponent {...processParam} /> : '' }
+          </Col>
+        </Row>
+        <ButtonGroup {...buttonGroup} />
+      </Form>
+      <CommonModal {...props} />
+    </div>
   );
 }
 

@@ -8,6 +8,7 @@ import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
+import CommonModal from "../../../common/commonModal";
 
 const InitProduct = (props) => {
   const [form] = Form.useForm();
@@ -87,19 +88,22 @@ const InitProduct = (props) => {
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
-    <Form {...layout} name="basic" form={form} onFinish={onFinish}>
-      <Row>
-        <Col>
-          {component}
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          {commonUtils.isNotEmptyObj(props.slaveContainer) ? <TableComponent {...slaveParam} /> : '' }
-        </Col>
-      </Row>
-      <ButtonGroup {...buttonGroup} />
-    </Form>
+    <div>
+      <Form {...layout} name="basic" form={form} onFinish={onFinish}>
+        <Row>
+          <Col>
+            {component}
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {commonUtils.isNotEmptyObj(props.slaveContainer) ? <TableComponent {...slaveParam} /> : '' }
+          </Col>
+        </Row>
+        <ButtonGroup {...buttonGroup} />
+      </Form>
+      <CommonModal {...props} />
+    </div>
   );
 }
 

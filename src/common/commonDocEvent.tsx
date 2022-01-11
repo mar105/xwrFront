@@ -430,14 +430,6 @@ const commonDocEvent = (WrapComponent) => {
         getButtonGroup={getButtonGroup}
         onDataChange={onDataChange}
       />
-      <CommonModal
-        {...props}
-        onButtonClick={onButtonClick}
-        onFinish={onFinish}
-        onSetForm={onSetForm}
-        getButtonGroup={getButtonGroup}
-        onDataChange={onDataChange}
-      />
     </div>
   };
 };

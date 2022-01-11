@@ -501,13 +501,11 @@ const commonBase = (WrapComponent) => {
 
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, [name + 'Container']: container }: any = stateRef.current;
       if (typeof dataOld === 'object' && dataOld.constructor === Object) {
-        const data = { ...dataOld };
-        data.handleType = commonUtils.isEmpty(data.handleType) ? 'modify' : data.handleType;
-        data[fieldName] = value;
+        const data = { ...dataOld, [fieldName]: value, ...assignValue, handleType: commonUtils.isEmpty(dataOld.handleType) ? 'modify' : dataOld.handleType };
 
         const dataModify = data.handleType === 'modify' ?
-          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName] } :
-            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName] } : dataModifyOld;
+          commonUtils.isEmptyObj(dataModifyOld) ? { id: data.id, handleType: data.handleType, [fieldName]: data[fieldName], ...assignValue } :
+            { ...dataModifyOld, id: data.id, [fieldName]: data[fieldName], ...assignValue } : dataModifyOld;
         if (isWait) {
           return { [name + 'Data']: data, [name + 'ModifyData']: dataModify }
         } else {
@@ -825,7 +823,7 @@ const commonBase = (WrapComponent) => {
             const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
             params.selectList.forEach((selectItem, selectIndex) => {
               const index = data.findIndex(item => item.id === record.id);
-              if (selectIndex === 0 && ((params.selectList.length === 1) || (index > -1 && commonUtils.isEmpty(data[index][fieldName])))) {
+              if (index > -1 && (selectIndex === 0 && ((params.selectList.length === 1) || commonUtils.isEmpty(data[index][fieldName])))) {
                 const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, stateRef.current);
                 const rowData = { ...data[index], [fieldName]: value, ...assignValue };
                 rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
@@ -844,6 +842,7 @@ const commonBase = (WrapComponent) => {
                 data.push(rowData);
               }
             });
+            console.log('rowData', name, data);
             if (isWait) {
               return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false };
             } else {

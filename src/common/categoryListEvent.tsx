@@ -118,7 +118,7 @@ const categoryListEvent = (WrapComponent) => {
           return;
         }
 
-        const url: string = `${application.urlCommon}/verify/isExistModifying`;
+        const url: string = application.urlCommon + '/verify/isExistModifying';
         const params = {id: slaveSelectedRows[0].id, tabId, groupId: commonModel.userInfo.groupId,
           shopId: commonModel.userInfo.shopId};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -158,7 +158,7 @@ const categoryListEvent = (WrapComponent) => {
 
         const params = { id: slaveSelectedRows[0].id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
           shopId: commonModel.userInfo.shopId,  saveData, handleType: key.replace('Button', '') };
-        const url: string = `${application.urlMain}/getData/saveData`;
+        const url: string = application.urlMain + '/getData/saveData';
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
           props.gotoSuccess(dispatch, interfaceReturn);
@@ -176,7 +176,7 @@ const categoryListEvent = (WrapComponent) => {
     const onModalCancel = async (e) => {
       const { dispatchModifyState } = props;
       const {dispatch, commonModel, tabId, masterData} = props;
-      const url: string = `${application.urlCommon}/verify/removeModifying`;
+      const url: string = application.urlCommon + '/verify/removeModifying';
       const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -203,7 +203,7 @@ const categoryListEvent = (WrapComponent) => {
       }
       const params = { id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId, saveData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType };
-      const url: string = `${application.urlMain}/getData/saveData`;
+      const url: string = application.urlMain + '/getData/saveData';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         if (props.isModal) {

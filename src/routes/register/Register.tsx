@@ -20,7 +20,7 @@ const  Register = (props) => {
 
   const onFinish = async (values: any) => {
     const { dispatch } = props;
-    const url = `${application.urlPrefix}/login/registerUser`;
+    const url = application.urlPrefix + '/login/registerUser';
     values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
     values.userPwdTwo = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwdTwo).toString());
     values.authorize = 'web';
@@ -49,7 +49,7 @@ const  Register = (props) => {
       return;
     }
 
-    const url = `${application.urlPrefix}/sendMessage/registerCaptcha`;
+    const url = application.urlPrefix + '/sendMessage/registerCaptcha';
     const params = {
       userMobile: form.getFieldValue('userMobile'),
     };

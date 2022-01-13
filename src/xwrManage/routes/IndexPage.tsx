@@ -80,7 +80,7 @@ function IndexPage(props) {
 
   const onClear = async () => {
     const {dispatch, commonModel} = props;
-    const url: string = `${application.urlCommon}/verify/clearAllModifying`;
+    const url: string = application.urlCommon + '/verify/clearAllModifying';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({}))).data;
     if (interfaceReturn.code === 1) {
     } else {

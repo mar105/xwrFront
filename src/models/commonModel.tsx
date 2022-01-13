@@ -5,50 +5,50 @@ import {notification} from "antd";
 export default {
   namespace: 'commonModel',
   state: {
-    token: localStorage.getItem(`${application.prefix}token`) || '',
-    userInfo: JSON.parse(localStorage.getItem(`${application.prefix}userInfo`) || '{}'),
-    userShop: JSON.parse(localStorage.getItem(`${application.prefix}userShop`) || '[]'),
+    token: localStorage.getItem(application.prefix + 'token') || '',
+    userInfo: JSON.parse(localStorage.getItem(application.prefix + 'userInfo') || '{}'),
+    userShop: JSON.parse(localStorage.getItem(application.prefix + 'userShop') || '[]'),
     stompClient: null,
-    panes: JSON.parse(localStorage.getItem(`${application.prefix}panes`) || '[]'),
-    activePane: JSON.parse(localStorage.getItem(`${application.prefix}activePane`) || '{}'),
-    commonConstant: JSON.parse(localStorage.getItem(`${application.prefix}commonConstant`) || '[]'),
-    formulaParamList: JSON.parse(localStorage.getItem(`${application.prefix}formulaParamList`) || '[]'),
-    formulaList: JSON.parse(localStorage.getItem(`${application.prefix}formulaList`) || '[]'),
+    panes: JSON.parse(localStorage.getItem(application.prefix + 'panes') || '[]'),
+    activePane: JSON.parse(localStorage.getItem(application.prefix + 'activePane') || '{}'),
+    commonConstant: JSON.parse(localStorage.getItem(application.prefix + 'commonConstant') || '[]'),
+    formulaParamList: JSON.parse(localStorage.getItem(application.prefix + 'formulaParamList') || '[]'),
+    formulaList: JSON.parse(localStorage.getItem(application.prefix + 'formulaList') || '[]'),
   },
   reducers: {
     saveToken(state, { payload: token }) {
-      localStorage.setItem(`${application.prefix}token`, token);
+      localStorage.setItem(application.prefix + 'token', token);
       return { ...state, token };
     },
     saveUserInfo(state, { payload: userInfo }) {
-      localStorage.setItem(`${application.prefix}userInfo`, JSON.stringify(userInfo));
+      localStorage.setItem(application.prefix + 'userInfo', JSON.stringify(userInfo));
       return { ...state, userInfo };
     },
     saveUserShop(state, { payload: userShop }) {
-      localStorage.setItem(`${application.prefix}userShop`, JSON.stringify(userShop));
+      localStorage.setItem(application.prefix + 'userShop', JSON.stringify(userShop));
       return { ...state, userShop };
     },
     saveStompClient(state, { payload: stompClient }) {
       return { ...state, stompClient };
     },
     savePanes(state, { payload: panes }) {
-      localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
+      localStorage.setItem(application.prefix + 'panes', JSON.stringify(panes));
       return { ...state, panes };
     },
     saveActivePane(state, { payload: activePane }) {
-      localStorage.setItem(`${application.prefix}activePane`, JSON.stringify(activePane));
+      localStorage.setItem(application.prefix + 'activePane', JSON.stringify(activePane));
       return { ...state, activePane };
     },
     saveCommonConstant(state, { payload: commonConstant }) {
-      localStorage.setItem(`${application.prefix}commonConstant`, JSON.stringify(commonConstant));
+      localStorage.setItem(application.prefix + 'commonConstant', JSON.stringify(commonConstant));
       return { ...state, commonConstant };
     },
     saveFormulaParamList(state, { payload: formulaParamList }) {
-      localStorage.setItem(`${application.prefix}formulaParamList`, JSON.stringify(formulaParamList));
+      localStorage.setItem(application.prefix + 'formulaParamList', JSON.stringify(formulaParamList));
       return { ...state, formulaParamList };
     },
     saveFormulaList(state, { payload: formulaList }) {
-      localStorage.setItem(`${application.prefix}formulaList`, JSON.stringify(formulaList));
+      localStorage.setItem(application.prefix + 'formulaList', JSON.stringify(formulaList));
       return { ...state, formulaList };
     },
   },

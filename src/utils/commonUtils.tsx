@@ -391,11 +391,11 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
                 const index = allDataset[dataSetName].findIndex(item => item.id === allDataset[selectedName][0]);
                 if (index > -1) {
                   // 加括号处理当值为负数时的异常
-                  formula = formula.replace(oldFieldItem, `(${allDataset[dataSetName][index][tableFieldName]})`);
+                  formula = formula.replace(oldFieldItem, '(' + allDataset[dataSetName][index][tableFieldName] + ')');
                 }
               }
             } else if (isNotEmptyObj(allDataset[dataSetName]) && allDataset[dataSetName][tableFieldName] !== undefined) {
-              formula = formula.replace(oldFieldItem, `(${allDataset[dataSetName][tableFieldName]})`);
+              formula = formula.replace(oldFieldItem, '(' + allDataset[dataSetName][tableFieldName] + ')');
             } else {
               formula = formula.replace(oldFieldItem, '0');
             }
@@ -403,7 +403,7 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
             const tableFieldName = oldFieldItem.trim();
             if (allDataset[dataSetName][tableFieldName] !== undefined) {
               // 加括号处理当值为负数时的异常
-              formula = formula.replace(tableFieldName, `(${allDataset[dataSetName][tableFieldName]})`);
+              formula = formula.replace(tableFieldName, '(' + allDataset[dataSetName][tableFieldName] + ')');
             } else {
               formula = formula.replace(tableFieldName, '0');
             }
@@ -477,7 +477,7 @@ export function downloadExcel(interfaceReturn) {
       if (interfaceReturn.headers.get('Content-Disposition') && interfaceReturn.headers.get('Content-Disposition').indexOf("filename=") !== -1) {
         fileName = interfaceReturn.headers.get('Content-Disposition').split('filename=')[1];
         a.href = downUrl;
-        a.download = `${decodeURI(fileName)}` || "download.xls";
+        a.download = decodeURI(fileName) || "download.xls";
         a.click();
         window.URL.revokeObjectURL(downUrl);
       } else {

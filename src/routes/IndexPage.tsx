@@ -124,7 +124,7 @@ function IndexPage(props) {
 
   const onClear = async () => {
     const {dispatch, commonModel} = props;
-    const url: string = `${application.urlCommon}/verify/clearAllModifying`;
+    const url: string = application.urlCommon + '/verify/clearAllModifying';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,
       shopId: commonModel.userInfo.shopId }))).data;
     if (interfaceReturn.code === 1) {
@@ -191,7 +191,7 @@ function IndexPage(props) {
       return;
     }
     let state: any = {...stateInfo};
-    const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+    const url: string = application.urlPrefix + '/getData/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       state = { ...state, routeId, ...interfaceReturn.data };

@@ -37,7 +37,7 @@ const Constant = (props) => {
   const getAllConstant = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlPrefix}/constant/getAllConstant`;
+    const url: string = application.urlPrefix + '/constant/getAllConstant';
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -56,7 +56,7 @@ const Constant = (props) => {
     saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }],
       commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], []));
     const params = { id: masterData.id, tabId, saveData };
-    const url: string = `${application.urlPrefix}/constant/saveConstant`;
+    const url: string = application.urlPrefix + '/constant/saveConstant';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
       const returnRoute: any = await getAllConstant({isWait: true});
@@ -126,7 +126,7 @@ const Constant = (props) => {
       }
       const data = props.onModify();
       const masterData = {...masterDataOld, ...data };
-      const url: string = `${application.urlCommon}/verify/isExistModifying`;
+      const url: string = application.urlCommon + '/verify/isExistModifying';
       const params = {id: masterData.id, tabId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
@@ -148,7 +148,7 @@ const Constant = (props) => {
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
-        let url: string = `${application.urlCommon}/verify/removeModifying`;
+        let url: string = application.urlCommon + '/verify/removeModifying';
         const params = {id: masterData.id, tabId};
         let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
@@ -175,7 +175,7 @@ const Constant = (props) => {
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [masterData], [], [], true));
       const params = { id: masterData.id, tabId, saveData, handleType: 'del' };
-      const url: string = `${application.urlPrefix}/constant/saveConstant`;
+      const url: string = application.urlPrefix + '/constant/saveConstant';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllConstant({isWait: true});
@@ -198,7 +198,7 @@ const Constant = (props) => {
         return;
       }
       const params = { id: masterData.id };
-      const url: string = `${application.urlPrefix}/constant/copyConstant`;
+      const url: string = application.urlPrefix + '/constant/copyConstant';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllConstant({isWait: true});

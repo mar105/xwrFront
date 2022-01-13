@@ -33,7 +33,7 @@ const InitSupply = (props) => {
   const onButtonClick = async (key, config, e) => {
     const { dispatch, dispatchModifyState, commonModel, routeId, slaveData } = props;
     if (key === 'setForceButton' || key === 'resetForceButton') { //强制完工设置处理
-      const url: string = `${application.urlCommon}/button/forceSet`;
+      const url: string = application.urlCommon + '/button/forceSet';
       const params = {
         routeId,
         groupId: commonModel.userInfo.groupId,

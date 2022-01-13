@@ -53,7 +53,7 @@ const Route = (props) => {
   const getAllRoute = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlPrefix}/route/getAllRoute`;
+    const url: string = application.urlPrefix + '/route/getAllRoute';
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -72,7 +72,7 @@ const Route = (props) => {
     saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType  }],
       commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], []));
     const params = { id: masterData.id, tabId, saveData };
-    const url: string = `${application.urlPrefix}/route/saveRoute`;
+    const url: string = application.urlPrefix + '/route/saveRoute';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
       const returnRoute: any = await getAllRoute({isWait: true});
@@ -130,7 +130,7 @@ const Route = (props) => {
       }
       const data = props.onModify();
       const masterData = {...masterDataOld, ...data };
-      const url: string = `${application.urlCommon}/verify/isExistModifying`;
+      const url: string = application.urlCommon + '/verify/isExistModifying';
       const params = {id: masterData.id, tabId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
@@ -152,7 +152,7 @@ const Route = (props) => {
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
-        const url: string = `${application.urlCommon}/verify/removeModifying`;
+        const url: string = application.urlCommon + '/verify/removeModifying';
         const params = {id: masterData.id, tabId};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
@@ -173,7 +173,7 @@ const Route = (props) => {
         return;
       }
       const params = { ...masterData };
-      const url: string = `${application.urlPrefix}/route/delRoute`;
+      const url: string = application.urlPrefix + '/route/delRoute';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllRoute({isWait: true});
@@ -197,7 +197,7 @@ const Route = (props) => {
         return;
       }
       const params = { id: masterData.id };
-      const url: string = `${application.urlPrefix}/route/copyRoute`;
+      const url: string = application.urlPrefix + '/route/copyRoute';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllRoute({isWait: true});

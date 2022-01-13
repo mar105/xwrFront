@@ -76,7 +76,7 @@ const commonListEvent = (WrapComponent) => {
       } else if (key === 'cancelButton') {
         props.callbackRemovePane();
       } else if (key === 'exportExcelButton') {
-        const url: string = `${application.urlUpload}/excel/exportExcel`;
+        const url: string = application.urlUpload + '/excel/exportExcel';
         const requestParam = {
           routeId: routeId,
           groupId: commonModel.userInfo.groupId,
@@ -89,7 +89,7 @@ const commonListEvent = (WrapComponent) => {
         commonUtils.downloadExcel(interfaceReturn);
       } else if (key === 'importExcelButton') {
         //放在ButtonGroup中。
-        // const url: string = `${application.urlUpload}/excel/importExcel`;
+        // const url: string = application.urlUpload + '/excel/importExcel';
         // const requestParam = {
         //   routeId: routeId,
         //   groupId: commonModel.userInfo.groupId,
@@ -171,7 +171,7 @@ const commonListEvent = (WrapComponent) => {
       const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'importExcelButton');
       const params = { tabId, routeId: slaveContainer.slaveData[index].popupActiveId, groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId, saveData, handleType: 'add' };
-      const url: string = `${application.urlPrefix}/getData/saveData`;
+      const url: string = application.urlPrefix + '/getData/saveData';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         dispatchModifyState({ pageLoading: true });

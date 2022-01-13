@@ -83,7 +83,7 @@ const BusinessPermission = (props) => {
   const getAllPermission = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlManage}/permission/getAllPermission`;
+    const url: string = application.urlManage + '/permission/getAllPermission';
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -98,9 +98,9 @@ const BusinessPermission = (props) => {
 
   const getUserPermission = async (userId, isCategory, isWait) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
-    const url: string = isCategory ? `${application.urlPrefix}/userPermission/getUserPermission?routeId=` + props.routeId +
+    const url: string = isCategory ? application.urlPrefix + '/userPermission/getUserPermission?routeId=' + props.routeId +
         '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&permissionCategoryId=' + userId :
-      `${application.urlPrefix}/userPermission/getUserPermission?routeId=` + props.routeId +
+      application.urlPrefix + '/userPermission/getUserPermission?routeId=' + props.routeId +
         '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&userId=' + userId;
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {

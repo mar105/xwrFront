@@ -46,7 +46,7 @@ const CategoryList = (props) => {
   const onButtonClick = async (key, config, e) => {
     const { dispatch, dispatchModifyState, commonModel, routeId } = props;
     if (key === 'syncBillButton') { //单据号设置 同步单据
-      const url: string = `${application.urlPrefix}/button/syncBill`;
+      const url: string = application.urlPrefix + '/button/syncBill';
       const params = {
         routeId,
         groupId: commonModel.userInfo.groupId,

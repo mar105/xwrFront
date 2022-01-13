@@ -16,8 +16,8 @@ const IndexMenu = (props) => {
     const {dispatch, commonModel } = props;
     const fetchData = async () => {
       if (commonModel.userInfo.userId !== '') {
-        const url: string = `${application.urlManage}/route/getAllRoute`;
-        const userPermissionUrl: string = `${application.urlPrefix}/userPermission/getUserPermission?routeId=` + props.routeId +
+        const url: string = application.urlManage + '/route/getAllRoute';
+        const userPermissionUrl: string = application.urlPrefix + '/userPermission/getUserPermission?routeId=' + props.routeId +
           '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&userId=' + commonModel.userInfo.userId;
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         const userPermissionReturn = commonModel.userInfo.isManage ? { code: 1, data: [] } : (await request.getRequest(userPermissionUrl, commonModel.token)).data;

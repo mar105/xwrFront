@@ -235,7 +235,7 @@ export function TableComponent(params: any) {
   };
 
   const getColumn = (resizeColumns: any) => {
-    const firstColumn: any = { title: '#', render: (text,record,index)=>`${index + 1}`, width: commonUtils.isEmptyArr(params.property.dataSource) ? 40 :
+    const firstColumn: any = { title: '#', render: (text,record,index)=> (index + 1), width: commonUtils.isEmptyArr(params.property.dataSource) ? 40 :
         params.property.dataSource.length < 10 ? 40 :
           params.property.dataSource.length < 100 ? 50:
             params.property.dataSource.length < 1000 ? 60 :

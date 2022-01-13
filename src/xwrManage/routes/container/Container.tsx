@@ -61,7 +61,7 @@ const Container = (props) => {
   const getAllContainer = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlPrefix}/container/getAllContainer`;
+    const url: string = application.urlPrefix + '/container/getAllContainer';
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -82,12 +82,12 @@ const Container = (props) => {
     saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, false));
     saveData.push(commonUtils.mergeData('sync', syncData, syncModifyData, syncDelData, false));
     const params = { id: masterData.id, tabId, saveData };
-    const url: string = `${application.urlPrefix}/container/saveContainer`;
+    const url: string = application.urlPrefix + '/container/saveContainer';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
       const returnRoute: any = await getAllContainer({isWait: true});
       const addState: any = {};
-      const url: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
+      const url: string = application.urlPrefix + '/container/getContainerSlaveList?superiorId=' + masterData.id;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         addState.slaveData = interfaceReturn.data;
@@ -97,7 +97,7 @@ const Container = (props) => {
         props.gotoError(dispatch, interfaceReturn);
       }
 
-      const urlSync: string = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + masterData.id;
+      const urlSync: string = application.urlPrefix + '/container/getContainerSyncList?superiorId=' + masterData.id;
       const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
       if (interfaceReturnSync.code === 1) {
         addState.syncData = interfaceReturnSync.data;
@@ -233,7 +233,7 @@ const Container = (props) => {
         } else {
           props.gotoError(dispatch, interfaceReturn);
         }
-        const urlSlave = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + masterData.id;
+        const urlSlave = application.urlPrefix + '/container/getContainerSlaveList?superiorId=' + masterData.id;
         const interfaceReturnSlave = (await request.getRequest(urlSlave, commonModel.token)).data;
         if (interfaceReturnSlave.code === 1) {
           addState.slaveData = interfaceReturnSlave.data;
@@ -245,7 +245,7 @@ const Container = (props) => {
           props.gotoError(dispatch, interfaceReturnSlave);
         }
 
-        const urlSync = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + masterData.id;
+        const urlSync = application.urlPrefix + '/container/getContainerSyncList?superiorId=' + masterData.id;
         const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
         if (interfaceReturnSync.code === 1) {
           addState.syncData = interfaceReturnSync.data;
@@ -273,7 +273,7 @@ const Container = (props) => {
         props.gotoError(dispatch, { code: '6003', msg: '容器界面才可删除' });
         return;
       }
-      const url: string = `${application.urlPrefix}/container/saveContainer`;
+      const url: string = application.urlPrefix + '/container/saveContainer';
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [masterData], [], [], true));
       saveData.push(commonUtils.mergeData('slave', slaveData, [], [], true));
@@ -331,7 +331,7 @@ const Container = (props) => {
         return;
       }
       const params = { id: masterData.id };
-      const url: string = `${application.urlPrefix}/container/copyContainer`;
+      const url: string = application.urlPrefix + '/container/copyContainer';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllContainer({isWait: true});
@@ -339,7 +339,7 @@ const Container = (props) => {
         addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
         addState.masterModifyData = {};
 
-        const urlSlave: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + addState.masterData.id;
+        const urlSlave: string = application.urlPrefix + '/container/getContainerSlaveList?superiorId=' + addState.masterData.id;
         const interfaceReturnSlave = (await request.getRequest(urlSlave, commonModel.token)).data;
         if (interfaceReturnSlave.code === 1) {
           addState.slaveData = interfaceReturnSlave.data;
@@ -349,7 +349,7 @@ const Container = (props) => {
           props.gotoError(dispatch, interfaceReturnSlave);
         }
 
-        const urlSync: string = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + addState.masterData.id;
+        const urlSync: string = application.urlPrefix + '/container/getContainerSyncList?superiorId=' + addState.masterData.id;
         const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
         if (interfaceReturnSync.code === 1) {
           addState.syncData = interfaceReturnSync.data;
@@ -376,7 +376,7 @@ const Container = (props) => {
     } else if (commonUtils.isNotEmptyArr(selectedKeys) && selectedKeys.length === 1) {
       const addState = props.onTreeSelect(selectedKeys, e, true);
       if (commonUtils.isNotEmpty(e.node.containerName)) {
-        const url: string = `${application.urlPrefix}/container/getContainerSlaveList?superiorId=` + e.node.id;
+        const url: string = application.urlPrefix + '/container/getContainerSlaveList?superiorId=' + e.node.id;
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           addState.slaveData = interfaceReturn.data;
@@ -384,7 +384,7 @@ const Container = (props) => {
           props.gotoError(dispatch, interfaceReturn);
         }
 
-        const urlSync: string = `${application.urlPrefix}/container/getContainerSyncList?superiorId=` + e.node.id;
+        const urlSync: string = application.urlPrefix + '/container/getContainerSyncList?superiorId=' + e.node.id;
         const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
         if (interfaceReturnSync.code === 1) {
           addState.syncData = interfaceReturnSync.data;
@@ -420,7 +420,7 @@ const Container = (props) => {
         searchValue: params.condition && params.condition.searchValue ? params.condition.searchValue : '',
         onlySearchRouteName: true,
       }
-      const url: string = `${application.urlPrefix}/route/getSearchRoute` + commonUtils.paramGet(requestParam);
+      const url: string = application.urlPrefix + '/route/getSearchRoute' + commonUtils.paramGet(requestParam);
 
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
@@ -435,7 +435,7 @@ const Container = (props) => {
       const requestParam = {
         routeId: props.routeId
       };
-      const url: string = `${application.urlPrefix}/container/getAllContainer` + commonUtils.paramGet(requestParam);
+      const url: string = application.urlPrefix + '/container/getAllContainer' + commonUtils.paramGet(requestParam);
 
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {

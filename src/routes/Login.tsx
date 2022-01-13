@@ -27,15 +27,15 @@ const Login = ({ dispatch }) => {
   };
 
   const onFinish = async (values: any) => {
-    const url: string = `${application.urlPrefix}/login/loginVerify`;
+    const url: string = application.urlPrefix + '/login/loginVerify';
     values.userName = values.userName;
     values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
     const interfaceReturn = (await request.postRequest(url, null, application.paramInit(values))).data;
     if (interfaceReturn.code === 1) {
-      localStorage.setItem(`${application.prefix}token`, '');
-      localStorage.setItem(`${application.prefix}userInfo`, '');
-      localStorage.setItem(`${application.prefix}panes`, '[]');
-      localStorage.setItem(`${application.prefix}activePane`, '{}');
+      localStorage.setItem(application.prefix + 'token', '');
+      localStorage.setItem(application.prefix + 'userInfo', '');
+      localStorage.setItem(application.prefix + 'panes', '[]');
+      localStorage.setItem(application.prefix + 'activePane', '{}');
       const userInfo: any = { userId: interfaceReturn.data.userId, userName: values.userName };
       if (commonUtils.isNotEmptyArr(interfaceReturn.data.userShop)) {
         userInfo.groupId = interfaceReturn.data.userShop[0].groupId;

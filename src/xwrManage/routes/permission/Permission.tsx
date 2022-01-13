@@ -37,7 +37,7 @@ const Permission = (props) => {
   const getAllPermission = async (params) => {
     const { commonModel, dispatch, dispatchModifyState } = props;
     const { isWait } = params;
-    const url: string = `${application.urlPrefix}/permission/getAllPermission`;
+    const url: string = application.urlPrefix + '/permission/getAllPermission';
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       if (isWait) {
@@ -56,7 +56,7 @@ const Permission = (props) => {
     saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }],
       commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], []));
     const params = { id: masterData.id, tabId, saveData };
-    const url: string = `${application.urlPrefix}/permission/savePermission`;
+    const url: string = application.urlPrefix + '/permission/savePermission';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
       const returnRoute: any = await getAllPermission({isWait: true});
@@ -126,7 +126,7 @@ const Permission = (props) => {
       }
       const data = props.onModify();
       const masterData = {...masterDataOld, ...data };
-      const url: string = `${application.urlCommon}/verify/isExistModifying`;
+      const url: string = application.urlCommon + '/verify/isExistModifying';
       const params = {id: masterData.id, tabId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
@@ -148,7 +148,7 @@ const Permission = (props) => {
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
-        let url: string = `${application.urlCommon}/verify/removeModifying`;
+        let url: string = application.urlCommon + '/verify/removeModifying';
         const params = {id: masterData.id, tabId};
         let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
@@ -175,7 +175,7 @@ const Permission = (props) => {
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [masterData], [], [], true));
       const params = { id: masterData.id, tabId, saveData, handleType: 'del' };
-      const url: string = `${application.urlPrefix}/permission/savePermission`;
+      const url: string = application.urlPrefix + '/permission/savePermission';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllPermission({isWait: true});
@@ -198,7 +198,7 @@ const Permission = (props) => {
         return;
       }
       const params = { id: masterData.id };
-      const url: string = `${application.urlPrefix}/permission/copyPermission`;
+      const url: string = application.urlPrefix + '/permission/copyPermission';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await getAllPermission({isWait: true});

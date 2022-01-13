@@ -64,7 +64,7 @@ const commonDocEvent = (WrapComponent) => {
       } else if (key === 'modifyButton') {
         const data = props.onModify();
         const masterData = {...masterDataOld, ...data };
-        const url: string = `${application.urlPrefix}/getData/getIsCanModify`;
+        const url: string = application.urlPrefix + '/getData/getIsCanModify';
         const params = {id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
           shopId: commonModel.userInfo.shopId};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -108,7 +108,7 @@ const commonDocEvent = (WrapComponent) => {
           }
           const params = { id: masterDataOld.id, tabId, routeId: props.routeId, saveData, groupId: commonModel.userInfo.groupId,
             shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
-          const url: string = `${application.urlPrefix}/getData/saveData`;
+          const url: string = application.urlPrefix + '/getData/saveData';
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
             props.gotoSuccess(dispatch, interfaceReturn);
@@ -159,7 +159,7 @@ const commonDocEvent = (WrapComponent) => {
           }
           const params = { id: masterDataOld.id, tabId, routeId: props.routeId, saveData, groupId: commonModel.userInfo.groupId,
             shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
-          const url: string = `${application.urlPrefix}/getData/examineOrCancel`;
+          const url: string = application.urlPrefix + '/getData/examineOrCancel';
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
             props.gotoSuccess(dispatch, interfaceReturn);
@@ -189,7 +189,7 @@ const commonDocEvent = (WrapComponent) => {
       }
       const params = { id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId, saveData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType };
-      const url: string = `${application.urlPrefix}/getData/saveData`;
+      const url: string = application.urlPrefix + '/getData/saveData';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         if (props.isModal) {

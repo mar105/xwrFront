@@ -12,7 +12,7 @@ getFilePath("./src").map((item)=>{
   let infoJson ={}, infoData={};
   try{
     // 读取pageinfo.json文件内容，如果在页面目录下没有找到pageinfo.json 捕获异常
-    infoJson = fs.readFileSync(`src/${item}/pageinfo.json`,"utf-8");//
+    infoJson = fs.readFileSync('src/' + item + '/pageinfo.json',"utf-8");//
     infoData = JSON.parse(infoJson);
   }catch(err){
     infoData = {};
@@ -31,11 +31,11 @@ getFilePath("./src").map((item)=>{
         keywords: infoData.keywords ? infoData.keywords : "webpack，react，github",
         description:infoData.description ? infoData.description : "这是一个webpack，react多页面架构"
       },
-      chunks:[`${item}/${item}`], //引入的js
+      chunks:[item + '/' + item], //引入的js
       // template: "./src/index.html",
       template: "./src/template.html",
       inject: true,
-      filename : `${item}/index.html`, //html位置
+      filename : item + '/index.html', //html位置
       minify:{//压缩html
         collapseWhitespace: true,
         preserveLineBreaks: true

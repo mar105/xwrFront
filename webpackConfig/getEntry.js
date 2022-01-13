@@ -17,9 +17,9 @@ module.exports = function getEntry(pathOld){
      */
     const path = pathOld.substring(1, pathOld.length);
     if (item === 'index') {
-      entry['index'] = `${path}/index.tsx`;
+      entry['index'] = path + '/index.tsx';
     } else {
-      entry[`${item}/${item}`] = `${path}/${item}/index.tsx`;
+      entry[item + '/' + item] = path + '/' + item + '/index.tsx';
     }
   });
   console.debug('getEntry', entry);

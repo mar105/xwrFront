@@ -5,35 +5,35 @@ import {message} from "antd";
 export default {
   namespace: 'commonModel',
   state: {
-    token: localStorage.getItem(`${application.prefix}token`) || '',
-    userInfo: JSON.parse(localStorage.getItem(`${application.prefix}userInfo`) || '{}'),
-    userShop: JSON.parse(localStorage.getItem(`${application.prefix}userShop`) || '[]'),
+    token: localStorage.getItem(application.prefix + 'token') || '',
+    userInfo: JSON.parse(localStorage.getItem(application.prefix + 'userInfo') || '{}'),
+    userShop: JSON.parse(localStorage.getItem(application.prefix + 'userShop') || '[]'),
     stompClient: null,
-    panes: JSON.parse(localStorage.getItem(`${application.prefix}panes`) || '[]'),
-    activePane: JSON.parse(localStorage.getItem(`${application.prefix}activePane`) || '{}'),
+    panes: JSON.parse(localStorage.getItem(application.prefix + 'panes') || '[]'),
+    activePane: JSON.parse(localStorage.getItem(application.prefix + 'activePane') || '{}'),
   },
   reducers: {
     saveToken(state, { payload: token }) {
-      localStorage.setItem(`${application.prefix}token`, token);
+      localStorage.setItem(application.prefix + 'token', token);
       return { ...state, token };
     },
     saveUserInfo(state, { payload: userInfo }) {
-      localStorage.setItem(`${application.prefix}userInfo`, JSON.stringify(userInfo));
+      localStorage.setItem(application.prefix + 'userInfo', JSON.stringify(userInfo));
       return { ...state, userInfo };
     },
     saveUserShop(state, { payload: userShop }) {
-      localStorage.setItem(`${application.prefix}userShop`, JSON.stringify(userShop));
+      localStorage.setItem(application.prefix + 'userShop', JSON.stringify(userShop));
       return { ...state, userShop };
     },
     saveStompClient(state, { payload: stompClient }) {
       return { ...state, stompClient };
     },
     savePanes(state, { payload: panes }) {
-      localStorage.setItem(`${application.prefix}panes`, JSON.stringify(panes));
+      localStorage.setItem(application.prefix + 'panes', JSON.stringify(panes));
       return { ...state, panes };
     },
     saveActivePane(state, { payload: activePane }) {
-      localStorage.setItem(`${application.prefix}activePane`, JSON.stringify(activePane));
+      localStorage.setItem(application.prefix + 'activePane', JSON.stringify(activePane));
       return { ...state, activePane };
     },
   },

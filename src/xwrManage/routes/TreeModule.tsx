@@ -39,7 +39,7 @@ const TreeModule = (props) => {
   const onSearch= async (e) => {
     const { commonModel, dispatch, dispatchModifyState, treeSearchValue } = props;
     if (commonUtils.isNotEmpty(treeSearchValue)) {
-      const url: string = `${application.urlPrefix}/route/getSearchRoute?searchValue=` + treeSearchValue;
+      const url: string = application.urlPrefix + '/route/getSearchRoute?searchValue=' + treeSearchValue;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         dispatchModifyState({ treeSearchData: interfaceReturn.data.data.list, treeSearchIsVisible: true });
@@ -197,7 +197,7 @@ const TreeModule = (props) => {
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', saveChangeData, [], [], true));
       const params = { id: info.dragNode.id, tabId, saveData, isSync: true };
-      const url: string = `${application.urlPrefix}/route/saveRoute`;
+      const url: string = application.urlPrefix + '/route/saveRoute';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         const returnRoute: any = await props.getAllRoute({isWait: true});

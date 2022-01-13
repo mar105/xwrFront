@@ -141,9 +141,16 @@ const WorkOrder = (props) => {
         }
         return;
       }
-      const index = processContainer.slaveData.findIndex(item => item.fieldName === 'processName');
-      if (index > -1) {
-        const dropParam = { name, type: 'popupActive', config: processContainer.slaveData[index], record: {} };
+      let config = {};
+      if (commonUtils.isNotEmptyArr(partSelectedRows)) {
+        const index = processContainer.slaveData.findIndex(item => item.fieldName === 'processName');
+        config = processContainer.slaveData[index];
+      } else {
+        const index = processContainer.slaveData.findIndex(item => item.fieldName === 'tableAddProduct');
+        config = processContainer.slaveData[index];
+      }
+      if (commonUtils.isNotEmptyObj(config)) {
+        const dropParam = { name, type: 'popupActive', config, record: {} };
         props.onDropPopup(dropParam);
         returnData[name + 'Data'] = propsRef.current[name + 'Data'];
       }
@@ -172,6 +179,55 @@ const WorkOrder = (props) => {
   const onRowClick = async (name, record, rowKey) => {
     const { dispatchModifyState } = props;
     dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]], [name + 'SelectedRows']: [record] });
+  }
+
+  const onDropPopup = async (params) => {
+    params.onModalOk = onModalOk;
+    props.onDropPopup(params);
+  }
+
+
+
+  const onModalOk = (params, isWait) => {
+    const name = params.name;
+    const { [name + 'Container']: container, masterData, [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = propsRef.current;
+
+    if (params.type === 'popupActive' && params.name === 'process' && commonUtils.isNotEmptyArr(params.selectList)) {
+      const assignField = params.config.assignField;
+      const fieldName = params.config.fieldName;
+      const value = params.selectList[0].id;
+      const record = params.record;
+      const data = [...dataOld];
+      const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+      params.selectList.forEach((selectItem, selectIndex) => {
+        const index = data.findIndex(item => item.id === record.id);
+        if (index > -1 && (selectIndex === 0 && ((params.selectList.length === 1) || commonUtils.isEmpty(data[index][fieldName])))) {
+          const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
+          const rowData = { ...data[index], [fieldName]: value, ...assignValue };
+          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
+          data[index] = rowData;
+          if (data[index].handleType === 'modify') {
+            const indexModify = dataModify.findIndex(item => item.id === record.id);
+            if (indexModify > -1) {
+              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
+            } else {
+              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
+            }
+          }
+        } else {
+          const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
+          const rowData = { ...propsRef.onAdd(container), [fieldName]: value, ...assignValue, superiorId: masterData.id };
+          data.push(rowData);
+        }
+      });
+      if (isWait) {
+        return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false };
+      } else {
+        props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false });
+      }
+    } else {
+      props.onModalOk(params);
+    }
   }
 
 
@@ -265,7 +321,7 @@ const WorkOrder = (props) => {
         </Row>
         <ButtonGroup {...buttonGroup} />
       </Form>
-      <CommonModal {...props} />
+      <CommonModal {...props} onDropPopup={onDropPopup} />
     </div>
   );
 }

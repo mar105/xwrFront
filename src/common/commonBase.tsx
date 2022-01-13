@@ -39,7 +39,7 @@ const commonBase = (WrapComponent) => {
           //为什么要用stateRef.current？是因为 masterData数据改变后，useEffect使用的是[]不重新更新state，为老数据,使用 useRef来存储变量。
           const { masterData }: any = stateRef.current;
           if (commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.handleType)) {
-            const url: string = `${application.urlCommon}/verify/removeModifying`;
+            const url: string = application.urlCommon + '/verify/removeModifying';
             const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
               shopId: commonModel.userInfo.shopId};
             const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -113,7 +113,7 @@ const commonBase = (WrapComponent) => {
     const getDataOne = async (params) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
-      const url: string = `${application.urlPrefix}/getData/getDataOne?routeId=` + modifyState.routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId +
+      const url: string = application.urlPrefix + '/getData/getDataOne?routeId=' + modifyState.routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId +
         '&containerId=' + params.containerId + '&dataId=' + params.condition.dataId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
@@ -131,7 +131,7 @@ const commonBase = (WrapComponent) => {
     const getDataList = async (params) => {
       const { commonModel, dispatch } = props;
       const { isWait } = params;
-      const url: string = `${application.urlPrefix}/getData/getDataList`;
+      const url: string = application.urlPrefix + '/getData/getDataList';
       const addState = {};
       const requestParam = {
         routeId: modifyState.routeId,
@@ -173,7 +173,7 @@ const commonBase = (WrapComponent) => {
       const { isWait } = params;
       const modifyStateNew = stateRef.current ? stateRef.current : modifyState;
       const { [params.name + 'Container']: container, [params.name + 'Data']: tableData } = modifyStateNew;
-      const url: string = `${application.urlPrefix}/getData/getSelectList`;
+      const url: string = application.urlPrefix + '/getData/getSelectList';
       let record = params.record;
       if (modifyStateNew[params.name + 'Data']) { //拿最新的记录
         if (typeof modifyStateNew[params.name + 'Data'] === 'object' && modifyStateNew[params.name + 'Data'].constructor === Object) {
@@ -310,7 +310,7 @@ const commonBase = (WrapComponent) => {
       });
       saveData.push(commonUtils.mergeData('slave', [], slaveData, [], false));
       const params = { id: container.id, tabId, saveData };
-      const url: string = `${application.urlManage}/container/saveContainer`;
+      const url: string = application.urlManage + '/container/saveContainer';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
         gotoSuccess(dispatch, interfaceReturn);
@@ -757,21 +757,19 @@ const commonBase = (WrapComponent) => {
         gotoError(dispatch, { code: '6002', msg: '路由Id不能为空！' });
         return;
       }
-      const url: string = `${application.urlPrefix}/getData/getRouteContainer?id=` + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+      const url: string = application.urlPrefix + '/getData/getRouteContainer?id=' + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: type === 'popupAdd' ? 'add' : undefined, isModal: true, modalParams: params };
         const path = replacePath(state.routeData.routeName);
         const route: any = commonUtils.getRouteComponent(routeInfo, path);
-        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, state).component });
+        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, params.onModalOk ? params.onModalOk : onModalOk, state).component });
       } else {
         gotoError(dispatch, interfaceReturn);
       }
     }
 
-    const onModalCancel = () => {
-      dispatchModifyState({ modalVisible: false });
-    }
+
 
     const onModalOk = (params, isWait) => {
       if (commonUtils.isEmpty(params)) {
@@ -842,7 +840,6 @@ const commonBase = (WrapComponent) => {
                 data.push(rowData);
               }
             });
-            console.log('rowData', name, data);
             if (isWait) {
               return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false };
             } else {
@@ -853,6 +850,10 @@ const commonBase = (WrapComponent) => {
         }
       }
 
+    }
+
+    const onModalCancel = () => {
+      dispatchModifyState({ modalVisible: false });
     }
 
     const onExpand = (name, expanded, record) => {
@@ -892,6 +893,7 @@ const commonBase = (WrapComponent) => {
       draggableBodyRow={draggableBodyRow}
       onUpload={onUpload}
       onDropPopup={onDropPopup}
+      onModalOk={onModalOk}
       onModalCancel={onModalCancel}
       onExpand={onExpand}
       getTreeNode={getTreeNode}

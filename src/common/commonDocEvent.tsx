@@ -87,7 +87,7 @@ const commonDocEvent = (WrapComponent) => {
           }
         } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
           const {dispatch, commonModel, tabId, masterData} = props;
-          const url: string = `${application.urlCommon}/verify/removeModifying`;
+          const url: string = application.urlCommon + '/verify/removeModifying';
           const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
             shopId: commonModel.userInfo.shopId};
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;

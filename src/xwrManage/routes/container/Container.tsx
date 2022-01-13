@@ -133,7 +133,7 @@ const Container = (props) => {
       allList.splice(allList.length - 1, 1);
       const masterData = { ...data, key: data.id, superiorId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? masterDataOld.superiorId : '',
         allId: commonUtils.isNotEmptyArr(treeSelectedKeys) ? allList.join() === '' ? data.id : allList.join() + ',' + data.id : data.id,
-        isVisible: 1, isRowNum: 1, isSelect: 1, virtualIndex: '' };
+        isVisible: 1, isRowNum: 1, isSelect: 1, virtualCondition: '', virtualIndex: '' };
       let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       const addState: any = {};
@@ -160,7 +160,7 @@ const Container = (props) => {
       }
       const data = props.onAdd();
       const masterData = { ...data, key: data.id, superiorId: masterDataOld.id, allId: masterDataOld.allId + ',' + data.id,
-        isVisible: 1, isRowNum: 1, isSelect: 1, virtualIndex: '' };
+        isVisible: 1, isRowNum: 1, isSelect: 1, virtualCondition: '', virtualIndex: '' };
       let treeData = [...treeDataOld];
       let treeExpandedKeys;
       treeData = props.setNewTreeNode(treeData, masterDataOld.allId, masterData);
@@ -195,7 +195,7 @@ const Container = (props) => {
       }
       const data = props.onModify();
       const masterData = {...masterDataOld, ...data };
-      const url: string = `${application.urlCommon}/verify/isExistModifying`;
+      const url: string = application.urlCommon + '/verify/isExistModifying';
       const params = {id: masterData.id, tabId};
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
@@ -226,7 +226,7 @@ const Container = (props) => {
         form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
-        const url: string = `${application.urlCommon}/verify/removeModifying`;
+        const url: string = application.urlCommon + '/verify/removeModifying';
         const params = {id: masterData.id, tabId};
         let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
@@ -559,6 +559,13 @@ const Container = (props) => {
     event: { onChange: props.onDataChange }
   };
 
+  const virtualCondition = {
+    name: 'master',
+    config: { fieldName: 'virtualCondition', viewName: '虚拟条件' },
+    property: { disabled: !enabled },
+    event: { onChange: props.onDataChange }
+  };
+
   const virtualIndex = {
     name: 'master',
     config: { fieldName: 'virtualIndex', viewName: '虚拟索引' },
@@ -648,6 +655,7 @@ const Container = (props) => {
       </Row>
       <Row>
         <Col><InputComponent {...virtualName} /></Col>
+        <Col><InputComponent {...virtualCondition} /></Col>
         <Col><InputComponent {...virtualIndex} /></Col>
       </Row>
       <Row>

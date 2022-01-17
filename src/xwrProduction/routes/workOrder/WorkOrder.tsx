@@ -10,8 +10,6 @@ import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import commonProductionEvent from "../../../common/commonProductionEvent";
 import CommonModal from "../../../common/commonModal";
-import * as application from "../../application";
-import * as request from "../../../utils/request";
 
 const WorkOrder = (props) => {
   const [form] = Form.useForm();
@@ -56,10 +54,17 @@ const WorkOrder = (props) => {
   }, [props.masterContainer.dataSetName]);
 
   const onFinish = async (values: any) => {
-    const { slaveData, slaveModifyData, slaveDelData } = props;
+    const { slaveData, slaveModifyData, slaveDelData,
+      partData, partModifyData, partDelData,
+      materialData, materialModifyData, materialDelData,
+      processData, processModifyData, processDelData,
+    } = props;
     const childCallback = (params) => {
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, false));
+      saveData.push(commonUtils.mergeData('part', partData, partModifyData, partDelData, false));
+      saveData.push(commonUtils.mergeData('material', materialData, materialModifyData, materialDelData, false));
+      saveData.push(commonUtils.mergeData('process', processData, processModifyData, processDelData, false));
       return saveData;
     }
     props.onFinish(values, { childCallback });
@@ -67,10 +72,17 @@ const WorkOrder = (props) => {
 
   const onButtonClick = async (key, config, e, childParams: any = undefined) => {
     if (key === 'delButton' || key === 'invalidButton' || key === 'examineButton'  || key === 'cancelExamineButton') {
-      const { slaveData, slaveModifyData, slaveDelData } = props;
+      const { slaveData, slaveModifyData, slaveDelData,
+        partData, partModifyData, partDelData,
+        materialData, materialModifyData, materialDelData,
+        processData, processModifyData, processDelData,
+      } = props;
       const childCallback = (params) => {
         const saveData: any = [];
         saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, true));
+        saveData.push(commonUtils.mergeData('part', partData, partModifyData, partDelData, true));
+        saveData.push(commonUtils.mergeData('material', materialData, materialModifyData, materialDelData, true));
+        saveData.push(commonUtils.mergeData('process', processData, processModifyData, processDelData, true));
         return saveData;
       }
       props.onButtonClick(key, config, e, { childCallback });
@@ -92,180 +104,11 @@ const WorkOrder = (props) => {
     }
   }
 
-  const onTableAddClick = (name, e, isWait = false) => {
-    const { dispatch, slaveSelectedRows, partSelectedRows, processContainer }: any = propsRef.current;
-    const returnData = props.onTableAddClick(name, e, true);
-    const addState = { ...returnData };
-    if (name === 'part') {
-      if (commonUtils.isEmptyArr(slaveSelectedRows)) {
-        const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
-        if (index > -1) {
-          props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
-        } else {
-          props.gotoError(dispatch, { code: '6001', msg: '请选择从表！' });
-        }
-        return;
-      }
-      const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-      returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
-      returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
-      addState[name + 'SelectedRowKeys'] = [returnData.data.id];
-      addState[name + 'SelectedRows'] = [{...returnData.data}];
-    } else if (name === 'material') {
-      if (commonUtils.isEmptyArr(slaveSelectedRows)) {
-        const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
-        if (index > -1) {
-          props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
-        } else {
-          props.gotoError(dispatch, { code: '6001', msg: '请选择从表！' });
-        }
-        return;
-      }
-      const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-      returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
-      returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
-
-      if (commonUtils.isEmptyArr(partSelectedRows)) {
-        returnData[name + 'Data'][index].partId = '';
-        returnData[name + 'Data'][index].materialGenre = '2product';
-      } else {
-        returnData[name + 'Data'][index].partName = partSelectedRows[0].partName;
-        returnData[name + 'Data'][index].partId = partSelectedRows[0].id;
-        returnData[name + 'Data'][index].materialGenre = '0main';
-      }
-    } else if (name === 'process') {
-      if (commonUtils.isEmptyArr(slaveSelectedRows)) {
-        const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
-        if (index > -1) {
-          props.gotoError(dispatch, { code: '6001', msg: props.constantData[index].viewName });
-        } else {
-          props.gotoError(dispatch, { code: '6001', msg: '请选择从表！' });
-        }
-        return;
-      }
-      let config = {};
-      if (commonUtils.isNotEmptyArr(partSelectedRows)) {
-        const index = processContainer.slaveData.findIndex(item => item.fieldName === 'processName');
-        config = processContainer.slaveData[index];
-      } else {
-        const index = processContainer.slaveData.findIndex(item => item.fieldName === 'tableAddProduct');
-        config = processContainer.slaveData[index];
-      }
-      if (commonUtils.isNotEmptyObj(config)) {
-        const dropParam = { name, type: 'popupActive', config, record: {} };
-        onDropPopup(dropParam);
-        returnData[name + 'Data'] = propsRef.current[name + 'Data'];
-      }
-
-      // const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-      // returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
-      // returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
-      //
-      // if (commonUtils.isEmptyArr(partSelectedRows)) {
-      //   returnData[name + 'Data'][index].partId = '';
-      //   returnData[name + 'Data'][index].processGenre = '3product';
-      // } else {
-      //   returnData[name + 'Data'][index].partName = partSelectedRows[0].partName;
-      //   returnData[name + 'Data'][index].partId = partSelectedRows[0].id;
-      //   // returnData[name + 'Data'][index].processGenre = '0prepress';
-      // }
-    }
-
-    if (isWait) {
-      return { ...addState, [name + 'Data']: returnData[name + 'Data'] };
-    } else {
-      props.dispatchModifyState({ ...addState, [name + 'Data']: returnData[name + 'Data'] });
-    }
-  };
-
-  const onRowClick = async (name, record, rowKey) => {
-    const { dispatchModifyState } = props;
-    dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]], [name + 'SelectedRows']: [record] });
-  }
-
-  const onDropPopup = async (params) => {
-    params.onModalOk = onModalOk;
-    props.onDropPopup(params);
-  }
-
-
-
-  const onModalOk = async (params, isWait) => {
-    const name = params.name;
-    const { dispatch, [name + 'Container']: container, masterData, [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = propsRef.current;
-
-    if (params.type === 'popupActive' && params.name === 'process' && commonUtils.isNotEmptyArr(params.selectList)) {
-      const assignField = params.config.assignField;
-      const fieldName = params.config.fieldName;
-      const record = params.record;
-      const data = [...dataOld];
-      const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
-      const url: string = application.urlBasic + '/process/getProcessMatch';
-      const matchIndex = container.slaveData.findIndex(item => item.fieldName === 'processMatch');
-      const paramsMatch = {
-        routeId: params.routeId,
-        groupId: commonModel.userInfo.groupId,
-        shopId: commonModel.userInfo.shopId,
-        containerId: container.slaveData[matchIndex].superiorId,
-        containerSlaveId: container.slaveData[matchIndex].id,
-        processIdArr: params.selectKeys,
-      };
-      let processMatch: any = [];
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsMatch))).data;
-      if (interfaceReturn.code === 1) {
-        processMatch = interfaceReturn.data;
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
-        return;
-      }
-
-      params.selectList.forEach((selectItem, selectIndex) => {
-        const index = data.findIndex(item => item.id === record.id);
-        let dataRow: any = {};
-        if (index > -1 && (selectIndex === 0 && ((params.selectList.length === 1) || commonUtils.isEmpty(data[index][fieldName])))) {
-          const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
-          const rowData = { ...data[index], ...assignValue };
-          rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
-          data[index] = rowData;
-          dataRow = rowData;
-          if (data[index].handleType === 'modify') {
-            const indexModify = dataModify.findIndex(item => item.id === record.id);
-            if (indexModify > -1) {
-              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], ...assignValue };
-            } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, ...assignValue })
-            }
-          }
-        } else {
-          const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
-          const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
-          dataRow = rowData;
-          data.push(rowData);
-        }
-
-        processMatch.filter(item => item.superiorId === dataRow.processId).forEach(matchItem => {
-          const assignValue = commonUtils.getAssignFieldValue(name, assignField, matchItem, propsRef.current);
-          const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
-          data.push(rowData);
-        });
-      });
-      if (isWait) {
-        return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false };
-      } else {
-        props.dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false });
-      }
-    } else {
-      props.onModalOk(params);
-    }
-  }
-
-
-
   const { enabled, masterContainer, masterData, commonModel } = props;
 
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
-  const slaveParam: any = commonUtils.getTableProps('slave', { ...props, onTableAddClick });
+  const slaveParam: any = commonUtils.getTableProps('slave', props);
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;
   slaveParam.width = 2000;
@@ -277,9 +120,9 @@ const WorkOrder = (props) => {
 
       </div>
     }, width: 100, fixed: 'right' };
-  slaveParam.eventOnRow.onRowClick = onRowClick;
+  slaveParam.eventOnRow.onRowClick = props.onRowClick;
 
-  const partParam: any = commonUtils.getTableProps('part', { ...props, onTableAddClick });
+  const partParam: any = commonUtils.getTableProps('part', props);
   partParam.isDragRow = true;
   partParam.pagination = false;
   partParam.width = 2000;
@@ -290,9 +133,9 @@ const WorkOrder = (props) => {
       </div>
     }, width: 100 , fixed: 'right' };
   partParam.onFilter = onFilter;
-  partParam.eventOnRow.onRowClick = onRowClick;
+  partParam.eventOnRow.onRowClick = props.onRowClick;
 
-  const materialParam: any = commonUtils.getTableProps('material', { ...props, onTableAddClick });
+  const materialParam: any = commonUtils.getTableProps('material', props);
   materialParam.isDragRow = true;
   materialParam.pagination = false;
   materialParam.width = 2000;
@@ -305,7 +148,7 @@ const WorkOrder = (props) => {
     }, width: 100 , fixed: 'right' };
   materialParam.onFilter = onFilter;
 
-  const processParam: any = commonUtils.getTableProps('process',{ ...props, onTableAddClick });
+  const processParam: any = commonUtils.getTableProps('process',props);
   processParam.isDragRow = true;
   processParam.pagination = false;
   processParam.width = 2000;
@@ -350,7 +193,7 @@ const WorkOrder = (props) => {
         </Row>
         <ButtonGroup {...buttonGroup} />
       </Form>
-      <CommonModal {...props} onDropPopup={onDropPopup} />
+      <CommonModal {...props} />
     </div>
   );
 }

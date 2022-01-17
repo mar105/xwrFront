@@ -58,12 +58,12 @@ export default {
       yield put(routerRedux.push({pathname: payload.newPage, state: payload.state, search: payload.search}));
     },
     * gotoError({ payload }, { put }) {
-      const { code, msg } = payload;
+      const { code, msg, errorMsg } = payload;
       if (code === '5001') {
         const prefix = application.prefix === 'xwrMain' ? '' : '/' + application.prefix;
         yield put(routerRedux.push(prefix + '/login'));
       }
-      // message.destroy();
+      console.error(errorMsg);
       notification.error({message: msg});
     },
     * gotoSuccess({ payload }, { put }) {

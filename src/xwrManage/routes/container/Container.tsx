@@ -55,6 +55,8 @@ const Container = (props) => {
     const returnBody = JSON.parse(data.body);
     if (returnBody.code === 1) {
       props.gotoSuccess(dispatch, returnBody);
+    } else {
+      props.gotoError(dispatch, returnBody);
     }
   }
 

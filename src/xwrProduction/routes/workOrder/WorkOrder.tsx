@@ -10,6 +10,8 @@ import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import commonProductionEvent from "../../../common/commonProductionEvent";
 import CommonModal from "../../../common/commonModal";
+import * as application from "../../application";
+import * as request from "../../../utils/request";
 
 const WorkOrder = (props) => {
   const [form] = Form.useForm();
@@ -151,7 +153,7 @@ const WorkOrder = (props) => {
       }
       if (commonUtils.isNotEmptyObj(config)) {
         const dropParam = { name, type: 'popupActive', config, record: {} };
-        props.onDropPopup(dropParam);
+        onDropPopup(dropParam);
         returnData[name + 'Data'] = propsRef.current[name + 'Data'];
       }
 
@@ -188,37 +190,64 @@ const WorkOrder = (props) => {
 
 
 
-  const onModalOk = (params, isWait) => {
+  const onModalOk = async (params, isWait) => {
     const name = params.name;
-    const { [name + 'Container']: container, masterData, [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = propsRef.current;
+    const { dispatch, [name + 'Container']: container, masterData, [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = propsRef.current;
 
     if (params.type === 'popupActive' && params.name === 'process' && commonUtils.isNotEmptyArr(params.selectList)) {
       const assignField = params.config.assignField;
       const fieldName = params.config.fieldName;
-      const value = params.selectList[0].id;
       const record = params.record;
       const data = [...dataOld];
       const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+      const url: string = application.urlBasic + '/process/getProcessMatch';
+      const matchIndex = container.slaveData.findIndex(item => item.fieldName === 'processMatch');
+      const paramsMatch = {
+        routeId: params.routeId,
+        groupId: commonModel.userInfo.groupId,
+        shopId: commonModel.userInfo.shopId,
+        containerId: container.slaveData[matchIndex].superiorId,
+        containerSlaveId: container.slaveData[matchIndex].id,
+        processIdArr: params.selectKeys,
+      };
+      let processMatch: any = [];
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsMatch))).data;
+      if (interfaceReturn.code === 1) {
+        processMatch = interfaceReturn.data;
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+        return;
+      }
+
       params.selectList.forEach((selectItem, selectIndex) => {
         const index = data.findIndex(item => item.id === record.id);
+        let dataRow: any = {};
         if (index > -1 && (selectIndex === 0 && ((params.selectList.length === 1) || commonUtils.isEmpty(data[index][fieldName])))) {
           const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
-          const rowData = { ...data[index], [fieldName]: value, ...assignValue };
+          const rowData = { ...data[index], ...assignValue };
           rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
           data[index] = rowData;
+          dataRow = rowData;
           if (data[index].handleType === 'modify') {
             const indexModify = dataModify.findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], [fieldName]: value, ...assignValue };
+              dataModify[indexModify] = {...dataModify[indexModify], ...dataModify[index], ...assignValue };
             } else {
-              dataModify.push({ id: record.id, handleType: data[index].handleType, [fieldName]: value, ...assignValue })
+              dataModify.push({ id: record.id, handleType: data[index].handleType, ...assignValue })
             }
           }
         } else {
           const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
-          const rowData = { ...propsRef.onAdd(container), [fieldName]: value, ...assignValue, superiorId: masterData.id };
+          const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
+          dataRow = rowData;
           data.push(rowData);
         }
+
+        processMatch.filter(item => item.superiorId === dataRow.processId).forEach(matchItem => {
+          const assignValue = commonUtils.getAssignFieldValue(name, assignField, matchItem, propsRef.current);
+          const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
+          data.push(rowData);
+        });
       });
       if (isWait) {
         return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, modalVisible: false };
@@ -259,7 +288,7 @@ const WorkOrder = (props) => {
       return <div>
         <a onClick={props.onLastColumnClick.bind(this, 'part', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
-    }, width: 50 , fixed: 'right' };
+    }, width: 100 , fixed: 'right' };
   partParam.onFilter = onFilter;
   partParam.eventOnRow.onRowClick = onRowClick;
 
@@ -273,7 +302,7 @@ const WorkOrder = (props) => {
       return <div>
         <a onClick={props.onLastColumnClick.bind(this, 'material', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
-    }, width: 50 , fixed: 'right' };
+    }, width: 100 , fixed: 'right' };
   materialParam.onFilter = onFilter;
 
   const processParam: any = commonUtils.getTableProps('process',{ ...props, onTableAddClick });
@@ -286,7 +315,7 @@ const WorkOrder = (props) => {
       return <div>
         <a onClick={props.onLastColumnClick.bind(this, 'process', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
       </div>
-    }, width: 50 , fixed: 'right' };
+    }, width: 100 , fixed: 'right' };
   processParam.onFilter = onFilter;
 
   const component = useMemo(()=>{ return (

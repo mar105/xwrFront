@@ -72,7 +72,7 @@ const commonListEvent = (WrapComponent) => {
           props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
           return;
         }
-        props.callbackRemovePane({...props.modalParams, selectList: props.slaveSelectedRows });
+        props.callbackRemovePane({...props.modalParams, selectList: props.slaveSelectedRows, selectKeys: props.slaveSelectedRowKeys });
       } else if (key === 'cancelButton') {
         props.callbackRemovePane();
       } else if (key === 'exportExcelButton') {
@@ -103,7 +103,7 @@ const commonListEvent = (WrapComponent) => {
 
     const onRowDoubleClick = async (name, record, e) => {
       if (props.isModal) {
-        props.callbackRemovePane({...props.modalParams, selectList: [record] });
+        props.callbackRemovePane({...props.modalParams, selectList: [record], selectKeys: [record.id] });
       } else {
         const {[name + 'Container']: container, routeId, slaveSum, slaveSearchCondition: searchCondition, slaveData, slaveSorterInfo: sorterInfo } = props;
         const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');

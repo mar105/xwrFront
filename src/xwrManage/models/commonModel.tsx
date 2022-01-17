@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import * as application from '../application';
-import {message} from "antd";
+import {notification} from "antd";
 
 export default {
   namespace: 'commonModel',
@@ -43,18 +43,19 @@ export default {
       yield put(routerRedux.push({pathname: payload.newPage, state: payload.state, search: payload.search}));
     },
     * gotoError({ payload }, { put }) {
-      const { code, msg } = payload;
+      const { code, msg, errorMsg } = payload;
       if (code === '5001') {
         const prefix = application.prefix === 'xwrMain' ? '' : '/' + application.prefix;
         yield put(routerRedux.push(prefix + '/login'));
       }
-      message.destroy();
-      message.error(msg);
+      console.error(errorMsg);
+      notification.error({message: msg});
     },
     * gotoSuccess({ payload }, { put }) {
       const { msg } = payload;
-      message.destroy();
-      message.success(msg);
+      // message.destroy();
+      // message.success(msg);
+      notification.success({message: msg});
     },
   },
 };

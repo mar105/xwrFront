@@ -94,13 +94,45 @@ const commonProductionEvent = (WrapComponent) => {
       return returnData;
     };
 
+    const modifyFieldData = (name, dataOld, dataModifyOld, modifyFieldName, modifyValue) => {
+      const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
+
+      const data: any = [];
+      dataOld.forEach(dataRowOld => {
+        const dataRow: any = {...dataRowOld, handleType: commonUtils.isEmpty(dataRowOld.handleType) ? 'modify' : dataRowOld.handleType, [modifyFieldName]: modifyValue };
+        data.push(dataRow);
+        if (dataRow.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === dataRow.id);
+          if (indexModify > -1) {
+            dataModify[indexModify] = {...dataModify[indexModify], [modifyFieldName]: modifyValue };
+          } else {
+            dataModify.push({ id: dataRow.id, handleType: dataRow.handleType, [modifyFieldName]: modifyValue })
+          }
+        }
+      });
+      return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+    };
+
     const onDataChange = (params) => {
       const { name, fieldName, record, isWait } = params;
+      const { partData: partDataOld, partModifyData: partModifyDataOld,
+        materialData: materialDataOld, materialModifyData: materialModifyDataOld,
+        processData: processDataOld, processModifyData: processModifyDataOld } = propsRef.current;
       let returnData = props.onDataChange({...params, isWait: true});
-      if(name === 'part') {
+      if(name === 'slave') {
+        if (fieldName === 'productName') {
+          returnData = {...returnData, ...modifyFieldData('part', partDataOld, partModifyDataOld, 'productName', returnData.dataRow.productName) };
+          returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'productName', returnData.dataRow.productName) };
+          returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'productName', returnData.dataRow.productName) };
+        }
+      } else if(name === 'part') {
+        //在方法内部判断了哪些字段需要计算
         returnData = calcPaper({name, fieldName, record, returnData});
-
-
+        if (fieldName === 'partName') {
+          returnData = {...returnData, ...modifyFieldData('part', partDataOld, partModifyDataOld, 'partName', returnData.dataRow.partName) };
+          returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'partName', returnData.dataRow.partName) };
+          returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'partName', returnData.dataRow.partName) };
+        }
       }
 
       if (isWait) {

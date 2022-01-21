@@ -129,7 +129,6 @@ const commonProductionEvent = (WrapComponent) => {
         //在方法内部判断了哪些字段需要计算
         returnData = calcPaper({name, fieldName, record, returnData});
         if (fieldName === 'partName') {
-          returnData = {...returnData, ...modifyFieldData('part', partDataOld, partModifyDataOld, 'partName', returnData.dataRow.partName) };
           returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'partName', returnData.dataRow.partName) };
           returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'partName', returnData.dataRow.partName) };
         }
@@ -202,12 +201,12 @@ const commonProductionEvent = (WrapComponent) => {
     }
 
     const onTableAddClick = (name, e, isWait = false) => {
-      const { dispatch, slaveSelectedRows, partSelectedRows, processContainer }: any = propsRef.current;
+      const { dispatch, slaveSelectedRowKeys, slaveData, partSelectedRowKeys, partData, processContainer }: any = propsRef.current;
       const returnData = props.onTableAddClick(name, e, true);
       const addState = { ...returnData };
       if (name === 'part' || name === 'material' || name === 'process') {
         if (name === 'part') {
-          if (commonUtils.isEmptyArr(slaveSelectedRows)) {
+          if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
             const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
               props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
@@ -217,12 +216,14 @@ const commonProductionEvent = (WrapComponent) => {
             return;
           }
           const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-          returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
-          returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
+          const slaveIndex = slaveData.findIndex(item => item.id === slaveSelectedRowKeys[0]);
+          returnData[name + 'Data'][index].slaveId = slaveData[slaveIndex].id;
+          returnData[name + 'Data'][index].partQty = slaveData[slaveIndex].productQty;
+          returnData[name + 'Data'][index].productName = slaveData[slaveIndex].productName;
           addState[name + 'SelectedRowKeys'] = [returnData.data.id];
           addState[name + 'SelectedRows'] = [{...returnData.data}];
         } else if (name === 'material') {
-          if (commonUtils.isEmptyArr(slaveSelectedRows)) {
+          if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
             const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
               props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
@@ -232,19 +233,21 @@ const commonProductionEvent = (WrapComponent) => {
             return;
           }
           const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-          returnData[name + 'Data'][index].slaveId = slaveSelectedRows[0].id;
-          returnData[name + 'Data'][index].productName = slaveSelectedRows[0].productName;
+          const slaveIndex = slaveData.findIndex(item => item.id === slaveSelectedRowKeys[0]);
+          const partIndex = partData.findIndex(item => item.id === partSelectedRowKeys[0]);
+          returnData[name + 'Data'][index].slaveId = slaveData[slaveIndex].id;
+          returnData[name + 'Data'][index].productName = slaveData[slaveIndex].productName;
 
-          if (commonUtils.isEmptyArr(partSelectedRows)) {
+          if (commonUtils.isEmptyArr(partSelectedRowKeys)) {
             returnData[name + 'Data'][index].partId = '';
             returnData[name + 'Data'][index].materialGenre = '2product';
           } else {
-            returnData[name + 'Data'][index].partName = partSelectedRows[0].partName;
-            returnData[name + 'Data'][index].partId = partSelectedRows[0].id;
+            returnData[name + 'Data'][index].partName = partData[partIndex].partName;
+            returnData[name + 'Data'][index].partId = partData[partIndex].id;
             returnData[name + 'Data'][index].materialGenre = '0main';
           }
         } else if (name === 'process') {
-          if (commonUtils.isEmptyArr(slaveSelectedRows)) {
+          if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
             const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
               props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
@@ -254,7 +257,7 @@ const commonProductionEvent = (WrapComponent) => {
             return;
           }
           let config = {};
-          if (commonUtils.isNotEmptyArr(partSelectedRows)) {
+          if (commonUtils.isNotEmptyArr(partSelectedRowKeys)) {
             const index = processContainer.slaveData.findIndex(item => item.fieldName === 'processName');
             config = processContainer.slaveData[index];
           } else {

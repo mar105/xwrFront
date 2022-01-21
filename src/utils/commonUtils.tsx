@@ -244,11 +244,35 @@ export function getUploadProps(name, props) {
  * delTmpData 表单删除数据
  * saveModifyTmpData 表单修改数据
  **/
+const childMergeData = (treeData, isAll, returnData) => {
+  treeData.forEach(data => {
+    if (isNotEmptyArr(data.children)) {
+      childMergeData(data.children, isAll, returnData);
+    }
+    if (isAll) {
+      returnData.push(data);
+    } else if (data.handleType === 'add') {
+      returnData.push(data);
+    }
+  });
+}
+
 export function mergeData(name, saveTmpData, saveModifyTmpData, delTmpData, isAll = false) {
   const delData = isEmptyArr(delTmpData) ? [] : delTmpData;
   const savesData = isEmptyArr(saveTmpData) ? [] : saveTmpData;
+  const returnData: any = [];
   let saveModifyData = isAll ? [] : isEmptyArr(saveModifyTmpData) ? [] : saveModifyTmpData;
-  const returnData = isAll ? savesData : savesData.filter(item => item.handleType === 'add'); // || item.handleType === 'modify'
+  savesData.forEach(data => {
+    if (isNotEmptyArr(data.children)) {
+      childMergeData(data.children, isAll, returnData);
+    }
+    if (isAll) {
+      returnData.push(data);
+    } else if (data.handleType === 'add') {
+      returnData.push(data);
+    }
+
+  });
   if (name === 'master' && isNotEmptyArr(saveTmpData) && saveTmpData[0].handleType === 'modify') {
     const rowData = { handleType: 'modify', id: saveTmpData[0].id, sortNum: saveTmpData[0].sortNum};
     saveModifyData = isEmptyArr(saveModifyData) ? [rowData] : [{...saveModifyData[0], ...rowData }];

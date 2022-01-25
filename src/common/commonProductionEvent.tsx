@@ -3,6 +3,7 @@ import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../xwrProduction/application";
 import * as request from "../utils/request";
+import {isNotEmptyArr} from "../utils/commonUtils";
 
 const commonProductionEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -141,33 +142,64 @@ const commonProductionEvent = (WrapComponent) => {
       }
     }
 
-    const sortData = (partData, processData) => {
+    const getTreeIndexAndInfo = (treeData, id) => {
+      let returnInfo: any = { index: 999 };
+      for(let index = 0; index < treeData.length; index++) {
+        if (treeData[index].id === id) {
+          returnInfo.index = index;
+          returnInfo.dataRow = treeData[index];
+          break;
+        } else if (isNotEmptyArr(treeData[index].children)) {
+          returnInfo = getTreeChildIndexAndInfo(treeData[index].children, id);
+        }
+      }
+      return returnInfo;
+    }
+
+    const getTreeChildIndexAndInfo = (treeData, id) => {
+      let returnInfo: any = { index: 999 };
+      for(let index = 0; index < treeData.length; index++) {
+        if (treeData[index].id === id) {
+          returnInfo.index = index;
+          returnInfo.dataRow = treeData[index];
+          break;
+        } else if (isNotEmptyArr(treeData[index].children)) {
+          returnInfo = getTreeChildIndexAndInfo(treeData[index].children, id);
+        }
+      }
+      return returnInfo;
+    }
+
+    const sortData = (partData, processData, sort = 'asc') => {
       processData.sort((row1, row2) => {
-        const indexSort1 = partData.findIndex(item => item.id === row1.partId) === -1 ? 999 : partData.findIndex(item => item.sId === row1.partId);
+        const partDataRowInfo1 = getTreeIndexAndInfo(partData, row1.partId);
+        const indexSort1 = partDataRowInfo1.index;
+        const level1 = partDataRowInfo1.index === 999 ? '9' : partDataRowInfo1.dataRow.allId.split(',').length.toString();
         if (row1.sortNum === undefined) {
           row1.sortNum = 0;
         }
         if (row2.sortNum === undefined) {
           row2.sortNum = 0;
         }
-        let partSort1 = `0000${indexSort1}`;
+        let partSort1 = '0000' + indexSort1.toString();
         partSort1 = partSort1.substring(partSort1.length - 3);
-        let processSort1 = `00000${row1.sortNum.toString()}`;
-        processSort1 = processSort1.indexOf('.') > -1 ? processSort1 : `${processSort1}.00`;
-        processSort1 = processSort1.replace('.', '');
+        let processSort1 = '0000' + row1.sortNum.toFixed(2);
         processSort1 = processSort1.substring(processSort1.length - 5);
 
-        const indexSort2 = partData.findIndex(item => item.sId === row2.partId) === -1 ? 999 : partData.findIndex(item => item.sId === row2.partId);
+        const partDataRowInfo2 = getTreeIndexAndInfo(partData, row2.partId);
+        const indexSort2 = partDataRowInfo2.index;
+        const level2 = partDataRowInfo2.index === 999 ? '9' : partDataRowInfo2.dataRow.allId.split(',').length.toString();
         let partSort2 = `0000${indexSort2}`;
         partSort2 = partSort2.substring(partSort2.length - 3);
-        let processSort2 = `00000${row2.sortNum.toString()}`;
-        processSort2 = processSort2.indexOf('.') > -1 ? processSort2 : `${processSort2}.00`;
-        processSort2 = processSort2.replace('.', '');
+        let processSort2 = '0000' + row2.sortNum.toFixed(2);
         processSort2 = processSort2.substring(processSort2.length - 5);
-        return parseFloat(partSort1 + row1.processGenre.substring(0, 1) + processSort1) - parseFloat(partSort2 + row2.processGenre.substring(0, 1) + processSort2);
+        return sort === 'asc' ?
+          parseFloat(level1 + partSort1 + row1.processGenre.substring(0, 1) + processSort1) - parseFloat(level2 + partSort2 + row2.processGenre.substring(0, 1) + processSort2) :
+          parseFloat(level2 + partSort2 + row2.processGenre.substring(0, 1) + processSort2) - parseFloat(level1 + partSort1 + row1.processGenre.substring(0, 1) + processSort1);
       });
       return processData;
     };
+
 
     const onLastColumnClick = (name, key, record, e, isWait = false) => {
       let addState: any = {};
@@ -361,6 +393,136 @@ const commonProductionEvent = (WrapComponent) => {
       }
     }
 
+    const getLastChildData = (treeData, lastLevelData) => {
+      treeData.forEach(data => {
+        if (isNotEmptyArr(data.children)) {
+          getLastChildData(data.children, lastLevelData);
+        } else {
+          lastLevelData.push(data);
+        }
+      });
+    }
+
+    const getPartLastChildData = (treeData, lastLevelData) => {
+      treeData.forEach(data => {
+        if (isNotEmptyArr(data.children)) {
+          getPartLastChildData(data.children, lastLevelData);
+        } else if (commonUtils.isNotEmpty(data.mergePartId)) {
+          lastLevelData.push(data);
+        }
+      });
+    }
+
+    const onButtonClick = async (key, config, e, childParams: any = undefined, isWait = false) => {
+      const { commonModel, masterData: masterDataOld, slaveData: slaveDataOld, partData: partDataOld, materialData: materialDataOld,
+        processData: processDataOld, processModifyData: processModifyDataOld } = propsRef.current;
+
+      if (key === 'calcButton') {
+        const processData = [...processDataOld];
+        const processModifyData = commonUtils.isEmptyArr(processModifyDataOld) ? [] : [...processModifyDataOld];
+
+        const slaveLastLevelAllData:any = [];
+
+        //过滤出从表最子级的产品数据。
+        slaveDataOld.forEach(data => {
+          if (isNotEmptyArr(data.children)) {
+            getLastChildData(data.children, slaveLastLevelAllData);
+          } else {
+            slaveLastLevelAllData.push(data);
+          }
+        });
+
+        //过滤出部件表最子级的产品数据。
+        const partLastLevelAllData:any = [];
+        partDataOld.forEach(data => {
+          if (isNotEmptyArr(data.children)) {
+            getPartLastChildData(data.children, partLastLevelAllData);
+          } else if (commonUtils.isEmpty(data.mergePartId)) {
+            partLastLevelAllData.push(data);
+          }
+        });
+
+
+        slaveLastLevelAllData.forEach(slave => {
+          const partLastLevelData = partLastLevelAllData.filter(item => item.slaveId === slave.id);
+          let processOutQty = slave.productQty;
+          let isFirst = false;
+          let inOutRate = 1;
+          partLastLevelData.forEach(part => {
+            slave.allId.split(',').forEach((key, index) => {
+              let processSlaveData = processDataOld.filter(item => item.slaveId === key && commonUtils.isEmpty(item.partId));
+              processSlaveData = sortData(partDataOld, processSlaveData, 'desc');
+              if (index !== 0) {
+                inOutRate = commonUtils.isEmptyorZeroDefault(slave.coefficient, 1);
+                isFirst = true;
+              }
+              calcProcess(processSlaveData, partDataOld, processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel);
+            });
+
+            part.allId.split(',').reverse().forEach(key => {
+              let processPartData = processDataOld.filter(item => item.partId === key);
+              processPartData = sortData(partDataOld, processPartData, 'desc');
+              inOutRate = part.totalPQty > 4 ? part.totalPQty / 2 / commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) :
+                commonUtils.isEmptyorZeroDefault(part.singlePQty, 1);
+              isFirst = true;
+              calcProcess(processPartData, partDataOld, processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel);
+            });
+          });
+        });
+        if (isWait) {
+          return { processData, processModifyData };
+        } else {
+          props.dispatchModifyState({ processData, processModifyData });
+        }
+      } else {
+        props.onButtonClick(key, config, e, childParams);
+      }
+    }
+
+    const calcProcess = (processFilterData, partDataOld, processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel) => {
+      processFilterData.forEach((process, processIndex) => {
+        if (!isFirst) {
+          inOutRate = commonUtils.isEmptyorZeroDefault(process.inOutAdjustRate, 1);
+        }
+        process.processOutQty = processOutQty;
+        if (commonUtils.isEmptyorZero(process.adjustLossQty)) {
+          process.lossQty = commonUtils.getFormulaValue('process', process, process.productionLossFormulaId, {
+            master: masterDataOld, slave, part, material: {}, process }, commonModel);
+        }
+        process.inOutRate = inOutRate;
+        const processInQty = part.totalPQty > 4 && process.processGenre !== '3product' && commonUtils.isEmptyorZero(process.inOutAdjustRate) ?
+          processOutQty * inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty) :
+          processOutQty / inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty);
+        process.processInQty = processInQty;
+
+        //排程数量公式
+        process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
+          master: masterDataOld, slave, part, material: {}, process }, commonModel);
+
+        //报产数量公式
+        process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
+          master: masterDataOld, slave, part, material: {}, process }, commonModel);
+
+        process.sortNum = processFilterData.length - processIndex;
+        processOutQty = processInQty;
+        isFirst = false;
+
+        sortData(partDataOld, processData);
+        const qtyCalcData = { processOutQty: process.processOutQty, inOutRate: process.inOutRate, processInQty: process.processInQty, processQty: process.processQty,
+          reportQty: process.reportQty, sortNum: process.sortNum };
+        const index = processData.findIndex(item => item.id === process.id);
+        processData[index] = { ...processData[index], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, ...qtyCalcData };
+        if (processData[index].handleType === 'modify') {
+          const indexModify = processModifyData.findIndex(item => item.id === process.id);
+          if (indexModify > -1) {
+            processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, ...qtyCalcData };
+          } else {
+            processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, ...qtyCalcData });
+          }
+        }
+      });
+    }
+
     return <div>
       <WrapComponent
         {...props}
@@ -370,6 +532,7 @@ const commonProductionEvent = (WrapComponent) => {
         onTableAddClick={onTableAddClick}
         onModalOk={onModalOk}
         onRowClick={onRowClick}
+        onButtonClick={onButtonClick}
       />
     </div>
   };

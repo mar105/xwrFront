@@ -37,7 +37,7 @@ const Shop = (props) => {
 
   const { enabled, masterContainer, masterData, commonModel } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
-    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
+    isModal: props.isModal, buttonGroup: buttonAddGroup };
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (

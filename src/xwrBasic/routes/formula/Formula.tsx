@@ -207,7 +207,7 @@ const Formula = (props) => {
   const buttonAddGroup: any = props.getButtonGroup();
   buttonAddGroup.push({ key: 'verifyButton', caption: '验证', htmlType: 'button', onClick: onButtonClick, sortNum: 100, disabled: !props.enabled });
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
-    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
+    isModal: props.isModal, buttonGroup: buttonAddGroup };
   const index = commonUtils.isEmptyObj(masterContainer) ? -1 : masterContainer.slaveData.findIndex(item => item.fieldName === 'formula');
   const inputParams = {
     name: 'master',

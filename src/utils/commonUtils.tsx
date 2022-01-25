@@ -517,7 +517,7 @@ export function downloadExcel(interfaceReturn) {
 }
 
 //数量转换到换算数量
-export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaId, coefficient) {
+export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaIdFieldName, coefficient) {
   const returnRow: any = {};
   let styleWidth = 0;
   let styleLength = 0;
@@ -577,8 +577,8 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
     commonConstant[indexM].englishName === dataRow[type + 'Unit'] ||
     commonConstant[indexM].traditionalName === dataRow[type + 'Unit']);
 
-  if (isNotEmpty(dataRow[formulaId])) {
-    returnRow[calcFieldName] = round(getFormulaValue(dataRow, dataRow[formulaId], commonModel), 6);
+  if (isNotEmpty(dataRow[formulaIdFieldName])) {
+    returnRow[calcFieldName] = round(getFormulaValue('slave', dataRow, dataRow[formulaIdFieldName], { slave: dataRow }, commonModel), 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
   // 单位相同 数量相同
@@ -641,7 +641,7 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
 export function getMeasureQtyToConvertCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaId, coefficient) {
   const returnRow: any = {};
   if (isNotEmpty(dataRow[formulaId])) {
-    returnRow[calcFieldName] = getFormulaValue(dataRow, dataRow[formulaId], commonModel);
+    returnRow[calcFieldName] = getFormulaValue('slave', dataRow, dataRow[formulaId], {slave: dataRow}, commonModel);
   }
   // 单位相同 数量相同
   else if (dataRow.measureUnit === dataRow.convertUnit) {
@@ -743,29 +743,36 @@ export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, field
 }
 
 
-//数量转换到换算数量
-export function getFormulaValue(dataRow, formulaId, commonModel) {
+//公式替换参数并计算
+export function getFormulaValue(name, dataRow, formulaId, allDataRow, commonModel) {
   const { formulaParamList, formulaList } = commonModel;
   const index = formulaList.findIndex(item => item.id === formulaId);
   if (index > -1) {
     let formula = formulaList[index].formula;
-    formulaParamList.filter(item => item.paramType === 'billSlave').forEach(formulaParam => {
-      const splitField = formulaParam.fieldName.split('.');
-      if (splitField.length > 1) {
-        const value = dataRow[splitField[0]];
-        if (isNotEmpty(value)) {
-          if (splitField[1] === 'left') {
-            formula = formula.replace(formulaParam.paramName, value.split('*')[0]);
-          } else if (value.split('*').length > 1 && splitField[1] === 'right') {
-            formula = formula.replace(formulaParam.paramName, value.split('*')[1]);
+    for(const key of Object.keys(allDataRow)) {
+      formulaParamList.filter(item => item.paramType === key).forEach(formulaParam => {
+        const splitField = formulaParam.fieldName.split('.');
+        if (splitField.length > 1) {
+          const value = name === key ? dataRow[splitField[0]] : allDataRow[key][splitField[0]];
+          if (isNotEmpty(value)) {
+            if (splitField[1] === 'left') {
+              formula = formula.replace(formulaParam.paramName, value.split('*')[0]);
+            } else if (splitField[1] === 'center') {
+              formula = formula.replace(formulaParam.paramName, value.split('*')[1]);
+            } else if (value.split('*').length > 1 && splitField[1] === 'right') {
+              formula = value.split('*').length > 2 ? formula.replace(formulaParam.paramName, value.split('*')[2]) : formula.replace(formulaParam.paramName, value.split('*')[1]);
+            }
           }
+        } else if (isNotEmpty(dataRow[formulaParam.fieldName])) {
+          const value = name === key ? dataRow[formulaParam.fieldName] : allDataRow[key].formulaParam.fieldName;
+          formula = formula.replace(formulaParam.paramName, value);
         }
-      } else if (isNotEmpty(dataRow[formulaParam.fieldName])) {
-        formula = formula.replace(formulaParam.paramName, dataRow[formulaParam.fieldName]);
-      } else {
-        formula = formula.replace(formulaParam.paramName, 0);
-      }
-    });
+        // else {
+        //   formula = formula.replace(formulaParam.paramName, 0);
+        // }
+      });
+    }
+
     try {
       return eval(formula);
     }

@@ -105,9 +105,11 @@ const WorkOrder = (props) => {
   }
 
   const { enabled, masterContainer, masterData, commonModel } = props;
+  const buttonAddGroup: any = props.getButtonGroup();
+  buttonAddGroup.push({ key: 'calcButton', caption: '计算', htmlType: 'button', onClick: onButtonClick, sortNum: 100, disabled: !props.enabled });
 
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
-    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
+    isModal: props.isModal, buttonGroup: buttonAddGroup };
   const slaveParam: any = commonUtils.getTableProps('slave', props);
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;

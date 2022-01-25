@@ -414,12 +414,18 @@ const commonProductionEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e, childParams: any = undefined, isWait = false) => {
-      const { commonModel, masterData: masterDataOld, slaveData: slaveDataOld, partData: partDataOld, materialData: materialDataOld,
+      const { commonModel, masterData: masterDataOld, slaveData: slaveDataOld,
+        partData: partDataOld, partModifyData: partModifyDataOld,
+        materialData: materialDataOld, materialModifyData: materialModifyDataOld,
         processData: processDataOld, processModifyData: processModifyDataOld } = propsRef.current;
 
       if (key === 'calcButton') {
         const processData = [...processDataOld];
         const processModifyData = commonUtils.isEmptyArr(processModifyDataOld) ? [] : [...processModifyDataOld];
+        const partData = commonUtils.isEmptyArr(partDataOld) ? [] : [...partDataOld];
+        const partModifyData = commonUtils.isEmptyArr(partModifyDataOld) ? [] : [...partModifyDataOld];
+        const materialData = commonUtils.isEmptyArr(materialDataOld) ? [] : [...materialDataOld];
+        const materialModifyData = commonUtils.isEmptyArr(materialModifyDataOld) ? [] : [...materialModifyDataOld];
 
         const slaveLastLevelAllData:any = [];
 
@@ -449,6 +455,7 @@ const commonProductionEvent = (WrapComponent) => {
           let isFirst = false;
           let inOutRate = 1;
           partLastLevelData.forEach(part => {
+            // 成品工艺数据计算
             slave.allId.split(',').forEach((key, index) => {
               let processSlaveData = processDataOld.filter(item => item.slaveId === key && commonUtils.isEmpty(item.partId));
               processSlaveData = sortData(partDataOld, processSlaveData, 'desc');
@@ -456,58 +463,91 @@ const commonProductionEvent = (WrapComponent) => {
                 inOutRate = commonUtils.isEmptyorZeroDefault(slave.coefficient, 1);
                 isFirst = true;
               }
-              calcProcess(processSlaveData, partDataOld, processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel);
+              calcProcess(processSlaveData, partData, partModifyData, materialData, materialModifyData,
+                processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel);
             });
 
+            //部件工艺数据计算
             part.allId.split(',').reverse().forEach(key => {
               let processPartData = processDataOld.filter(item => item.partId === key);
               processPartData = sortData(partDataOld, processPartData, 'desc');
               inOutRate = part.totalPQty > 4 ? part.totalPQty / 2 / commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) :
-                commonUtils.isEmptyorZeroDefault(part.singlePQty, 1);
+                commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) / commonUtils.isEmptyorZeroDefault(part.magnification, 1);
               isFirst = true;
-              calcProcess(processPartData, partDataOld, processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel);
+              calcProcess(processPartData, partData, partModifyData, materialData, materialModifyData,
+                processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel);
             });
           });
         });
         if (isWait) {
-          return { processData, processModifyData };
+          return { processData, processModifyData, partData, partModifyData, materialData, materialModifyData };
         } else {
-          props.dispatchModifyState({ processData, processModifyData });
+          props.dispatchModifyState({ processData, processModifyData, partData, partModifyData, materialData, materialModifyData });
         }
       } else {
         props.onButtonClick(key, config, e, childParams);
       }
     }
 
-    const calcProcess = (processFilterData, partDataOld, processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel) => {
+    const calcProcess = (processFilterData, partData, partModifyData, materialData, materialModifyData,
+                         processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel) => {
+      let inOutAdjust = 1;
+      let printingLossQty = 0;
+      let processId = '';
       processFilterData.forEach((process, processIndex) => {
         if (!isFirst) {
           inOutRate = commonUtils.isEmptyorZeroDefault(process.inOutAdjustRate, 1);
+        } else {
+          //手动修改出入比后得出1比
+          processFilterData.filter(item => commonUtils.isNotEmptyorZero(item.inOutAdjustRate)).forEach(process => {
+            inOutAdjust = inOutAdjust * process.inOutAdjustRate;
+          });
+          inOutRate = inOutRate / inOutAdjust;
         }
-        process.processOutQty = processOutQty;
-        if (commonUtils.isEmptyorZero(process.adjustLossQty)) {
-          process.lossQty = commonUtils.getFormulaValue('process', process, process.productionLossFormulaId, {
+
+        if (process.processGenre !== '0prepress') {
+          process.processOutQty = processOutQty;
+          process.lossQty = commonUtils.isEmptyorZero(process.adjustLossQty) ? process.adjustLossQty :
+            commonUtils.getFormulaValue('process', process, process.productionLossFormulaId, {
             master: masterDataOld, slave, part, material: {}, process }, commonModel);
+
+          process.inOutRate = inOutRate;
+          const processInQty = part.totalPQty > 4 && process.processGenre !== '3product' && commonUtils.isEmptyorZero(process.inOutAdjustRate) ?
+            processOutQty * inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty) :
+            processOutQty / inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty);
+          process.processInQty = processInQty;
+          processOutQty = processInQty;
+          processId = process.id;
+
+          if (process.processGenre === '1printing') {
+            printingLossQty = printingLossQty + process.lossQty;
+          }
+
+          //排程数量公式
+          process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
+            master: masterDataOld, slave, part, material: {}, process }, commonModel);
+
+          //报产数量公式
+          process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
+            master: masterDataOld, slave, part, material: {}, process }, commonModel);
+        } else {
+          const partAndMaterial = partAndMaterialCalc(slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty);
+          //排程数量公式
+          process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
+            master: masterDataOld, slave, part: partAndMaterial.partDataRow, material: partAndMaterial.materialDataRow, process }, commonModel);
+
+          //报产数量公式
+          process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
+            master: masterDataOld, slave, part: partAndMaterial.partDataRow, material: partAndMaterial.materialDataRow, process }, commonModel);
+
+          process.processOutQty = process.processQty;
+          process.processInQty = process.processQty;
         }
-        process.inOutRate = inOutRate;
-        const processInQty = part.totalPQty > 4 && process.processGenre !== '3product' && commonUtils.isEmptyorZero(process.inOutAdjustRate) ?
-          processOutQty * inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty) :
-          processOutQty / inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty);
-        process.processInQty = processInQty;
-
-        //排程数量公式
-        process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
-          master: masterDataOld, slave, part, material: {}, process }, commonModel);
-
-        //报产数量公式
-        process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
-          master: masterDataOld, slave, part, material: {}, process }, commonModel);
 
         process.sortNum = processFilterData.length - processIndex;
-        processOutQty = processInQty;
+
         isFirst = false;
 
-        sortData(partDataOld, processData);
         const qtyCalcData = { processOutQty: process.processOutQty, inOutRate: process.inOutRate, processInQty: process.processInQty, processQty: process.processQty,
           reportQty: process.reportQty, sortNum: process.sortNum };
         const index = processData.findIndex(item => item.id === process.id);
@@ -515,12 +555,68 @@ const commonProductionEvent = (WrapComponent) => {
         if (processData[index].handleType === 'modify') {
           const indexModify = processModifyData.findIndex(item => item.id === process.id);
           if (indexModify > -1) {
-            processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, ...qtyCalcData };
+            processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: processData[index].handleType, ...qtyCalcData };
           } else {
             processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, ...qtyCalcData });
           }
         }
       });
+      sortData(partData, processData);
+    }
+
+    const partAndMaterialCalc = (slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty) => {
+      const partDataRow = props.getTreeNode(partData, part.allId);
+      let materialDataRow = {};
+      partDataRow.totalPrintingLossQty = printingLossQty;
+      partDataRow.totalPostpressLossQty = processOutQty - partDataRow.totalMachineQty - printingLossQty;
+      partDataRow.totalLossQty = processOutQty - partDataRow.totalMachineQty;
+      partDataRow.totalPaperQty = processOutQty;
+      partDataRow.handleType = commonUtils.isEmpty(partDataRow.handleType) ? 'modify' : partDataRow.handleType;
+      props.setTreeNode(partData, partDataRow, part.allId);
+
+      const partQtyCalcData = { totalPrintingLossQty: partDataRow.totalPrintingLossQty, totalPostpressLossQty: partDataRow.totalPostpressLossQty,
+        totalLossQty: partDataRow.totalLossQty, totalPaperQty: partDataRow.totalPaperQty };
+      if (partDataRow.handleType === 'modify') {
+        const indexModify = partModifyData.findIndex(item => item.id === partDataRow.id);
+        if (indexModify > -1) {
+          partModifyData[indexModify] = { ...partModifyData[indexModify], handleType: partDataRow.handleType, ...partQtyCalcData };
+        } else {
+          partModifyData.push({ id: partDataRow.id, handleType: partDataRow.handleType, ...partQtyCalcData });
+        }
+      }
+
+      materialData.filter(item => item.partId === part.id).forEach((material, materialIndex) => {
+        const index = materialData.findIndex(item => item.id = material.id);
+        materialData[index].handleType = commonUtils.isEmpty(materialData[index].handleType) ? 'modify' : materialData[index].handleType;
+        if (commonUtils.isNotEmpty(material.printToMeasureFormulaId)) {
+          materialData[index].measureQty = commonUtils.getFormulaValue('material', process, material.printToMeasureFormulaId, {
+            master: props.masterData, slave, part, material, process }, props.commonModel);
+        } else if (commonUtils.isEmpty(material.adjustProcessId)) {
+          materialData[index].measureQty = processOutQty;
+          materialData[index].processId = processId;
+        } else {
+          const processIndex = processFilterData.findIndex(item => item.processId === material.adjustProcessId);
+          if (processIndex > -1) {
+            materialData[index].measureQty = processFilterData[processIndex].processInQty;
+          }
+        }
+        const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, {...materialData[index]},'material', 'measureQty', 'materialQty', 'measureToMaterialFormulaId', 'measureToMaterialCoefficient');
+        const materialCalcData = { processId, measureQty: materialData[index].measureQty, ...qtyCalcData };
+        materialData[index] = { ...materialData[index], ...materialCalcData };
+        if (materialIndex === 0 && material.materialGenre === '0main') {
+          materialDataRow = materialData[index];
+        }
+
+        if (materialData[index].handleType === 'modify') {
+          const indexModify = materialModifyData.findIndex(item => item.id === material.id);
+          if (indexModify > -1) {
+            materialModifyData[indexModify] = { ...materialModifyData[indexModify], handleType: materialData[index].handleType, ...materialCalcData };
+          } else {
+            materialModifyData.push({ id: materialData[index].id, handleType: materialData[index].handleType, ...materialCalcData });
+          }
+        }
+      });
+      return { partDataRow, materialDataRow };
     }
 
     return <div>

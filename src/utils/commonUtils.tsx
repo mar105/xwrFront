@@ -517,7 +517,7 @@ export function downloadExcel(interfaceReturn) {
 }
 
 //数量转换到换算数量
-export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaIdFieldName, coefficient) {
+export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaIdFieldName, coefficientFieldName) {
   const returnRow: any = {};
   let styleWidth = 0;
   let styleLength = 0;
@@ -630,7 +630,7 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
   // 普通材料处理
   // 1 * 系数
   else {
-    returnRow[calcFieldName] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow[coefficient], 1), 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow[coefficientFieldName], 1), 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
 
@@ -638,10 +638,10 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
 }
 
 //数量转换到换算数量
-export function getMeasureQtyToConvertCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaId, coefficient) {
+export function getMeasureQtyToConvertCalc(commonModel, dataRow, type, fieldName, calcFieldName, formulaIdFieldName, coefficientFieldName) {
   const returnRow: any = {};
-  if (isNotEmpty(dataRow[formulaId])) {
-    returnRow[calcFieldName] = getFormulaValue('slave', dataRow, dataRow[formulaId], {slave: dataRow}, commonModel);
+  if (isNotEmpty(dataRow[formulaIdFieldName])) {
+    returnRow[calcFieldName] = getFormulaValue('slave', dataRow, dataRow[formulaIdFieldName], {slave: dataRow}, commonModel);
   }
   // 单位相同 数量相同
   else if (dataRow.measureUnit === dataRow.convertUnit) {
@@ -650,7 +650,7 @@ export function getMeasureQtyToConvertCalc(commonModel, dataRow, type, fieldName
   // 普通材料处理
   // 1 * 系数
   else {
-    returnRow[calcFieldName] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow[coefficient], 1), 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow[coefficientFieldName], 1), 6);
   }
   return returnRow;
 }

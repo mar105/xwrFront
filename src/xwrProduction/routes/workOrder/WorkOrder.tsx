@@ -98,9 +98,9 @@ const WorkOrder = (props) => {
     if (name === 'part') {
       return record.slaveId === slaveId;
     } else if (name === 'material') {
-      return (record.slaveId === slaveId && (record.partId === partId || record.materialGenre === '2product'));
+      return (record.slaveId === slaveId && ((record.partId === partId || record.materialGenre === '2product') || partId === ''));
     } else if (name === 'process') {
-      return (record.slaveId === slaveId && (record.partId === partId || record.processGenre === '3product'));
+      return (record.slaveId === slaveId && ((record.partId === partId || record.processGenre === '3product') || partId === ''));
     }
   }
 

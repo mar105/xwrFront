@@ -115,10 +115,33 @@ const commonProductionEvent = (WrapComponent) => {
     };
 
     const onDataChange = (params) => {
-      const { name, fieldName, record, isWait } = params;
-      const { partData: partDataOld, partModifyData: partModifyDataOld,
+      const { name, fieldName, record, isWait, value: valueOld } = params;
+      const { dispatch, partData: partDataOld, partModifyData: partModifyDataOld, partSelectedRowKeys,
         materialData: materialDataOld, materialModifyData: materialModifyDataOld,
         processData: processDataOld, processModifyData: processModifyDataOld } = propsRef.current;
+      if(name === 'material') {
+        if (fieldName === 'materialGenre') {
+          if (valueOld !== '2product' && commonUtils.isEmptyArr(partSelectedRowKeys)) {
+            const index = props.constantData.filter(item => item.constantName === 'pleaseChoosePart');
+            if (index > -1) {
+              props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
+            } else {
+              props.gotoError(dispatch, {code: '6001', msg: '请选择部件！'});
+            }
+            return;
+          }
+        }
+      } else if(name === 'process') {
+        if (valueOld !== '3product' && commonUtils.isEmptyArr(partSelectedRowKeys)) {
+          const index = props.constantData.filter(item => item.constantName === 'pleaseChoosePart');
+          if (index > -1) {
+            props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
+          } else {
+            props.gotoError(dispatch, {code: '6001', msg: '请选择部件！'});
+          }
+          return;
+        }
+      }
       let returnData = props.onDataChange({...params, isWait: true});
       if(name === 'slave') {
         if (fieldName === 'productName') {
@@ -132,6 +155,22 @@ const commonProductionEvent = (WrapComponent) => {
         if (fieldName === 'partName') {
           returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'partName', returnData.dataRow.partName) };
           returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'partName', returnData.dataRow.partName) };
+        }
+      } else if(name === 'material') {
+        if (fieldName === 'materialGenre') {
+          const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
+          if (index > -1) {
+            returnData[name + 'Data'][index].partId = returnData[name + 'Data'][index].materialGenre === '2product' ? '' :
+              commonUtils.isEmpty(returnData[name + 'Data'][index].partId) ? partSelectedRowKeys[0] : returnData[name + 'Data'][index].partId;
+          }
+        }
+      } else if(name === 'process') {
+        if (fieldName === 'processGenre') {
+          const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
+          if (index > -1) {
+            returnData[name + 'Data'][index].partId = returnData[name + 'Data'][index].processGenre === '3product' ? '' :
+              commonUtils.isEmpty(returnData[name + 'Data'][index].partId) ? partSelectedRowKeys[0] : returnData[name + 'Data'][index].partId;
+          }
         }
       }
 
@@ -266,7 +305,6 @@ const commonProductionEvent = (WrapComponent) => {
           }
           const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
           const slaveIndex = slaveData.findIndex(item => item.id === slaveSelectedRowKeys[0]);
-          const partIndex = partData.findIndex(item => item.id === partSelectedRowKeys[0]);
           returnData[name + 'Data'][index].slaveId = slaveData[slaveIndex].id;
           returnData[name + 'Data'][index].productName = slaveData[slaveIndex].productName;
 
@@ -274,6 +312,7 @@ const commonProductionEvent = (WrapComponent) => {
             returnData[name + 'Data'][index].partId = '';
             returnData[name + 'Data'][index].materialGenre = '2product';
           } else {
+            const partIndex = partData.findIndex(item => item.id === partSelectedRowKeys[0]);
             returnData[name + 'Data'][index].partName = partData[partIndex].partName;
             returnData[name + 'Data'][index].partId = partData[partIndex].id;
             returnData[name + 'Data'][index].materialGenre = '0main';
@@ -494,6 +533,8 @@ const commonProductionEvent = (WrapComponent) => {
       let inOutAdjust = 1;
       let printingLossQty = 0;
       let processId = '';
+      let isPartAndMaterial = true;
+      let partAndMaterial: any = {};
       processFilterData.forEach((process, processIndex) => {
         if (!isFirst) {
           inOutRate = commonUtils.isEmptyorZeroDefault(process.inOutAdjustRate, 1);
@@ -531,8 +572,11 @@ const commonProductionEvent = (WrapComponent) => {
           process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
             master: masterDataOld, slave, part, material: {}, process }, commonModel);
         } else {
-          const partAndMaterial = partAndMaterialCalc(slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty);
-          //排程数量公式
+          if (isPartAndMaterial) {
+            partAndMaterial = partAndMaterialCalc(slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty);
+            isPartAndMaterial = false;
+          }
+                    //排程数量公式
           process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
             master: masterDataOld, slave, part: partAndMaterial.partDataRow, material: partAndMaterial.materialDataRow, process }, commonModel);
 
@@ -586,7 +630,7 @@ const commonProductionEvent = (WrapComponent) => {
       }
 
       materialData.filter(item => item.partId === part.id).forEach((material, materialIndex) => {
-        const index = materialData.findIndex(item => item.id = material.id);
+        const index = materialData.findIndex(item => item.id === material.id);
         materialData[index].handleType = commonUtils.isEmpty(materialData[index].handleType) ? 'modify' : materialData[index].handleType;
         if (commonUtils.isNotEmpty(material.printToMeasureFormulaId)) {
           materialData[index].measureQty = commonUtils.getFormulaValue('material', process, material.printToMeasureFormulaId, {
@@ -616,6 +660,7 @@ const commonProductionEvent = (WrapComponent) => {
           }
         }
       });
+
       return { partDataRow, materialDataRow };
     }
 

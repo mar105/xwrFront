@@ -63,7 +63,9 @@ export default {
         const prefix = application.prefix === 'xwrMain' ? '' : '/' + application.prefix;
         yield put(routerRedux.push(prefix + '/login'));
       }
-      console.error(errorMsg);
+      if (errorMsg !== undefined) {
+        console.error(errorMsg);
+      }
       notification.error({message: msg});
     },
     * gotoSuccess({ payload }, { put }) {

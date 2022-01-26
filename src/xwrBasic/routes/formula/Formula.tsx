@@ -94,14 +94,15 @@ const Formula = (props) => {
     return treeData;
   };
 
-  const onSelectChange = (name, fieldName, record, assignField, value, option) => {
+  const onDataChange = (params) => {
+    const { fieldName, value } = params;
     if (fieldName === 'formulaType') {
       const { dispatchModifyState } = props;
-      const returnState = props.onSelectChange(name, fieldName, record, assignField, value, option, true);
+      let returnData = props.onDataChange({...params, isWait: true});
       const treeData = getTreeData(value);
-      dispatchModifyState({treeData, ...returnState});
+      dispatchModifyState({treeData, ...returnData});
     } else {
-      props.onSelectChange(name, fieldName, record, assignField, value, option);
+      props.onDataChange(params);
     }
 
   }
@@ -224,7 +225,7 @@ const Formula = (props) => {
   };
   const component = useMemo(()=>{
     return (
-    <CommonExhibit name="master" {...props} onSelectChange={onSelectChange} />)}, [masterContainer, masterData, enabled]);
+    <CommonExhibit name="master" {...props} onDataChange={onDataChange} />)}, [masterContainer, masterData, enabled]);
   const tree = useMemo(()=>{ return (
     <TreeComponent {...treeParam} />)}, [treeData, treeSelectedKeys]);
   const paramButton = useMemo(()=>{

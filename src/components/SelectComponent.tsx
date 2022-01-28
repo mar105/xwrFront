@@ -1,15 +1,75 @@
-import React, {useReducer} from 'react';
-import {Divider, Form, Input, message, Select} from 'antd';
+import React, {useEffect, useReducer} from 'react';
+import {Divider, Form, Input, message, Select, Tooltip} from 'antd';
 import { componentType } from '../utils/commonTypes';
 import * as commonUtils from '../utils/commonUtils';
 import debounce from 'lodash/debounce';
 import { SaveOutlined, PlusSquareOutlined, SelectOutlined } from '@ant-design/icons';
+import {TableComponent} from "./TableComponent";
 
 const { Option } = Select;
 export function SelectComponent(params) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
     return {...state, ...action };
   },{});
+
+  useEffect(() => {
+    const array: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
+    const keyUpFieldDrop = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? 'id' : params.config.keyUpFieldDrop;
+    const columns = [{ title: '', dataIndex: keyUpFieldDrop, fieldType: 'varchar', sortNum: 1 }];
+    if (array.length > 0) {
+      Object.keys(array[0]).forEach((key, index) => {
+        if (key !== keyUpFieldDrop) {
+          columns.push({ title: '', dataIndex: key, fieldType: 'varchar', sortNum: index + 2 })
+        };
+      });
+    }
+    const container: any = {};
+    const slaveConfig: any = [];
+    container.isMultiChoise = true;
+    columns.forEach(item => {
+      const config = {...item, viewName: item.title, fieldName: item.dataIndex };
+      slaveConfig.push(config);
+    });
+    container.slaveData = slaveConfig;
+
+    const getTableProps = () => {
+      const data: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
+      const name = 'select';
+      const tableParam ={
+        name,
+        enabled: false,
+        dispatchModifyState: params.dispatchModifyState,
+        property: { showHeader: false, columns: columns, dataSource: data, loading: modifySelfState.loading },
+        eventOnRow: { onRowClick: params.onRowClick },
+        // rowSelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
+        eventSelection: { onRowSelectChange: params.onRowSelectChange },
+        config: container,
+        onReachEnd: params.onReachEnd, //分页滚动 拖动到最后调用接口
+        onSortEnd: params.onSortEnd,
+        draggableBodyRow: params.draggableBodyRow,
+        pagination: true, // 是否分页
+        isLastColumn: false,
+        expandable: {onExpand: params.onExpand, expandedRowKeys: []},
+        lastColumn: {},
+      }
+      return tableParam;
+    };
+    const dropdownRender = menu => {
+      return (
+        <div>
+          {/*{menu}*/}
+          <TableComponent {...getTableProps()} />
+          <Divider style={{ margin: '4px 0' }} />
+          <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
+            <Input style={{ flex: 'auto' }} value={modifySelfState.dropAddName} onChange={onDropAddNameChange} />
+            <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'addItem')} > <SaveOutlined /> </a>
+            <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'popup')} > <PlusSquareOutlined /> </a>
+          </div>
+        </div>
+      )
+    }
+    dispatchModifySelfState({ container, columns, dropdownRender });
+  }, [modifySelfState.viewDrop]);
   let dropOptions: any = [];
   const addProperty: any = {};
   addProperty.showSearch = true;
@@ -46,6 +106,26 @@ export function SelectComponent(params) {
   } else if (params.config.dropType === 'popup') {
     addProperty.open = false;
     addProperty.suffixIcon = <SelectOutlined onClick={onPopup} />
+  } else if (params.config.dropType === 'current') {
+    const keyUpFieldDrop = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? 'id' : params.config.keyUpFieldDrop;
+    const columns = [{ title: '', dataIndex: keyUpFieldDrop, fieldType: 'varchar', sortNum: 1 }];
+    const array: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
+    if (array.length > 0) {
+      Object.keys(array[0]).forEach((key, index) => {
+        if (key !== keyUpFieldDrop) {
+          columns.push({ title: '', dataIndex: key, fieldType: 'varchar', sortNum: index + 2 })
+        };
+      });
+    }
+    const container: any = {};
+    const slaveConfig: any = [];
+    container.isMultiChoise = true;
+    columns.forEach(item => {
+      const config = {...item, viewName: item.title, fieldName: item.dataIndex };
+      slaveConfig.push(config);
+    });
+    container.slaveData = slaveConfig;
+    addProperty.tableInfo = { container, columns };
   }
 
   const onKeyUp = (e) => {
@@ -107,19 +187,6 @@ export function SelectComponent(params) {
     }
   };
 
-  const dropdownRender = menu => {
-    return (
-      <div>
-        {menu}
-        <Divider style={{ margin: '4px 0' }} />
-        <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
-          <Input style={{ flex: 'auto' }} value={modifySelfState.dropAddName} onChange={onDropAddNameChange} />
-          <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'addItem')} > <SaveOutlined /> </a>
-          <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'popup')} > <PlusSquareOutlined /> </a>
-        </div>
-      </div>
-  )}
-
   const event = {
     onChange,
     onKeyUp,
@@ -134,7 +201,8 @@ export function SelectComponent(params) {
 
   params.property.loading = modifySelfState.loading;
   params.property.allowClear = params.config.isDropEmpty;
-  params.property.dropdownRender = params.config.isDropAdd ? dropdownRender : null;
+  // params.property.dropdownRender = params.config.isDropAdd ? dropdownRender : null;
+  params.property.dropdownRender = params.config.dropType === 'sql' ? modifySelfState.dropdownRender : null;
 
   if (params.componentType === componentType.Soruce) {
     return <Select bordered={false} {...params.property} {...addProperty} { ...event }>{dropOptions}</Select>;

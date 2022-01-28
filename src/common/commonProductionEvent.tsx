@@ -95,13 +95,41 @@ const commonProductionEvent = (WrapComponent) => {
       return returnData;
     };
 
-    const modifyFieldData = (name, dataOld, dataModifyOld, modifyFieldName, modifyValue) => {
+    const modifyFieldData = (name, dataOld, dataModifyOld, filterFieldName, filterValue, modifyFieldName, modifyValue) => {
       const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
 
-      const data: any = [];
-      dataOld.forEach(dataRowOld => {
+      const data: any = [...dataOld];
+      data.filter(item => item[filterFieldName] === filterValue).forEach(dataRowOld => {
         const dataRow: any = {...dataRowOld, handleType: commonUtils.isEmpty(dataRowOld.handleType) ? 'modify' : dataRowOld.handleType, [modifyFieldName]: modifyValue };
-        data.push(dataRow);
+        if (dataRowOld.allId) {
+          props.setTreeNode(data, dataRow, dataRowOld.allId);
+        } else {
+          const index = data.findIndex(item => item.id === dataRow.id);
+          data[index] = dataRow;
+        }
+
+        if (commonUtils.isNotEmptyArr(dataRow.children)) {
+          modifyChildFieldData(name, data.children, dataModify, modifyFieldName, modifyValue);
+        }
+        if (dataRow.handleType === 'modify') {
+          const indexModify = dataModify.findIndex(item => item.id === dataRow.id);
+          if (indexModify > -1) {
+            dataModify[indexModify] = {...dataModify[indexModify], [modifyFieldName]: modifyValue };
+          } else {
+            dataModify.push({ id: dataRow.id, handleType: dataRow.handleType, [modifyFieldName]: modifyValue })
+          }
+        }
+      });
+      return { [name + 'Data']: data, [name + 'ModifyData']: dataModify };
+    };
+
+    const modifyChildFieldData = (name, data, dataModify, modifyFieldName, modifyValue) => {
+      data.forEach(dataRowOld => {
+        const dataRow: any = {...dataRowOld, handleType: commonUtils.isEmpty(dataRowOld.handleType) ? 'modify' : dataRowOld.handleType, [modifyFieldName]: modifyValue };
+        props.setTreeNode(data, dataRow, dataRowOld.allId);
+        if (commonUtils.isNotEmptyArr(dataRow.children)) {
+          modifyChildFieldData(name, dataRow.children, dataModify, modifyFieldName, modifyValue);
+        }
         if (dataRow.handleType === 'modify') {
           const indexModify = dataModify.findIndex(item => item.id === dataRow.id);
           if (indexModify > -1) {
@@ -119,6 +147,7 @@ const commonProductionEvent = (WrapComponent) => {
       const { dispatch, partData: partDataOld, partModifyData: partModifyDataOld, partSelectedRowKeys,
         materialData: materialDataOld, materialModifyData: materialModifyDataOld,
         processData: processDataOld, processModifyData: processModifyDataOld } = propsRef.current;
+      // 前面数据改变前作判断
       if(name === 'material') {
         if (fieldName === 'materialGenre') {
           if (valueOld !== '2product' && commonUtils.isEmptyArr(partSelectedRowKeys)) {
@@ -142,19 +171,21 @@ const commonProductionEvent = (WrapComponent) => {
           return;
         }
       }
+
+      // 开始修改数据
       let returnData = props.onDataChange({...params, isWait: true});
       if(name === 'slave') {
         if (fieldName === 'productName') {
-          returnData = {...returnData, ...modifyFieldData('part', partDataOld, partModifyDataOld, 'productName', returnData.dataRow.productName) };
-          returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'productName', returnData.dataRow.productName) };
-          returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'productName', returnData.dataRow.productName) };
+          returnData = {...returnData, ...modifyFieldData('part', partDataOld, partModifyDataOld, 'slaveId', returnData.dataRow.id, 'productName', returnData.dataRow.productName) };
+          returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'slaveId', returnData.dataRow.id,'productName', returnData.dataRow.productName) };
+          returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'slaveId', returnData.dataRow.id, 'productName', returnData.dataRow.productName) };
         }
       } else if(name === 'part') {
         //在方法内部判断了哪些字段需要计算
         returnData = calcPaper({name, fieldName, record, returnData});
         if (fieldName === 'partName') {
-          returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'partName', returnData.dataRow.partName) };
-          returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'partName', returnData.dataRow.partName) };
+          returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'partId', returnData.dataRow.id,'partName', returnData.dataRow.partName) };
+          returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'partId', returnData.dataRow.id,'partName', returnData.dataRow.partName) };
         }
       } else if(name === 'material') {
         if (fieldName === 'materialGenre') {
@@ -272,12 +303,12 @@ const commonProductionEvent = (WrapComponent) => {
     }
 
     const onTableAddClick = (name, e, isWait = false) => {
-      const { dispatch, slaveSelectedRowKeys, slaveData, partSelectedRowKeys, partData, processContainer }: any = propsRef.current;
+      const { dispatch, slaveSelectedRows, slaveData, partSelectedRows, partData, processContainer }: any = propsRef.current;
       const returnData = props.onTableAddClick(name, e, true);
       const addState = { ...returnData };
       if (name === 'part' || name === 'material' || name === 'process') {
         if (name === 'part') {
-          if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+          if (commonUtils.isEmptyArr(slaveSelectedRows)) {
             const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
               props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
@@ -286,15 +317,16 @@ const commonProductionEvent = (WrapComponent) => {
             }
             return;
           }
-          const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-          const slaveIndex = slaveData.findIndex(item => item.id === slaveSelectedRowKeys[0]);
-          returnData[name + 'Data'][index].slaveId = slaveData[slaveIndex].id;
-          returnData[name + 'Data'][index].partQty = slaveData[slaveIndex].productQty;
-          returnData[name + 'Data'][index].productName = slaveData[slaveIndex].productName;
-          addState[name + 'SelectedRowKeys'] = [returnData.data.id];
-          addState[name + 'SelectedRows'] = [{...returnData.data}];
+          const part = props.getTreeNode(returnData[name + 'Data'], returnData.dataRow.allId);
+          const slave = props.getTreeNode(slaveData, slaveSelectedRows[0].allId);
+          part.slaveId = slave.id;
+          part.partQty = slave.productQty;
+          part.productName = slave.productName;
+          props.setTreeNode(returnData[name + 'Data'], part, returnData.dataRow.allId);
+          addState[name + 'SelectedRowKeys'] = [returnData.dataRow.id];
+          addState[name + 'SelectedRows'] = [part];
         } else if (name === 'material') {
-          if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+          if (commonUtils.isEmptyArr(slaveSelectedRows)) {
             const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
               props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
@@ -303,22 +335,22 @@ const commonProductionEvent = (WrapComponent) => {
             }
             return;
           }
-          const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.data.id);
-          const slaveIndex = slaveData.findIndex(item => item.id === slaveSelectedRowKeys[0]);
-          returnData[name + 'Data'][index].slaveId = slaveData[slaveIndex].id;
-          returnData[name + 'Data'][index].productName = slaveData[slaveIndex].productName;
+          const index = returnData[name + 'Data'].findIndex(item => item.id === returnData.dataRow.id);
+          const slave = props.getTreeNode(slaveData, slaveSelectedRows[0].allId);
+          returnData[name + 'Data'][index].slaveId = slave.id;
+          returnData[name + 'Data'][index].productName = slave.productName;
 
-          if (commonUtils.isEmptyArr(partSelectedRowKeys)) {
+          if (commonUtils.isEmptyArr(partSelectedRows)) {
             returnData[name + 'Data'][index].partId = '';
             returnData[name + 'Data'][index].materialGenre = '2product';
           } else {
-            const partIndex = partData.findIndex(item => item.id === partSelectedRowKeys[0]);
-            returnData[name + 'Data'][index].partName = partData[partIndex].partName;
-            returnData[name + 'Data'][index].partId = partData[partIndex].id;
+            const part = props.getTreeNode(partData, partSelectedRows[0].allId);
+            returnData[name + 'Data'][index].partName = part.partName;
+            returnData[name + 'Data'][index].partId = part.id;
             returnData[name + 'Data'][index].materialGenre = '0main';
           }
         } else if (name === 'process') {
-          if (commonUtils.isEmptyArr(slaveSelectedRowKeys)) {
+          if (commonUtils.isEmptyArr(slaveSelectedRows)) {
             const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
               props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
@@ -328,7 +360,7 @@ const commonProductionEvent = (WrapComponent) => {
             return;
           }
           let config = {};
-          if (commonUtils.isNotEmptyArr(partSelectedRowKeys)) {
+          if (commonUtils.isNotEmptyArr(partSelectedRows)) {
             const index = processContainer.slaveData.findIndex(item => item.fieldName === 'processName');
             config = processContainer.slaveData[index];
           } else {
@@ -353,7 +385,12 @@ const commonProductionEvent = (WrapComponent) => {
     };
     const onRowClick = async (name, record, rowKey) => {
       const { dispatchModifyState } = props;
-      dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]], [name + 'SelectedRows']: [record] });
+      const addState: any = {};
+      if (name === 'slave') {
+        addState.partSelectedRowKeys = [];
+        addState.partSelectedRows = [];
+      }
+      dispatchModifyState({ [name + 'SelectedRowKeys']: [record[rowKey]], [name + 'SelectedRows']: [record], ...addState });
     }
 
     const onModalOk = async (params, isWait) => {
@@ -393,6 +430,7 @@ const commonProductionEvent = (WrapComponent) => {
             const rowData = { ...data[index], ...assignValue };
             rowData.handleType = commonUtils.isEmpty(data[index].handleType) ? 'modify' : data[index].handleType;
             rowData.partId = rowData.processGenre === '3product' ? '' : rowData.partId;
+            rowData.partName = rowData.processGenre === '3product' ? '' : rowData.partName;
             data[index] = rowData;
             dataRow = rowData;
             if (data[index].handleType === 'modify') {
@@ -407,6 +445,7 @@ const commonProductionEvent = (WrapComponent) => {
             const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
             const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
             rowData.partId = rowData.processGenre === '3product' ? '' : rowData.partId;
+            rowData.partName = rowData.processGenre === '3product' ? '' : rowData.partName;
             dataRow = rowData;
             data.push(rowData);
           }
@@ -415,6 +454,7 @@ const commonProductionEvent = (WrapComponent) => {
             const assignValue = commonUtils.getAssignFieldValue(name, assignField, matchItem, propsRef.current);
             const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
             rowData.partId = rowData.processGenre === '3product' ? '' : rowData.partId;
+            rowData.partName = rowData.processGenre === '3product' ? '' : rowData.partName;
             const index = data.findIndex(item => item.slaveId === rowData.slaveId && item.partId === rowData.partId && item.processId === rowData.processId);
             if (!(index > -1)) {
               data.push(rowData);
@@ -502,7 +542,7 @@ const commonProductionEvent = (WrapComponent) => {
                 inOutRate = commonUtils.isEmptyorZeroDefault(slave.coefficient, 1);
                 isFirst = true;
               }
-              calcProcess(processSlaveData, partData, partModifyData, materialData, materialModifyData,
+              processOutQty = calcProcess(processSlaveData, partData, partModifyData, materialData, materialModifyData,
                 processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel);
             });
 
@@ -513,7 +553,7 @@ const commonProductionEvent = (WrapComponent) => {
               inOutRate = part.totalPQty > 4 ? part.totalPQty / 2 / commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) :
                 commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) / commonUtils.isEmptyorZeroDefault(part.magnification, 1);
               isFirst = true;
-              calcProcess(processPartData, partData, partModifyData, materialData, materialModifyData,
+              processOutQty = calcProcess(processPartData, partData, partModifyData, materialData, materialModifyData,
                 processModifyData, processData, processOutQty, isFirst, inOutRate, masterDataOld, slave, part, commonModel);
             });
           });
@@ -548,7 +588,7 @@ const commonProductionEvent = (WrapComponent) => {
 
         if (process.processGenre !== '0prepress') {
           process.processOutQty = processOutQty;
-          process.lossQty = commonUtils.isEmptyorZero(process.adjustLossQty) ? process.adjustLossQty :
+          process.lossQty = commonUtils.isNotEmptyorZero(process.adjustLossQty) ? process.adjustLossQty :
             commonUtils.getFormulaValue('process', process, process.productionLossFormulaId, {
             master: masterDataOld, slave, part, material: {}, process }, commonModel);
 
@@ -576,7 +616,8 @@ const commonProductionEvent = (WrapComponent) => {
             partAndMaterial = partAndMaterialCalc(slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty);
             isPartAndMaterial = false;
           }
-                    //排程数量公式
+
+          //排程数量公式
           process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
             master: masterDataOld, slave, part: partAndMaterial.partDataRow, material: partAndMaterial.materialDataRow, process }, commonModel);
 
@@ -606,6 +647,7 @@ const commonProductionEvent = (WrapComponent) => {
         }
       });
       sortData(partData, processData);
+      return processOutQty;
     }
 
     const partAndMaterialCalc = (slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty) => {
@@ -632,16 +674,17 @@ const commonProductionEvent = (WrapComponent) => {
       materialData.filter(item => item.partId === part.id).forEach((material, materialIndex) => {
         const index = materialData.findIndex(item => item.id === material.id);
         materialData[index].handleType = commonUtils.isEmpty(materialData[index].handleType) ? 'modify' : materialData[index].handleType;
+        materialData[index].materialKQty = getMaterialKQty(part.machineLength, part.machineWidth, materialData[index].materialStyle, materialData[index].materialKQty);
         if (commonUtils.isNotEmpty(material.printToMeasureFormulaId)) {
-          materialData[index].measureQty = commonUtils.getFormulaValue('material', process, material.printToMeasureFormulaId, {
-            master: props.masterData, slave, part, material, process }, props.commonModel);
+          materialData[index].measureQty = Math.ceil(commonUtils.getFormulaValue('material', process, material.printToMeasureFormulaId, {
+            master: props.masterData, slave, part, material, process }, props.commonModel) / commonUtils.isEmptyorZeroDefault(materialData[index].materialKQty, 1));
         } else if (commonUtils.isEmpty(material.adjustProcessId)) {
-          materialData[index].measureQty = processOutQty;
+          materialData[index].measureQty = Math.ceil(processOutQty / commonUtils.isEmptyorZeroDefault(materialData[index].materialKQty, 1));
           materialData[index].processId = processId;
         } else {
           const processIndex = processFilterData.findIndex(item => item.processId === material.adjustProcessId);
           if (processIndex > -1) {
-            materialData[index].measureQty = processFilterData[processIndex].processInQty;
+            materialData[index].measureQty = Math.ceil(processFilterData[processIndex].processInQty / commonUtils.isEmptyorZeroDefault(materialData[index].materialKQty, 1));
           }
         }
         const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, {...materialData[index]},'material', 'measureQty', 'materialQty', 'measureToMaterialFormulaId', 'measureToMaterialCoefficient');
@@ -662,6 +705,34 @@ const commonProductionEvent = (WrapComponent) => {
       });
 
       return { partDataRow, materialDataRow };
+    }
+
+    const getMaterialKQty = (machineLengthOld, machineWidthOld, materialStyle, materialKQty) => {
+      const machineLength = machineLengthOld > machineWidthOld ? machineLengthOld : machineWidthOld;
+      const machineWidth = machineLengthOld > machineWidthOld ? machineWidthOld : machineLengthOld;
+      if (materialStyle.split('*').length === 2) {
+        const materialWidthOld = materialStyle.split('*')[0];
+        const materialLengthOld = materialStyle.split('*')[1];
+        const materialLength = materialLengthOld > materialWidthOld ? materialLengthOld : materialWidthOld;
+        const materialWidth = materialLengthOld > materialWidthOld ? materialWidthOld : materialLengthOld;
+        if (materialLength > 0 && materialWidth > 0 && machineLength > 0 && machineWidth > 0) {
+          const qty1 = Math.floor(materialLength / machineLength) * Math.floor(materialWidth / machineWidth);
+          let blend1 = 0;
+          if (materialLength - Math.floor(materialLength / machineLength) * machineLength >= machineWidth) {
+            blend1 = Math.floor((materialLength - Math.floor(materialLength / machineLength) * machineLength) / machineWidth) * Math.floor(materialWidth / machineLength);
+          }
+
+          const qty2 = Math.floor(materialWidth / machineLength) * Math.floor(materialLength / machineWidth);
+          let blend2 = 0;
+          if (materialWidth - Math.floor(materialWidth / machineLength) * materialWidth >= machineWidth) {
+            blend2 = Math.floor((materialWidth - Math.floor(materialWidth / machineLength) * machineLength) / machineWidth) * Math.floor(materialLength / machineLength);
+          }
+          return (qty1 + blend1) > (qty2 + blend2) ? (qty1 + blend1) : (qty2 + blend2);
+        } else {
+          return materialKQty;
+        }
+      }
+      return materialKQty;
     }
 
     return <div>

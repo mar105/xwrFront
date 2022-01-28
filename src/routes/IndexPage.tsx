@@ -135,6 +135,7 @@ function IndexPage(props) {
 
   const onExit = async () => {
     const {dispatch} = props;
+    onClear();
     clearInterval(modifySelfState.intervalWebsocket);
     if (props.commonModel.stompClient !== null) {
       props.commonModel.stompClient.disconnect();

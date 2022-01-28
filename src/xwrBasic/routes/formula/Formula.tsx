@@ -46,6 +46,13 @@ const Formula = (props) => {
   }, [props.masterContainer.dataSetName]);
 
   useEffect(() => {
+    if (commonUtils.isNotEmptyObj(props.masterData) && formulaParamRef.current) {
+      const treeData = getTreeData(props.masterData.formulaType);
+      props.dispatchModifyState({treeData });
+    }
+  }, [props.masterData]);
+
+  useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
       && props.commonModel.stompClient.connected) {
       const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + props.tabId, saveDataReturnResult);
@@ -94,18 +101,19 @@ const Formula = (props) => {
     return treeData;
   };
 
-  const onDataChange = (params) => {
-    const { fieldName, value } = params;
-    if (fieldName === 'formulaType') {
-      const { dispatchModifyState } = props;
-      let returnData = props.onDataChange({...params, isWait: true});
-      const treeData = getTreeData(value);
-      dispatchModifyState({treeData, ...returnData});
-    } else {
-      props.onDataChange(params);
-    }
+  // const onDataChange = (params) => {
+  //   const { fieldName, value } = params;
+  //   if (fieldName === 'formulaType') {
+  //     const { dispatchModifyState } = props;
+  //     let returnData = props.onDataChange({...params, isWait: true});
+  //     const treeData = getTreeData(value);
+  //     dispatchModifyState({treeData, ...returnData});
+  //   } else {
+  //     props.onDataChange(params);
+  //   }
+  //
+  // }
 
-  }
   const onFinish = async (values: any) => {
     if (verifyFormula() === 1) {
       if (await props.onFinish(values)) {
@@ -113,8 +121,6 @@ const Formula = (props) => {
       }
     }
   }
-
-
 
   const onButtonClick = async (key, config, e) => {
     if (key === 'verifyButton') {
@@ -225,7 +231,7 @@ const Formula = (props) => {
   };
   const component = useMemo(()=>{
     return (
-    <CommonExhibit name="master" {...props} onDataChange={onDataChange} />)}, [masterContainer, masterData, enabled]);
+    <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   const tree = useMemo(()=>{ return (
     <TreeComponent {...treeParam} />)}, [treeData, treeSelectedKeys]);
   const paramButton = useMemo(()=>{

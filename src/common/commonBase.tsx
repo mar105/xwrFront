@@ -354,7 +354,7 @@ const commonBase = (WrapComponent) => {
       addState[name + 'SelectedRowKeys'] = [data.id];
       addState[name + 'SelectedRows'] = [data];
       if (isWait) {
-        return { ...addState, [name + 'Data']: tableData, data };
+        return { ...addState, [name + 'Data']: tableData, dataRow: data };
       } else {
         dispatchModifyState({ ...addState, [name + 'Data']: tableData });
       }

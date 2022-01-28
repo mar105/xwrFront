@@ -386,6 +386,32 @@ export function getDefaultValue(container, allDataset) {
   return returnData;
 }
 
+export function getTreeNodeById(treeData, id) {
+  let treeNode: any = {};
+  for(let index = 0; index < treeData.length; index++) {
+    if (treeData[index].id === id) {
+      treeNode = treeData[index];
+      break;
+    } else if (isNotEmptyArr(treeData[index].children)) {
+      treeNode = getChildTreeNodeById(treeData[index].children, id);
+    }
+  }
+  return treeNode;
+}
+
+export function getChildTreeNodeById(treeData, id) {
+  let treeNode: any = { };
+  for(let index = 0; index < treeData.length; index++) {
+    if (treeData[index].id === id) {
+      treeNode = treeData[index];
+      break;
+    } else if (isNotEmptyArr(treeData[index].children)) {
+      treeNode = getChildTreeNodeById(treeData[index].children, id);
+    }
+  }
+  return treeNode;
+}
+
 // 处理赋值赋值字段、默认值赋值字段 其他数据集value;
 export function copeDataSetValue(name, record, assignValueField, allDataset) {
   const fieldName = assignValueField;
@@ -441,11 +467,12 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
       } else {
         const selectedName = fieldName.split('.')[0].trim() + 'SelectedRowKeys';
         if (isNotEmptyArr(allDataset[selectedName])) {
-          const index = allDataset[dataSetName].findIndex(item => item.id === allDataset[selectedName][0]);
-          if (index > -1) {
-            // 加括号处理当值为负数时的异常
-            return allDataset[dataSetName][index][tableFieldName]
-          }
+          const treeNode = getTreeNodeById(allDataset[dataSetName], allDataset[selectedName][0]);
+          return treeNode[tableFieldName];
+          // const index = allDataset[dataSetName].findIndex(item => item.id === allDataset[selectedName][0]);
+          // if (index > -1) {
+          //   return allDataset[dataSetName][index][tableFieldName]
+          // }
         }
         return undefined;
       }
@@ -763,16 +790,17 @@ export function getFormulaValue(name, dataRow, formulaId, allDataRow, commonMode
               formula = value.split('*').length > 2 ? formula.replace(formulaParam.paramName, value.split('*')[2]) : formula.replace(formulaParam.paramName, value.split('*')[1]);
             }
           }
-        } else if (isNotEmpty(dataRow[formulaParam.fieldName])) {
-          const value = name === key ? dataRow[formulaParam.fieldName] : allDataRow[key].formulaParam.fieldName;
-          formula = formula.replace(formulaParam.paramName, value);
+        } else {
+          const value = name === key ? dataRow[formulaParam.fieldName] : allDataRow[key][formulaParam.fieldName];
+          if (isNotEmpty(value)) {
+            formula = formula.replace(formulaParam.paramName, value);
+          }
         }
         // else {
         //   formula = formula.replace(formulaParam.paramName, 0);
         // }
       });
     }
-
     try {
       return eval(formula);
     }

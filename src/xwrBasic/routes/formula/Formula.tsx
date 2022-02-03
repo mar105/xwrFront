@@ -30,7 +30,7 @@ const Formula = (props) => {
       const { dispatchModifyState } = props;
       const index = props.containerData[0].slaveData.findIndex(item => item.fieldName === 'treeSql');
       if (index > -1) {
-        const returnState: any = await props.getSelectList({containerSlaveId: props.containerData[0].slaveData[index].id, isWait: true, sqlCondition: props.containerData[0].slaveData[index].sqlCondition });
+        const returnState: any = await props.getSelectList({containerSlaveId: props.containerData[0].slaveData[index].id, isWait: true, config: props.containerData[0].slaveData[index] });
         dispatchModifyState({ formulaParam: returnState.list });
       }
     }

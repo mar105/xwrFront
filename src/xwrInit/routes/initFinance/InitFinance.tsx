@@ -20,7 +20,7 @@ const InitFinance = (props) => {
         const { dispatchModifyState, slaveContainer } = props;
         const index = slaveContainer.slaveData.findIndex(item => item.fieldName === 'isFinance');
         if (index > -1 && commonUtils.isNotEmpty(slaveContainer.slaveData[index].viewDrop)) {
-          const returnData = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true, sqlCondition: slaveContainer.slaveData[index].sqlCondition })).list;
+          const returnData = (await props.getSelectList({containerSlaveId: slaveContainer.slaveData[index].id, isWait: true, config: slaveContainer.slaveData[index] })).list;
           if (commonUtils.isNotEmptyArr(returnData)) {
             dispatchModifyState({isFinance: returnData[0].isFinance});
           }

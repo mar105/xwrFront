@@ -357,7 +357,7 @@ export function TableComponent(params: any) {
             } else if (column.fieldType === 'varchar' || column.fieldType === 'text') {
               if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
                 return <ProvinceCityArea {...provinceCityAreaParams}  />;
-              } else if (config.dropType === 'sql' || config.dropType === 'const' || config.dropType === 'popup') {
+              } else if (config.dropType === 'sql' || config.dropType === 'current' || config.dropType === 'const' || config.dropType === 'popup') {
                 let component;
                 if (config.isTreeDrop) {
                   component = useMemo(() => {

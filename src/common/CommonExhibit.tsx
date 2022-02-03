@@ -69,7 +69,7 @@ export const CommonExhibit = (props) => {
       if (item.fieldType === 'varchar') {
         if (item.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
           component = <ProvinceCityArea {...provinceCityAreaParams}  />;
-        } else if (item.dropType === 'sql' || item.dropType === 'const') {
+        } else if (item.dropType === 'sql' || item.dropType === 'current' || item.dropType === 'const') {
           if (item.isTreeDrop) {
             component = <TreeSelectComponent {...treeSelectParams}  />;
           } else {

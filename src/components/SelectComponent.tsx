@@ -13,27 +13,68 @@ export function SelectComponent(params) {
   },{});
 
   useEffect(() => {
-    const keyUpFieldDrop = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? 'id' : params.config.keyUpFieldDrop;
-    const columns = [{ title: '', dataIndex: keyUpFieldDrop, fieldType: 'varchar', sortNum: 1 }];
+    if (params.config.viewColumnDrop) {
+      const keyUpFieldDrop = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? 'id' : params.config.keyUpFieldDrop;
+      const columns = [{ title: '', dataIndex: keyUpFieldDrop, fieldType: 'varchar', sortNum: 1 }];
 
-    if (commonUtils.isNotEmpty(params.config.viewColumnDrop) ) {
-      params.config.viewColumnDrop.split(',').forEach((key, index) => {
-        if (key !== keyUpFieldDrop) {
-          columns.push({ title: '', dataIndex: key, fieldType: 'varchar', sortNum: index + 2 })
-        };
+      if (commonUtils.isNotEmpty(params.config.viewColumnDrop) ) {
+        params.config.viewColumnDrop.split(',').forEach((key, index) => {
+          if (key !== keyUpFieldDrop) {
+            columns.push({ title: '', dataIndex: key, fieldType: 'varchar', sortNum: index + 2 })
+          };
+        });
+      }
+      const container: any = {};
+      const slaveConfig: any = [];
+      container.isMultiChoise = true;
+      columns.forEach(item => {
+        const config = {...item, viewName: item.title, fieldName: item.dataIndex };
+        slaveConfig.push(config);
       });
+      container.slaveData = slaveConfig;
+
+      const getTableProps = () => {
+        const data: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
+        const name = 'select';
+        const tableParam ={
+          name,
+          enabled: false,
+          dispatchModifyState: params.dispatchModifyState,
+          property: { rowSelection: null, showHeader: false, columns: columns, dataSource: data, loading: modifySelfState.loading },
+          eventOnRow: { onRowClick: onRowClick },
+          eventSelection: { onRowSelectChange: params.onRowSelectChange },
+          config: container,
+          onReachEnd: params.onReachEnd, //分页滚动 拖动到最后调用接口
+          onSortEnd: params.onSortEnd,
+          draggableBodyRow: params.draggableBodyRow,
+          pagination: true, // 是否分页
+          isLastColumn: false,
+          expandable: {onExpand: params.onExpand, expandedRowKeys: []},
+          lastColumn: {},
+          width: params.config.dropWidth > 0 ? params.config.dropWidth : 50,
+        }
+        return tableParam;
+      };
+
+      const dropdownRender = menu => {
+        return (
+          <div>
+            { commonUtils.isEmpty(params.config.viewColumnDrop) ? menu : <TableComponent {...getTableProps()} /> }
+            {params.config.isDropAdd ?
+              <div>
+                <Divider style={{ margin: '4px 0' }} />
+                <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
+                  <Input style={{ flex: 'auto' }} value={modifySelfState.dropAddName} onChange={onDropAddNameChange} />
+                  <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'addItem')} > <SaveOutlined /> </a>
+                  <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'popup')} > <PlusSquareOutlined /> </a>
+                </div>
+              </div>
+              : '' }
+          </div>
+        )
+      }
+      dispatchModifySelfState({ selectContainer: container, selectColumns: columns, dropdownRender });
     }
-    const container: any = {};
-    const slaveConfig: any = [];
-    container.isMultiChoise = true;
-    columns.forEach(item => {
-      const config = {...item, viewName: item.title, fieldName: item.dataIndex };
-      slaveConfig.push(config);
-    });
-    container.slaveData = slaveConfig;
-
-
-    dispatchModifySelfState({ selectContainer: container, selectColumns: columns });
   }, [modifySelfState.viewDrop]);
   let dropOptions: any = [];
   const addProperty: any = {};
@@ -62,7 +103,7 @@ export function SelectComponent(params) {
       dropOptions.push(option);
     };
     addProperty.filterOption = (input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-  } else if (params.config.dropType === 'sql') {
+  } else if (params.config.dropType === 'sql' || params.config.dropType === 'current') {
     const array: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
     for (const optionObj of array) {
       const viewOption = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? optionObj.id : optionObj[params.config.keyUpFieldDrop];
@@ -72,13 +113,12 @@ export function SelectComponent(params) {
     addProperty.filterOption = (input, option) => {
       return !modifySelfState.isLastPage || commonUtils.isEmpty(option.children) ? true : option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     }
-    if (params.config.dropType === 'sql' && commonUtils.isNotEmpty(params.config.viewColumnDrop)) {
+    if (commonUtils.isNotEmpty(params.config.viewColumnDrop)) {
       addProperty.open = modifySelfState.open;
     }
   } else if (params.config.dropType === 'popup') {
     addProperty.open = false;
     addProperty.suffixIcon = <SelectOutlined onClick={onPopup} />
-  } else if (params.config.dropType === 'current') {
   }
 
   const onKeyUp = (e) => {
@@ -90,8 +130,8 @@ export function SelectComponent(params) {
   const onDropdownVisibleChange = async (open) => {
     if (open) {
       const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true,
-        containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition };
-      if (params.config.dropType === 'sql') {
+        containerSlaveId: params.config.id, config: params.config };
+      if (params.config.dropType === 'sql' || params.config.dropType === 'current') {
         dispatchModifySelfState({ loading: true });
         const selectList = await params.event.getSelectList(dropParam);
         dispatchModifySelfState({ ...selectList, viewDrop: selectList.list, loading: false, open });
@@ -103,22 +143,28 @@ export function SelectComponent(params) {
     const { target } = e;
     if (Math.ceil(target.scrollTop + target.offsetHeight) >= target.scrollHeight && params.config.dropType === 'sql' && !modifySelfState.isLastPage) {
       const dropParam = { name: params.name, record: params.record, pageNum: modifySelfState.pageNum + 1, fieldName: params.config.fieldName, isWait: true,
-        containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { searchValue: modifySelfState.searchValue } };
+        containerSlaveId: params.config.id, config: params.config, condition: { searchValue: modifySelfState.searchValue } };
       const selectList = await params.event.getSelectList(dropParam);
       dispatchModifySelfState({ ...selectList, viewDrop: [...modifySelfState.viewDrop, ...selectList.list]});
     }
   };
   const debounceSearch = async (value) => {
     const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true,
-      containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { searchValue: value } };
+      containerSlaveId: params.config.id, config: params.config, condition: { searchValue: value } };
     const selectList = await params.event.getSelectList(dropParam);
     dispatchModifySelfState({ ...selectList, viewDrop: selectList.list, searchValue: value});
   };
 
   const callDebounceSearch = debounce(debounceSearch, 500);
   const onSearch = (value) => {
-    if (params.config.dropType === 'sql') {
+    if (params.config.dropType === 'sql' || params.config.dropType === 'current') {
       callDebounceSearch(value);
+    }
+  }
+
+  const onBlur = () => {
+    if (commonUtils.isNotEmpty(params.config.viewColumnDrop)) {
+      dispatchModifySelfState({ open: false });
     }
   }
 
@@ -148,44 +194,46 @@ export function SelectComponent(params) {
     dispatchModifySelfState({ open: false });
   }
 
-  const getTableProps = () => {
-    const data: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
-    const name = 'select';
-    const tableParam ={
-      name,
-      enabled: false,
-      dispatchModifyState: params.dispatchModifyState,
-      property: { rowSelection: null, showHeader: false, columns: modifySelfState.selectColumns, dataSource: data, loading: modifySelfState.loading },
-      eventOnRow: { onRowClick: onRowClick },
-      eventSelection: { onRowSelectChange: params.onRowSelectChange },
-      config: modifySelfState.selectContainer,
-      onReachEnd: params.onReachEnd, //分页滚动 拖动到最后调用接口
-      onSortEnd: params.onSortEnd,
-      draggableBodyRow: params.draggableBodyRow,
-      pagination: true, // 是否分页
-      isLastColumn: false,
-      expandable: {onExpand: params.onExpand, expandedRowKeys: []},
-      lastColumn: {},
-    }
-    return tableParam;
-  };
-  const dropdownRender = menu => {
-    return (
-      <div>
-        { commonUtils.isEmpty(params.config.viewColumnDrop) ? menu : <TableComponent {...getTableProps()} /> }
-        {params.config.isDropAdd ?
-          <div>
-            <Divider style={{ margin: '4px 0' }} />
-            <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
-              <Input style={{ flex: 'auto' }} value={modifySelfState.dropAddName} onChange={onDropAddNameChange} />
-              <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'addItem')} > <SaveOutlined /> </a>
-              <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'popup')} > <PlusSquareOutlined /> </a>
-            </div>
-          </div>
-          : '' }
-      </div>
-    )
-  }
+  // const getTableProps = () => {
+  //   const data: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
+  //   const name = 'select';
+  //   const tableParam ={
+  //     name,
+  //     enabled: false,
+  //     dispatchModifyState: params.dispatchModifyState,
+  //     property: { rowSelection: null, showHeader: false, columns: modifySelfState.selectColumns, dataSource: data, loading: modifySelfState.loading },
+  //     eventOnRow: { onRowClick: onRowClick },
+  //     eventSelection: { onRowSelectChange: params.onRowSelectChange },
+  //     config: modifySelfState.selectContainer,
+  //     onReachEnd: params.onReachEnd, //分页滚动 拖动到最后调用接口
+  //     onSortEnd: params.onSortEnd,
+  //     draggableBodyRow: params.draggableBodyRow,
+  //     pagination: true, // 是否分页
+  //     isLastColumn: false,
+  //     expandable: {onExpand: params.onExpand, expandedRowKeys: []},
+  //     lastColumn: {},
+  //     width: params.config.dropWidth > 0 ? params.config.dropWidth : 50,
+  //   }
+  //   return tableParam;
+  // };
+  //
+  // const dropdownRender = menu => {
+  //   return (
+  //     <div>
+  //       { commonUtils.isEmpty(params.config.viewColumnDrop) ? menu : <TableComponent {...getTableProps()} /> }
+  //       {params.config.isDropAdd ?
+  //         <div>
+  //           <Divider style={{ margin: '4px 0' }} />
+  //           <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
+  //             <Input style={{ flex: 'auto' }} value={modifySelfState.dropAddName} onChange={onDropAddNameChange} />
+  //             <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'addItem')} > <SaveOutlined /> </a>
+  //             <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'popup')} > <PlusSquareOutlined /> </a>
+  //           </div>
+  //         </div>
+  //         : '' }
+  //     </div>
+  //   )
+  // }
 
   const event = {
     onChange,
@@ -193,6 +241,7 @@ export function SelectComponent(params) {
     onDropdownVisibleChange,
     onPopupScroll,
     onSearch,
+    onBlur,
   }
   const rules: any = [];
   if (params.config.isRequired) {
@@ -201,7 +250,7 @@ export function SelectComponent(params) {
 
   params.property.loading = modifySelfState.loading;
   params.property.allowClear = params.config.isDropEmpty;
-  params.property.dropdownRender = (params.config.dropType === 'sql' && commonUtils.isNotEmpty(params.config.viewColumnDrop)) || params.config.isDropAdd ? dropdownRender : null;
+  params.property.dropdownRender = ((params.config.dropType === 'sql' || params.config.dropType === 'current') && commonUtils.isNotEmpty(params.config.viewColumnDrop)) || params.config.isDropAdd ? modifySelfState.dropdownRender : null;
 
   if (params.componentType === componentType.Soruce) {
     return <Select bordered={false} {...params.property} {...addProperty} { ...event }>{dropOptions}</Select>;

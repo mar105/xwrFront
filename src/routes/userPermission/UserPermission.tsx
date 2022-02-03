@@ -89,8 +89,8 @@ const UserPermission = (props) => {
       const index = container.slaveData.findIndex(item => item.fieldName === name);
       if (indexTree > -1 && commonUtils.isNotEmpty(container.slaveData[indexTree].viewDrop) &&
           index > -1 && commonUtils.isNotEmpty(container.slaveData[index].viewDrop)) {
-        const tableTree = (await props.getSelectList({containerSlaveId: container.slaveData[indexTree].id, isWait: true, sqlCondition: container.slaveData[index].sqlCondition })).list;
-        const tableSlave = (await props.getSelectList({containerSlaveId: container.slaveData[index].id, isWait: true, sqlCondition: container.slaveData[index].sqlCondition })).list;
+        const tableTree = (await props.getSelectList({containerSlaveId: container.slaveData[indexTree].id, isWait: true, config: container.slaveData[index] })).list;
+        const tableSlave = (await props.getSelectList({containerSlaveId: container.slaveData[index].id, isWait: true, config: container.slaveData[index] })).list;
         const table = [...tableTree, ...tableSlave];
         let rowIndex = 0;
         // 判断已存数据库的数据集中有没有已经不存在的数据，有的话标记删除
@@ -127,7 +127,7 @@ const UserPermission = (props) => {
     } else {
       const index = container.slaveData.findIndex(item => item.fieldName === name);
       if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].viewDrop)) {
-        const table = (await props.getSelectList({containerSlaveId: container.slaveData[index].id, isWait: true, sqlCondition: container.slaveData[index].sqlCondition })).list;
+        const table = (await props.getSelectList({containerSlaveId: container.slaveData[index].id, isWait: true, config: container.slaveData[index] })).list;
         let rowIndex = 0;
         for(const dataRow of tableDataOld) {
           const indexTableData = table.findIndex(item => item.id === dataRow[name + 'Id']);

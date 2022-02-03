@@ -170,42 +170,106 @@ const commonBase = (WrapComponent) => {
 
     const getSelectList = async (params) => {
       const { commonModel, dispatch } = props;
-      const { isWait } = params;
+      const { isWait, config } = params;
       const modifyStateNew = stateRef.current ? stateRef.current : modifyState;
       const { [params.name + 'Container']: container, [params.name + 'Data']: tableData } = modifyStateNew;
-      const url: string = application.urlPrefix + '/getData/getSelectList';
-      let record = params.record;
-      if (modifyStateNew[params.name + 'Data']) { //拿最新的记录
-        if (typeof modifyStateNew[params.name + 'Data'] === 'object' && modifyStateNew[params.name + 'Data'].constructor === Object) {
-          record = modifyStateNew[params.name + 'Data'];
-        } else if (container.isTree) {
-          record = getTreeNode(tableData, record.allId);
-        } else {
-          const index = modifyStateNew[params.name + 'Data'].findIndex(item => item.id === params.record.id);
-          record = modifyStateNew[params.name + 'Data'][index];
-        }
-      }
-      const condition = commonUtils.getCondition(params.name, record, params.sqlCondition, modifyStateNew);
-      const requestParam = {
-        routeId: modifyState.routeId,
-        groupId: commonModel.userInfo.groupId,
-        shopId: commonModel.userInfo.shopId,
-        containerSlaveId: params.containerSlaveId,
-        pageNum: params.pageNum,
-        pageSize: application.pageSize,
-        condition: { ...condition, ...params.condition},
-      }
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;
-      if (interfaceReturn.code === 1) {
+
+      if (params.config.dropType === 'current') {
+        const unionDrop = params.config.viewDrop.split('&&');
+        const returnData: any = [];
+        unionDrop.forEach(dropItem => {
+          const itemFirst = dropItem.split(',')[0];
+          let data = modifyStateNew[itemFirst.split('.')[0].trim() + 'Data'];
+          if (commonUtils.isNotEmpty(config.sqlCondition)) {
+            config.sqlCondition.split(',').forEach((item) => {
+              const fieldName = item.split('.')[1];
+              const fieldNameFilter = item.split('.').length > 2 ? item.split('.')[2] : fieldName;
+              const dataCondition = modifyStateNew[item.split('.')[0] + 'Data'];
+              const selectedRowKeys = modifyStateNew[item.split('.')[0] + 'SelectedRowKeys'];
+              if (typeof dataCondition === 'object' && dataCondition.constructor === Object) {
+                data = data.filter(item => commonUtils.isEmptyDefault(item[fieldNameFilter], '') === commonUtils.isEmptyDefault(dataCondition[fieldName], ''));
+              } else if (commonUtils.isNotEmptyArr(selectedRowKeys)) {
+                let iIndex = dataCondition.findIndex(itemData => itemData.sId === selectedRowKeys[0]);
+                iIndex = iIndex > -1 ? iIndex : dataCondition.findIndex(itemData => itemData.sSlaveId === selectedRowKeys[0]);
+                if (iIndex > -1) {
+                  data = data.filter(item => commonUtils.isEmptyDefault(item[fieldNameFilter], '') === commonUtils.isEmptyDefault(dataCondition[iIndex][fieldName], ''));
+                }
+              } else if (commonUtils.isNotEmptyArr(data)) {
+                data = data.filter(item => commonUtils.isEmptyDefault(item[fieldNameFilter], '') === commonUtils.isEmptyDefault(dataCondition[0][fieldName], ''));
+              }
+            });
+          }
+          data.forEach((itemDataRow) => {
+            const dataRow = {};
+            dropItem.split(',').forEach((item) => {
+              if (itemFirst.split('.')[0].trim() === item.split('.')[0].trim()) {
+                const fieldName = item.split('.')[1];
+                const fieldNameNew = item.split('.').length > 2 ? item.split('.')[2] : fieldName;
+                dataRow[fieldNameNew] = commonUtils.isEmpty(itemDataRow[fieldName]) ? '' : itemDataRow[fieldName].toString();
+              } else {
+                const dataCondition = modifyStateNew[item.split('.')[0] + 'Data'];
+                const selectedRowKeys = modifyStateNew[item.split('.')[0] + 'SelectedRowKeys'];
+                const fieldName = item.split('.')[1];
+                const fieldNameNew = item.split('.').length > 2 ? item.split('.')[2] : fieldName;
+                if (typeof dataCondition === 'object' && dataCondition.constructor === Object) {
+                  dataRow[fieldNameNew] = dataCondition[fieldName];
+                } else if (commonUtils.isNotEmptyArr(selectedRowKeys)) {
+                  let iIndex = dataCondition.findIndex(itemData => itemData.sId === selectedRowKeys[0]);
+                  iIndex = iIndex > -1 ? iIndex : dataCondition.findIndex(itemData => itemData.sSlaveId === selectedRowKeys[0]);
+                  if (iIndex > -1) {
+                    data = dataCondition[iIndex][fieldName];
+                  }
+                } else if (commonUtils.isNotEmptyArr(data)) {
+                  data = dataCondition[0][fieldName];
+                }
+              }
+            });
+
+            returnData.push(dataRow);
+          });
+        });
+
         if (isWait) {
-          return { ...interfaceReturn.data.data };
+          return { isLastPage: true, list: returnData };
         } else {
-          dispatchModifyState({ ...interfaceReturn.data.data });
+          dispatchModifyState({ isLastPage: true, list: returnData });
         }
       } else {
-        gotoError(dispatch, interfaceReturn);
-        return {};
+        const url: string = application.urlPrefix + '/getData/getSelectList';
+        let record = params.record;
+        if (modifyStateNew[params.name + 'Data']) { //拿最新的记录
+          if (typeof modifyStateNew[params.name + 'Data'] === 'object' && modifyStateNew[params.name + 'Data'].constructor === Object) {
+            record = modifyStateNew[params.name + 'Data'];
+          } else if (container.isTree) {
+            record = getTreeNode(tableData, record.allId);
+          } else {
+            const index = modifyStateNew[params.name + 'Data'].findIndex(item => item.id === params.record.id);
+            record = modifyStateNew[params.name + 'Data'][index];
+          }
+        }
+        const condition = commonUtils.getCondition(params.name, record, config.sqlCondition, modifyStateNew);
+        const requestParam = {
+          routeId: modifyState.routeId,
+          groupId: commonModel.userInfo.groupId,
+          shopId: commonModel.userInfo.shopId,
+          containerSlaveId: params.containerSlaveId,
+          pageNum: params.pageNum,
+          pageSize: application.pageSize,
+          condition: { ...condition, ...params.condition},
+        }
+        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;
+        if (interfaceReturn.code === 1) {
+          if (isWait) {
+            return { ...interfaceReturn.data.data };
+          } else {
+            dispatchModifyState({ ...interfaceReturn.data.data });
+          }
+        } else {
+          gotoError(dispatch, interfaceReturn);
+          return {};
+        }
       }
+
     }
 
     const onAdd = (containerOld?) => {
@@ -776,7 +840,7 @@ const commonBase = (WrapComponent) => {
         dispatchModifyState({ modalVisible: false });
       } else if (params.type === 'popupAdd') {
         setTimeout(async () => { //延时2秒的原因是等待rocket任务处理完成。
-          const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition, condition: { newRecordId: params.newRecord.id } };
+          const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, config: params.config, condition: { newRecordId: params.newRecord.id } };
           const selectList = await getSelectList(dropParam);
           if (commonUtils.isNotEmpty(selectList) && commonUtils.isNotEmptyArr(selectList.list)) {
             const returnData: any = onDataChange({ name: params.name, fieldName: params.config.fieldName, record: params.record, assignField: params.config.assignField,

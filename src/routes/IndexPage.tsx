@@ -61,12 +61,12 @@ function IndexPage(props) {
     if (returnBody.type === 'formulaParam') {
       const formulaParamList: any = [];
       let pageNum = 1;
-      let dropParam = { name: 'formulaParam', pageNum, isWait: true, containerSlaveId: '1454410376715309056' }; //公式参数
+      let dropParam = { name: 'formulaParam', pageNum, isWait: true, containerSlaveId: '1454410376715309056', config: {} }; //公式参数
       let returnData: any = await props.getSelectList(dropParam);
       if (commonUtils.isNotEmptyObj(returnData)) {
         formulaParamList.push(...returnData.list);
         while(!returnData.isLastPage) {
-          dropParam = { name: 'formulaParam', pageNum: pageNum + 1, isWait: true, containerSlaveId: '1454410376715309056' };
+          dropParam = { name: 'formulaParam', pageNum: pageNum + 1, isWait: true, containerSlaveId: '1454410376715309056', config: {} };
           returnData = await props.getSelectList(dropParam);
           if (commonUtils.isEmptyArr(returnData.list)) {
             break;
@@ -83,12 +83,12 @@ function IndexPage(props) {
     else if (returnBody.type === 'formula') {
       const formulaList: any = [];
       let pageNum = 1;
-      let dropParam = { name: 'formula', pageNum, isWait: true, containerSlaveId: '1454411898979225600' }; //公式
+      let dropParam = { name: 'formula', pageNum, isWait: true, containerSlaveId: '1454411898979225600', config: {} }; //公式
       let returnData = await props.getSelectList(dropParam);
       if (commonUtils.isNotEmptyObj(returnData)) {
         formulaList.push(...returnData.list);
         while(!returnData.isLastPage) {
-          dropParam = { name: 'formula', pageNum: pageNum + 1, isWait: true, containerSlaveId: '1454411898979225600' };
+          dropParam = { name: 'formula', pageNum: pageNum + 1, isWait: true, containerSlaveId: '1454411898979225600', config: {} };
           returnData = await props.getSelectList(dropParam);
           if (commonUtils.isEmptyArr(returnData.list)) {
             break;

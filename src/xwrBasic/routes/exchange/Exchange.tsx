@@ -25,7 +25,7 @@ const Exchange = (props) => {
         const exchangeRateData: any = [];
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'exchangeRate');
         if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
-          const exchangeRate = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true, sqlCondition: masterContainer.slaveData[index].sqlCondition })).list;
+          const exchangeRate = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true, config: masterContainer.slaveData[index] })).list;
           exchangeRate.forEach((dataRow, rowIndex) => {
             let data = props.onAdd(exchangeRateContainer);
             data = { ...data, ...commonUtils.getAssignFieldValue('master', masterContainer.slaveData[index].assignField, dataRow)};

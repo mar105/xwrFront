@@ -31,7 +31,7 @@ export function TreeSelectComponent(params) {
 
   const onDropdownVisibleChange = async (open) => {
     if (open) {
-      const dropParam = { fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, sqlCondition: params.config.sqlCondition };
+      const dropParam = { fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, config: params.config };
       if (params.config.dropType === 'sql') {
         dispatchModifySelfState({ loading: true });
         const selectList = await params.event.getSelectList(dropParam);

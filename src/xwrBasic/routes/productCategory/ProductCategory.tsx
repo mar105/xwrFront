@@ -25,7 +25,7 @@ const ProductCategory = (props) => {
         const processCategoryData: any = [];
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'processCategory');
         if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
-          const processCategory = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true, sqlCondition: masterContainer.slaveData[index].sqlCondition })).list;
+          const processCategory = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true, config: masterContainer.slaveData[index] })).list;
           processCategory.forEach((dataRow, rowIndex) => {
             let data = props.onAdd(processCategoryContainer);
             data = { ...data, ...commonUtils.getAssignFieldValue('master', masterContainer.slaveData[index].assignField, dataRow)};
@@ -52,7 +52,7 @@ const ProductCategory = (props) => {
         const processCategoryDelData: any = commonUtils.isEmptyArr(processCategoryDelDataOld) ? [] : [...processCategoryDelDataOld];
         const index = masterContainer.slaveData.findIndex(item => item.fieldName === 'processCategory');
         if (index > -1 && commonUtils.isNotEmpty(masterContainer.slaveData[index].viewDrop)) {
-          const processCategory = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true, sqlCondition: masterContainer.slaveData[index].sqlCondition })).list;
+          const processCategory = (await props.getSelectList({containerSlaveId: masterContainer.slaveData[index].id, isWait: true, config: masterContainer.slaveData[index] })).list;
           let rowIndex = 0;
           for(const dataRow of processCategoryDataOld) {
             const index = processCategory.findIndex(item => item.id === dataRow.processCategoryId);

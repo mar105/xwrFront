@@ -37,7 +37,7 @@ const SlaveContainer = (props) => {
     { title: '查询界面', dataIndex: 'popupSelectName', fieldType: 'varchar', sortNum: 180, width: 150, dropType: 'sql', isDropEmpty: true, keyUpFieldDrop: 'viewName', assignField: 'popupSelectId=id' },
     { title: '查询界面Key', dataIndex: 'popupSelectKey', fieldType: 'varchar', sortNum: 190, width: 150 },
 
-    { title: '下拉|类型', dataIndex: 'dropType', fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "sql": "sql语句", "const": "常量", "popup": "选择框与定位" }', sortNum: 200, width: 150 },
+    { title: '下拉|类型', dataIndex: 'dropType', fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "sql": "sql语句", "const": "常量", "popup": "选择框与定位", "current": "界面数据" }', sortNum: 200, width: 150 },
     { title: '下拉|中文', dataIndex: 'chineseDrop', fieldType: 'varchar', sortNum: 210, width: 150 },
     { title: '下拉|繁体', dataIndex: 'traditionalDrop', fieldType: 'varchar', sortNum: 220, width: 150 },
     { title: '下拉|英文', dataIndex: 'englishDrop', fieldType: 'varchar', sortNum: 230, width: 150 },
@@ -49,6 +49,8 @@ const SlaveContainer = (props) => {
     { title: '下拉|是否空数据', dataIndex: 'isDropEmpty', fieldType: 'tinyint', sortNum: 270, width: 150 },
     { title: '下拉|是否多选', dataIndex: 'isMultiChoise', fieldType: 'tinyint', sortNum: 280, width: 150 },
     { title: '下拉|宽度', dataIndex: 'dropWidth', fieldType: 'decimal', sortNum: 290, width: 150 },
+    { title: '下拉|显示字段', dataIndex: 'viewColumnDrop', fieldType: 'varchar', sortNum: 291, width: 150 },
+
 
     { title: '下拉|是否树型', dataIndex: 'isTreeDrop', fieldType: 'tinyint', sortNum: 291, width: 150 },
     { title: '下拉|树型主Key', dataIndex: 'treeKeyDrop', fieldType: 'varchar', sortNum: 292, width: 150 },

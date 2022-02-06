@@ -1,5 +1,5 @@
 import React, {useReducer} from 'react';
-import {Divider, Form, Input, message, Select } from 'antd';
+import {Divider, Form, Input, message, Select, Row, Col } from 'antd';
 import { componentType } from '../utils/commonTypes';
 import * as commonUtils from '../utils/commonUtils';
 import debounce from 'lodash/debounce';
@@ -11,71 +11,6 @@ export function SelectComponent(params) {
     return {...state, ...action };
   },{});
 
-  // useEffect(() => {
-  //   if (params.config.viewColumnDrop) {
-  //     const keyUpFieldDrop = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? 'id' : params.config.keyUpFieldDrop;
-  //     const columns = [{ title: '', dataIndex: keyUpFieldDrop, fieldType: 'varchar', sortNum: 1 }];
-  //
-  //     if (commonUtils.isNotEmpty(params.config.viewColumnDrop) ) {
-  //       params.config.viewColumnDrop.split(',').forEach((key, index) => {
-  //         if (key !== keyUpFieldDrop) {
-  //           columns.push({ title: '', dataIndex: key, fieldType: 'varchar', sortNum: index + 2 })
-  //         };
-  //       });
-  //     }
-  //     const container: any = {};
-  //     const slaveConfig: any = [];
-  //     container.isMultiChoise = true;
-  //     columns.forEach(item => {
-  //       const config = {...item, viewName: item.title, fieldName: item.dataIndex };
-  //       slaveConfig.push(config);
-  //     });
-  //     container.slaveData = slaveConfig;
-  //
-  //     const getTableProps = () => {
-  //       const data: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
-  //       const name = 'select';
-  //       const tableParam ={
-  //         name,
-  //         enabled: false,
-  //         dispatchModifyState: params.dispatchModifyState,
-  //         property: { rowSelection: null, showHeader: false, columns: columns, dataSource: data, loading: modifySelfState.loading },
-  //         eventOnRow: { onRowClick: onRowClick },
-  //         eventSelection: { onRowSelectChange: params.onRowSelectChange },
-  //         config: container,
-  //         onReachEnd: params.onReachEnd, //分页滚动 拖动到最后调用接口
-  //         onSortEnd: params.onSortEnd,
-  //         draggableBodyRow: params.draggableBodyRow,
-  //         pagination: true, // 是否分页
-  //         isLastColumn: false,
-  //         expandable: {onExpand: params.onExpand, expandedRowKeys: []},
-  //         lastColumn: {},
-  //         width: params.config.dropWidth > 0 ? params.config.dropWidth : 50,
-  //       }
-  //       return tableParam;
-  //     };
-  //
-  //     const dropdownRender = menu => {
-  //       return (
-  //         <div>
-  //           { commonUtils.isEmpty(params.config.viewColumnDrop) ? menu : <TableComponent {...getTableProps()} /> }
-  //           {params.config.isDropAdd ?
-  //             <div>
-  //               <Divider style={{ margin: '4px 0' }} />
-  //               <div style={{ display: 'flex', flexWrap: 'nowrap', padding: 8 }}>
-  //                 <Input style={{ flex: 'auto' }} value={modifySelfState.dropAddName} onChange={onDropAddNameChange} />
-  //                 <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'addItem')} > <SaveOutlined /> </a>
-  //                 <a style={{ flex: 'none', padding: '8px', display: 'block', cursor: 'pointer' }} onClick={onClick.bind(this, 'popup')} > <PlusSquareOutlined /> </a>
-  //               </div>
-  //             </div>
-  //             : '' }
-  //         </div>
-  //       )
-  //     }
-  //     dispatchModifySelfState({ selectContainer: container, selectColumns: columns, dropdownRender });
-  //   }
-  // }, [modifySelfState.viewDrop]);
-  //
   let dropOptions: any = [];
   const addProperty: any = {};
   addProperty.showSearch = true;
@@ -110,13 +45,12 @@ export function SelectComponent(params) {
       const viewValue = commonUtils.isEmpty(params.config.keyUpFieldDrop) ? optionObj.id : optionObj[params.config.keyUpFieldDrop];
       let viewOption = viewValue;
       if (params.config.viewColumnDrop) {
-        params.config.viewColumnDrop.split(',').forEach((key, index) => {
-          if (optionObj[key.trim()]) {
-            viewOption = viewOption + '-' + optionObj[key.trim()];
-          }
+        let rowView: any = '';
+        const count = Math.floor(24 / params.config.viewColumnDrop.split(',').length);
+        params.config.viewColumnDrop.split(',').forEach((key) => {
+          rowView = optionObj[key.trim()] ? <>{rowView}<Col span={count}>{optionObj[key.trim()]}</Col></> : <>{rowView}<Col span={count}></Col></>
         });
-        // viewOption = <div><Row><Col>{viewValue}</Col><Col>{viewValue}</Col></Row></div>;
-        // viewOption = <div><Row>{viewValue}{rowView}</Row></div>;
+        viewOption = <div><Row>{rowView}</Row></div>;
       }
       const option: any = (<Option key={optionObj.id} value={optionObj.id} label={optionObj[params.config.keyUpFieldDrop]} optionObj={optionObj}>{viewOption}</Option>);
       dropOptions.push(option);
@@ -124,9 +58,6 @@ export function SelectComponent(params) {
     addProperty.filterOption = (input, option) => {
       return !modifySelfState.isLastPage || commonUtils.isEmpty(option.children) ? true : option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     }
-    // if (commonUtils.isNotEmpty(params.config.viewColumnDrop)) {
-    //   addProperty.open = modifySelfState.open;
-    // }
   } else if (params.config.dropType === 'popup') {
     addProperty.open = false;
     addProperty.suffixIcon = <SelectOutlined onClick={onPopup} />
@@ -173,12 +104,6 @@ export function SelectComponent(params) {
     }
   }
 
-  // const onBlur = () => {
-  //   if (commonUtils.isNotEmpty(params.config.viewColumnDrop)) {
-  //     dispatchModifySelfState({ open: false });
-  //   }
-  // }
-
   const onChange = (value, option) => {
     if (params.event && params.event.onChange) {
       params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Select', record: params.record, assignField: params.config.assignField, value, option});
@@ -199,34 +124,6 @@ export function SelectComponent(params) {
       params.event.onDropPopup(dropParam);
     }
   };
-
-  // const onRowClick = async (name, record, rowKey) => {
-  //   onChange(record.id, {optionObj: record });
-  //   dispatchModifySelfState({ open: false });
-  // }
-
-  // const getTableProps = () => {
-  //   const data: any = commonUtils.isEmptyArr(modifySelfState.viewDrop) ? [] : modifySelfState.viewDrop;
-  //   const name = 'select';
-  //   const tableParam ={
-  //     name,
-  //     enabled: false,
-  //     dispatchModifyState: params.dispatchModifyState,
-  //     property: { rowSelection: null, showHeader: false, columns: modifySelfState.selectColumns, dataSource: data, loading: modifySelfState.loading },
-  //     eventOnRow: { onRowClick: onRowClick },
-  //     eventSelection: { onRowSelectChange: params.onRowSelectChange },
-  //     config: modifySelfState.selectContainer,
-  //     onReachEnd: params.onReachEnd, //分页滚动 拖动到最后调用接口
-  //     onSortEnd: params.onSortEnd,
-  //     draggableBodyRow: params.draggableBodyRow,
-  //     pagination: true, // 是否分页
-  //     isLastColumn: false,
-  //     expandable: {onExpand: params.onExpand, expandedRowKeys: []},
-  //     lastColumn: {},
-  //     width: params.config.dropWidth > 0 ? params.config.dropWidth : 50,
-  //   }
-  //   return tableParam;
-  // };
 
   const dropdownRender = menu => {
     return (
@@ -252,7 +149,6 @@ export function SelectComponent(params) {
     onDropdownVisibleChange,
     onPopupScroll,
     onSearch,
-    // onBlur,
   }
   const rules: any = [];
   if (params.config.isRequired) {

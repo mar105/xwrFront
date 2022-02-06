@@ -81,6 +81,7 @@ export function SelectComponent(params) {
   addProperty.showSearch = true;
   addProperty.optionFilterProp = 'children';
   addProperty.mode = params.config.isMultiChoise ? 'multiple' : '';
+  addProperty.optionLabelProp = 'label';
   addProperty.value = params.config.isMultiChoise ?
     commonUtils.isEmpty(params.property.value) ? undefined : params.property.value.split(',') : params.property.value;
   if (params.config.dropWidth > 0) {
@@ -117,7 +118,7 @@ export function SelectComponent(params) {
         // viewOption = <div><Row><Col>{viewValue}</Col><Col>{viewValue}</Col></Row></div>;
         // viewOption = <div><Row>{viewValue}{rowView}</Row></div>;
       }
-      const option: any = (<Option key={optionObj.id} value={optionObj.id} optionObj={optionObj}>{viewOption}</Option>);
+      const option: any = (<Option key={optionObj.id} value={optionObj.id} label={optionObj[params.config.keyUpFieldDrop]} optionObj={optionObj}>{viewOption}</Option>);
       dropOptions.push(option);
     };
     addProperty.filterOption = (input, option) => {

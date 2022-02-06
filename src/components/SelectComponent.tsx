@@ -100,7 +100,7 @@ export function SelectComponent(params) {
     const array: any = typeof params.config.viewDrop === 'string' ?
       commonUtils.objectToArr(commonUtils.stringToObj(params.config.viewDrop)) : params.config.viewDrop;
     for (const optionObj of array) {
-      const option: any = (<Option key={optionObj.id} value={optionObj.id}>{optionObj.value}</Option>);
+      const option: any = (<Option key={optionObj.id} value={optionObj.id} label={optionObj.value}>{optionObj.value}</Option>);
       dropOptions.push(option);
     };
     addProperty.filterOption = (input, option) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;

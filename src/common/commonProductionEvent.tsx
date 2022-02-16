@@ -3,7 +3,6 @@ import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../xwrProduction/application";
 import * as request from "../utils/request";
-import {isNotEmptyArr} from "../utils/commonUtils";
 
 const commonProductionEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -219,7 +218,7 @@ const commonProductionEvent = (WrapComponent) => {
           returnInfo.index = index;
           returnInfo.dataRow = treeData[index];
           break;
-        } else if (isNotEmptyArr(treeData[index].children)) {
+        } else if (commonUtils.isNotEmptyArr(treeData[index].children)) {
           returnInfo = getTreeChildIndexAndInfo(treeData[index].children, id);
         }
       }
@@ -233,7 +232,7 @@ const commonProductionEvent = (WrapComponent) => {
           returnInfo.index = index;
           returnInfo.dataRow = treeData[index];
           break;
-        } else if (isNotEmptyArr(treeData[index].children)) {
+        } else if (commonUtils.isNotEmptyArr(treeData[index].children)) {
           returnInfo = getTreeChildIndexAndInfo(treeData[index].children, id);
         }
       }
@@ -474,7 +473,7 @@ const commonProductionEvent = (WrapComponent) => {
 
     const getLastChildData = (treeData, lastLevelData) => {
       treeData.forEach(data => {
-        if (isNotEmptyArr(data.children)) {
+        if (commonUtils.isNotEmptyArr(data.children)) {
           getLastChildData(data.children, lastLevelData);
         } else {
           lastLevelData.push(data);
@@ -484,10 +483,28 @@ const commonProductionEvent = (WrapComponent) => {
 
     const getPartLastChildData = (treeData, lastLevelData) => {
       treeData.forEach(data => {
-        if (isNotEmptyArr(data.children)) {
+        if (commonUtils.isNotEmptyArr(data.children)) {
           getPartLastChildData(data.children, lastLevelData);
-        } else if (commonUtils.isNotEmpty(data.mergePartId)) {
+        } else {//if (commonUtils.isNotEmpty(data.mergePartId)) {
           lastLevelData.push(data);
+        }
+      });
+    }
+
+    const getMergePartChildData = (treeData, mergePartIds, mergePartData) => {
+      treeData.forEach(data => {
+        if (commonUtils.isNotEmpty(data.mergePartId)) {
+          if (mergePartIds.findIndex(item => item === data.mergePartId) > -1) {
+            mergePartData.push(data);
+          } else {
+            const part = commonUtils.getTreeNodeById(treeData, data.mergePartId);
+            mergePartData.push(part);
+            mergePartIds.push(data.mergePartId);
+            mergePartData.push(data);
+          }
+        }
+        if (commonUtils.isNotEmptyArr(data.children)) {
+          getMergePartChildData(data.children, mergePartIds, mergePartData);
         }
       });
     }
@@ -523,9 +540,12 @@ const commonProductionEvent = (WrapComponent) => {
 
         const slaveLastLevelAllData:any = [];
 
+        // 计算合版信息数据。
+        calcMergePart(slaveDataOld, partData, partModifyData);
+
         //过滤出从表最子级的产品数据。
         slaveDataOld.forEach(data => {
-          if (isNotEmptyArr(data.children)) {
+          if (commonUtils.isNotEmptyArr(data.children)) {
             getLastChildData(data.children, slaveLastLevelAllData);
           } else {
             slaveLastLevelAllData.push(data);
@@ -534,8 +554,8 @@ const commonProductionEvent = (WrapComponent) => {
 
         //过滤出部件表最子级的产品数据。
         const partLastLevelAllData:any = [];
-        partDataOld.forEach(data => {
-          if (isNotEmptyArr(data.children)) {
+        partData.forEach(data => {
+          if (commonUtils.isNotEmptyArr(data.children)) {
             getPartLastChildData(data.children, partLastLevelAllData);
           } else { //if (commonUtils.isEmpty(data.mergePartId)) {
             partLastLevelAllData.push(data);
@@ -550,8 +570,8 @@ const commonProductionEvent = (WrapComponent) => {
           partLastLevelData.forEach(part => {
             // 成品工艺数据计算
             slave.allId.split(',').forEach((key, index) => {
-              let processSlaveData = processDataOld.filter(item => item.slaveId === key && commonUtils.isEmpty(item.partId));
-              processSlaveData = sortData(partDataOld, processSlaveData, 'desc');
+              let processSlaveData = processData.filter(item => item.slaveId === key && commonUtils.isEmpty(item.partId));
+              processSlaveData = sortData(partData, processSlaveData, 'desc');
               if (index !== 0) {
                 inOutRate = commonUtils.isEmptyorZeroDefault(slave.coefficient, 1);
                 isFirstInOutRate = true;
@@ -560,12 +580,27 @@ const commonProductionEvent = (WrapComponent) => {
                 processModifyData, processData, currentProcess, isFirstInOutRate, inOutRate, masterDataOld, slave, part, commonModel);
             });
 
-            console.log('currentProcess', currentProcess);
-
             //部件工艺数据计算
             part.allId.split(',').reverse().forEach(key => {
-              let processPartData = processDataOld.filter(item => item.partId === key);
-              processPartData = sortData(partDataOld, processPartData, 'desc');
+              // ------- 合并合版数据  ------------------------
+              const idPart =  commonUtils.getTreeNodeById(partData, key);
+              let mergeProcessData: any = [];
+              if (commonUtils.isNotEmpty(idPart.mergePartId)) {
+                const mergePart = commonUtils.getTreeNodeById(partData, idPart.mergePartId);
+                mergeProcessData = processData.filter(item => item.partId === mergePart.id && item.isMerge);
+              }
+              let processPartData = processData.filter(item => item.partId === key);
+              if (commonUtils.isNotEmptyArr(mergeProcessData)) {
+                mergeProcessData.forEach(process => {
+                  const index = processPartData.findIndex(item => item.processId === process.processId && item.isMerge);
+                  if (index > -1) {
+                    processPartData.splice(index, 1);
+                  }
+                });
+                processPartData.concat(mergeProcessData);
+              }
+              // ------------------------------------------------------------
+              processPartData = sortData(partData, processPartData, 'desc');
               inOutRate = part.totalPQty > 4 ? part.totalPQty / 2 / commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) :
                 commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) / commonUtils.isEmptyorZeroDefault(part.magnification, 1);
               isFirstInOutRate = true;
@@ -610,94 +645,145 @@ const commonProductionEvent = (WrapComponent) => {
       let partAndMaterial: any = {};
       let processOutQty = currentProcess.processInQty;
       processFilterData.forEach((process, processIndex) => {
-        if (commonUtils.isNotEmpty(currentProcess.id)) {
-          //更新上道工艺Id
-          const index = processData.findIndex(item => item.id === currentProcess.id);
-          processData[index] = { ...processData[index], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, priorId: currentProcess.id  };
+        if (processOutQty > process.processOutQty) {
+          if (commonUtils.isNotEmpty(currentProcess.id) && !process.isMerge) {
+            //更新上道工艺Id
+            const index = processData.findIndex(item => item.id === currentProcess.id);
+            processData[index] = { ...processData[index], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, priorId: currentProcess.id  };
+            if (processData[index].handleType === 'modify') {
+              const indexModify = processModifyData.findIndex(item => item.id === process.id);
+              if (indexModify > -1) {
+                processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: processData[index].handleType, priorId: currentProcess.id };
+              } else {
+                processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, priorId: currentProcess.id });
+              }
+            }
+          }
+          if (!isFirstInOutRate) {
+            inOutRate = commonUtils.isEmptyorZeroDefault(process.inOutAdjustRate, 1);
+          } else {
+            //手动修改出入比后得出1比
+            processFilterData.filter(item => commonUtils.isNotEmptyorZero(item.inOutAdjustRate)).forEach(process => {
+              inOutAdjust = inOutAdjust * process.inOutAdjustRate;
+            });
+            inOutRate = inOutRate / inOutAdjust;
+          }
+
+          if (process.processGenre !== '0prepress') {
+            process.processOutQty = processOutQty;
+            process.lossQty = commonUtils.isNotEmptyorZero(process.adjustLossQty) ? process.adjustLossQty :
+              commonUtils.getFormulaValue('process', process, process.productionLossFormulaId, {
+              master: masterDataOld, slave, part, material: {}, process }, commonModel);
+
+            process.inOutRate = inOutRate;
+            const processInQty = part.totalPQty > 4 && process.processGenre !== '3product' && commonUtils.isEmptyorZero(process.inOutAdjustRate) ?
+              processOutQty * inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty) :
+              processOutQty / inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty);
+            process.processInQty = processInQty;
+            processOutQty = processInQty;
+            processId = process.id;
+
+            if (process.processGenre === '1printing') {
+              printingLossQty = printingLossQty + process.lossQty;
+            }
+
+            //排程数量公式
+            process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
+              master: masterDataOld, slave, part, material: {}, process }, commonModel);
+
+            //报产数量公式
+            process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
+              master: masterDataOld, slave, part, material: {}, process }, commonModel);
+          } else {
+            if (isPartAndMaterial) {
+              partAndMaterial = partAndMaterialCalc(slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty);
+              isPartAndMaterial = false;
+            }
+
+            //排程数量公式
+            process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
+              master: masterDataOld, slave, part: partAndMaterial.partDataRow, material: partAndMaterial.materialDataRow, process }, commonModel);
+
+            //报产数量公式
+            process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
+              master: masterDataOld, slave, part: partAndMaterial.partDataRow, material: partAndMaterial.materialDataRow, process }, commonModel);
+
+            process.processOutQty = process.processQty;
+            process.processInQty = process.processQty;
+          }
+          process.isLast = currentProcess.isFirstProcess ? true : false;
+
+          process.sortNum = processFilterData.length - processIndex;
+
+
+          isFirstInOutRate = false;
+          currentProcess = { ...process};
+
+          const qtyCalcData = { processOutQty: process.processOutQty, inOutRate: process.inOutRate, processInQty: process.processInQty, processQty: process.processQty,
+            reportQty: process.reportQty, sortNum: process.sortNum, isLast: process.isLast };
+          const index = processData.findIndex(item => item.id === process.id);
+          processData[index] = { ...processData[index], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, ...qtyCalcData };
           if (processData[index].handleType === 'modify') {
             const indexModify = processModifyData.findIndex(item => item.id === process.id);
             if (indexModify > -1) {
-              processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: processData[index].handleType, priorId: currentProcess.id };
+              processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: processData[index].handleType, ...qtyCalcData };
             } else {
-              processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, priorId: currentProcess.id });
+              processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, ...qtyCalcData });
             }
-          }
-        }
-        if (!isFirstInOutRate) {
-          inOutRate = commonUtils.isEmptyorZeroDefault(process.inOutAdjustRate, 1);
-        } else {
-          //手动修改出入比后得出1比
-          processFilterData.filter(item => commonUtils.isNotEmptyorZero(item.inOutAdjustRate)).forEach(process => {
-            inOutAdjust = inOutAdjust * process.inOutAdjustRate;
-          });
-          inOutRate = inOutRate / inOutAdjust;
-        }
-
-        if (process.processGenre !== '0prepress') {
-          process.processOutQty = processOutQty;
-          process.lossQty = commonUtils.isNotEmptyorZero(process.adjustLossQty) ? process.adjustLossQty :
-            commonUtils.getFormulaValue('process', process, process.productionLossFormulaId, {
-            master: masterDataOld, slave, part, material: {}, process }, commonModel);
-
-          process.inOutRate = inOutRate;
-          const processInQty = part.totalPQty > 4 && process.processGenre !== '3product' && commonUtils.isEmptyorZero(process.inOutAdjustRate) ?
-            processOutQty * inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty) :
-            processOutQty / inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty);
-          process.processInQty = processInQty;
-          processOutQty = processInQty;
-          processId = process.id;
-
-          if (process.processGenre === '1printing') {
-            printingLossQty = printingLossQty + process.lossQty;
-          }
-
-          //排程数量公式
-          process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
-            master: masterDataOld, slave, part, material: {}, process }, commonModel);
-
-          //报产数量公式
-          process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
-            master: masterDataOld, slave, part, material: {}, process }, commonModel);
-        } else {
-          if (isPartAndMaterial) {
-            partAndMaterial = partAndMaterialCalc(slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty);
-            isPartAndMaterial = false;
-          }
-
-          //排程数量公式
-          process.processQty = commonUtils.getFormulaValue('process', process, process.scheduleQtyFormulaId, {
-            master: masterDataOld, slave, part: partAndMaterial.partDataRow, material: partAndMaterial.materialDataRow, process }, commonModel);
-
-          //报产数量公式
-          process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
-            master: masterDataOld, slave, part: partAndMaterial.partDataRow, material: partAndMaterial.materialDataRow, process }, commonModel);
-
-          process.processOutQty = process.processQty;
-          process.processInQty = process.processQty;
-        }
-        process.isLast = currentProcess.isFirstProcess ? true : false;
-
-        process.sortNum = processFilterData.length - processIndex;
-
-
-        isFirstInOutRate = false;
-        currentProcess = { ...process};
-
-        const qtyCalcData = { processOutQty: process.processOutQty, inOutRate: process.inOutRate, processInQty: process.processInQty, processQty: process.processQty,
-          reportQty: process.reportQty, sortNum: process.sortNum, isLast: process.isLast };
-        const index = processData.findIndex(item => item.id === process.id);
-        processData[index] = { ...processData[index], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, ...qtyCalcData };
-        if (processData[index].handleType === 'modify') {
-          const indexModify = processModifyData.findIndex(item => item.id === process.id);
-          if (indexModify > -1) {
-            processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: processData[index].handleType, ...qtyCalcData };
-          } else {
-            processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, ...qtyCalcData });
           }
         }
       });
       sortData(partData, processData);
       return currentProcess;
+    }
+
+    const calcMergePart = (slaveData, partData, partModifyData) => {
+      const mergePartIds: any = [];
+      const mergePartData: any = [];
+      partData.forEach(data => {
+        if (commonUtils.isNotEmpty(data.mergePartId)) {
+          if (mergePartIds.findIndex(item => item === data.mergePartId) > -1) {
+            mergePartData.push(data);
+          } else {
+            const part = commonUtils.getTreeNodeById(partData, data.mergePartId);
+            mergePartData.push(part);
+            mergePartIds.push(data.mergePartId);
+            mergePartData.push(data);
+          }
+        }
+        if (commonUtils.isNotEmptyArr(data.children)) {
+          getMergePartChildData(data.children, mergePartIds, mergePartData);
+        }
+      });
+      mergePartIds.forEach(mergePartId => {
+        let maxPart;
+        let maxQty = 0;
+        const mergePartIdData = mergePartData.filter(item => item.id === mergePartId && item.mergePartId === mergePartId);
+        mergePartIdData.forEach(part => {
+          const slave = commonUtils.getTreeNodeById(slaveData, part.slaveId);
+          const qty = commonUtils.isEmptyorZeroDefault(slave.productQty, 0) + commonUtils.isEmptyorZeroDefault(slave.giveQty, 0) +
+            commonUtils.isEmptyorZeroDefault(slave.stockUpQty, 0);
+          if (qty / commonUtils.isEmptyorZeroDefault(part.mergeSinglePQty, 1) > maxQty) {
+            maxQty = qty / commonUtils.isEmptyorZeroDefault(part.mergeSinglePQty, 1);
+            maxPart = part;
+          }
+        });
+        if (maxPart) {
+          mergePartIdData.forEach(part => {
+            const partQtyCalcData = { partQty: Math.ceil(maxQty) * part.mergeSinglePQty, singlePQty: maxPart.mergeSinglePQty };
+            const partDataRow = { ...part, handleType: commonUtils.isEmpty(part.handleType) ? 'modify' : part.handleType, ...partQtyCalcData };
+            props.setTreeNode(partData, partDataRow, part.allId);
+            if (partDataRow.handleType === 'modify') {
+              const indexModify = partModifyData.findIndex(item => item.id === partDataRow.id);
+              if (indexModify > -1) {
+                partModifyData[indexModify] = { ...partModifyData[indexModify], handleType: partDataRow.handleType, ...partQtyCalcData };
+              } else {
+                partModifyData.push({ id: partDataRow.id, handleType: partDataRow.handleType, ...partQtyCalcData });
+              }
+            }
+          });
+        }
+      });
     }
 
     const partAndMaterialCalc = (slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty) => {
@@ -760,7 +846,7 @@ const commonProductionEvent = (WrapComponent) => {
     const getMaterialKQty = (machineLengthOld, machineWidthOld, materialStyle, materialKQty) => {
       const machineLength = machineLengthOld > machineWidthOld ? machineLengthOld : machineWidthOld;
       const machineWidth = machineLengthOld > machineWidthOld ? machineWidthOld : machineLengthOld;
-      if (materialStyle.split('*').length === 2) {
+      if (commonUtils.isNotEmpty(materialStyle) && materialStyle.split('*').length === 2) {
         const materialWidthOld = materialStyle.split('*')[0];
         const materialLengthOld = materialStyle.split('*')[1];
         const materialLength = materialLengthOld > materialWidthOld ? materialLengthOld : materialWidthOld;

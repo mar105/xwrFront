@@ -95,7 +95,7 @@ const Material = (props) => {
     render: (text,record, index)=> {
     return <div>
       <a onClick={onLastColumnClick.bind(this, 'supply', 'defaultButton', record)}>
-        <Tooltip placement="top" title="默认"> {masterData.defaultSupplyId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
+        <Tooltip placement="top" title="默认"> {commonUtils.isNotEmptyObj(masterData) && masterData.defaultSupplyId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
       <a onClick={props.onLastColumnClick.bind(this, 'supply', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
     </div>
   }, width: 50 , fixed: 'right' };

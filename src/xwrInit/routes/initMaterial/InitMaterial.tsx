@@ -67,7 +67,7 @@ const InitMaterial = (props) => {
       }
       props.onButtonClick(key, config, e, { childCallback });
     } else {
-      props.onButtonClick(key, config, e);
+      props.onButtonClick(key, config, e, childParams);
     }
   }
 

@@ -634,6 +634,8 @@ const commonBase = (WrapComponent) => {
       const { [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld } = stateRef.current;
       if (oldIndex !== newIndex) {
         const data: any = [];
+
+        //数组合并
         const newData = arrayMove([].concat(dataOld), oldIndex, newIndex).filter(el => !!el);
         const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
         newData.forEach((itemData: any, index) => {

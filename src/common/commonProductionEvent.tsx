@@ -11,7 +11,7 @@ const commonProductionEvent = (WrapComponent) => {
       propsRef.current = props;
     }, [props]);
 
-    const calcPaper = (params) => {
+    const calcPaperState = (params) => {
       const {name, fieldName, record, returnData } = params;
       const { [name + 'Container']: container } = props;
       let dataRow: any = {};
@@ -26,73 +26,81 @@ const commonProductionEvent = (WrapComponent) => {
       }
       if (fieldName === 'singlePQty' || fieldName === 'totalPQty' || fieldName === 'printType' ||
         fieldName === 'frontColor' || fieldName === 'frontSpecialColor' || fieldName === 'backColor' || fieldName === 'backSpecialColor') {
-        if (dataRow.totalPQty >= 4) {
-          dataRow.plateQty = Math.ceil(dataRow.totalPQty / commonUtils.isEmptyorZeroDefault(dataRow.singlePQty, 1));
-          if (dataRow.printType === 'frontBack') { // 样本正反
-            if (dataRow.plateQty < 2) {
-              dataRow.plateQty = 2;
-              dataRow.splitQty = 1;
-            } else {
-              dataRow.splitQty = Math.ceil(dataRow.plateQty);
-            }
-            dataRow.totalPlateQty = dataRow.splitQty * (
-              commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0) +
-              commonUtils.isEmptyDefault(dataRow.backColor, 0) + commonUtils.isEmptyDefault(dataRow.backSpecialColor, 0));
-          } else if (dataRow.printType === 'leftRight' || dataRow.printType === 'heavenEarth') { //左右翻 天地翻
-            dataRow.splitQty = Math.ceil(dataRow.plateQty);
-            dataRow.totalPlateQty = dataRow.splitQty * (
-              commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
-          } else { //单面
-            dataRow.plateQty = commonUtils.isEmptyDefault(dataRow.totalPQty, 0) / 2 / dataRow.singlePQty;
-            dataRow.splitQty = Math.ceil(dataRow.plateQty);
-            dataRow.totalPlateQty = dataRow.splitQty * (
-              commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
-          }
-          if (dataRow.splitQty > 0 && dataRow.singlePQty > 0) {
-            dataRow.machineQty = Math.ceil(commonUtils.isEmptyDefault(dataRow.partQty, 0) * commonUtils.isEmptyDefault(dataRow.totalPQty, 0) / 2 / dataRow.singlePQty / dataRow.splitQty);
-            dataRow.totalMachineQty = dataRow.machineQty * dataRow.splitQty;
-          }
-        } else {
-          if (dataRow.printType === 'frontBack') {
-            dataRow.plateQty = 2;
-            dataRow.totalPlateQty = dataRow.splitQty * (
-              commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0) +
-              commonUtils.isEmptyDefault(dataRow.backColor, 0) + commonUtils.isEmptyDefault(dataRow.backSpecialColor, 0));
-          } else {
-            dataRow.plateQty = 1;
-            dataRow.totalPlateQty = dataRow.splitQty * (
-              commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
-          }
-          dataRow.splitQty = 1;
-          if (dataRow.singlePQty > 0) {
-            dataRow.machineQty = Math.ceil(commonUtils.isEmptyDefault(dataRow.partQty, 0) * commonUtils.isEmptyorZeroDefault(dataRow.magnification, 1) / dataRow.singlePQty);
-            dataRow.totalMachineQty = dataRow.machineQty * dataRow.splitQty;
-          }
-        }
+        const returnDataRow = calcPaper(dataRow);
 
         if (dataRow.handleType === 'modify') {
           const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
           if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
-            returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify],
-              plateQty: dataRow.plateQty,
-              splitQty: dataRow.splitQty,
-              totalPlateQty: dataRow.totalPlateQty,
-              machineQty: dataRow.machineQty,
-              totalMachineQty: dataRow.totalMachineQty
-            };
+            returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...returnDataRow };
           }
         }
-      }
-      if (container.isTree) {
-        props.setTreeNode(returnData[name + 'Data'], dataRow, record.allId);
-      } else {
-        const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
-        if (index > -1) {
-          returnData[name + 'Data'][index] = dataRow;
+        if (container.isTree) {
+          props.setTreeNode(returnData[name + 'Data'], { ...dataRow, ...returnDataRow}, record.allId);
+        } else {
+          const index = returnData[name + 'Data'].findIndex(item => item.id === record.id);
+          if (index > -1) {
+            returnData[name + 'Data'][index] = { ...dataRow, ...returnDataRow};
+          }
         }
       }
       return returnData;
     };
+
+    const calcPaper = (dataRowOld) => {
+      const dataRow = { ...dataRowOld};
+      dataRow.totalPQty = commonUtils.isEmptyorZeroDefault(dataRow.totalPQty, 2);
+      if (dataRow.totalPQty >= 4) {
+        dataRow.plateQty = Math.ceil(dataRow.totalPQty / commonUtils.isEmptyorZeroDefault(dataRow.singlePQty, 1));
+        if (dataRow.printType === 'frontBack') { // 样本正反
+          if (dataRow.plateQty < 2) {
+            dataRow.plateQty = 2;
+            dataRow.splitQty = 1;
+          } else {
+            dataRow.splitQty = Math.ceil(dataRow.plateQty);
+          }
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0) +
+            commonUtils.isEmptyDefault(dataRow.backColor, 0) + commonUtils.isEmptyDefault(dataRow.backSpecialColor, 0));
+        } else if (dataRow.printType === 'leftRight' || dataRow.printType === 'heavenEarth') { //左右翻 天地翻
+          dataRow.splitQty = Math.ceil(dataRow.plateQty);
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
+        } else { //单面
+          dataRow.plateQty = commonUtils.isEmptyDefault(dataRow.totalPQty, 0) / 2 / dataRow.singlePQty;
+          dataRow.splitQty = Math.ceil(dataRow.plateQty);
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
+        }
+        if (dataRow.splitQty > 0 && dataRow.singlePQty > 0) {
+          dataRow.machineQty = Math.ceil(commonUtils.isEmptyDefault(dataRow.partQty, 0) * commonUtils.isEmptyDefault(dataRow.totalPQty, 0) / 2 / dataRow.singlePQty / dataRow.splitQty);
+          dataRow.totalMachineQty = dataRow.machineQty * dataRow.splitQty;
+        }
+      } else {
+        if (dataRow.printType === 'frontBack') {
+          dataRow.plateQty = 2;
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0) +
+            commonUtils.isEmptyDefault(dataRow.backColor, 0) + commonUtils.isEmptyDefault(dataRow.backSpecialColor, 0));
+        } else {
+          dataRow.plateQty = 1;
+          dataRow.totalPlateQty = dataRow.splitQty * (
+            commonUtils.isEmptyDefault(dataRow.frontColor, 0) + commonUtils.isEmptyDefault(dataRow.frontSpecialColor, 0));
+        }
+        dataRow.splitQty = 1;
+        if (dataRow.singlePQty > 0) {
+          dataRow.machineQty = Math.ceil(commonUtils.isEmptyDefault(dataRow.partQty, 0) * commonUtils.isEmptyorZeroDefault(dataRow.magnification, 1) / dataRow.singlePQty);
+          dataRow.totalMachineQty = dataRow.machineQty * dataRow.splitQty;
+        }
+      }
+      return {
+        totalPQty: dataRow.totalPQty,
+        plateQty: dataRow.plateQty,
+        splitQty: dataRow.splitQty,
+        totalPlateQty: dataRow.totalPlateQty,
+        machineQty: dataRow.machineQty,
+        totalMachineQty: dataRow.totalMachineQty
+      };
+    }
 
     const modifyFieldData = (name, dataOld, dataModifyOld, filterFieldName, filterValue, modifyFieldName, modifyValue) => {
       const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
@@ -181,7 +189,7 @@ const commonProductionEvent = (WrapComponent) => {
         }
       } else if(name === 'part') {
         //在方法内部判断了哪些字段需要计算
-        returnData = calcPaper({name, fieldName, record, returnData});
+        returnData = calcPaperState({name, fieldName, record, returnData});
         if (fieldName === 'partName') {
           returnData = {...returnData, ...modifyFieldData('material', materialDataOld, materialModifyDataOld, 'partId', returnData.dataRow.id,'partName', returnData.dataRow.partName) };
           returnData = {...returnData, ...modifyFieldData('process', processDataOld, processModifyDataOld, 'partId', returnData.dataRow.id,'partName', returnData.dataRow.partName) };
@@ -241,7 +249,8 @@ const commonProductionEvent = (WrapComponent) => {
 
     const sortData = (partData, processData, sort = 'asc') => {
       processData.sort((row1, row2) => {
-        const partDataRowInfo1 = getTreeIndexAndInfo(partData, row1.partId);
+        const partDataRowInfo1 = sort === 'asc' ? getTreeIndexAndInfo(partData, row1.partId) : { index: 0, dataRow: { allId: '' } };
+        const merge1 = sort === 'asc' ? '0' : row1.isMerge ? '0' : '1';
         const indexSort1 = partDataRowInfo1.index;
         const level1 = partDataRowInfo1.index === 999 ? '9' : partDataRowInfo1.dataRow.allId.split(',').length.toString();
         if (row1.sortNum === undefined) {
@@ -255,7 +264,8 @@ const commonProductionEvent = (WrapComponent) => {
         let processSort1 = '0000' + row1.sortNum.toFixed(2);
         processSort1 = processSort1.substring(processSort1.length - 5);
 
-        const partDataRowInfo2 = getTreeIndexAndInfo(partData, row2.partId);
+        const partDataRowInfo2 = sort === 'asc' ? getTreeIndexAndInfo(partData, row2.partId) : { index: 0, dataRow: { allId: '' } };
+        const merge2 = sort === 'asc' ? '0' : row2.isMerge ? '0' : '1';
         const indexSort2 = partDataRowInfo2.index;
         const level2 = partDataRowInfo2.index === 999 ? '9' : partDataRowInfo2.dataRow.allId.split(',').length.toString();
         let partSort2 = `0000${indexSort2}`;
@@ -264,7 +274,7 @@ const commonProductionEvent = (WrapComponent) => {
         processSort2 = processSort2.substring(processSort2.length - 5);
         return sort === 'asc' ?
           parseFloat(level1 + partSort1 + row1.processGenre.substring(0, 1) + processSort1) - parseFloat(level2 + partSort2 + row2.processGenre.substring(0, 1) + processSort2) :
-          parseFloat(level2 + partSort2 + row2.processGenre.substring(0, 1) + processSort2) - parseFloat(level1 + partSort1 + row1.processGenre.substring(0, 1) + processSort1);
+          parseFloat(merge2 + level2 + partSort2 + row2.processGenre.substring(0, 1) + processSort2) - parseFloat(merge1 + level1 + partSort1 + row1.processGenre.substring(0, 1) + processSort1);
       });
       return processData;
     };
@@ -567,6 +577,7 @@ const commonProductionEvent = (WrapComponent) => {
           let currentProcess = { processInQty: slave.productQty, isFirstProcess: true };
           let isFirstInOutRate = false;
           let inOutRate = 1;
+          let diffQty = 0;
           partLastLevelData.forEach(part => {
             // 成品工艺数据计算
             slave.allId.split(',').forEach((key, index) => {
@@ -574,10 +585,12 @@ const commonProductionEvent = (WrapComponent) => {
               processSlaveData = sortData(partData, processSlaveData, 'desc');
               if (index !== 0) {
                 inOutRate = commonUtils.isEmptyorZeroDefault(slave.coefficient, 1);
+                diffQty = commonUtils.isEmptyorZeroDefault(slave.productQty, 0) + commonUtils.isEmptyorZeroDefault(slave.giveQty, 0) +
+                  commonUtils.isEmptyorZeroDefault(slave.stockUpQty, 0) - commonUtils.isEmptyorZeroDefault(part.partQty, 0);
                 isFirstInOutRate = true;
               }
               currentProcess = calcProcess(processSlaveData, partData, partModifyData, materialData, materialModifyData,
-                processModifyData, processData, currentProcess, isFirstInOutRate, inOutRate, masterDataOld, slave, part, commonModel);
+                processModifyData, processData, currentProcess, isFirstInOutRate, inOutRate, 0, masterDataOld, slave, part, commonModel);
             });
 
             //部件工艺数据计算
@@ -597,15 +610,19 @@ const commonProductionEvent = (WrapComponent) => {
                     processPartData.splice(index, 1);
                   }
                 });
-                processPartData.concat(mergeProcessData);
+                processPartData = processPartData.concat(mergeProcessData);
+
               }
               // ------------------------------------------------------------
               processPartData = sortData(partData, processPartData, 'desc');
+
               inOutRate = part.totalPQty > 4 ? part.totalPQty / 2 / commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) :
                 commonUtils.isEmptyorZeroDefault(part.singlePQty, 1) / commonUtils.isEmptyorZeroDefault(part.magnification, 1);
+              diffQty = commonUtils.isEmptyorZeroDefault(slave.productQty, 0) + commonUtils.isEmptyorZeroDefault(slave.giveQty, 0) +
+                commonUtils.isEmptyorZeroDefault(slave.stockUpQty, 0) - commonUtils.isEmptyorZeroDefault(part.partQty, 0);
               isFirstInOutRate = true;
               currentProcess = calcProcess(processPartData, partData, partModifyData, materialData, materialModifyData,
-                processModifyData, processData, currentProcess, isFirstInOutRate, inOutRate, masterDataOld, slave, part, commonModel);
+                processModifyData, processData, currentProcess, isFirstInOutRate, inOutRate, diffQty, masterDataOld, slave, part, commonModel);
             });
           });
         });
@@ -637,14 +654,15 @@ const commonProductionEvent = (WrapComponent) => {
      * @param commonModel        公共信息
      */
     const calcProcess = (processFilterData, partData, partModifyData, materialData, materialModifyData,
-                         processModifyData, processData, currentProcess, isFirstInOutRate, inOutRate, masterDataOld, slave, part, commonModel) => {
+                         processModifyData, processData, currentProcess, isFirstInOutRate, inOutRate, diffQty, masterDataOld, slave, part, commonModel) => {
       let inOutAdjust = 1;
       let printingLossQty = 0;
       let processId = '';
-      let isPartAndMaterial = true;
+      let isPartAndMaterial = true; // 是否是印前第一次处理。
       let partAndMaterial: any = {};
       let processOutQty = currentProcess.processInQty;
       processFilterData.forEach((process, processIndex) => {
+        // 合版时取最大的排版数
         if (processOutQty > process.processOutQty) {
           if (commonUtils.isNotEmpty(currentProcess.id) && !process.isMerge) {
             //更新上道工艺Id
@@ -667,6 +685,7 @@ const commonProductionEvent = (WrapComponent) => {
               inOutAdjust = inOutAdjust * process.inOutAdjustRate;
             });
             inOutRate = inOutRate / inOutAdjust;
+            processOutQty = processOutQty - diffQty;
           }
 
           if (process.processGenre !== '0prepress') {
@@ -694,6 +713,7 @@ const commonProductionEvent = (WrapComponent) => {
             //报产数量公式
             process.reportQty = commonUtils.getFormulaValue('process', process, process.reportQtyFormulaId, {
               master: masterDataOld, slave, part, material: {}, process }, commonModel);
+
           } else {
             if (isPartAndMaterial) {
               partAndMaterial = partAndMaterialCalc(slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty);
@@ -721,7 +741,8 @@ const commonProductionEvent = (WrapComponent) => {
 
           const qtyCalcData = { processOutQty: process.processOutQty, inOutRate: process.inOutRate, processInQty: process.processInQty, processQty: process.processQty,
             reportQty: process.reportQty, sortNum: process.sortNum, isLast: process.isLast };
-          const index = processData.findIndex(item => item.id === process.id);
+          let index = processData.findIndex(item => item.id === process.id);
+
           processData[index] = { ...processData[index], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, ...qtyCalcData };
           if (processData[index].handleType === 'modify') {
             const indexModify = processModifyData.findIndex(item => item.id === process.id);
@@ -731,8 +752,43 @@ const commonProductionEvent = (WrapComponent) => {
               processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, ...qtyCalcData });
             }
           }
+
+          // 更新合版对应的工艺数据。
+          index = processData.findIndex(item => item.partId === (item.processGenre === '3product' ? '' : part.id) && item.processId === process.processId);
+          processData[index] = { ...processData[index], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, ...qtyCalcData };
+          if (processData[index].handleType === 'modify') {
+            const indexModify = processModifyData.findIndex(item => item.partId === (item.processGenre === '3product' ? '' : part.id) && item.processId === process.processId);
+            if (indexModify > -1) {
+              processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: processData[index].handleType, ...qtyCalcData };
+            } else {
+              processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, ...qtyCalcData });
+            }
+          }
+        } else if (process.processGenre !== '0prepress') {
+          currentProcess = { ...process};
+          processOutQty = process.processInQty;
+          if (process.processGenre === '1printing') {
+            printingLossQty = printingLossQty + process.lossQty;
+          }
+
+          // 更新合版对应的工艺数据。
+          const qtyCalcData = { processOutQty: process.processOutQty, inOutRate: process.inOutRate, processInQty: process.processInQty, processQty: process.processQty,
+            reportQty: process.reportQty, sortNum: process.sortNum, isLast: process.isLast };
+          const index = processData.findIndex(item => item.partId === (item.processGenre === '3product' ? '' : part.id) && item.processId === process.processId);
+          processData[index] = { ...processData[index], handleType: commonUtils.isEmpty(processData[index].handleType) ? 'modify' : processData[index].handleType, ...qtyCalcData };
+          if (processData[index].handleType === 'modify') {
+            const indexModify = processModifyData.findIndex(item => item.partId === (item.processGenre === '3product' ? '' : part.id) && item.processId === process.processId);
+            if (indexModify > -1) {
+              processModifyData[indexModify] = { ...processModifyData[indexModify], handleType: processData[index].handleType, ...qtyCalcData };
+            } else {
+              processModifyData.push({ id: processData[index].id, handleType: processData[index].handleType, ...qtyCalcData });
+            }
+          }
         }
       });
+      if (isPartAndMaterial) {
+        partAndMaterialCalc(slave, partData, partModifyData, part, materialData, materialModifyData, processFilterData, processId, processOutQty, printingLossQty);
+      }
       sortData(partData, processData);
       return currentProcess;
     }
@@ -758,27 +814,28 @@ const commonProductionEvent = (WrapComponent) => {
       mergePartIds.forEach(mergePartId => {
         let maxPart;
         let maxQty = 0;
-        const mergePartIdData = mergePartData.filter(item => item.id === mergePartId && item.mergePartId === mergePartId);
+        const mergePartIdData = mergePartData.filter(item => item.id === mergePartId || item.mergePartId === mergePartId);
         mergePartIdData.forEach(part => {
           const slave = commonUtils.getTreeNodeById(slaveData, part.slaveId);
           const qty = commonUtils.isEmptyorZeroDefault(slave.productQty, 0) + commonUtils.isEmptyorZeroDefault(slave.giveQty, 0) +
             commonUtils.isEmptyorZeroDefault(slave.stockUpQty, 0);
           if (qty / commonUtils.isEmptyorZeroDefault(part.mergeSinglePQty, 1) > maxQty) {
-            maxQty = qty / commonUtils.isEmptyorZeroDefault(part.mergeSinglePQty, 1);
+            maxQty = qty * commonUtils.isEmptyorZeroDefault(part.totalPQty, 2) / 2 / commonUtils.isEmptyorZeroDefault(part.mergeSinglePQty, 1);
             maxPart = part;
           }
         });
         if (maxPart) {
           mergePartIdData.forEach(part => {
-            const partQtyCalcData = { partQty: Math.ceil(maxQty) * part.mergeSinglePQty, singlePQty: maxPart.mergeSinglePQty };
+            const partQtyCalcData = { partQty: Math.ceil(maxQty) * maxPart.mergeSinglePQty, singlePQty: maxPart.mergeSinglePQty, totalPQty: maxPart.totalPQty };
             const partDataRow = { ...part, handleType: commonUtils.isEmpty(part.handleType) ? 'modify' : part.handleType, ...partQtyCalcData };
-            props.setTreeNode(partData, partDataRow, part.allId);
+            const returnDataRow = calcPaper(partDataRow);
+            props.setTreeNode(partData, { ...partDataRow, ...returnDataRow }, part.allId);
             if (partDataRow.handleType === 'modify') {
               const indexModify = partModifyData.findIndex(item => item.id === partDataRow.id);
               if (indexModify > -1) {
-                partModifyData[indexModify] = { ...partModifyData[indexModify], handleType: partDataRow.handleType, ...partQtyCalcData };
+                partModifyData[indexModify] = { ...partModifyData[indexModify], handleType: partDataRow.handleType, ...partQtyCalcData, ...returnDataRow };
               } else {
-                partModifyData.push({ id: partDataRow.id, handleType: partDataRow.handleType, ...partQtyCalcData });
+                partModifyData.push({ id: partDataRow.id, handleType: partDataRow.handleType, ...partQtyCalcData, ...returnDataRow });
               }
             }
           });

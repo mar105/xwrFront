@@ -137,14 +137,14 @@ const commonDocEvent = (WrapComponent) => {
           dispatchModifyState({...returnState, listRowIndex});
         }
 
-      } else if (key === 'copyToButton' || key === 'menu') {
+      } else if (key === 'copyToButton' || key === 'copyToMenu') {
         const { containerData, routeId } = props;
         if (commonUtils.isNotEmptyArr(containerData)) {
           const copyToData: any = {};
           for(const container of containerData) {
             copyToData[container.dataSetName + 'Data'] = props[container.dataSetName + 'Data'];
           }
-          copyToData.config = key === 'menu' ? e.item.props.config : config;
+          copyToData.config = key === 'copyToMenu' ? e.item.props.config : config;
           props.callbackAddPane(copyToData.config.popupActiveId, { handleType: 'add',
             listRouteId: routeId, listContainerId: props.listContainerId, listCondition: props.listCondition, listTableKey: props.listTableKey,
             listRowIndex: props.listRowTotal, listRowTotal: props.listRowTotal, copyToData });
@@ -152,6 +152,7 @@ const commonDocEvent = (WrapComponent) => {
       } else if (key === 'examineButton' || key === 'cancelExamineButton') {
         if (commonUtils.isNotEmpty(masterDataOld.id)) {
           const saveData: any = [];
+          // 审核时传入数据原因是需要审核后动作。
           saveData.push(commonUtils.mergeData('master', [masterDataOld], [], [], true));
           if (childParams && childParams.childCallback) {
             const saveChildData = await childParams.childCallback({masterDataOld});
@@ -175,6 +176,11 @@ const commonDocEvent = (WrapComponent) => {
         } else {
           props.callbackRemovePane(tabId);
         }
+      } else if (key === 'copyFromButton' || key === 'copyFromMenu') {
+        const fromConfig = key === 'copyFromMenu' ? e.item.props.config : config;
+        // routeName配置的未清为commonList转换为selectList
+        const dropParam = { name: fromConfig.fieldName, type: 'popupFrom', config: fromConfig, routeName: '/xwrBasic/selectList' };
+        props.onDropPopup(dropParam);
       }
     }
 
@@ -235,15 +241,15 @@ const commonDocEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 40, disabled: !props.enabled });
       buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 50, disabled: props.enabled || isExamine });
       buttonGroup.push({ key: 'examineButton', caption: '审核', htmlType: 'button', sortNum: 60, disabled: props.enabled || isExamine });
-      buttonGroup.push({ key: 'cancelExamineButton', caption: '消审', htmlType: 'button', sortNum: 60, disabled: props.enabled || !isExamine });
+      buttonGroup.push({ key: 'cancelExamineButton', caption: '消审', htmlType: 'button', sortNum: 70, disabled: props.enabled || !isExamine });
 
-      buttonGroup.push({ key: 'firstButton', caption: '首条', htmlType: 'button', sortNum: 60, disabled: props.enabled });
-      buttonGroup.push({ key: 'priorButton', caption: '上一条', htmlType: 'button', sortNum: 70, disabled: props.enabled });
-      buttonGroup.push({ key: 'nextButton', caption: '下一条', htmlType: 'button', sortNum: 80, disabled: props.enabled });
-      buttonGroup.push({ key: 'lastButton', caption: '末条', htmlType: 'button', sortNum: 90, disabled: props.enabled });
-      buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 100, disabled: props.enabled });
-      buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 100, disabled: props.enabled || isInvalid || isExamine });
-      buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 70, disabled: props.enabled });
+      buttonGroup.push({ key: 'firstButton', caption: '首条', htmlType: 'button', sortNum: 80, disabled: props.enabled });
+      buttonGroup.push({ key: 'priorButton', caption: '上一条', htmlType: 'button', sortNum: 90, disabled: props.enabled });
+      buttonGroup.push({ key: 'nextButton', caption: '下一条', htmlType: 'button', sortNum: 100, disabled: props.enabled });
+      buttonGroup.push({ key: 'lastButton', caption: '末条', htmlType: 'button', sortNum: 110, disabled: props.enabled });
+      buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 120, disabled: props.enabled });
+      buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 130, disabled: props.enabled || isInvalid || isExamine });
+      buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 140, disabled: props.enabled });
       return buttonGroup;
     }
 

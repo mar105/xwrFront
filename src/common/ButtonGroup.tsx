@@ -83,7 +83,7 @@ export function ButtonGroup(params) {
       }
 
       let buttonItem = {...buttonOld, disabled: disabled ? disabled : buttonOld.disabled }; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置
-      if (buttonOld.key === 'copyToButton') {
+      if (buttonOld.key === 'copyToButton' || buttonOld.key === 'copyFromButton') {
         const buttonChildren = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
           item.containerType === 'control' && item.isVisible && item.fieldName.startsWith(buttonOld.key + '.') && item.fieldName.split('.').length < 3);
         if (buttonChildren.length === 1) {
@@ -94,7 +94,8 @@ export function ButtonGroup(params) {
           buttonConfig.children = buttonChildrenSlave;
         } else if (buttonChildren.length > 1) {
           isDropDown = true;
-          menusData = <Menu onClick={commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, 'menu', null)}>{buttonChildren.map(menu => {
+          menusData = <Menu onClick={commonUtils.isEmpty(params.onClick) ? undefined :
+            params.onClick.bind(this, buttonOld.key === 'copyToButton' ? 'copyToMenu' : 'copyFromMenu', null)}>{buttonChildren.map(menu => {
             const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
               item.containerType === 'control' && item.fieldName.startsWith(menu.fieldName + '.'));
             menu.children = buttonChildrenSlave;

@@ -48,18 +48,19 @@ export function ButtonGroup(params) {
 
   const buttons = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item => item.containerType === 'control' && item.fieldName.endsWith('Button') && !item.fieldName.includes('.'));
   //先找到通用按钮，取配置
-  const buttonGroup = buttonGroupOld.map(buttonOld => {
+  const buttonSort: any = [];
+  buttonGroupOld.map(buttonOld => {
     const index = buttons.findIndex(button => button.fieldName === buttonOld.key);
-    let buttonConfig: any = {fieldName: buttonOld.key, isVisible: true};
+    let buttonConfig: any = {...buttonOld, fieldName: buttonOld.key, isVisible: true, viewName: buttonOld.caption };
     if (index > -1) {
-      buttonConfig = buttons[index];
+      buttonConfig = {...buttonConfig, ...buttons[index], key: buttons[index].fieldName };
       buttons.splice(index, 1);
     }
     if (params.isModal) {
         //选择框处理
-       if (params.modalType === 'select' && buttonConfig.fieldName !== 'selectButton' && buttonConfig.fieldName !== 'cancelButton' && buttonConfig.fieldName !== 'refreshButton') {
+       if (params.modalType === 'select' && buttonConfig.key !== 'selectButton' && buttonConfig.key !== 'cancelButton' && buttonConfig.key !== 'refreshButton') {
          buttonConfig.isVisible = false;
-       } else if (params.modalType !== 'select' && buttonConfig.fieldName !== 'postButton') { //新记录处理
+       } else if (params.modalType !== 'select' && buttonConfig.key !== 'postButton') { //新记录处理
          buttonConfig.isVisible = false;
        }
     }
@@ -67,35 +68,30 @@ export function ButtonGroup(params) {
       let isDropDown = false;
       let menusData;
       let disabled;
-      disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName &&
-        (item.permissionName === buttonOld.key || item.permissionName === buttonConfig.fieldName)) > -1) : false;
+      disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName && item.permissionName === buttonConfig.fieldName) > -1) : false;
 
-      if (buttonOld.key === 'postButton' || buttonConfig.fieldName === 'postButton' ||
-          buttonOld.key === 'cancelButton' || buttonConfig.fieldName === 'cancelButton') {
+      if (buttonConfig.key === 'postButton' || buttonConfig.key === 'cancelButton') {
         disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName &&
-          (buttonOld.key === 'addButton' || buttonConfig.fieldName === 'addButton' ||
-            buttonOld.key === 'modifyButton' || buttonConfig.fieldName === 'modifyButton')) > -1) : false;
+          (buttonConfig.key === 'addButton' || buttonConfig.key === 'modifyButton')) > -1) : false;
       }
 
-      if (params.userInfo.isManage || buttonOld.key === 'refreshButton' || buttonConfig.fieldName === 'refreshButton' ||
-        buttonOld.key === 'cancelButton' || buttonConfig.fieldName === 'cancelButton') {
+      if (params.userInfo.isManage || buttonConfig.key === 'refreshButton' || buttonConfig.key === 'cancelButton') {
         disabled = false;
       }
-
-      let buttonItem = {...buttonOld, disabled: disabled ? disabled : buttonOld.disabled }; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置
-      if (buttonOld.key === 'copyToButton' || buttonOld.key === 'copyFromButton') {
+      buttonConfig = {...buttonConfig, disabled: disabled ? disabled : buttonOld.disabled };
+      // let buttonItem = {...buttonOld, disabled: disabled ? disabled : buttonOld.disabled }; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置
+      if (buttonConfig.key === 'copyToButton' || buttonConfig.key === 'copyFromButton') {
         const buttonChildren = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
-          item.containerType === 'control' && item.isVisible && item.fieldName.startsWith(buttonOld.key + '.') && item.fieldName.split('.').length < 3);
+          item.containerType === 'control' && item.isVisible && item.fieldName.startsWith(buttonConfig.key + '.') && item.fieldName.split('.').length < 3);
         if (buttonChildren.length === 1) {
-          buttonItem = {...buttonOld, ...buttonChildren[0]};
-          buttonConfig = {...buttonChildren[0]};
+          buttonConfig = {...buttonConfig, ...buttonChildren[0] };
           const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
             item.containerType === 'control' && item.fieldName.startsWith(buttonChildren[0].fieldName + '.'));
           buttonConfig.children = buttonChildrenSlave;
         } else if (buttonChildren.length > 1) {
           isDropDown = true;
           menusData = <Menu onClick={commonUtils.isEmpty(params.onClick) ? undefined :
-            params.onClick.bind(this, buttonOld.key === 'copyToButton' ? 'copyToMenu' : 'copyFromMenu', null)}>{buttonChildren.map(menu => {
+            params.onClick.bind(this, buttonConfig.key === 'copyToButton' ? 'copyToMenu' : 'copyFromMenu', null)}>{buttonChildren.map(menu => {
             const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
               item.containerType === 'control' && item.fieldName.startsWith(menu.fieldName + '.'));
             menu.children = buttonChildrenSlave;
@@ -106,24 +102,28 @@ export function ButtonGroup(params) {
       }
       
       const button = {
-        caption: buttonOld.caption,
+        caption: buttonConfig.viewName,
         isDropDown,
-        property: { name: buttonItem.key, htmlType: buttonItem.htmlType, disabled: buttonItem.disabled, overlay: menusData },
-        event: { onClick: commonUtils.isEmpty(params.onClick) || buttonOld.key === 'delButton' || buttonOld.key === 'invalidButton' ? undefined :
-            params.onClick.bind(this, buttonItem.key, buttonConfig) },
+        property: { name: buttonConfig.key, htmlType: buttonConfig.htmlType, disabled: buttonConfig.disabled, overlay: menusData },
+        event: { onClick: commonUtils.isEmpty(params.onClick) || buttonConfig.key === 'delButton' || buttonConfig.key === 'invalidButton' ? undefined :
+            params.onClick.bind(this, buttonConfig.key, buttonConfig) },
         componentType: componentType.Soruce,
       };
 
 
-      if (buttonOld.key === 'delButton' || buttonOld.key === 'invalidButton') {
-        return <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>} onConfirm={params.onClick.bind(this, buttonItem.key, buttonConfig)}>
-          <Col><ButtonComponent {...button} /></Col>
-        </Popconfirm>
-      } else if (buttonOld.key.startsWith('importExcel') > 0) {
+      if (buttonConfig.key === 'delButton' || buttonConfig.key === 'invalidButton') {
+        buttonSort.push({ sortNum: buttonConfig.sortNum, component:
+            <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>} onConfirm={params.onClick.bind(this, buttonConfig.key, buttonConfig)}>
+              <Col><ButtonComponent {...button} /></Col>
+            </Popconfirm> } );
+        // return <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>} onConfirm={params.onClick.bind(this, buttonItem.key, buttonConfig)}>
+        //   <Col><ButtonComponent {...button} /></Col>
+        // </Popconfirm>
+      } else if (buttonConfig.key.startsWith('importExcel') > 0) {
         const index = commonUtils.isEmptyObj(params.container) ? -1 : params.container.slaveData.findIndex(item => item.fieldName === 'addButton');
         const saveRouteId = index > -1 ? params.container.slaveData[index].popupSelectId : '';
         const uploadParam: any = {
-          name: buttonOld.key,
+          name: buttonConfig.key,
           enabled: false,
           button: <ButtonComponent {...button} />,
           property: {
@@ -138,7 +138,7 @@ export function ButtonGroup(params) {
             onChange: undefined,
             customRequest: onCustomRequest,
             data: {
-              name: buttonOld.key,
+              name: buttonConfig.key,
               routeId: params.routeId,
               groupId: params.groupId,
               shopId: params.shopId,
@@ -148,25 +148,32 @@ export function ButtonGroup(params) {
             }
           },
         };
-        return <Col><UploadFile {...uploadParam}></UploadFile></Col>;
+        buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col><UploadFile {...uploadParam}></UploadFile></Col> } );
+        // return <Col><UploadFile {...uploadParam}></UploadFile></Col>;
       } else {
-        return <Col><ButtonComponent {...button} /></Col>;
+        buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col><ButtonComponent {...button} /></Col> } );
+        // return <Col><ButtonComponent {...button} /></Col>;
       }
     }
 
   });
 
   //剩余的为界面其他按钮配置
-  const buttonGroupOther = buttons.filter(item => item.isVisible).map(item => {
+  buttons.filter(item => item.isVisible).map(item => {
     const button = {
       caption: item.viewName,
       property: { name: item.fieldName, htmlType: 'button', disabled: item.disabled },
       event: { onClick: commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, item.fieldName, item) },
       componentType: componentType.Soruce,
     };
-    return <Col><ButtonComponent {...button} /></Col>;
+    buttonSort.push({ sortNum: item.sortNum, component: <Col><ButtonComponent {...button} /></Col> } );
+    // return <Col><ButtonComponent {...button} /></Col>;
   });
-  buttonGroup.push(...buttonGroupOther);
+  buttonSort.sort((row1, row2) => row1.sortNum > row2.sortNum);
+  const buttonGroup: any = [];
+  buttonSort.forEach(button => {
+    buttonGroup.push(button.component);
+  });
 
   return <Row style={{ height: 'auto', overflow: 'auto' }}>{buttonGroup}</Row>;
 }

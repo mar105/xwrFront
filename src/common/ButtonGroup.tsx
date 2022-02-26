@@ -53,7 +53,7 @@ export function ButtonGroup(params) {
     const index = buttons.findIndex(button => button.fieldName === buttonOld.key);
     let buttonConfig: any = {...buttonOld, fieldName: buttonOld.key, isVisible: true, viewName: buttonOld.caption };
     if (index > -1) {
-      buttonConfig = {...buttonConfig, ...buttons[index], key: buttons[index].fieldName };
+      buttonConfig = {...buttonConfig, ...buttons[index], key: buttons[index].fieldName, sortNum: buttonOld.sortNum };
       buttons.splice(index, 1);
     }
     if (params.isModal) {
@@ -84,7 +84,7 @@ export function ButtonGroup(params) {
         const buttonChildren = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
           item.containerType === 'control' && item.isVisible && item.fieldName.startsWith(buttonConfig.key + '.') && item.fieldName.split('.').length < 3);
         if (buttonChildren.length === 1) {
-          buttonConfig = {...buttonConfig, ...buttonChildren[0] };
+          buttonConfig = {...buttonConfig, ...buttonChildren[0], sortNum: buttonConfig.sortNum };
           const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
             item.containerType === 'control' && item.fieldName.startsWith(buttonChildren[0].fieldName + '.'));
           buttonConfig.children = buttonChildrenSlave;

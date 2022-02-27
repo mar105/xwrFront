@@ -435,6 +435,7 @@ const commonDocEvent = (WrapComponent) => {
         params.selectList.forEach((selectItem, selectIndex) => {
           const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
           const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
+          rowData.allId = rowData.id;
           data.push(rowData);
         });
         if (isWait) {

@@ -341,7 +341,7 @@ export function getAssignFieldValue(name, assignField, option, allDataset = unde
   if (isNotEmpty(assignField)) {
     assignField.split(',').forEach(item => {
       const arrAssign = item.split('=');
-      if (item.indexOf('=') > -1 && item.indexOf('.') > -1) {
+      if (item.indexOf('=') > -1) {
         returnField[arrAssign[0].trim()] = isNotEmptyObj(option) ? copeDataSetValue(name, option, arrAssign[1].trim(), allDataset): '';
       } else {
         returnField[arrAssign[0].trim()] = isNotEmptyObj(option) ? option[arrAssign[1].trim()] : '';
@@ -414,71 +414,69 @@ export function getChildTreeNodeById(treeData, id) {
 
 // 处理赋值赋值字段、默认值赋值字段 其他数据集value;
 export function copeDataSetValue(name, record, assignValueField, allDataset) {
-  const fieldName = assignValueField;
+  const fieldName = assignValueField.trim();
+  const dataSetName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[0].trim() + 'Data' : name;
+  const tableFieldName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[1].trim() : fieldName;
   if (fieldName.split('.').length > 1 || fieldName.split('&').length > 1 || fieldName.includes('+') || fieldName.includes('-') || fieldName.includes('*') ||
     fieldName.includes('/') || fieldName.includes('(') || fieldName.includes(')')) {
-    const dataSetName = fieldName.split('.')[0].trim() + 'Data';
-    const tableFieldName = fieldName.split('.')[1].trim();
-    if (isNotEmpty(allDataset[dataSetName])) {
-      if (fieldName.includes('+') || fieldName.includes('-') || fieldName.includes('*') ||
-        fieldName.includes('/') || fieldName.includes('(') || fieldName.includes(')')) {
-        let formula = fieldName;
-        let formulaSplit = fieldName;
-        formulaSplit = formulaSplit.split('+').join('$');
-        formulaSplit = formulaSplit.split('-').join('$');
-        formulaSplit = formulaSplit.split('*').join('$');
-        formulaSplit = formulaSplit.split('/').join('$');
-        formulaSplit = formulaSplit.split('(').join('$');
-        formulaSplit = formulaSplit.split(')').join('$');
-        formulaSplit.split('$').forEach((fieldNameItem) => {
-          const oldFieldItem = fieldNameItem.trim();
-          if (oldFieldItem.indexOf('.') > -1) {
-            const dataSetName = oldFieldItem.split('.')[0].trim() + 'Data';
-            const tableFieldName = oldFieldItem.split('.')[1].trim();
-            if (isNotEmptyArr(allDataset[dataSetName])) {
-              const selectedName = oldFieldItem.split('.')[0].trim() + 'SelectedRowKeys';
-              if (isNotEmptyArr(allDataset[selectedName])) {
-                const index = allDataset[dataSetName].findIndex(item => item.id === allDataset[selectedName][0]);
-                if (index > -1) {
-                  // 加括号处理当值为负数时的异常
-                  formula = formula.replace(oldFieldItem, '(' + allDataset[dataSetName][index][tableFieldName] + ')');
-                }
-              }
-            } else if (isNotEmptyObj(allDataset[dataSetName]) && allDataset[dataSetName][tableFieldName] !== undefined) {
-              formula = formula.replace(oldFieldItem, '(' + allDataset[dataSetName][tableFieldName] + ')');
-            } else {
-              formula = formula.replace(oldFieldItem, '0');
-            }
-          } else {
-            const tableFieldName = oldFieldItem.trim();
-            if (allDataset[dataSetName][tableFieldName] !== undefined) {
+    let formula = fieldName;
+    let formulaSplit = fieldName;
+    formulaSplit = formulaSplit.split('&').join('$');
+    formulaSplit = formulaSplit.split('+').join('$');
+    formulaSplit = formulaSplit.split('-').join('$');
+    formulaSplit = formulaSplit.split('*').join('$');
+    formulaSplit = formulaSplit.split('/').join('$');
+    formulaSplit = formulaSplit.split('(').join('$');
+    formulaSplit = formulaSplit.split(')').join('$');
+    formulaSplit.split('$').forEach((fieldNameItem) => {
+      const oldFieldItem = fieldNameItem.trim();
+      if (oldFieldItem.indexOf('.') > -1) {
+        const dataSetName = oldFieldItem.split('.')[0].trim() + 'Data';
+        const tableFieldName = oldFieldItem.split('.')[1].trim();
+        if (isNotEmptyArr(allDataset[dataSetName])) {
+          const selectedName = oldFieldItem.split('.')[0].trim() + 'SelectedRowKeys';
+          if (isNotEmptyArr(allDataset[selectedName])) {
+            const index = allDataset[dataSetName].findIndex(item => item.id === allDataset[selectedName][0]);
+            if (index > -1) {
               // 加括号处理当值为负数时的异常
-              formula = formula.replace(tableFieldName, '(' + allDataset[dataSetName][tableFieldName] + ')');
-            } else {
-              formula = formula.replace(tableFieldName, '0');
+              formula = formula.replace(oldFieldItem, '(' + allDataset[dataSetName][index][tableFieldName] + ')');
             }
           }
-        });
-        return tableFieldName.substring(0, 1) === '&' ? formula.split('+').join('') : round(eval(formula), 6);
-      } else if ((name + 'Data') === dataSetName) {
-        return record[tableFieldName];
-      } else if (typeof allDataset[dataSetName] === 'object' && allDataset[dataSetName].constructor === Object) {
-        return allDataset[dataSetName][tableFieldName];
-      } else {
-        const selectedName = fieldName.split('.')[0].trim() + 'SelectedRowKeys';
-        if (isNotEmptyArr(allDataset[selectedName])) {
-          const treeNode = getTreeNodeById(allDataset[dataSetName], allDataset[selectedName][0]);
-          return treeNode[tableFieldName];
-          // const index = allDataset[dataSetName].findIndex(item => item.id === allDataset[selectedName][0]);
-          // if (index > -1) {
-          //   return allDataset[dataSetName][index][tableFieldName]
-          // }
+        } else if (isNotEmptyObj(allDataset[dataSetName]) && allDataset[dataSetName][tableFieldName] !== undefined) {
+          formula = formula.replace(oldFieldItem, '(' + allDataset[dataSetName][tableFieldName] + ')');
+        } else {
+          formula = formula.replace(oldFieldItem, '0');
         }
-        return undefined;
+      } else if (isNotEmpty(allDataset[dataSetName])) {
+        const tableFieldName = oldFieldItem.trim();
+        if (allDataset[dataSetName][tableFieldName] !== undefined) {
+          // 加括号处理当值为负数时的异常
+          formula = formula.replace(tableFieldName, '(' + allDataset[dataSetName][tableFieldName] + ')');
+        } else {
+          formula = formula.replace(tableFieldName, '0');
+        }
+      } else {
+        const tableFieldName = oldFieldItem.trim();
+        if (record[tableFieldName] !== undefined) {
+          // 加括号处理当值为负数时的异常
+          formula = formula.replace(tableFieldName, '(' + record[tableFieldName] + ')');
+        } else {
+          formula = formula.replace(tableFieldName, '0');
+        }
       }
-    } else {
-      return undefined;
+    });
+    return tableFieldName.substring(0, 1) === '&' ? formula.split('+').join('') : round(eval(formula), 6);
+  } else if ((name + 'Data') === dataSetName) {
+    return record[tableFieldName];
+  } else if (isNotEmpty(allDataset[dataSetName]) && typeof allDataset[dataSetName] === 'object' && allDataset[dataSetName].constructor === Object) {
+    return allDataset[dataSetName][tableFieldName];
+  } else if (isNotEmpty(allDataset[dataSetName])) {
+    const selectedName = fieldName.split('.')[0].trim() + 'SelectedRowKeys';
+    if (isNotEmptyArr(allDataset[selectedName])) {
+      const treeNode = getTreeNodeById(allDataset[dataSetName], allDataset[selectedName][0]);
+      return treeNode[tableFieldName];
     }
+    return undefined;
   } else {
     return record[fieldName];
   }

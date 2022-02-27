@@ -179,7 +179,7 @@ const commonDocEvent = (WrapComponent) => {
       } else if (key === 'copyFromButton' || key === 'copyFromMenu') {
         const fromConfig = key === 'copyFromMenu' ? e.item.props.config : config;
         // routeName配置的未清为commonList转换为selectList
-        const dropParam = { name: fromConfig.fieldName, type: 'popupFrom', config: fromConfig, routeName: '/xwrBasic/selectList' };
+        const dropParam = { name: 'slave', type: 'popupFrom', config: fromConfig, routeName: '/xwrBasic/selectList', onModalOk };
         props.onDropPopup(dropParam);
       }
     }
@@ -425,6 +425,28 @@ const commonDocEvent = (WrapComponent) => {
       return returnData;
     }
 
+    const onModalOk = async (params, isWait) => {
+      const name = params.name;
+      const { [name + 'Container']: container, masterData, [name + 'Data']: dataOld }: any = propsRef.current;
+
+      if (params.type === 'popupFrom' && name === 'slave' && commonUtils.isNotEmptyArr(params.selectList)) {
+        const assignField = params.config.assignField;
+        const data = [...dataOld];
+        params.selectList.forEach((selectItem, selectIndex) => {
+          const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
+          const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
+          data.push(rowData);
+        });
+        if (isWait) {
+          return { [name + 'Data']: data, modalVisible: false };
+        } else {
+          props.dispatchModifyState({ [name + 'Data']: data, modalVisible: false });
+        }
+      } else {
+        props.onModalOk(params);
+      }
+    }
+
 
     return <div>
       <WrapComponent
@@ -434,6 +456,7 @@ const commonDocEvent = (WrapComponent) => {
         onSetForm={onSetForm}
         getButtonGroup={getButtonGroup}
         onDataChange={onDataChange}
+        onModalOk={onModalOk}
       />
     </div>
   };

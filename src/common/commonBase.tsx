@@ -101,7 +101,7 @@ const commonBase = (WrapComponent) => {
           } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree === 1 ? undefined : params.pageNum,
+              const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree ? undefined : params.pageNum,
                 condition: { searchCondition: modifyState[container.dataSetName + 'SearchCondition'], sorterInfo: modifyState[container.dataSetName + 'SorterInfo'] }, isWait: true });
               addState = {...addState, ...returnData, [container.dataSetName + 'ModifyData']: [], [container.dataSetName + 'DelData']: []};
             }
@@ -300,34 +300,42 @@ const commonBase = (WrapComponent) => {
     };
 
     const delTableData = (name, keyName, keyValue) => {
-      const { [name + 'Data']: dataOld, [name + 'DelData']: delDataOld, [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
+      const { [name + 'Container']: container, [name + 'Data']: dataOld, [name + 'DelData']: delDataOld, [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
 
       const data = [...dataOld];
       const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
       const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
       const selectedRowKeys = commonUtils.isEmptyArr(selectedRowKeysOld) ? [] : [...selectedRowKeysOld];
-      let index = data.findIndex(item => item[keyName] === keyValue);
-      while (index > -1) {
-        /*   删除从表中的数据并存入删除集合中   */
-        const key = data[index].id;
-        if (data[index].handleType !== 'add') {
-          data[index].handleType = 'del';
-          delData.push(data[index]);
-        }
-        data.splice(index, 1);
 
-        const indexRow = selectedRows.findIndex(item => item.id === key);
-        if (indexRow > -1) {
-          selectedRows.splice(indexRow, 1);
-        }
-
-        const indexRowKey = selectedRowKeys.findIndex(item => item === key);
-        if (indexRowKey > -1) {
-          selectedRowKeys.splice(indexRowKey, 1);
-        }
-
+      let index = -1;
+      if (container.isTree) {
+        delTreeNode(data, selectedRows, selectedRowKeys, keyName, keyValue);
+      } else {
         index = data.findIndex(item => item[keyName] === keyValue);
+
+        while (index > -1) {
+          /*   删除从表中的数据并存入删除集合中   */
+          const key = data[index].id;
+          if (data[index].handleType !== 'add') {
+            data[index].handleType = 'del';
+            delData.push(data[index]);
+          }
+          data.splice(index, 1);
+
+          const indexRow = selectedRows.findIndex(item => item.id === key);
+          if (indexRow > -1) {
+            selectedRows.splice(indexRow, 1);
+          }
+
+          const indexRowKey = selectedRowKeys.findIndex(item => item === key);
+          if (indexRowKey > -1) {
+            selectedRowKeys.splice(indexRowKey, 1);
+          }
+
+          index = data.findIndex(item => item[keyName] === keyValue);
+        }
       }
+
       return { [name + 'Data']: data, [name + 'DelData']: delData, [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys };
     }
 
@@ -527,6 +535,62 @@ const commonBase = (WrapComponent) => {
             treeNode[index] = dataRow;
           }
           return treeNode[index];
+        }
+      }
+    }
+
+
+    const delTreeNode = (treeDataOld, selectedRows, selectedRowKeys, keyName, keyValue) => {
+      const treeData = [...treeDataOld];
+      for(let index = 0; index < treeData.length; index++) {
+        if (treeData[index][keyName] === keyValue) {
+          treeDataOld.splice(index, 1);
+          const indexRow = selectedRows.findIndex(item => item.id === keyValue);
+          if (indexRow > -1) {
+            selectedRows.splice(indexRow, 1);
+          }
+
+          const indexRowKey = selectedRowKeys.findIndex(item => item === keyValue);
+          if (indexRowKey > -1) {
+            selectedRowKeys.splice(indexRowKey, 1);
+          }
+        } else {
+          const indexOld = treeDataOld.findIndex(item => item.id === treeData[index].id);
+          if (commonUtils.isNotEmptyArr(treeDataOld[indexOld].children)) {
+            delChildTreeNode(treeDataOld[indexOld].children, selectedRows, selectedRowKeys, keyName, keyValue);
+            if (commonUtils.isEmptyArr(treeDataOld[indexOld].children)) {
+              delete treeDataOld[indexOld].children;
+            }
+          }
+        }
+      }
+
+    }
+
+    const delChildTreeNode = (treeNodeOld, selectedRows, selectedRowKeys, keyName, keyValue) => {
+      const treeNode = [...treeNodeOld];
+      if (commonUtils.isNotEmptyArr(treeNode)) {
+        for(let index = 0; index < treeNode.length; index++) {
+          if (treeNode[index][keyName] === keyValue) {
+            treeNodeOld.splice(index, 1);
+            const indexRow = selectedRows.findIndex(item => item.id === keyValue);
+            if (indexRow > -1) {
+              selectedRows.splice(indexRow, 1);
+            }
+
+            const indexRowKey = selectedRowKeys.findIndex(item => item === keyValue);
+            if (indexRowKey > -1) {
+              selectedRowKeys.splice(indexRowKey, 1);
+            }
+          } else {
+            const indexOld = treeNodeOld.findIndex(item => item.id === treeNode[index].id);
+            if (commonUtils.isNotEmptyArr(treeNodeOld[indexOld].children)) {
+              delChildTreeNode(treeNodeOld[indexOld].children, selectedRows, selectedRowKeys, keyName, keyValue);
+              if (commonUtils.isEmptyArr(treeNodeOld[indexOld].children)) {
+                delete treeNodeOld[indexOld].children;
+              }
+            }
+          }
         }
       }
     }

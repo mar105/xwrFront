@@ -1,7 +1,8 @@
 import * as xwrBasicRouteInfo from "./xwrBasic/routeInfo";
 import * as xwrInitRouteInfo from "./xwrInit/routeInfo";
 import * as xwrSaleRouteInfo from "./xwrSale/routeInfo";
-import * as xwrProductioneRouteInfo from "./xwrProduction/routeInfo";
+import * as xwrProductionRouteInfo from "./xwrProduction/routeInfo";
+import * as xwrProductInventoryRouteInfo from "./xwrProductInventory/routeInfo";
 
 const xwrMainRouteInfo: any[] = [{
     path: '/login', name: 'login', component: () => import('./routes/Login'),
@@ -26,6 +27,7 @@ export const replacePath = (pathOld) => {
   path = path.replace('/xwrInit/', '/');    // 期初
   path = path.replace('/xwrSale/', '/');    // 销售
   path = path.replace('/xwrProduction/', '/'); // 生产
+  path = path.replace('/xwrProductInventory/', '/'); // 产品库存
   return path;
 }
 const mergeRouteInfo = (routeInfo, childRouteInfo) => {
@@ -48,6 +50,7 @@ routeInfoNew.push(...xwrMainRouteInfo);
 mergeRouteInfo(routeInfoNew, xwrBasicRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrInitRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrSaleRouteInfo.routeInfo);
-mergeRouteInfo(routeInfoNew, xwrProductioneRouteInfo.routeInfo);
+mergeRouteInfo(routeInfoNew, xwrProductionRouteInfo.routeInfo);
+mergeRouteInfo(routeInfoNew, xwrProductInventoryRouteInfo.routeInfo);
 
 export const routeInfo: any[] = [...routeInfoNew];

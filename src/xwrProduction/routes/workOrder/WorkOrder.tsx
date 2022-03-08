@@ -70,27 +70,6 @@ const WorkOrder = (props) => {
     props.onFinish(values, { childCallback });
   }
 
-  const onButtonClick = async (key, config, e, childParams: any = undefined) => {
-    if (key === 'delButton' || key === 'invalidButton' || key === 'examineButton'  || key === 'cancelExamineButton') {
-      const { slaveData, slaveModifyData, slaveDelData,
-        partData, partModifyData, partDelData,
-        materialData, materialModifyData, materialDelData,
-        processData, processModifyData, processDelData,
-      } = props;
-      const childCallback = (params) => {
-        const saveData: any = [];
-        saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, true));
-        saveData.push(commonUtils.mergeData('part', partData, partModifyData, partDelData, true));
-        saveData.push(commonUtils.mergeData('material', materialData, materialModifyData, materialDelData, true));
-        saveData.push(commonUtils.mergeData('process', processData, processModifyData, processDelData, true));
-        return saveData;
-      }
-      props.onButtonClick(key, config, e, { childCallback });
-    } else {
-      props.onButtonClick(key, config, e, childParams);
-    }
-  }
-
   const onFilter = (name, fieldName, value, record) => {
     const { slaveSelectedRowKeys, partSelectedRowKeys }: any = propsRef.current;
     const slaveId = commonUtils.isEmptyArr(slaveSelectedRowKeys) ? '' : slaveSelectedRowKeys.toString();
@@ -105,12 +84,8 @@ const WorkOrder = (props) => {
   }
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonAddGroup: any = props.getButtonGroup();
-  buttonAddGroup.push({ key: 'copyFromButton', caption: '复制从', htmlType: 'button', onClick: onButtonClick, sortNum: 121, disabled: !props.enabled });
-  buttonAddGroup.push({ key: 'calcButton', caption: '计算', htmlType: 'button', onClick: onButtonClick, sortNum: 141, disabled: !props.enabled });
-
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
-    isModal: props.isModal, buttonGroup: buttonAddGroup };
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const slaveParam: any = commonUtils.getTableProps('slave', props);
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;

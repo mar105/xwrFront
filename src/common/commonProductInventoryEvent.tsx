@@ -102,10 +102,32 @@ const commonProductInventoryEvent = (WrapComponent) => {
       }
     }
 
+    const onButtonClick = async (key, config, e, childParams: any = undefined) => {
+      if (key === 'delButton' || key === 'invalidButton' || key === 'examineButton'  || key === 'cancelExamineButton') {
+        const { slaveData, slaveModifyData, slaveDelData } = props;
+        const childCallback = (params) => {
+          const saveData: any = [];
+          saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, true));
+          return saveData;
+        }
+        props.onButtonClick(key, config, e, { childCallback });
+      } else {
+        props.onButtonClick(key, config, e, childParams);
+      }
+    }
+
+    const getButtonGroup = () => {
+      const buttonAddGroup: any = props.getButtonGroup();
+      buttonAddGroup.push({ key: 'copyFromButton', caption: '复制从', htmlType: 'button', onClick: onButtonClick, sortNum: 121, disabled: !props.enabled });
+      return buttonAddGroup;
+    }
+
     return <div>
       <WrapComponent
         {...props}
         onDataChange={onDataChange}
+        getButtonGroup={getButtonGroup}
+        onButtonClick={onButtonClick}
       />
     </div>
   };

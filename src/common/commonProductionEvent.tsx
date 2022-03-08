@@ -523,8 +523,22 @@ const commonProductionEvent = (WrapComponent) => {
         partData: partDataOld, partModifyData: partModifyDataOld,
         materialData: materialDataOld, materialModifyData: materialModifyDataOld,
         processData: processDataOld, processModifyData: processModifyDataOld } = propsRef.current;
-
-      if (key === 'calcButton') {
+      if (key === 'delButton' || key === 'invalidButton' || key === 'examineButton'  || key === 'cancelExamineButton') {
+        const { slaveData, slaveModifyData, slaveDelData,
+          partData, partModifyData, partDelData,
+          materialData, materialModifyData, materialDelData,
+          processData, processModifyData, processDelData,
+        } = props;
+        const childCallback = (params) => {
+          const saveData: any = [];
+          saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, true));
+          saveData.push(commonUtils.mergeData('part', partData, partModifyData, partDelData, true));
+          saveData.push(commonUtils.mergeData('material', materialData, materialModifyData, materialDelData, true));
+          saveData.push(commonUtils.mergeData('process', processData, processModifyData, processDelData, true));
+          return saveData;
+        }
+        props.onButtonClick(key, config, e, { childCallback });
+      } else if (key === 'calcButton') {
         const processData: any = [];
         const processModifyData = commonUtils.isEmptyArr(processModifyDataOld) ? [] : [...processModifyDataOld];
         processDataOld.forEach(processOld => {
@@ -927,6 +941,13 @@ const commonProductionEvent = (WrapComponent) => {
       return materialKQty;
     }
 
+    const getButtonGroup = () => {
+      const buttonAddGroup: any = props.getButtonGroup();
+      buttonAddGroup.push({ key: 'copyFromButton', caption: '复制从', htmlType: 'button', onClick: onButtonClick, sortNum: 121, disabled: !props.enabled });
+      buttonAddGroup.push({ key: 'calcButton', caption: '计算', htmlType: 'button', onClick: onButtonClick, sortNum: 141, disabled: !props.enabled });
+      return buttonAddGroup;
+    }
+
     return <div>
       <WrapComponent
         {...props}
@@ -937,6 +958,7 @@ const commonProductionEvent = (WrapComponent) => {
         onModalOk={onModalOk}
         onRowClick={onRowClick}
         onButtonClick={onButtonClick}
+        getButtonGroup={getButtonGroup}
       />
     </div>
   };

@@ -81,8 +81,19 @@ export function ButtonGroup(params) {
       buttonConfig = {...buttonConfig, disabled: disabled ? disabled : buttonOld.disabled };
       // let buttonItem = {...buttonOld, disabled: disabled ? disabled : buttonOld.disabled }; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置
       if (buttonConfig.key === 'copyToButton' || buttonConfig.key === 'copyFromButton') {
-        const buttonChildren = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
+        let buttonChildren = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
           item.containerType === 'control' && item.isVisible && item.fieldName.startsWith(buttonConfig.key + '.') && item.fieldName.split('.').length < 3);
+        let shopSetting = '';
+        // 根据系统参数中 过滤复制到、从数据 deliverApplyType  { "saleOrder": "销售订单", "workOrder": "生产单"}
+        // 例如 copyFromButton.deliverApplyType_saleOrder  copyFromButton.deliverApplyType_workOrder
+        // deliverApplyType 为系统参数，_ 为分隔符 saleOrder 为 deliverApplyType 下拉参数，只取系统参数值的显示。
+        buttonChildren.filter(item => item.fieldName.indexOf('_') > -1).forEach(child => {
+          const shopParam = child.fieldName.substring(0, child.fieldName.indexOf('_')) + '_' +
+            params.userInfo.shopInfo[child.fieldName.split('.')[1].substring(0, child.fieldName.split('.')[1].indexOf('_'))];
+          shopSetting = shopSetting + shopParam + ',';
+        });
+        buttonChildren = buttonChildren.filter(item => !(item.fieldName.indexOf('_') > -1) || (item.fieldName.indexOf('_') > -1 && shopSetting.indexOf(item.fieldName) > -1));
+        console.log(buttonChildren, shopSetting);
         if (buttonChildren.length === 1) {
           buttonConfig = {...buttonConfig, ...buttonChildren[0], sortNum: buttonConfig.sortNum };
           const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>

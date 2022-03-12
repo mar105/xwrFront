@@ -417,11 +417,11 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
   const fieldName = assignValueField.trim();
   const dataSetName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[0].trim() + 'Data' : name;
   const tableFieldName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[1].trim() : fieldName;
-  if (fieldName.split('.').length > 1 || fieldName.split('&').length > 1 || fieldName.includes('+') || fieldName.includes('-') || fieldName.includes('*') ||
-    fieldName.includes('/') || fieldName.includes('(') || fieldName.includes(')')) {
+
+  if (tableFieldName.split('&').length > 1 || tableFieldName.includes('+') || tableFieldName.includes('-') || tableFieldName.includes('*') ||
+    tableFieldName.includes('/') || tableFieldName.includes('(') || tableFieldName.includes(')')) {
     let formula = fieldName;
     let formulaSplit = fieldName;
-    formulaSplit = formulaSplit.split('&').join('$');
     formulaSplit = formulaSplit.split('+').join('$');
     formulaSplit = formulaSplit.split('-').join('$');
     formulaSplit = formulaSplit.split('*').join('$');
@@ -444,6 +444,8 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
           }
         } else if (isNotEmptyObj(allDataset[dataSetName]) && allDataset[dataSetName][tableFieldName] !== undefined) {
           formula = formula.replace(oldFieldItem, '(' + allDataset[dataSetName][tableFieldName] + ')');
+        } else if (tableFieldName.substring(0, 1) === '&') {
+          formula = formula.replace(oldFieldItem, '');
         } else {
           formula = formula.replace(oldFieldItem, '0');
         }
@@ -452,6 +454,8 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
         if (allDataset[dataSetName][tableFieldName] !== undefined) {
           // 加括号处理当值为负数时的异常
           formula = formula.replace(tableFieldName, '(' + allDataset[dataSetName][tableFieldName] + ')');
+        } else if (tableFieldName.substring(0, 1) === '&') {
+          formula = formula.replace(tableFieldName, '');
         } else {
           formula = formula.replace(tableFieldName, '0');
         }
@@ -460,11 +464,14 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
         if (record[tableFieldName] !== undefined) {
           // 加括号处理当值为负数时的异常
           formula = formula.replace(tableFieldName, '(' + record[tableFieldName] + ')');
+        } else if (tableFieldName.substring(0, 1) === '&') {
+          formula = formula.replace(tableFieldName, '');
         } else {
           formula = formula.replace(tableFieldName, '0');
         }
       }
     });
+    console.log('formula', fieldName, formula);
     return tableFieldName.substring(0, 1) === '&' ? formula.split('+').join('') : round(eval(formula), 6);
   } else if ((name + 'Data') === dataSetName) {
     return record[tableFieldName];

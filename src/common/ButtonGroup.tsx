@@ -93,7 +93,6 @@ export function ButtonGroup(params) {
           shopSetting = shopSetting + shopParam + ',';
         });
         buttonChildren = buttonChildren.filter(item => !(item.fieldName.indexOf('_') > -1) || (item.fieldName.indexOf('_') > -1 && shopSetting.indexOf(item.fieldName) > -1));
-        console.log(buttonChildren, shopSetting);
         if (buttonChildren.length === 1) {
           buttonConfig = {...buttonConfig, ...buttonChildren[0], sortNum: buttonConfig.sortNum };
           const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>

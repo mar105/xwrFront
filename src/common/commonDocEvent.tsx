@@ -429,6 +429,7 @@ const commonDocEvent = (WrapComponent) => {
       const name = params.name;
       const { [name + 'Container']: container, masterData, [name + 'Data']: dataOld }: any = propsRef.current;
 
+      //复制从功能处理。
       if (params.type === 'popupFrom' && name === 'slave' && commonUtils.isNotEmptyArr(params.selectList)) {
         const assignField = params.config.assignField;
         const data = [...dataOld];

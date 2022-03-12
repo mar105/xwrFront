@@ -904,7 +904,7 @@ const commonBase = (WrapComponent) => {
     const onModalOk = (params, isWait) => {
       if (commonUtils.isEmpty(params)) {
         dispatchModifyState({ modalVisible: false });
-      } else if (params.type === 'popupAdd') {
+      } else if (params.type === 'popupAdd') { //选择框界面弹出后点增加保存后重新刷新下拉数据。
         setTimeout(async () => { //延时2秒的原因是等待rocket任务处理完成。
           const dropParam = { name: params.name, record: params.record, pageNum: 1, fieldName: params.config.fieldName, isWait: true, containerSlaveId: params.config.id, config: params.config, condition: { newRecordId: params.newRecord.id } };
           const selectList = await getSelectList(dropParam);
@@ -920,7 +920,7 @@ const commonBase = (WrapComponent) => {
             dispatchModifyState({ modalVisible: false });
           }
         }, 2000);
-      } else if (params.type === 'popupActive') {
+      } else if (params.type === 'popupActive') {  //弹出框选择数据
         if (commonUtils.isNotEmptyArr(params.selectList)) {
           const name = params.name;
           const { [name + 'Container']: container, masterData, [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld }: any = stateRef.current;

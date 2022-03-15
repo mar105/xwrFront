@@ -471,7 +471,7 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
         }
       }
     });
-    console.log('formula', fieldName, formula);
+
     return tableFieldName.substring(0, 1) === '&' ? formula.split('+').join('') : round(eval(formula), 6);
   } else if ((name + 'Data') === dataSetName) {
     return record[tableFieldName];

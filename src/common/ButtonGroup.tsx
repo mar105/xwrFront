@@ -90,7 +90,9 @@ export function ButtonGroup(params) {
         buttonChildren.filter(item => item.fieldName.indexOf('_') > -1).forEach(child => {
           const shopParam = child.fieldName.substring(0, child.fieldName.indexOf('_')) + '_' +
             params.userInfo.shopInfo[child.fieldName.split('.')[1].substring(0, child.fieldName.split('.')[1].indexOf('_'))];
-          shopSetting = shopSetting + shopParam + ',';
+          if (!(shopSetting.indexOf(shopParam) > -1)) {
+            shopSetting = shopSetting + shopParam + ',';
+          }
         });
         buttonChildren = buttonChildren.filter(item => !(item.fieldName.indexOf('_') > -1) || (item.fieldName.indexOf('_') > -1 && shopSetting.indexOf(item.fieldName) > -1));
         if (buttonChildren.length === 1) {

@@ -63,7 +63,7 @@ const commonBase = (WrapComponent) => {
       if (commonUtils.isNotEmptyArr(containerData)) {
         let addState = { enabled: false, pageLoading: false };
         for(const container of containerData) {
-        // containerData.forEach(async container => { //foreach不能使用await
+        // containerData.forEach(async container => { //foreach不能使用await、 continue
           if (params.testMongo) {
             // 如果有虚拟名称时，保存后不获取数据，等待任务推送数据。
             if (commonUtils.isNotEmpty(container.virtualName)) {
@@ -174,6 +174,7 @@ const commonBase = (WrapComponent) => {
       const modifyStateNew = stateRef.current ? stateRef.current : modifyState;
       const { [params.name + 'Container']: container, [params.name + 'Data']: tableData } = modifyStateNew;
 
+      //取本页面数据来拼接下拉。
       if (params.config.dropType === 'current') {
         const unionDrop = params.config.viewDrop.split('&&');
         const returnData: any = [];

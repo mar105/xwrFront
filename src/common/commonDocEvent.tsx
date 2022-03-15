@@ -427,22 +427,39 @@ const commonDocEvent = (WrapComponent) => {
 
     const onModalOk = async (params, isWait) => {
       const name = params.name;
-      const { [name + 'Container']: container, masterData, [name + 'Data']: dataOld }: any = propsRef.current;
+      const { [name + 'Container']: container, masterModifyData: masterModifyDataOld, masterData: masterDataOld, [name + 'Data']: dataOld }: any = propsRef.current;
 
       //复制从功能处理。
       if (params.type === 'popupFrom' && name === 'slave' && commonUtils.isNotEmptyArr(params.selectList)) {
         const assignField = params.config.assignField;
         const data = [...dataOld];
+        const addState: any = {};
+        //复制从时，从表没有数据，直接覆盖主表数据。
+        if (commonUtils.isEmptyArr(data)) {
+          const assignValue = commonUtils.getAssignFieldValue(name, assignField, params.selectList[0], propsRef.current);
+          const masterData = { ...masterDataOld, ...assignValue };
+          addState.masterData = masterData;
+
+          const masterModifyData = masterData.handleType === 'modify' ?
+            commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, ...assignValue } :
+              { ...masterModifyDataOld, id: masterData.id, ...assignValue } : masterData;
+          addState.masterModifyData = masterModifyData;
+          form.resetFields();
+          form.setFieldsValue(commonUtils.setFieldsValue(masterData, props.masterContainer));
+        }
+        const index = commonUtils.isEmptyArr(params.config.children) ? -1 : params.config.children.findIndex(item => item.fieldName === params.config.fieldName + '.slave');
+        const assignFieldSlave = index > -1 ? params.config.children[index].assignField : '';
         params.selectList.forEach((selectItem, selectIndex) => {
-          const assignValue = commonUtils.getAssignFieldValue(name, assignField, selectItem, propsRef.current);
-          const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterData.id };
+          const assignValue = commonUtils.getAssignFieldValue(name, assignFieldSlave, selectItem, propsRef.current);
+          const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterDataOld.id };
           rowData.allId = rowData.id;
           data.push(rowData);
         });
+
         if (isWait) {
-          return { [name + 'Data']: data, modalVisible: false };
+          return { [name + 'Data']: data, ...addState, modalVisible: false };
         } else {
-          props.dispatchModifyState({ [name + 'Data']: data, modalVisible: false });
+          props.dispatchModifyState({ [name + 'Data']: data, ...addState, modalVisible: false });
         }
       } else {
         props.onModalOk(params);

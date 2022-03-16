@@ -442,7 +442,7 @@ const commonDocEvent = (WrapComponent) => {
 
     const onModalOk = async (params, isWait) => {
       const name = params.name;
-      const { [name + 'Container']: container, masterModifyData: masterModifyDataOld, masterData: masterDataOld, [name + 'Data']: dataOld }: any = propsRef.current;
+      const { commonModel, dispatch, [name + 'Container']: container, masterModifyData: masterModifyDataOld, masterData: masterDataOld, [name + 'Data']: dataOld }: any = propsRef.current;
 
       //复制从功能处理。
       if (params.type === 'popupFrom' && name === 'slave' && commonUtils.isNotEmptyArr(params.selectList)) {
@@ -461,6 +461,21 @@ const commonDocEvent = (WrapComponent) => {
           addState.masterModifyData = masterModifyData;
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(masterData, props.masterContainer));
+        } else {
+          const assignValue = commonUtils.getAssignFieldValue(name, assignField, params.selectList[0], propsRef.current);
+          const conditionOld = commonUtils.getCondition('master', masterDataOld, params.config.sqlCondition, props);
+          const conditionNew = commonUtils.getCondition('master', assignValue, params.config.sqlCondition, props);
+          for(const key of Object.keys(conditionOld)) {
+            if (conditionOld[key] !== conditionNew[key]) {
+              const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseSameMasterData');
+              if (index > -1) {
+                props.gotoError(dispatch, { code: '6001', msg: commonModel.commonConstant[index].viewName });
+              } else {
+                props.gotoError(dispatch, { code: '6001', msg: '请选择相同主表数据！' });
+              }
+              return;
+            }
+          }
         }
         const index = commonUtils.isEmptyArr(params.config.children) ? -1 : params.config.children.findIndex(item => item.fieldName === params.config.fieldName + '.slave');
         const assignFieldSlave = index > -1 ? params.config.children[index].assignField : '';

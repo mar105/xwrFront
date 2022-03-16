@@ -443,9 +443,9 @@ const commonBase = (WrapComponent) => {
       const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
 
       if (commonUtils.isEmptyArr(selectedRows)) {
-        const index = commonModel.commonConstant.filter(item => item.constantName === 'pleaseChooseData');
+        const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseData');
         if (index > -1) {
-          gotoError(dispatch, { code: '6001', msg: commonModel.constantData[index].viewName });
+          gotoError(dispatch, { code: '6001', msg: commonModel.commonConstant[index].viewName });
         } else {
           gotoError(dispatch, { code: '6001', msg: '请选择数据！' });
         }

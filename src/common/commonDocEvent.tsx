@@ -442,7 +442,7 @@ const commonDocEvent = (WrapComponent) => {
 
           const masterModifyData = masterData.handleType === 'modify' ?
             commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, ...assignValue } :
-              { ...masterModifyDataOld, id: masterData.id, ...assignValue } : masterData;
+              { ...masterModifyDataOld, id: masterData.id, ...assignValue } : masterModifyDataOld;
           addState.masterModifyData = masterModifyData;
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(masterData, props.masterContainer));

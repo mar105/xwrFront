@@ -16,6 +16,7 @@ const commonBase = (WrapComponent) => {
     const [modifyState, dispatchModifyState] = useReducer((state, action) => {
       return {...state, ...action };
     },{ masterContainer: {}, ...props.commonModel.activePane, ...props.modalState });
+
     useEffect(() => {
       stateRef.current = modifyState;
     }, [modifyState]);
@@ -891,7 +892,7 @@ const commonBase = (WrapComponent) => {
       const url: string = application.urlPrefix + '/getData/getRouteContainer?id=' + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
-        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: type === 'popupAdd' ? 'add' : undefined, isModal: true, modalParams: params };
+        const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: type === 'popupAdd' ? 'add' : undefined, isModal: true, ...params.state, modalParams: params };
         const path = replacePath(params.routeName ? params.routeName : state.routeData.routeName);
         const route: any = commonUtils.getRouteComponent(routeInfo, path);
         dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, params.onModalOk ? params.onModalOk : onModalOk, state).component });

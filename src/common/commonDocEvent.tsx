@@ -178,8 +178,23 @@ const commonDocEvent = (WrapComponent) => {
         }
       } else if (key === 'copyFromButton' || key === 'copyFromMenu') {
         const fromConfig = key === 'copyFromMenu' ? e.item.props.config : config;
+        const condition = commonUtils.getCondition('master', masterDataOld, config.sqlCondition, props);
+        const searchCondition: any = [];
+        const searchRowKeys: any = [];
+        const searchData: any = {};
+        Object.keys(condition).forEach(key => {
+          if (commonUtils.isNotEmpty(condition[key])) {
+            searchRowKeys.push(key);
+            searchCondition.push({ fieldName: key, condition: '=', fieldValue: condition[key] });
+            searchData['first' + key] = key;
+            searchData['second' + key] = '=';
+            searchData['third' + key] = condition[key];
+          }
+        });
+
         // routeName配置的未清为commonList转换为selectList
-        const dropParam = { name: 'slave', type: 'popupFrom', config: fromConfig, routeName: '/xwrBasic/selectList', onModalOk };
+        const dropParam = { name: 'slave', type: 'popupFrom', config: fromConfig, routeName: '/xwrBasic/selectList', onModalOk,
+          state: { searchRowKeys, slaveSearchCondition: searchCondition, searchData }  };
         props.onDropPopup(dropParam);
       }
     }

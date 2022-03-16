@@ -11,22 +11,24 @@ import {ButtonComponent} from "../components/ButtonComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 const Search = (props) => {
   useEffect(() => {
-    const { slaveContainer, dispatchModifyState } = props;
+    const { slaveContainer, searchData: searchDataOld, searchRowKeys: searchRowKeysOld, dispatchModifyState } = props;
     const searchConfig = slaveContainer.slaveData.filter(item => item.isSearch === 1);
-    const searchRowKeys: any = [];
-    const searchData = {};
+    const searchRowKeys: any = commonUtils.isEmptyArr(searchRowKeysOld) ? [] : [...searchRowKeysOld];
+    const searchData = commonUtils.isEmptyArr(searchDataOld) ? {} : {...searchDataOld};
     const firstViewDrop: any = [];
 
     if (commonUtils.isNotEmptyArr(searchConfig)) {
-      const key = commonUtils.newId();
-      searchRowKeys.push(key);
-      searchData['first' + key] = searchConfig[0].fieldName;
-      const secondViewDrop = searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
-        searchConfig[0].fieldType === 'datetime' ? searchType.datetime :
-          searchConfig[0].fieldType === 'tinyint' ? searchType.tinyint :
-            searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
-              searchConfig[0].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
-      searchData['second' + key] = secondViewDrop[0].id;
+      if (commonUtils.isEmptyArr(searchRowKeys)) {
+        const key = commonUtils.newId();
+        searchRowKeys.push(key);
+        searchData['first' + key] = searchConfig[0].fieldName;
+        const secondViewDrop = searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+          searchConfig[0].fieldType === 'datetime' ? searchType.datetime :
+            searchConfig[0].fieldType === 'tinyint' ? searchType.tinyint :
+              searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+                searchConfig[0].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
+        searchData['second' + key] = secondViewDrop[0].id;
+      }
       searchConfig.forEach(item => {
         firstViewDrop.push({id: item.fieldName, value: item.viewName});
       });
@@ -54,6 +56,7 @@ const Search = (props) => {
     const searchData = {...searchDataOld};
     const searchRowKeys = [...searchRowKeysOld];
     let addState: any = {};
+    const searchConfig = container.slaveData.filter(item => item.isSearch === 1);
     if (key === 'addConditionButton') {
       const key = commonUtils.newId();
       searchRowKeys.push(key);
@@ -108,7 +111,7 @@ const Search = (props) => {
       event: {onChange: props.onSelectChange, getSelectList: props.getSelectList }
     };
 
-    const index = searchConfig.findIndex(item => item.fieldName === searchData['first' + key]);
+    const index = commonUtils.isEmptyArr(searchConfig) ? -1 : searchConfig.findIndex(item => item.fieldName === searchData['first' + key]);
     const secondContainerConfig = index > -1 ? searchConfig[index] : {};
     const secondViewDrop = secondContainerConfig.fieldType === 'varchar' ? searchType.varchar :
       secondContainerConfig.fieldType === 'datetime' ? searchType.datetime :
@@ -193,6 +196,7 @@ const Search = (props) => {
     event: { onClick: onButtonClick.bind(this, 'searchButton') },
     componentType: componentType.Soruce,
   };
+
   return (<Form>
     {commonUtils.isEmptyArr(searchRowKeys) ? '' :
       <div>

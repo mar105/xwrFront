@@ -9,7 +9,7 @@ import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
-import commonProductInventoryEvent from "../../../common/commonProductInventoryEvent";
+import commonProductInventoryEvent from "../commonProductInventoryEvent";
 
 const ProductStorage = (props) => {
   const [form] = Form.useForm();

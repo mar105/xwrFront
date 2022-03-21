@@ -9,9 +9,9 @@ import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
-import commonBillEvent from "../../../common/commonBillEvent";
+import commonFinanceEvent from "../commonFinanceEvent";
 
-const SaleReconcile = (props) => {
+const SaleInvoice = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
@@ -55,4 +55,4 @@ const SaleReconcile = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(SaleReconcile))));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonFinanceEvent(SaleInvoice))));

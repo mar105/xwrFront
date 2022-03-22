@@ -102,7 +102,8 @@ const SlaveContainer = (props) => {
       dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
     } else if (name === 'slaveSyncDataButton') {
       if (propsRef.current.masterData.containerName === 'noTable') { return };
-      const url: string = application.urlPrefix + '/container/getDBFields?tableName=' + propsRef.current.masterData.containerName;
+      const containerName = propsRef.current.masterData.containerName.replace('viw_', '');
+      const url: string = application.urlPrefix + '/container/getDBFields?tableName=' + containerName;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         const slaveData = [...slaveDataOld];

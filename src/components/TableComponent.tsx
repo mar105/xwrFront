@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useReducer} from 'react';
+import React, {useEffect, useReducer} from 'react';
 import {Button, Input, Space, Table } from 'antd';
 import * as commonUtils from "../utils/commonUtils";
 import { VList, scrollTo } from 'virtuallist-antd';
@@ -267,7 +267,6 @@ export function TableComponent(params: any) {
           onResize: handleResize(columnIndex),
         });
         column.shouldCellUpdate = (record, prevRecord) => {
-          //这一段与 组件使用useMemo，不知道是否多余，暂时两个都放，我的个人想法是可以把useMemo这个去除。
           return record[column.dataIndex] !== prevRecord[column.dataIndex] || modifySelfState.enabled !== params.enabled;
         }
 
@@ -350,9 +349,7 @@ export function TableComponent(params: any) {
               event: {onChange: params.event.onDataChange}
             };
             if (column.dataIndex === 'sortNum' && params.isDragRow) {
-              const component = useMemo(() => {
-                return <div><DragHandle/> <NumberComponent {...numberParams}  /></div>
-              }, [text]);
+              const component = <div><DragHandle/> <NumberComponent {...numberParams}  /></div>;
               return component;
             } else if (column.fieldType === 'varchar' || column.fieldType === 'text') {
               if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
@@ -360,35 +357,23 @@ export function TableComponent(params: any) {
               } else if (config.dropType === 'sql' || config.dropType === 'current' || config.dropType === 'const' || config.dropType === 'popup') {
                 let component;
                 if (config.isTreeDrop) {
-                  component = useMemo(() => {
-                    return <TreeSelectComponent {...treeSelectParams}  />
-                  }, [text]);
+                  component = <TreeSelectComponent {...treeSelectParams}  />;
                 } else {
-                  component = useMemo(() => {
-                    return <SelectComponent {...selectParams}  />
-                  }, [text]);
+                  component = <SelectComponent {...selectParams}  />
                 }
                 return component;
               } else {
-                const component = useMemo(() => {
-                  return <InputComponent {...inputParams}  />
-                }, [text]);
+                const component = <InputComponent {...inputParams}  />
                 return component;
               }
             } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
-              const component = useMemo(() => {
-                return <NumberComponent {...numberParams}  />
-              }, [text]);
+              const component = <NumberComponent {...numberParams}  />;
               return component;
             } else if (column.fieldType === 'tinyint') {
-              const component = useMemo(() => {
-                return <CheckboxComponent {...checkboxParams}  />
-              }, [text]);
+              const component = <CheckboxComponent {...checkboxParams}  />;
               return component;
             } else if (column.fieldType === 'datetime') {
-              const component = useMemo(() => {
-                return <DatePickerComponent {...datePickerParams}  />
-              }, [text]);
+              const component = <DatePickerComponent {...datePickerParams}  />;
               return component;
             } else {
               return text;

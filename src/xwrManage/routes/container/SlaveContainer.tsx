@@ -213,8 +213,8 @@ const SlaveContainer = (props) => {
     return <div>
       <a onClick={onLastColumnClick.bind(this, name, 'copyToClipboardButton', record)}>
       <Tooltip placement="top" title="复制到剪贴版"><CopyOutlined /></Tooltip></a>
-      <a onClick={onLastColumnClick.bind(this, name, 'delButton', record)}>
-      <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
+      { !props.enabled ? '' : <a onClick={onLastColumnClick.bind(this, name, 'delButton', record)}>
+      <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a> }
     </div>
   }, width: 100, fixed: 'right' };
   tableParam.lastTitle = <div>

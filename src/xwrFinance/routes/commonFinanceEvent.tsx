@@ -63,6 +63,93 @@ const commonFinanceEvent = (WrapComponent) => {
       }
     }
 
+    const onDataChange = (params) => {
+      const { name, fieldName, record, isWait } = params;
+      const { slaveData: slaveDataOld, slaveModifyData: slaveModifyDataOld } = propsRef.current;
+
+      // 开始修改数据
+      const addState: any = {};
+      let returnData = props.onDataChange({...params, isWait: true});
+      if (name === 'master') {
+        if (fieldName === 'totalInvoiceMoney') {
+          let negativeMoney = 0; // 负数金额
+          let positiveMoney = 0; // 正数金额
+          const slaveData = [...slaveDataOld];
+          const slaveModifyData = commonUtils.isEmptyArr(slaveModifyDataOld) ? [] : slaveModifyDataOld;
+          slaveData.forEach(slave => {
+            if (slave.balanceMoney > 0) {
+              positiveMoney = positiveMoney + slave.balanceMoney;
+            } else {
+              negativeMoney = negativeMoney + slave.balanceMoney;
+            }
+          });
+          if (returnData.masterData.totalInvoiceMoney - (positiveMoney + negativeMoney) >= 0) {
+            slaveData.forEach(slave => {
+              slave.handleType = commonUtils.isEmpty(slave.handleType) ? 'modify' : slave.handleType;
+              slave.invoiceMoney = slave.balanceMoney;
+              if (slave.handleType === 'modify') {
+                const indexModify = slaveModifyData.findIndex(item => item.id === record.id);
+                if (indexModify > -1) {
+                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], invoiceMoney: slave.balanceMoney };
+                } else {
+                  slaveModifyData.push({ id: record.id, handleType: slave.handleType, invoiceMoney: slave.balanceMoney })
+                }
+              }
+            });
+            addState.slaveData = slaveData;
+            addState.slaveModifyData = slaveModifyData;
+            const exchangeRate = commonUtils.isEmptyorZeroDefault(returnData.masterData.exchangeRate, 1);
+            returnData.masterData.preInvoiceMoney = returnData.masterData.totalInvoiceMoney - (positiveMoney + negativeMoney);
+            returnData.masterData.preInvoiceBaseMoney = returnData.masterData.preInvoiceMoney / exchangeRate;
+            const modifyData = { preInvoiceMoney: returnData.masterData.preInvoiceMoney,
+              preInvoiceBaseMoney : returnData.masterData.preInvoiceBaseMoney};
+
+            returnData.masterModifyData = returnData.masterData.handleType === 'modify' ?
+              commonUtils.isEmptyObj(returnData.masterModifyData) ?
+                { id: returnData.masterData.id, handleType: returnData.masterData.handleType, ...modifyData } :
+                { ...returnData.masterModifyData, id: returnData.masterData.id, ...modifyData } : returnData.masterModifyData;
+          } else {
+            let minusMoney = returnData.masterData.totalInvoiceMoney + positiveMoney;
+            slaveData.forEach(slave => {
+              slave.handleType = commonUtils.isEmpty(slave.handleType) ? 'modify' : slave.handleType;
+              if (slave.balanceMoney < 0) {
+                slave.invoiceMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? slave.balanceMoney : minusMoney;
+                minusMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? minusMoney - Math.ceil(slave.balanceMoney) : 0;
+              } else {
+                slave.invoiceMoney = slave.balanceMoney;
+              }
+
+              if (slave.handleType === 'modify') {
+                const indexModify = slaveModifyData.findIndex(item => item.id === record.id);
+                if (indexModify > -1) {
+                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], invoiceMoney: slave.balanceMoney };
+                } else {
+                  slaveModifyData.push({ id: record.id, handleType: slave.handleType, invoiceMoney: slave.balanceMoney })
+                }
+              }
+            });
+            addState.slaveData = slaveData;
+            addState.slaveModifyData = slaveModifyData;
+            returnData.masterData.preInvoiceMoney = 0;
+            returnData.masterData.preInvoiceBaseMoney = 0;
+            const modifyData = { preInvoiceMoney: returnData.masterData.preInvoiceMoney,
+              preInvoiceBaseMoney : returnData.masterData.preInvoiceBaseMoney};
+
+            returnData.masterModifyData = returnData.masterData.handleType === 'modify' ?
+              commonUtils.isEmptyObj(returnData.masterModifyData) ?
+                { id: returnData.masterData.id, handleType: returnData.masterData.handleType, ...modifyData } :
+                { ...returnData.masterModifyData, id: returnData.masterData.id, ...modifyData } : returnData.masterModifyData;
+          }
+        }
+      }
+
+      if (isWait) {
+        return { ...returnData, ...addState };
+      } else {
+        props.dispatchModifyState({ ...returnData, ...addState });
+      }
+    }
+
     const getButtonGroup = () => {
       const buttonAddGroup: any = props.getButtonGroup();
       buttonAddGroup.push({ key: 'copyFromButton', caption: '复制从', htmlType: 'button', onClick: onButtonClick, sortNum: 121, disabled: !props.enabled });
@@ -75,6 +162,7 @@ const commonFinanceEvent = (WrapComponent) => {
         getButtonGroup={getButtonGroup}
         onButtonClick={onButtonClick}
         onFinish={onFinish}
+        onDataChange={onDataChange}
       />
     </div>
   };

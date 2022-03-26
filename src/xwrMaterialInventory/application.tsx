@@ -1,6 +1,6 @@
 import * as application from '../application';
 
-export const prefix: string = 'xwrInit';
+export const prefix: string = 'xwrMaterialInventory';
 export const pageSize: number = application.pageSize;
 export const urlMain: string = application.urlPrefix;
 export const urlPrefix: string = application.url + '/' + prefix;

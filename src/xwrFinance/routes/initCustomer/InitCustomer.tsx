@@ -8,7 +8,7 @@ import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import categoryListEvent from "../../../common/categoryListEvent";
 import Search from "../../../common/Search";
-import * as application from "../../application";
+import * as application from "../../../xwrMaterialInventory/application";
 import * as request from "../../../utils/request";
 const InitCustomer = (props) => {
   const [form] = Form.useForm();

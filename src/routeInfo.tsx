@@ -1,8 +1,8 @@
 import * as xwrBasicRouteInfo from "./xwrBasic/routeInfo";
-import * as xwrInitRouteInfo from "./xwrInit/routeInfo";
 import * as xwrSaleRouteInfo from "./xwrSale/routeInfo";
 import * as xwrProductionRouteInfo from "./xwrProduction/routeInfo";
 import * as xwrProductInventoryRouteInfo from "./xwrProductInventory/routeInfo";
+import * as xwrMaterialInventoryRouteInfo from "./xwrMaterialInventory/routeInfo";
 import * as xwrFinanceRouteInfo from "./xwrFinance/routeInfo";
 
 const xwrMainRouteInfo: any[] = [{
@@ -24,14 +24,15 @@ const xwrMainRouteInfo: any[] = [{
 //替换的原因是因为分模块打包后，再刷新会根据路由直接跳转到子模块路由上去。为了能在panes上展现。
 export const replacePath = (pathOld) => {
   let path = pathOld;
-  path = path.replace('/xwrBasic/', '/');   // 基础
-  path = path.replace('/xwrInit/', '/');    // 期初
-  path = path.replace('/xwrSale/', '/');    // 销售
-  path = path.replace('/xwrProduction/', '/'); // 生产
-  path = path.replace('/xwrProductInventory/', '/'); // 产品库存
-  path = path.replace('/xwrFinance/', '/'); // 财务
+  path = path.replace('/xwrBasic/', '/');                // 基础
+  path = path.replace('/xwrSale/', '/');                 // 销售
+  path = path.replace('/xwrProduction/', '/');           // 生产
+  path = path.replace('/xwrProductInventory/', '/');     // 产品库存
+  path = path.replace('/xwrMaterialInventory/', '/');    // 材料库存
+  path = path.replace('/xwrFinance/', '/');              // 财务
   return path;
 }
+
 const mergeRouteInfo = (routeInfo, childRouteInfo) => {
   const index = routeInfo.findIndex(item => item.path === '/');
   if (index > -1) {
@@ -50,10 +51,10 @@ const mergeRouteInfo = (routeInfo, childRouteInfo) => {
 const routeInfoNew: any = [];
 routeInfoNew.push(...xwrMainRouteInfo);
 mergeRouteInfo(routeInfoNew, xwrBasicRouteInfo.routeInfo);
-mergeRouteInfo(routeInfoNew, xwrInitRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrSaleRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrProductionRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrProductInventoryRouteInfo.routeInfo);
+mergeRouteInfo(routeInfoNew, xwrMaterialInventoryRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrFinanceRouteInfo.routeInfo);
 
 export const routeInfo: any[] = [...routeInfoNew];

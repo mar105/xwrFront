@@ -109,7 +109,6 @@ const Container = (props) => {
         props.gotoError(dispatch, interfaceReturnSync);
       }
 
-      console.log('returnRoute.treeData, masterData.allId', returnRoute.treeData, masterData.allId);
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
       addState.masterModifyData = {};
       form.resetFields();

@@ -9,6 +9,12 @@ const commonFinanceEvent = (WrapComponent) => {
       propsRef.current = props;
     }, [props]);
 
+    let form;
+    const onSetForm = (formNew) => {
+      form = formNew;
+      props.onSetForm(form);
+    }
+
     useEffect(() => {
       if (commonUtils.isNotEmptyObj(props.masterContainer)) {
         if (props.handleType === 'add') {
@@ -64,7 +70,7 @@ const commonFinanceEvent = (WrapComponent) => {
     }
 
     const onDataChange = (params) => {
-      const { name, fieldName, record, isWait } = params;
+      const { name, fieldName, isWait } = params;
       const { slaveData: slaveDataOld, slaveModifyData: slaveModifyDataOld } = propsRef.current;
 
       // 开始修改数据
@@ -83,16 +89,18 @@ const commonFinanceEvent = (WrapComponent) => {
               negativeMoney = negativeMoney + slave.balanceMoney;
             }
           });
-          if (returnData.masterData.totalInvoiceMoney - (positiveMoney + negativeMoney) >= 0) {
-            slaveData.forEach(slave => {
+          if (returnData.masterData.totalInvoiceMoney - Math.abs(positiveMoney + negativeMoney) >= 0) {
+            slaveDataOld.forEach((slaveOld, index) => {
+              const slave = { ...slaveOld };
               slave.handleType = commonUtils.isEmpty(slave.handleType) ? 'modify' : slave.handleType;
               slave.invoiceMoney = slave.balanceMoney;
+              slaveData[index] = slave;
               if (slave.handleType === 'modify') {
-                const indexModify = slaveModifyData.findIndex(item => item.id === record.id);
+                const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
                 if (indexModify > -1) {
-                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], invoiceMoney: slave.balanceMoney };
+                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], invoiceMoney: slave.invoiceMoney };
                 } else {
-                  slaveModifyData.push({ id: record.id, handleType: slave.handleType, invoiceMoney: slave.balanceMoney })
+                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, invoiceMoney: slave.invoiceMoney })
                 }
               }
             });
@@ -109,25 +117,47 @@ const commonFinanceEvent = (WrapComponent) => {
                 { id: returnData.masterData.id, handleType: returnData.masterData.handleType, ...modifyData } :
                 { ...returnData.masterModifyData, id: returnData.masterData.id, ...modifyData } : returnData.masterModifyData;
           } else {
-            let minusMoney = returnData.masterData.totalInvoiceMoney + positiveMoney;
-            slaveData.forEach(slave => {
+            let isNegative = false;
+            let minusMoney = 0;
+            if (returnData.masterData.totalInvoiceMoney + Math.abs(negativeMoney) > positiveMoney) {
+              isNegative = true;
+              //当发票
+              minusMoney = returnData.masterData.totalInvoiceMoney + positiveMoney;
+            } else {
+              minusMoney = returnData.masterData.totalInvoiceMoney + Math.abs(negativeMoney);
+            }
+
+              // returnData.masterData.totalInvoiceMoney + Math.abs(negativeMoney);
+            slaveData.forEach((slaveOld, index) => {
+              const slave = {...slaveOld};
               slave.handleType = commonUtils.isEmpty(slave.handleType) ? 'modify' : slave.handleType;
-              if (slave.balanceMoney < 0) {
-                slave.invoiceMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? slave.balanceMoney : minusMoney;
-                minusMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? minusMoney - Math.ceil(slave.balanceMoney) : 0;
+              if (isNegative) {
+                if (slave.balanceMoney < 0) {
+                  slave.invoiceMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? slave.balanceMoney : -minusMoney;
+                  minusMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? -(minusMoney - Math.ceil(slave.balanceMoney)) : 0;
+                } else {
+                  slave.invoiceMoney = slave.balanceMoney;
+                }
               } else {
-                slave.invoiceMoney = slave.balanceMoney;
+                if (slave.balanceMoney > 0) {
+                  slave.invoiceMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? slave.balanceMoney : minusMoney;
+                  minusMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? minusMoney - Math.ceil(slave.balanceMoney) : 0;
+                } else {
+                  slave.invoiceMoney = slave.balanceMoney;
+                }
               }
+              slaveData[index] = slave;
 
               if (slave.handleType === 'modify') {
-                const indexModify = slaveModifyData.findIndex(item => item.id === record.id);
+                const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
                 if (indexModify > -1) {
-                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], invoiceMoney: slave.balanceMoney };
+                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], invoiceMoney: slave.invoiceMoney };
                 } else {
-                  slaveModifyData.push({ id: record.id, handleType: slave.handleType, invoiceMoney: slave.balanceMoney })
+                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, invoiceMoney: slave.invoiceMoney })
                 }
               }
             });
+
             addState.slaveData = slaveData;
             addState.slaveModifyData = slaveModifyData;
             returnData.masterData.preInvoiceMoney = 0;
@@ -141,6 +171,7 @@ const commonFinanceEvent = (WrapComponent) => {
                 { ...returnData.masterModifyData, id: returnData.masterData.id, ...modifyData } : returnData.masterModifyData;
           }
         }
+        form.setFieldsValue(commonUtils.setFieldsValue(returnData[params.name + 'Data'], props[params.name + 'Container']));
       }
 
       if (isWait) {
@@ -163,6 +194,7 @@ const commonFinanceEvent = (WrapComponent) => {
         onButtonClick={onButtonClick}
         onFinish={onFinish}
         onDataChange={onDataChange}
+        onSetForm={onSetForm}
       />
     </div>
   };

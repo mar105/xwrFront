@@ -3,6 +3,7 @@ import * as xwrSaleRouteInfo from "./xwrSale/routeInfo";
 import * as xwrProductionRouteInfo from "./xwrProduction/routeInfo";
 import * as xwrProductInventoryRouteInfo from "./xwrProductInventory/routeInfo";
 import * as xwrMaterialInventoryRouteInfo from "./xwrMaterialInventory/routeInfo";
+import * as xwrPurchaseRouteInfo from "./xwrPurchase/routeInfo";
 import * as xwrFinanceRouteInfo from "./xwrFinance/routeInfo";
 
 const xwrMainRouteInfo: any[] = [{
@@ -30,6 +31,7 @@ export const replacePath = (pathOld) => {
   path = path.replace('/xwrProductInventory/', '/');     // 产品库存
   path = path.replace('/xwrMaterialInventory/', '/');    // 材料库存
   path = path.replace('/xwrFinance/', '/');              // 财务
+  path = path.replace('/xwrPurchase/', '/');             // 采购
   return path;
 }
 
@@ -56,5 +58,6 @@ mergeRouteInfo(routeInfoNew, xwrProductionRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrProductInventoryRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrMaterialInventoryRouteInfo.routeInfo);
 mergeRouteInfo(routeInfoNew, xwrFinanceRouteInfo.routeInfo);
+mergeRouteInfo(routeInfoNew, xwrPurchaseRouteInfo.routeInfo);
 
 export const routeInfo: any[] = [...routeInfoNew];

@@ -417,7 +417,6 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
   const fieldName = assignValueField.trim();
   const dataSetName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[0].trim() + 'Data' : name;
   const tableFieldName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[1].trim() : fieldName;
-
   if (tableFieldName.split('&').length > 1 || tableFieldName.includes('+') || tableFieldName.includes('-') || tableFieldName.includes('*') ||
     tableFieldName.includes('/') || tableFieldName.includes('(') || tableFieldName.includes(')')) {
     let formula = fieldName;
@@ -475,9 +474,9 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
     return tableFieldName.substring(0, 1) === '&' ? formula.split('+').join('') : round(eval(formula), 6);
   } else if ((name + 'Data') === dataSetName) {
     return record[tableFieldName];
-  } else if (isNotEmpty(allDataset[dataSetName]) && typeof allDataset[dataSetName] === 'object' && allDataset[dataSetName].constructor === Object) {
+  } else if (isNotEmpty(allDataset) && isNotEmpty(allDataset[dataSetName]) && typeof allDataset[dataSetName] === 'object' && allDataset[dataSetName].constructor === Object) {
     return allDataset[dataSetName][tableFieldName];
-  } else if (isNotEmpty(allDataset[dataSetName])) {
+  } else if (isNotEmpty(allDataset) && isNotEmpty(allDataset[dataSetName])) {
     const selectedName = fieldName.split('.')[0].trim() + 'SelectedRowKeys';
     if (isNotEmptyArr(allDataset[selectedName])) {
       const treeNode = getTreeNodeById(allDataset[dataSetName], allDataset[selectedName][0]);

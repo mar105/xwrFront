@@ -989,12 +989,12 @@ const commonBase = (WrapComponent) => {
     }
 
     const onExpand = (name, expanded, record) => {
-      const { [name + 'ExpandedRowKeys']: expandedRowKeysOld } = stateRef.current;
+      const { [name + 'ExpandedRowKeys']: expandedRowKeysOld, [name + 'Container']: container } = stateRef.current;
       const expandedRowKeys = commonUtils.isEmptyArr(expandedRowKeysOld) ? [] : [...expandedRowKeysOld];
       if (expanded) {
-        expandedRowKeys.push(record.id);
+        expandedRowKeys.push(record[container.tableKey]);
       } else {
-        const index = expandedRowKeys.findIndex(item => item.id === record.id);
+        const index = expandedRowKeys.findIndex(item => item === record[container.tableKey]);
         expandedRowKeys.splice(index, 1);
       }
       dispatchModifyState({ [name + 'ExpandedRowKeys']: expandedRowKeys });

@@ -136,6 +136,7 @@ const BusinessPermission = (props) => {
           if (commonUtils.isNotEmptyArr(children)) {
             data.children = children;
           }
+          data.key = dataRow[container.tableKey];
           tableData.push(data);
         });
         addState[name + 'SrcData'] = table;
@@ -155,6 +156,7 @@ const BusinessPermission = (props) => {
       if (commonUtils.isNotEmptyArr(children)) {
         data.children = children;
       }
+      data.key = dataRow[container.tableKey];
       tableData.push(data);
     });
     return tableData;

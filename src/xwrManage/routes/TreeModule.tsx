@@ -42,7 +42,13 @@ const TreeModule = (props) => {
       const url: string = application.urlPrefix + '/route/getSearchRoute?searchValue=' + treeSearchValue;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
-        dispatchModifyState({ treeSearchData: interfaceReturn.data.data.list, treeSearchIsVisible: true });
+        dispatchModifyState({
+          treeSearchData: interfaceReturn.data.data.list,
+          treeSearchSum: interfaceReturn.data.data.sum,
+          treeSearchPageNum: interfaceReturn.data.data.pageNum,
+          treeSearchIsLastPage: interfaceReturn.data.data.isLastPage,
+          treeSearchLoading: false,
+          treeSearchIsVisible: true });
       } else {
         props.gotoError(dispatch, interfaceReturn);
       }

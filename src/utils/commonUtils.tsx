@@ -715,7 +715,7 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
     }
     else if (isMeasureM) {
       if (count === 1) {
-        returnRow.measureReelQty = dataRow.measureQty * styleLength / toM;
+        returnRow.measureReelQty = round(dataRow.measureQty * styleLength / toM, 2);
       } else {
         returnRow.measureReelQty = dataRow.measureQty;
       }

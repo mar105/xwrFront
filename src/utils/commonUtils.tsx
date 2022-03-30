@@ -667,7 +667,7 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
     returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / toM, 6);
     returnRow.measureUnit = reelUnit;
   }
-  else if (count === 1 && dataRow.isReel && isM2) {
+  else if (count === 1 && dataRow.isReel && isM2Inch) {
     returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / toMInch, 6);
     returnRow.measureUnit = reelUnit;
   }
@@ -685,7 +685,7 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
     returnRow[calcFieldName] = round(dataRow.measureQty * (styleLength + styleWidth + cartonLength) * (styleWidth + styleHeight + cartonWidth) * 2 / toCartonM2, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
-  else if (count === 2 && !dataRow.isReel && isM2) {
+  else if (count === 2 && !dataRow.isReel && isM2Inch) {
     returnRow[calcFieldName] = round(dataRow.measureQty * (styleLength + styleWidth + cartonLength) * (styleWidth + styleHeight + cartonWidth) * 2 / toCartonM2Inch, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }

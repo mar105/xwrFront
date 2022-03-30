@@ -581,13 +581,33 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
   const isM2 = indexM2 > -1 && (commonConstant[indexM2].chineseName === dataRow[type + 'Unit'] ||
     commonConstant[indexM2].englishName === dataRow[type + 'Unit'] ||
     commonConstant[indexM2].traditionalName === dataRow[type + 'Unit']);
+  const indexM2Inch = commonConstant.findIndex(item => item.constantName === 'm2Inch');
+  const isM2Inch = indexM2Inch > -1 && (commonConstant[indexM2Inch].chineseName === dataRow[type + 'Unit'] ||
+    commonConstant[indexM2Inch].englishName === dataRow[type + 'Unit'] ||
+    commonConstant[indexM2Inch].traditionalName === dataRow[type + 'Unit']);
   const toM2 = shopInfo.unitType === 'mm' ? 1000 * 1000 : // 毫米转平方
     shopInfo.unitType === 'cm'? 100 * 100 : // 厘米转平方
       shopInfo.unitType === 'inch' ? 39.3700787402 * 39.3700787402 : // 英寸转平方
         1000 * 1000;
+  const toM2Inch = shopInfo.unitType === 'mm' ? 39.3700787402 * 39.3700787402 : // 毫米转平方
+    shopInfo.unitType === 'cm'? 3.93700787402 * 3.93700787402 : // 厘米转平方
+      shopInfo.unitType === 'inch' ? 1 * 1 : // 英寸转平方
+        1000 * 1000;
+  const toM = shopInfo.unitType === 'mm' ? 1000 : // 毫米转米
+    shopInfo.unitType === 'cm'? 100 : // 厘米转米
+      shopInfo.unitType === 'inch' ? 39.3700787402 : // 英寸转米
+        1000;
+  const toMInch = shopInfo.unitType === 'mm' ? 39.3700787402 : // 毫米转平方
+    shopInfo.unitType === 'cm'? 3.93700787402 : // 厘米转平方
+      shopInfo.unitType === 'inch' ? 1 * 1 : // 英寸转平方
+        1000;
   const toCartonM2 = shopInfo.cartonUnitType === 'mm' ? 1000 * 1000 : // 毫米转平方
     shopInfo.cartonUnitType === 'cm'? 100 * 100 : // 厘米转平方
       shopInfo.cartonUnitType === 'inch' ? 39.3700787402 * 39.3700787402 : // 英寸转平方
+        1000 * 1000;
+  const toCartonM2Inch = shopInfo.unitType === 'mm' ? 39.3700787402 * 39.3700787402 : // 毫米转平方
+    shopInfo.unitType === 'cm'? 3.93700787402 * 3.93700787402 : // 厘米转平方
+      shopInfo.unitType === 'inch' ? 1 * 1 : // 英寸转平方
         1000 * 1000;
   const cartonLength = shopInfo.cartonUnitType === 'mm' ? 70 : // 毫米
     shopInfo.cartonUnitType === 'cm'? 7 : // 厘米
@@ -628,6 +648,9 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
   } else if (count === 1 && !dataRow.isReel && isM2) {
     returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / toM2, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
+  } else if (count === 1 && !dataRow.isReel && isM2Inch) {
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / toM2Inch, 6);
+    returnRow.measureUnit = dataRow.measureStoreUnit;
   }
 
   // 卷筒材料处理
@@ -641,7 +664,11 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
   }
   // 1卷 门幅*长度m 889*500m
   else if (count === 1 && dataRow.isReel && isM2) {
-    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / 1000, 6);
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / toM, 6);
+    returnRow.measureUnit = reelUnit;
+  }
+  else if (count === 1 && dataRow.isReel && isM2) {
+    returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * styleLength / toMInch, 6);
     returnRow.measureUnit = reelUnit;
   }
   // 1m 门幅889
@@ -656,6 +683,10 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
   // 100*200*300 长宽高
   else if (count === 2 && !dataRow.isReel && isM2) {
     returnRow[calcFieldName] = round(dataRow.measureQty * (styleLength + styleWidth + cartonLength) * (styleWidth + styleHeight + cartonWidth) * 2 / toCartonM2, 6);
+    returnRow.measureUnit = dataRow.measureStoreUnit;
+  }
+  else if (count === 2 && !dataRow.isReel && isM2) {
+    returnRow[calcFieldName] = round(dataRow.measureQty * (styleLength + styleWidth + cartonLength) * (styleWidth + styleHeight + cartonWidth) * 2 / toCartonM2Inch, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
   // 普通材料处理

@@ -573,10 +573,16 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
   const isTon = indexTon > -1 && (commonConstant[indexTon].chineseName === dataRow[type + 'Unit'] ||
     commonConstant[indexTon].englishName === dataRow[type + 'Unit'] ||
     commonConstant[indexTon].traditionalName === dataRow[type + 'Unit']);
+  const isMeasureTon = indexTon > -1 && (commonConstant[indexTon].chineseName === dataRow.measureStoreUnit ||
+    commonConstant[indexTon].englishName === dataRow.measureStoreUnit ||
+    commonConstant[indexTon].traditionalName === dataRow.measureStoreUnit);
   const indexKg = commonConstant.findIndex(item => item.constantName === 'kg');
   const isKg = indexKg > -1 && (commonConstant[indexKg].chineseName === dataRow[type + 'Unit'] ||
     commonConstant[indexKg].englishName === dataRow[type + 'Unit'] ||
     commonConstant[indexKg].traditionalName === dataRow[type + 'Unit']);
+  const isMeasureKg = indexKg > -1 && (commonConstant[indexKg].chineseName === dataRow.measureStoreUnit ||
+    commonConstant[indexKg].englishName === dataRow.measureStoreUnit ||
+    commonConstant[indexKg].traditionalName === dataRow.measureStoreUnit);
   const indexM2 = commonConstant.findIndex(item => item.constantName === 'm2');
   const isM2 = indexM2 > -1 && (commonConstant[indexM2].chineseName === dataRow[type + 'Unit'] ||
     commonConstant[indexM2].englishName === dataRow[type + 'Unit'] ||
@@ -624,9 +630,9 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
   const paperUnit = indexPaper > -1 ? commonConstant[indexPaper].viewName : '';
 
   const indexM = commonConstant.findIndex(item => item.constantName === 'm');
-  const isM = indexM > -1 && (commonConstant[indexM].chineseName === dataRow[type + 'Unit'] ||
-    commonConstant[indexM].englishName === dataRow[type + 'Unit'] ||
-    commonConstant[indexM].traditionalName === dataRow[type + 'Unit']);
+  const isMeasureM = indexM > -1 && (commonConstant[indexM].chineseName === dataRow.measureStoreUnit ||
+    commonConstant[indexM].englishName === dataRow.measureStoreUnit ||
+    commonConstant[indexM].traditionalName === dataRow.measureStoreUnit);
 
   if (isNotEmpty(dataRow[formulaIdFieldName])) {
     returnRow[calcFieldName] = round(getFormulaValue('slave', dataRow, dataRow[formulaIdFieldName], { slave: dataRow }, commonModel), 6);
@@ -672,10 +678,10 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
     returnRow.measureUnit = reelUnit;
   }
   // 1m 门幅889
-  else if (isNotEmpty(dataRow[type + 'Style']) && dataRow.gramWeight > 0 && dataRow.isReel && isM && isTon) {
+  else if (isNotEmpty(dataRow[type + 'Style']) && dataRow.gramWeight > 0 && dataRow.isReel && isMeasureM && isTon) {
     returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * dataRow.gramWeight / toM2 / 1000000, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
-  } else if (isNotEmpty(dataRow[type + 'Style']) && dataRow.gramWeight > 0 && dataRow.isReel && isM && isKg) {
+  } else if (isNotEmpty(dataRow[type + 'Style']) && dataRow.gramWeight > 0 && dataRow.isReel && isMeasureM && isKg) {
     returnRow[calcFieldName] = round(dataRow.measureQty * styleWidth * dataRow.gramWeight / toM2  / 1000, 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
   }
@@ -694,6 +700,29 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
   else {
     returnRow[calcFieldName] = round(dataRow.measureQty * isEmptyorZeroDefault(dataRow[coefficientFieldName], 1), 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
+  }
+
+  if (dataRow.isReel) {
+    returnRow.materialReelStyle = styleWidth;
+    if ((isMeasureKg && isKg) || (isMeasureTon && isTon)) {
+      returnRow.measureReelQty = dataRow[calcFieldName];
+    }
+    else if (isMeasureKg && isTon) {
+      returnRow.measureReelQty = dataRow[calcFieldName] * 1000;
+    }
+    else if (isMeasureTon && isKg) {
+      returnRow.measureReelQty = dataRow[calcFieldName] / 1000;
+    }
+    else if (isMeasureM) {
+      if (count === 1) {
+        returnRow.measureReelQty = dataRow.measureQty * styleLength / toM;
+      } else {
+        returnRow.measureReelQty = dataRow.measureQty;
+      }
+    }
+  } else {
+    returnRow.materialReelStyle = '';
+    returnRow.measureReelQty = 0;
   }
 
   return returnRow;

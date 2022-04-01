@@ -14,6 +14,7 @@ import {NumberComponent} from "../../../components/NumberComponent";
 import {SwitchComponent} from "../../../components/SwitchComponent";
 import SlaveContainer from "./SlaveContainer";
 import SyncContainer from "./SyncContainer";
+import {TreeSelectComponent} from "../../../components/TreeSelectComponent";
 
 const Container = (props) => {
   const [form] = Form.useForm();
@@ -433,7 +434,7 @@ const Container = (props) => {
         props.gotoError(dispatch, interfaceReturn);
         return {};
       }
-    } else if (params.fieldName === 'containerViewName') {
+    } else if (params.fieldName === 'containerViewName' || params.fieldName === 'superiorContainerName') {
       const requestParam = {
         routeId: props.routeId
       };
@@ -624,6 +625,15 @@ const Container = (props) => {
     event: { onChange: props.onDataChange }
   };
 
+  const superiorContainerName = {
+    name: 'master',
+    config: { fieldName: 'superiorContainerName', viewName: '父级容器名称', dropType: 'sql',
+      isTreeDrop: true, assignField: 'superiorContainerName=viewName,superiorContainerId=id',
+      treeKeyDrop: 'id', treeColumnNameDrop: 'viewName' },
+    property: { disabled: !enabled, dropdownMatchSelectWidth: 400 },
+    event: { onChange: props.onDataChange, getSelectList }
+  };
+
   const isSelect = {
     name: 'master',
     config: { fieldName: 'isSelect', viewName: '是否查询' },
@@ -691,6 +701,15 @@ const Container = (props) => {
               </Row>
             </div>: ''
           }
+          <Row>
+            <Col><TreeSelectComponent {...superiorContainerName} /></Col>
+            {commonUtils.isNotEmptyObj(masterData) && masterData.superiorContainerId ?
+              <div>
+                <Col><InputComponent {...treeKey} /></Col>
+                <Col><InputComponent {...treeSlaveKey} /></Col>
+              </div> : ''
+            }
+          </Row>
         </div>
         : ''}
     </div>)}, [masterData, enabled]);

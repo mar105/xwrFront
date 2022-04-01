@@ -64,7 +64,7 @@ const commonBase = (WrapComponent) => {
       if (commonUtils.isNotEmptyArr(containerData)) {
         let addState = { enabled: false, pageLoading: false };
         for(const container of containerData) {
-        // containerData.forEach(async container => { //foreach不能使用await、 continue
+        // containerData.forEach(async container => { //foreach不能使用 continue
           if (params.testMongo) {
             // 如果有虚拟名称时，保存后不获取数据，等待任务推送数据。
             if (commonUtils.isNotEmpty(container.virtualName)) {
@@ -102,9 +102,32 @@ const commonBase = (WrapComponent) => {
           } else if (params.handleType !== 'add' && container.isSelect) {
             //列表获取
             if (container.isTable) {
-              const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree ? undefined : params.pageNum,
-                condition: { searchCondition: modifyState[container.dataSetName + 'SearchCondition'], sorterInfo: modifyState[container.dataSetName + 'SorterInfo'] }, isWait: true });
-              addState = {...addState, ...returnData, [container.dataSetName + 'ModifyData']: [], [container.dataSetName + 'DelData']: []};
+              if (commonUtils.isEmpty(container.superiorContainerId)) {
+                const returnData: any = await getDataList({ name: container.dataSetName, containerId: container.id, pageNum: container.isTree ? undefined : params.pageNum,
+                  condition: { searchCondition: modifyState[container.dataSetName + 'SearchCondition'], sorterInfo: modifyState[container.dataSetName + 'SorterInfo'] }, isWait: true });
+                addState = {...addState, ...returnData, [container.dataSetName + 'ModifyData']: [], [container.dataSetName + 'DelData']: []};
+
+                const index = containerData.findIndex(item => item.superiorContainerId === container.id);
+                if (index > -1) {
+                  //嵌套表不分页
+                  const superiorData = addState[container.dataSetName + 'Data'];
+                  if (commonUtils.isNotEmptyArr(superiorData)) {
+                    const childData: any = [];
+                    superiorData.forEach(async superior => {
+                      const searchCondition = commonUtils.isNotEmptyObj(modifyState[containerData[index].dataSetName + 'SearchCondition']) ? [...modifyState[containerData[index].dataSetName + 'SearchCondition']] : [];
+                      searchCondition.push({ fieldName: containerData[index].treeSlaveKey, condition: '=', fieldValue: superior[containerData[index].treeKey] });
+
+                      const returnData: any = await getDataList({ name: containerData[index].dataSetName, containerId: containerData[index].id, pageNum: undefined,
+                        condition: { searchCondition, sorterInfo: modifyState[containerData[index].dataSetName + 'SorterInfo'] }, isWait: true });
+                      childData.push(...returnData[containerData[index].dataSetName + 'Data']);
+                    });
+                    addState = {...addState, [containerData[index].dataSetName + 'Data']: childData, [containerData[index].dataSetName + 'ModifyData']: [], [containerData[index].dataSetName + 'DelData']: []};
+                  }
+
+                }
+
+              }
+
             }
           }
         };

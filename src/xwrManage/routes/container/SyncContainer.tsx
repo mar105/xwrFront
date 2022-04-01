@@ -95,7 +95,7 @@ const SyncContainer = (props) => {
   const tableParam: any = commonUtils.getTableProps(name, props);
   tableParam.isDragRow = true;
   tableParam.property.columns = commonUtils.isEmptyArr(tableParam.property.columns) ? columns : tableParam.property.columns;
-  tableParam.width = 800;
+  tableParam.width = 1200;
   tableParam.lastColumn = { title: 'o',
     render: (text,record, index)=> {
     return <div>

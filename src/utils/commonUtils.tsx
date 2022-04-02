@@ -187,7 +187,11 @@ export function getTableProps(name, props) {
   //标准配置配置，直接把配置保存后后台配置表
   const configSetting = props.commonModel.userInfo.shopId === '1395719229487058944' ?
     <a onClick={props.onTableConfigSaveClick.bind(this, name)}> <Tooltip placement="top" title="列宽保存"><SaveOutlined /> </Tooltip></a> : '';
-  const tableParam ={
+
+  const index = props.containerData && props[name + 'Container'] ? props.containerData.findIndex(item => item.superiorContainerId === props[name + 'Container'].id) : -1;
+  const tableNestParam = index > -1 ? getTableProps(props.containerData[index].dataSetName, props) : {};
+
+  const tableParam = {
     name,
     enabled: props.enabled,
     dispatchModifyState: props.dispatchModifyState,
@@ -204,6 +208,7 @@ export function getTableProps(name, props) {
     isLastColumn: true,
     onLastColumnClick: props.onLastColumnClick,
     onTableChange: props.onTableChange,
+    tableNestParam,
     expandable: {onExpand: props.onExpand, expandedRowKeys: props[name + 'ExpandedRowKeys']},
     pagination: true, // 是否分页
     event: { onDataChange: props.onDataChange, getSelectList: props.getSelectList, onDropPopup: props.onDropPopup },

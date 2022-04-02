@@ -96,7 +96,7 @@ export function TableComponent(params: any) {
 
     //-----增加列宽拖拽------------------------------
     // params.config.isTree ? {} :
-    const components = {
+    const components = commonUtils.isNotEmptyObj(params.tableNestParam) ? {} : {
       header: {
         cell: ResizeableTitle,
       },
@@ -495,7 +495,7 @@ export function TableComponent(params: any) {
     scroll: { x: "100%", y: 500 },
   // 使用VList 即可有虚拟列表的效果
   // 此值和scrollY值相同. 必传. (required).  same value for scrolly
-    components: modifySelfState.components,
+  //   components: modifySelfState.components,
     rowSelection: { checkStrictly: true, type: params.config.isMultiChoise ? 'checkbox' : 'radio', fixed: true, ...params.rowSelection,
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
       getCheckboxProps: (record) => ({ disabled: record.disabled }),
@@ -520,6 +520,15 @@ export function TableComponent(params: any) {
   if (commonUtils.isNotEmptyObj(modifySelfState.expandable)) {
     tableParams.expandable = { ...modifySelfState.expandable, ...params.expandable,
       onExpand: (expanded, record) => { params.expandable.onExpand(params.name, expanded, record) } };
+  }
+  if (commonUtils.isNotEmptyObj(params.tableNestParam)) {
+    tableParams.expandable = { ...tableParams.expandable,
+      expandedRowRender: (record) => {
+        const dataSource = params.tableNestParam.property.dataSource.filter(item => item[params.tableNestParam.config.treeSlaveKey] === record[params.tableNestParam.config.treeKey]);
+        const tableParam = { ...params.tableNestParam, property: { ...params.tableNestParam.property, dataSource } };
+        return <TableComponent {...tableParam} />;
+    }
+    };
   }
   return <div style={{width: params.width ? params.width: 1000}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>

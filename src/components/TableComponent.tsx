@@ -115,7 +115,7 @@ export function TableComponent(params: any) {
     dispatchModifySelfState({components, ...addState });
     //params.lastColumn.changeValue 判断是否需要重新渲染最后一列。
     //filteredInfo 用于包含搜索的变黄色
-  }, [params.lastColumn.changeValue, params.property.columns, params.expandable.expandedRowKeys, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
+  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
 
   // useEffect(() => {
   //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功
@@ -531,6 +531,7 @@ export function TableComponent(params: any) {
     }
     };
   }
+  console.log('tableParams',params.name, params);
   return <div style={{width: params.width ? params.width: 1000}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
 

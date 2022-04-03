@@ -469,7 +469,7 @@ export function TableComponent(params: any) {
     }
     dispatchModifySelfState({filteredInfo: filters, sorterInfo});
 
-    if (params.onTableChange && !params.config.isTree && !params.enabled) {
+    if (params.onTableChange && commonUtils.isEmpty(params.config.superiorContainerId) && !params.config.isTree && !params.enabled) {
       params.onTableChange(params.name, pagination, filters, sorterInfo, extra);
     }
   }
@@ -495,7 +495,7 @@ export function TableComponent(params: any) {
     scroll: { x: "100%", y: 500 },
   // 使用VList 即可有虚拟列表的效果
   // 此值和scrollY值相同. 必传. (required).  same value for scrolly
-  //   components: modifySelfState.components,
+    components: modifySelfState.components,
     rowSelection: { checkStrictly: true, type: params.config.isMultiChoise ? 'checkbox' : 'radio', fixed: true, ...params.rowSelection,
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
       getCheckboxProps: (record) => ({ disabled: record.disabled }),
@@ -531,7 +531,7 @@ export function TableComponent(params: any) {
     }
     };
   }
-  console.log('tableParams',params.name, params);
+
   return <div style={{width: params.width ? params.width: 1000}}>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
 

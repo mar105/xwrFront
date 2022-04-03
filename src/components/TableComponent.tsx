@@ -524,9 +524,10 @@ export function TableComponent(params: any) {
   if (commonUtils.isNotEmptyObj(params.tableNestParam)) {
     tableParams.expandable = { ...tableParams.expandable,
       expandedRowRender: (record) => {
-        const dataSource = params.tableNestParam.property.dataSource.filter(item => item[params.tableNestParam.config.treeSlaveKey] === record[params.tableNestParam.config.treeKey]);
-        const tableParam = { ...params.tableNestParam, property: { ...params.tableNestParam.property, dataSource } };
-        return <TableComponent {...tableParam} />;
+        params.tableNestParam.onFilter = (name, fieldName, value, recordNest) => {
+          return recordNest[params.tableNestParam.config.treeSlaveKey] === record[params.tableNestParam.config.treeKey];
+        };
+        return <TableComponent {...params.tableNestParam} />;
     }
     };
   }

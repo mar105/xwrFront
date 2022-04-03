@@ -622,53 +622,89 @@ const commonBase = (WrapComponent) => {
 
 
 
-    const onRowSelectChange = (name, selectedRowKeys, selectedRows) => {
-      const { [name + 'Container']: container, [name + 'Data']: tableData } = modifyState;
+    const onRowSelectChange = (name, selectedRowKeys, selectedRows, isWait) => {
+      const { [name + 'Container']: container, [name + 'Data']: tableData, [name + 'SelectedRowKeys']: selectedRowKeysOldOld } = modifyState;
       const addState: any = {};
       //嵌套表格勾选连带功能
-      if (commonUtils.isNotEmpty(container.superiorContainerId)) {
-        const superiorSelectRowKeys: any = [];
-        const superiorSelectRows: any = [];
-        const containerIndex = modifyState.containerData.findIndex(item => item.id === container.superiorContainerId);
-        if (containerIndex > -1) {
-          const superiorDataSetName = modifyState.containerData[containerIndex].dataSetName;
-          const superiorData = commonUtils.isEmptyArr(modifyState[superiorDataSetName + 'Data']) ? [] : modifyState[superiorDataSetName + 'Data'];
-          selectedRowKeys.forEach(selectedRowKey => {
-            const index = tableData.findIndex(item => item[container.tableKey] === selectedRowKey);
-            if (index > -1) {
-              const superiorIndex = superiorData.findIndex(item => item[container.treeKey] === tableData[index][container.treeSlaveKey]);
-              if (superiorIndex > -1) {
-                superiorSelectRowKeys.push(superiorData[superiorIndex][modifyState.containerData[containerIndex].tableKey]);
-                superiorSelectRows.push(superiorData[superiorIndex]);
+      if (commonUtils.isNotEmptyArr(modifyState.containerData)) {
+        if (commonUtils.isNotEmpty(container.superiorContainerId)) {
+          //勾选嵌套表
+          const containerIndex = modifyState.containerData.findIndex(item => item.id === container.superiorContainerId);
+          if (containerIndex > -1) {
+            const superiorDataSetName = modifyState.containerData[containerIndex].dataSetName;
+            const superiorData = commonUtils.isEmptyArr(modifyState[superiorDataSetName + 'Data']) ? [] : modifyState[superiorDataSetName + 'Data'];
+            const superiorSelectRowKeys: any = [];
+            const superiorSelectRows: any = [];
+            selectedRowKeys.forEach(selectedRowKey => {
+              const index = tableData.findIndex(item => item[container.tableKey] === selectedRowKey);
+              if (index > -1) {
+                const superiorIndex = superiorData.findIndex(item => item[container.treeKey] === tableData[index][container.treeSlaveKey]);
+                const superiorRowKeysIndex = superiorSelectRowKeys.findIndex(item => item === tableData[index][container.treeSlaveKey]);
+                if (superiorIndex > -1 && !(superiorRowKeysIndex > -1)) {
+                  superiorSelectRowKeys.push(superiorData[superiorIndex][modifyState.containerData[containerIndex].tableKey]);
+                  superiorSelectRows.push(superiorData[superiorIndex]);
+                }
               }
-            }
-          });
+            });
+            addState[superiorDataSetName + 'SelectedRowKeys'] = superiorSelectRowKeys;
+            addState[superiorDataSetName + 'SelectRows'] = superiorSelectRows;
+          }
+        } else {
+          //勾选父级表
+          const containerIndex = modifyState.containerData.findIndex(item => item.superiorContainerId === container.id);
+          if (containerIndex > -1) {
+            const nestDataSetName = modifyState.containerData[containerIndex].dataSetName;
+            const nestData = commonUtils.isEmptyArr(modifyState[nestDataSetName + 'Data']) ? [] : [...modifyState[nestDataSetName + 'Data']];
+            const nestSelectRowKeys: any = commonUtils.isEmptyArr(modifyState[nestDataSetName + 'SelectedRowKeys']) ? [] : [...modifyState[nestDataSetName + 'SelectedRowKeys']];
+            const nestSelectRows: any = commonUtils.isEmptyArr(modifyState[nestDataSetName + 'SelectedRows']) ? [] : [...modifyState[nestDataSetName + 'SelectedRows']];
+            const selectedRowKeysOld = commonUtils.isEmptyArr(selectedRowKeysOldOld) ? [] : selectedRowKeysOldOld;
+            const treeKey = modifyState.containerData[containerIndex].treeKey;
+            const treeSlaveKey = modifyState.containerData[containerIndex].treeSlaveKey;
 
-          addState[superiorDataSetName + 'SelectedRowKeys'] = superiorSelectRowKeys;
-          addState[superiorDataSetName + 'SelectRows'] = superiorSelectRows;
-        }
-      } else {
-        const nestSelectRowKeys: any = [];
-        const nestSelectRows: any = [];
-        const containerIndex = modifyState.containerData.findIndex(item => item.superiorContainerId === container.id);
-        if (containerIndex > -1) {
-          const nestDataSetName = modifyState.containerData[containerIndex].dataSetName;
-          const nestData = commonUtils.isEmptyArr(modifyState[nestDataSetName + 'Data']) ? [] : modifyState[nestDataSetName + 'Data'];
-          selectedRowKeys.forEach(selectedRowKey => {
-            const index = tableData.findIndex(item => item[container.tableKey] === selectedRowKey);
-            if (index > -1) {
-              nestData.forEach(nest => {
-                nestSelectRowKeys.push(nest[modifyState.containerData[containerIndex].tableKey]);
-                nestSelectRows.push(nest);
+            const filterKeys = selectedRowKeysOld.filter(item => !selectedRowKeys.includes(item));
+            if (commonUtils.isNotEmptyArr(filterKeys)) {
+              //取消勾选
+              filterKeys.forEach(selectedRowKey => {
+                const index = tableData.findIndex(item => item[container.tableKey] === selectedRowKey);
+                if (index > -1) {
+                  nestData.filter(item => item[treeSlaveKey] === tableData[index][treeKey]).forEach(nest => {
+                    const nestIndex = nestSelectRowKeys.findIndex(item => item === nest[modifyState.containerData[containerIndex].tableKey]);
+                    if (nestIndex > -1) {
+                      nestSelectRowKeys.splice(nestIndex);
+                    }
+                    const nestRowIndex = nestSelectRows.findIndex(item => item[modifyState.containerData[containerIndex].tableKey] === nest[modifyState.containerData[containerIndex].tableKey]);
+                    if (nestRowIndex > -1) {
+                      nestSelectRowKeys.splice(nestRowIndex);
+                    }
+                  });
+                }
+              });
+            } else {
+              // 增加勾选
+              const filterKeys = selectedRowKeys.filter(item => !selectedRowKeysOld.includes(item));
+              filterKeys.forEach(selectedRowKey => {
+                const index = tableData.findIndex(item => item[container.tableKey] === selectedRowKey);
+                if (index > -1) {
+                  nestData.filter(item => item[treeSlaveKey] === tableData[index][treeKey]).forEach(nest => {
+                    nestSelectRowKeys.push(nest[modifyState.containerData[containerIndex].tableKey]);
+                    nestSelectRows.push(nest);
+                  });
+                }
               });
             }
-          });
 
-          addState[nestDataSetName + 'SelectedRowKeys'] = nestSelectRowKeys;
-          addState[nestDataSetName + 'SelectRows'] = nestSelectRows;
+            addState[nestDataSetName + 'SelectedRowKeys'] = nestSelectRowKeys;
+            addState[nestDataSetName + 'SelectRows'] = nestSelectRows;
+          }
         }
       }
-      dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys, [name + 'SelectedRows']: selectedRows, ...addState });
+
+      if (isWait) {
+        return { [name + 'SelectedRowKeys']: selectedRowKeys, [name + 'SelectedRows']: selectedRows, ...addState };
+      } else {
+        dispatchModifyState({ [name + 'SelectedRowKeys']: selectedRowKeys, [name + 'SelectedRows']: selectedRows, ...addState });
+      }
+
     }
 
     const onDataChange = (params) => {

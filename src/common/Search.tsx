@@ -108,7 +108,7 @@ const Search = (props) => {
       config: firstConfig,
       property: {value: searchData['first' + key]},
       record: searchData,
-      event: {onChange: props.onSelectChange, getSelectList: props.getSelectList }
+      event: {onChange: props.onDataChange, getSelectList: props.getSelectList }
     };
 
     const index = commonUtils.isEmptyArr(searchConfig) ? -1 : searchConfig.findIndex(item => item.fieldName === searchData['first' + key]);
@@ -132,7 +132,7 @@ const Search = (props) => {
       config: secondConfig,
       property: {value: searchData['second' + key]},
       record: searchData,
-      event: {onChange: props.onSelectChange, getSelectList: props.getSelectList }
+      event: {onChange: props.onDataChange, getSelectList: props.getSelectList }
     };
 
     const thirdConfig = index > -1 ? {
@@ -150,7 +150,7 @@ const Search = (props) => {
       config: thirdConfig,
       property: {value: searchData['third' + key]},
       record: searchData,
-      event: {onChange: props.onSelectChange, getSelectList: props.getSelectList }
+      event: {onChange: props.onDataChange, getSelectList: props.getSelectList }
     };
 
     const thirdInputprops = {

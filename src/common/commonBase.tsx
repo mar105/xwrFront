@@ -113,14 +113,14 @@ const commonBase = (WrapComponent) => {
                   const superiorData = addState[container.dataSetName + 'Data'];
                   if (commonUtils.isNotEmptyArr(superiorData)) {
                     const childData: any = [];
-                    superiorData.forEach(async superior => {
+                    for (const superior of superiorData) {
                       const searchCondition = commonUtils.isNotEmptyObj(modifyState[containerData[index].dataSetName + 'SearchCondition']) ? [...modifyState[containerData[index].dataSetName + 'SearchCondition']] : [];
                       searchCondition.push({ fieldName: containerData[index].treeSlaveKey, condition: '=', fieldValue: superior[containerData[index].treeKey] });
 
                       const returnData: any = await getDataList({ name: containerData[index].dataSetName, containerId: containerData[index].id, pageNum: undefined,
                         condition: { searchCondition, sorterInfo: modifyState[containerData[index].dataSetName + 'SorterInfo'] }, isWait: true });
                       childData.push(...returnData[containerData[index].dataSetName + 'Data']);
-                    });
+                    };
                     addState = {...addState, [containerData[index].dataSetName + 'Data']: childData, [containerData[index].dataSetName + 'ModifyData']: [], [containerData[index].dataSetName + 'DelData']: []};
                   }
 
@@ -781,7 +781,7 @@ const commonBase = (WrapComponent) => {
 
     const onReachEnd = async (name) => {
       const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage, [name + 'CreateDate']: createDate }: any = stateRef.current;
-      if (!isLastPage && !container.isTree) {
+      if (!isLastPage && commonUtils.isEmpty(container.superiorContainerId) && !container.isTree) {
         dispatchModifyState({[name + 'Loading']: true });
         const returnData: any = await getDataList({ name, containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true, createDate });
         const addState = {...returnData};

@@ -52,7 +52,7 @@ const Search = (props) => {
 
   const onButtonClick = async (key, e) => {
     const name = 'slave';
-    const { searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState, [name + 'Container']: container, [name + 'SorterInfo']: sorterInfo } = props;
+    const { containerData, searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState, [name + 'Container']: container, [name + 'SorterInfo']: sorterInfo } = props;
     const searchData = {...searchDataOld};
     const searchRowKeys = [...searchRowKeysOld];
     let addState: any = {};
@@ -77,6 +77,26 @@ const Search = (props) => {
       dispatchModifyState({[name + 'Loading']: true });
       const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition, sorterInfo }, isWait: true });
       addState = {...addState, ...returnData};
+
+      const index = containerData.findIndex(item => item.superiorContainerId === container.id);
+      if (index > -1) {
+        //嵌套表不分页
+        const superiorData = addState[container.dataSetName + 'Data'];
+        if (commonUtils.isNotEmptyArr(superiorData)) {
+          const childData: any = [];
+          for (const superior of superiorData) {
+            const searchNestCondition = commonUtils.isNotEmptyObj(props[containerData[index].dataSetName + 'SearchCondition']) ? [...props[containerData[index].dataSetName + 'SearchCondition']] : [];
+            searchNestCondition.push({ fieldName: containerData[index].treeSlaveKey, condition: '=', fieldValue: superior[containerData[index].treeKey] });
+            searchNestCondition.push(...searchCondition);
+            const returnData: any = await props.getDataList({ name: containerData[index].dataSetName, containerId: containerData[index].id, pageNum: undefined,
+              condition: { searchCondition: searchNestCondition, sorterInfo: props[containerData[index].dataSetName + 'SorterInfo'] }, isWait: true });
+            childData.push(...returnData[containerData[index].dataSetName + 'Data']);
+          };
+          addState = {...addState, [containerData[index].dataSetName + 'Data']: childData, [containerData[index].dataSetName + 'ModifyData']: [], [containerData[index].dataSetName + 'DelData']: []};
+        }
+
+      }
+
       dispatchModifyState({...addState});
     }
   }

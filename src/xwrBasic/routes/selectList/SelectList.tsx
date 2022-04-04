@@ -33,6 +33,11 @@ const SelectList = (props) => {
 
 
   const selectParam: any = commonUtils.getTableProps('slave', props);
+  if (commonUtils.isNotEmptyObj(selectParam.tableNestParam.property)) {
+    selectParam.tableNestParam.property.rowSelection = null;
+    selectParam.tableNestParam.property.dataSource = props.slaveNestSelectedRows;
+  }
+
   selectParam.enabled = false;
   selectParam.property.dataSource = props.slaveSelectedRows;
   selectParam.property.rowSelection = null;

@@ -633,21 +633,21 @@ const commonBase = (WrapComponent) => {
           if (containerIndex > -1) {
             const superiorDataSetName = modifyState.containerData[containerIndex].dataSetName;
             const superiorData = commonUtils.isEmptyArr(modifyState[superiorDataSetName + 'Data']) ? [] : modifyState[superiorDataSetName + 'Data'];
-            const superiorSelectRowKeys: any = [];
-            const superiorSelectRows: any = [];
+            const superiorSelectedRowKeys: any = [];
+            const superiorSelectedRows: any = [];
             selectedRowKeys.forEach(selectedRowKey => {
               const index = tableData.findIndex(item => item[container.tableKey] === selectedRowKey);
               if (index > -1) {
                 const superiorIndex = superiorData.findIndex(item => item[container.treeKey] === tableData[index][container.treeSlaveKey]);
-                const superiorRowKeysIndex = superiorSelectRowKeys.findIndex(item => item === tableData[index][container.treeSlaveKey]);
+                const superiorRowKeysIndex = superiorSelectedRowKeys.findIndex(item => item === tableData[index][container.treeSlaveKey]);
                 if (superiorIndex > -1 && !(superiorRowKeysIndex > -1)) {
-                  superiorSelectRowKeys.push(superiorData[superiorIndex][modifyState.containerData[containerIndex].tableKey]);
-                  superiorSelectRows.push(superiorData[superiorIndex]);
+                  superiorSelectedRowKeys.push(superiorData[superiorIndex][modifyState.containerData[containerIndex].tableKey]);
+                  superiorSelectedRows.push(superiorData[superiorIndex]);
                 }
               }
             });
-            addState[superiorDataSetName + 'SelectedRowKeys'] = superiorSelectRowKeys;
-            addState[superiorDataSetName + 'SelectRows'] = superiorSelectRows;
+            addState[superiorDataSetName + 'SelectedRowKeys'] = superiorSelectedRowKeys;
+            addState[superiorDataSetName + 'SelectedRows'] = superiorSelectedRows;
           }
         } else {
           //勾选父级表
@@ -656,7 +656,7 @@ const commonBase = (WrapComponent) => {
             const nestDataSetName = modifyState.containerData[containerIndex].dataSetName;
             const nestData = commonUtils.isEmptyArr(modifyState[nestDataSetName + 'Data']) ? [] : [...modifyState[nestDataSetName + 'Data']];
             const nestSelectRowKeys: any = commonUtils.isEmptyArr(modifyState[nestDataSetName + 'SelectedRowKeys']) ? [] : [...modifyState[nestDataSetName + 'SelectedRowKeys']];
-            const nestSelectRows: any = commonUtils.isEmptyArr(modifyState[nestDataSetName + 'SelectedRows']) ? [] : [...modifyState[nestDataSetName + 'SelectedRows']];
+            const nestSelectedRows: any = commonUtils.isEmptyArr(modifyState[nestDataSetName + 'SelectedRows']) ? [] : [...modifyState[nestDataSetName + 'SelectedRows']];
             const selectedRowKeysOld = commonUtils.isEmptyArr(selectedRowKeysOldOld) ? [] : selectedRowKeysOldOld;
             const treeKey = modifyState.containerData[containerIndex].treeKey;
             const treeSlaveKey = modifyState.containerData[containerIndex].treeSlaveKey;
@@ -672,7 +672,7 @@ const commonBase = (WrapComponent) => {
                     if (nestIndex > -1) {
                       nestSelectRowKeys.splice(nestIndex);
                     }
-                    const nestRowIndex = nestSelectRows.findIndex(item => item[modifyState.containerData[containerIndex].tableKey] === nest[modifyState.containerData[containerIndex].tableKey]);
+                    const nestRowIndex = nestSelectedRows.findIndex(item => item[modifyState.containerData[containerIndex].tableKey] === nest[modifyState.containerData[containerIndex].tableKey]);
                     if (nestRowIndex > -1) {
                       nestSelectRowKeys.splice(nestRowIndex);
                     }
@@ -687,14 +687,14 @@ const commonBase = (WrapComponent) => {
                 if (index > -1) {
                   nestData.filter(item => item[treeSlaveKey] === tableData[index][treeKey]).forEach(nest => {
                     nestSelectRowKeys.push(nest[modifyState.containerData[containerIndex].tableKey]);
-                    nestSelectRows.push(nest);
+                    nestSelectedRows.push(nest);
                   });
                 }
               });
             }
 
             addState[nestDataSetName + 'SelectedRowKeys'] = nestSelectRowKeys;
-            addState[nestDataSetName + 'SelectRows'] = nestSelectRows;
+            addState[nestDataSetName + 'SelectedRows'] = nestSelectedRows;
           }
         }
       }

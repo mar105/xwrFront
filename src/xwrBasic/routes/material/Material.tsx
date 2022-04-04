@@ -77,11 +77,15 @@ const Material = (props) => {
   }
 
   const onLastColumnClick = (name, key, record, e, isWait = false) => {
-    const { dispatchModifyState, masterData: masterDataOld }: any = props;
+    const { dispatchModifyState, masterData: masterDataOld, masterModifyData: masterModifyDataOld }: any = props;
     if (name === 'supply') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, defaultSupplyId: record.id };
-        dispatchModifyState({ masterData });
+        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultSupplyId: record.supplyId };
+
+        const masterModifyData = masterData.handleType === 'modify' ?
+          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultSupplyId: record.supplyId } :
+            { ...masterModifyDataOld, id: masterData.id, defaultSupplyId: record.supplyId } : masterModifyDataOld;
+        dispatchModifyState({ masterData, masterModifyData });
       }
     }
   };
@@ -92,11 +96,12 @@ const Material = (props) => {
   const supplyParam: any = commonUtils.getTableProps('supply', props);
   supplyParam.isDragRow = true;
   supplyParam.pagination = false;
+
   supplyParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultSupplyId,
     render: (text,record, index)=> {
     return <div>
       <a onClick={onLastColumnClick.bind(this, 'supply', 'defaultButton', record)}>
-        <Tooltip placement="top" title="默认"> {commonUtils.isNotEmptyObj(masterData) && masterData.defaultSupplyId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
+        <Tooltip placement="top" title="默认"> {commonUtils.isNotEmptyObj(masterData) && masterData.defaultSupplyId === record.supplyId ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
       <a onClick={props.onLastColumnClick.bind(this, 'supply', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
     </div>
   }, width: 50 , fixed: 'right' };

@@ -366,6 +366,7 @@ const commonBase = (WrapComponent) => {
 
     const onLastColumnClick = (name, key, record, e, isWait = false) => {
       const { [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
+      let addState = {};
       if (key === 'delButton') {
         const returnData = delTableData(name, 'id', record.id);
         if (isWait) {
@@ -384,10 +385,14 @@ const commonBase = (WrapComponent) => {
         if (indexKeys > -1) {
           selectedRowKeys.splice(indexKeys, 1);
         }
+        if (name === 'slaveNest') {
+          addState = onRowSelectChange(name, selectedRowKeys, selectedRows, true);
+        }
+
         if (isWait) {
-          return { [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys };
+          return { [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys, ...addState };
         } else {
-          dispatchModifyState({ [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys });
+          dispatchModifyState({ [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys, ...addState });
         }
       }
 

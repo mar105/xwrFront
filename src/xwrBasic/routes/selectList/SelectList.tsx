@@ -36,6 +36,11 @@ const SelectList = (props) => {
   if (commonUtils.isNotEmptyObj(selectParam.tableNestParam.property)) {
     selectParam.tableNestParam.property.rowSelection = null;
     selectParam.tableNestParam.property.dataSource = props.slaveNestSelectedRows;
+    selectParam.tableNestParam.lastColumn = { title: 'o',
+      render: (text,record, index)=> {
+        return <a onClick={props.onLastColumnClick ? props.onLastColumnClick.bind(this, 'slaveNest', 'delSelectButton', record) : null}>
+          <Tooltip placement="top" title="删除"><DeleteOutlined /></Tooltip></a>
+      }, width: 50 , fixed: 'right' };
   }
 
   selectParam.enabled = false;

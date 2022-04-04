@@ -90,6 +90,7 @@ const Material = (props) => {
   const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const supplyParam: any = commonUtils.getTableProps('supply', props);
+  supplyParam.isDragRow = true;
   supplyParam.pagination = false;
   supplyParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultSupplyId,
     render: (text,record, index)=> {

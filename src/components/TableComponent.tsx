@@ -85,6 +85,7 @@ export function TableComponent(params: any) {
       // return <SortableItem index={index} {...restProps} />;
     };
 
+    //有行isDragRow 行拖拽功能时表格中组件显示正常，不然是缩小版，样式要调整。
     if (params.isDragRow) {
       addComponents.body = {
         wrapper: DraggableContainer,

@@ -495,6 +495,7 @@ const commonDocEvent = (WrapComponent) => {
             params.selectNestList.filter(item => item[params.selectNestContainer.treeSlaveKey] === selectItem[params.selectNestContainer.treeKey]).forEach(nest => {
               const nestAssignValue = commonUtils.getAssignFieldValue(name, nestAssignFieldSlave, nest, propsRef.current);
               const rowNestData = { ...props.onAdd(container), ...nestAssignValue, superiorId: masterDataOld.id, slaveSuperiorId: rowData.id };
+              rowNestData.allId = rowData.id + rowNestData.id;
               nestData.push(rowNestData);
             });
 

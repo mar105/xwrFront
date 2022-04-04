@@ -25,16 +25,17 @@ const CommonList = (props) => {
         if (containerIndex > -1) {
           const superiorDataSetName = props.containerData[containerIndex].dataSetName;
           const superiorData = commonUtils.isEmptyArr(props[superiorDataSetName + 'Data']) ? [] : [...props[superiorDataSetName + 'Data']];
-          superiorData.forEach((superior) => {
-            superior.unMeasureQty = superior.benchmarkMeasureQty;
-            superior.unMaterialQty = superior.benchmarkMaterialQty;
-            superior.unConvertQty = superior.benchmarkConvertQty;
-            // superiorData[index] = {...superior,
-            //   unMeasureQty: superior.benchmarkMeasureQty,
-            //   unMaterialQty: superior.benchmarkMaterialQty,
-            //   unConvertQty: superior.benchmarkConvertQty
-            // };
+          superiorData.forEach((superior, index) => {
+            // superior.unMeasureQty = superior.benchmarkMeasureQty;
+            // superior.unMaterialQty = superior.benchmarkMaterialQty;
+            // superior.unConvertQty = superior.benchmarkConvertQty;
+            superiorData[index] = {...superior,
+              unMeasureQty: superior.benchmarkMeasureQty,
+              unMaterialQty: superior.benchmarkMaterialQty,
+              unConvertQty: superior.benchmarkConvertQty
+            };
           });
+
           selectedRowKeys.forEach(selectedRowKey => {
             const index = tableData.findIndex(item => item[container.tableKey] === selectedRowKey);
             if (index > -1) {
@@ -68,8 +69,11 @@ const CommonList = (props) => {
                     unConvertQty: tableData[index].unConvertQty
                   });
                 }
+                const selectedRowIndex = returnData[superiorDataSetName + 'SelectedRows'].findIndex(item => item[container.treeKey] === tableData[index][container.treeSlaveKey]);
+                if (selectedRowIndex > -1) {
+                  returnData[superiorDataSetName + 'SelectedRows'][selectedRowIndex] = superiorData[superiorIndex];
+                }
               }
-
             }
           });
           addState[superiorDataSetName + 'Data'] = superiorData;
@@ -90,7 +94,7 @@ const CommonList = (props) => {
                   unMeasureQty: tableData[index].benchmarkMeasureQty,
                   unMaterialQty: tableData[index].benchmarkMaterialQty,
                   unConvertQty: tableData[index].benchmarkConvertQty
-                }
+                };
               }
             });
           } else {
@@ -104,9 +108,14 @@ const CommonList = (props) => {
                   unMaterialQty: tableData[index].benchmarkMaterialQty,
                   unConvertQty: tableData[index].benchmarkConvertQty
                 }
+                const selectedRowIndex = selectedRows.findIndex(item => item[container.tableKey] === selectedRowKey);
+                if (selectedRowIndex > -1) {
+                  selectedRows[selectedRowIndex] = tableData[index];
+                }
               }
             });
           }
+          addState[name + 'SelectedRows'] = selectedRows;
           addState[name + 'Data'] = tableData;
         }
       }

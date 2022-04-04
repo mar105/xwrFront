@@ -483,10 +483,25 @@ const commonDocEvent = (WrapComponent) => {
         }
         const index = commonUtils.isEmptyArr(params.config.children) ? -1 : params.config.children.findIndex(item => item.fieldName === params.config.fieldName + '.slave');
         const assignFieldSlave = index > -1 ? params.config.children[index].assignField : '';
+        const nestIndex = commonUtils.isEmptyArr(params.config.children) ? -1 : params.config.children.findIndex(item => item.fieldName === params.config.fieldName + '.slaveNest');
+        const nestAssignFieldSlave = nestIndex > -1 ? params.config.children[nestIndex].assignField : '';
+
         params.selectList.forEach((selectItem, selectIndex) => {
           const assignValue = commonUtils.getAssignFieldValue(name, assignFieldSlave, selectItem, propsRef.current);
           const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterDataOld.id };
           rowData.allId = rowData.id;
+          if (commonUtils.isNotEmptyObj(params.selectNestContainer)) {
+            const nestData: any = [];
+            params.selectNestList.filter(item => item[params.selectNestContainer.treeSlaveKey] === selectItem[params.selectNestContainer.treeKey]).forEach(nest => {
+              const nestAssignValue = commonUtils.getAssignFieldValue(name, nestAssignFieldSlave, nest, propsRef.current);
+              const rowNestData = { ...props.onAdd(container), ...nestAssignValue, superiorId: masterDataOld.id, slaveSuperiorId: rowData.id };
+              nestData.push(rowNestData);
+            });
+
+            if (commonUtils.isNotEmptyArr(nestData)) {
+              rowData.children = nestData;
+            }
+          }
           data.push(rowData);
         });
 

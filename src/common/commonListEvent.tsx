@@ -72,7 +72,10 @@ const commonListEvent = (WrapComponent) => {
           props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
           return;
         }
-        props.callbackRemovePane({...props.modalParams, selectList: props.slaveSelectedRows, selectKeys: props.slaveSelectedRowKeys });
+        props.callbackRemovePane({...props.modalParams,
+          selectList: props.slaveSelectedRows, selectKeys: props.slaveSelectedRowKeys,
+          selectNestContainer: props.slaveNestContainer,
+          selectNestList: props.slaveNestSelectedRows, selectNestKeys: props.slaveNestSelectedRowKeys });
       } else if (key === 'cancelButton') {
         props.callbackRemovePane();
       } else if (key === 'exportExcelButton') {

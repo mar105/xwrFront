@@ -403,6 +403,10 @@ const commonProductionEvent = (WrapComponent) => {
     }
 
     const onModalOk = async (params, isWait) => {
+      if (commonUtils.isEmpty(params)) {
+        props.dispatchModifyState({ modalVisible: false });
+        return;
+      }
       const name = params.name;
       const { dispatch, [name + 'Container']: container, masterData, [name + 'Data']: dataOld, [name + 'ModifyData']: dataModifyOld, partData, commonModel }: any = propsRef.current;
       if (params.type === 'popupActive' && params.name === 'process' && commonUtils.isNotEmptyArr(params.selectList)) {

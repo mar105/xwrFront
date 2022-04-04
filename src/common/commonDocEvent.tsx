@@ -441,6 +441,10 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     const onModalOk = async (params, isWait) => {
+      if (commonUtils.isEmpty(params)) {
+        props.dispatchModifyState({ modalVisible: false });
+        return;
+      }
       const name = params.name;
       const { commonModel, dispatch, [name + 'Container']: container, masterModifyData: masterModifyDataOld, masterData: masterDataOld, [name + 'Data']: dataOld }: any = propsRef.current;
 

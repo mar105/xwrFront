@@ -10,6 +10,7 @@ import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
 import commonBillEvent from "../../../common/commonBillEvent";
+import commonPurchaseEvent from "../commonPurchaseEvent";
 
 const PurchaseOrder = (props) => {
   const [form] = Form.useForm();
@@ -55,4 +56,4 @@ const PurchaseOrder = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(PurchaseOrder))));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonPurchaseEvent(PurchaseOrder)))));

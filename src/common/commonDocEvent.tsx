@@ -218,6 +218,7 @@ const commonDocEvent = (WrapComponent) => {
         } else {
           let returnState: any = await props.getAllData({ dataId: masterData.id });
           if (commonUtils.isNotEmptyObj(childParams) && childParams.getAllData) {
+            //BusinessPermission用到
             const returnChild: any = await childParams.getAllData(true);
             returnState = {...returnState, ...returnChild};
           }

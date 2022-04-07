@@ -46,7 +46,7 @@ const InitSupply = (props) => {
       }
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        const returnState = await props.getAllData();
+        const returnState = await props.getAllData({ pageNum: 1 });
         dispatchModifyState({ ...returnState, slaveSelectedRows: [], slaveSelectedRowKeys: [], isAP: key === 'setForceButton' });
         props.gotoSuccess(dispatch, interfaceReturn);
       } else {

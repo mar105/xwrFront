@@ -494,8 +494,9 @@ export function TableComponent(params: any) {
     rowKey,
     // 滚动的高度, 可以是受控属性。 (number | string) be controlled.
     scroll: { x: "100%", y: 500 },
-  // 使用VList 即可有虚拟列表的效果
-  // 此值和scrollY值相同. 必传. (required).  same value for scrolly
+    // 使用VList 即可有虚拟列表的效果
+    // 此值和scrollY值相同. 必传. (required).  same value for scrolly
+    // checkStrictly 为false 勾选主数据从数据连动勾选。
     components: modifySelfState.components,
     rowSelection: { checkStrictly: false, type: params.config.isMultiChoise ? 'checkbox' : 'radio', fixed: true, ...params.rowSelection,
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],

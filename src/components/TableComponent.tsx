@@ -497,7 +497,7 @@ export function TableComponent(params: any) {
   // 使用VList 即可有虚拟列表的效果
   // 此值和scrollY值相同. 必传. (required).  same value for scrolly
     components: modifySelfState.components,
-    rowSelection: { checkStrictly: true, type: params.config.isMultiChoise ? 'checkbox' : 'radio', fixed: true, ...params.rowSelection,
+    rowSelection: { checkStrictly: false, type: params.config.isMultiChoise ? 'checkbox' : 'radio', fixed: true, ...params.rowSelection,
       selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
       getCheckboxProps: (record) => ({ disabled: record.disabled }),
       onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } },

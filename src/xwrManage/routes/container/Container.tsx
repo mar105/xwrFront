@@ -628,7 +628,7 @@ const Container = (props) => {
   const superiorContainerName = {
     name: 'master',
     config: { fieldName: 'superiorContainerName', viewName: '父级容器名称', dropType: 'sql',
-      isTreeDrop: true, assignField: 'superiorContainerName=viewName,superiorContainerId=id',
+      isDropEmpty: true, isTreeDrop: true, assignField: 'superiorContainerName=viewName,superiorContainerId=id',
       treeKeyDrop: 'id', treeColumnNameDrop: 'viewName' },
     property: { disabled: !enabled, dropdownMatchSelectWidth: 400 },
     event: { onChange: props.onDataChange, getSelectList }

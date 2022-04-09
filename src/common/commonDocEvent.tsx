@@ -492,6 +492,7 @@ const commonDocEvent = (WrapComponent) => {
           const rowData = { ...props.onAdd(container), ...assignValue, superiorId: masterDataOld.id };
           rowData.allId = rowData.id;
           if (commonUtils.isNotEmptyObj(params.selectNestContainer)) {
+            //嵌套表数据加入
             const nestData: any = [];
             params.selectNestList.filter(item => item[params.selectNestContainer.treeSlaveKey] === selectItem[params.selectNestContainer.treeKey]).forEach(nest => {
               const nestAssignValue = commonUtils.getAssignFieldValue(name, nestAssignFieldSlave, nest, propsRef.current);
@@ -503,6 +504,18 @@ const commonDocEvent = (WrapComponent) => {
             if (commonUtils.isNotEmptyArr(nestData)) {
               rowData.children = nestData;
             }
+          }
+          else if (commonUtils.isNotEmptyArr(selectItem.children)) {
+            //子表数据加入
+            const childrenData: any = [];
+            selectItem.children.forEach(child => {
+              const childAssignValue = commonUtils.getAssignFieldValue(name, assignFieldSlave, child, propsRef.current);
+              const rowChildData = { ...props.onAdd(container), ...childAssignValue, superiorId: masterDataOld.id, slaveSuperiorId: rowData.id };
+              rowChildData.allId = rowData.id + ',' + rowChildData.id;
+              childrenData.push(rowChildData);
+            });
+
+            rowData.children = childrenData;
           }
           data.push(rowData);
         });

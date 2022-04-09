@@ -257,6 +257,7 @@ const BusinessPermission = (props) => {
   permissionParam.pagination = false;
   permissionParam.isLastColumn = false;
   permissionParam.enabled = false;
+  permissionParam.rowSelection.checkStrictly = false;
 
   return (
     <Form {...layout} name="basic" form={form} onFinish={onFinish}>

@@ -83,17 +83,17 @@ const commonFinanceEvent = (WrapComponent) => {
           const slaveData = [...slaveDataOld];
           const slaveModifyData = commonUtils.isEmptyArr(slaveModifyDataOld) ? [] : slaveModifyDataOld;
           slaveData.forEach(slave => {
-            if (slave.balanceMoney > 0) {
-              positiveMoney = positiveMoney + slave.balanceMoney;
+            if (slave.originalUnMoney > 0) {
+              positiveMoney = positiveMoney + slave.originalUnMoney;
             } else {
-              negativeMoney = negativeMoney + slave.balanceMoney;
+              negativeMoney = negativeMoney + slave.originalUnMoney;
             }
           });
           if (returnData.masterData.totalInvoiceMoney - Math.abs(positiveMoney + negativeMoney) >= 0) {
             slaveDataOld.forEach((slaveOld, index) => {
               const slave = { ...slaveOld };
               slave.handleType = commonUtils.isEmpty(slave.handleType) ? 'modify' : slave.handleType;
-              slave.invoiceMoney = slave.balanceMoney;
+              slave.invoiceMoney = slave.originalUnMoney;
               slaveData[index] = slave;
               if (slave.handleType === 'modify') {
                 const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
@@ -132,18 +132,18 @@ const commonFinanceEvent = (WrapComponent) => {
               const slave = {...slaveOld};
               slave.handleType = commonUtils.isEmpty(slave.handleType) ? 'modify' : slave.handleType;
               if (isNegative) {
-                if (slave.balanceMoney < 0) {
-                  slave.invoiceMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? slave.balanceMoney : -minusMoney;
-                  minusMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? -(minusMoney - Math.ceil(slave.balanceMoney)) : 0;
+                if (slave.originalUnMoney < 0) {
+                  slave.invoiceMoney = minusMoney - Math.ceil(slave.originalUnMoney) > 0 ? slave.originalUnMoney : -minusMoney;
+                  minusMoney = minusMoney - Math.ceil(slave.originalUnMoney) > 0 ? -(minusMoney - Math.ceil(slave.originalUnMoney)) : 0;
                 } else {
-                  slave.invoiceMoney = slave.balanceMoney;
+                  slave.invoiceMoney = slave.originalUnMoney;
                 }
               } else {
-                if (slave.balanceMoney > 0) {
-                  slave.invoiceMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? slave.balanceMoney : minusMoney;
-                  minusMoney = minusMoney - Math.ceil(slave.balanceMoney) > 0 ? minusMoney - Math.ceil(slave.balanceMoney) : 0;
+                if (slave.originalUnMoney > 0) {
+                  slave.invoiceMoney = minusMoney - Math.ceil(slave.originalUnMoney) > 0 ? slave.originalUnMoney : minusMoney;
+                  minusMoney = minusMoney - Math.ceil(slave.originalUnMoney) > 0 ? minusMoney - Math.ceil(slave.originalUnMoney) : 0;
                 } else {
-                  slave.invoiceMoney = slave.balanceMoney;
+                  slave.invoiceMoney = slave.originalUnMoney;
                 }
               }
               slaveData[index] = slave;

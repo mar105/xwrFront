@@ -11,8 +11,9 @@ import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
 import commonBillEvent from "../../../common/commonBillEvent";
 import commonPurchaseEvent from "../../../common/commonPurchaseEvent";
+import commonFinanceEvent from "../commonFinanceEvent";
 
-const PurchaseOrder = (props) => {
+const PurchaseInvoice = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
@@ -56,4 +57,4 @@ const PurchaseOrder = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonPurchaseEvent(PurchaseOrder)))));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonPurchaseEvent(commonFinanceEvent(PurchaseInvoice))))));

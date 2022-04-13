@@ -12,7 +12,7 @@ import CommonModal from "../../../common/commonModal";
 import commonBillEvent from "../../../common/commonBillEvent";
 import commonPurchaseEvent from "../../../common/commonPurchaseEvent";
 
-const PurchaseOrder = (props) => {
+const PurchaseReconcile = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
@@ -56,4 +56,4 @@ const PurchaseOrder = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonPurchaseEvent(PurchaseOrder)))));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonPurchaseEvent(PurchaseReconcile)))));

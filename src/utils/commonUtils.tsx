@@ -347,8 +347,9 @@ export function getAssignFieldValue(name, assignField, option, allDataset = unde
     assignField.split(',').forEach(item => {
       const arrAssign = item.split('=');
       if (item.indexOf('=') > -1) {
+        console.log('arrAssign', arrAssign, arrAssign[0], arrAssign[1]);
         returnField[arrAssign[0].trim()] = isNotEmptyObj(option) ? copeDataSetValue(name, option, arrAssign[1].trim(), allDataset): '';
-      } else {
+      } else if (isNotEmpty(item)) {
         returnField[arrAssign[0].trim()] = isNotEmptyObj(option) ? option[arrAssign[1].trim()] : '';
       }
     });

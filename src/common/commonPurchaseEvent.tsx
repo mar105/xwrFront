@@ -1,6 +1,6 @@
 import * as React from "react";
 import {useRef, useEffect} from "react";
-import * as commonUtils from "../../utils/commonUtils";
+import * as commonUtils from "../utils/commonUtils";
 
 const commonPurchaseEvent = (WrapComponent) => {
   return function ChildComponent(props) {

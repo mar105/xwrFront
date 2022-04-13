@@ -11,6 +11,10 @@ export const routeInfo: any[] = [
       path: '/xwrFinance/saleReconcile', title: '销售对账', name: 'saleReconcile', component: () => import('./routes/saleReconcile/SaleReconcile'),
     },{
       path: '/xwrFinance/saleInvoice', title: '销售发票', name: 'saleInvoice', component: () => import('./routes/saleInvoice/SaleInvoice'),
+    }, {
+      path: '/xwrFinance/purchaseReconcile', title: '采购对账', name: 'purchaseReconcile', component: () => import('./routes/purchaseReconcile/PurchaseReconcile'),
+    },{
+      path: '/xwrFinance/purchaseInvoice', title: '采购发票', name: 'purchaseInvoice', component: () => import('./routes/purchaseInvoice/PurchaseInvoice'),
     }]
   },
 ];

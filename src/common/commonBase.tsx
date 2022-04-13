@@ -777,7 +777,7 @@ const commonBase = (WrapComponent) => {
           }
         }
         if (isWait) {
-          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, dataRow };
+          return { [name + 'Data']: data, [name + 'ModifyData']: dataModify, dataRow, assignValue };
         } else {
           dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
         }

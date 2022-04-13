@@ -419,7 +419,7 @@ const commonDocEvent = (WrapComponent) => {
           }
         }
         else if (container.containerModel.includes('/material') && (fieldName === 'materialStdMoney' || fieldName === 'costMoney' || fieldName === 'taxName')) {
-          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'product', fieldName);
+          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'material', fieldName);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);

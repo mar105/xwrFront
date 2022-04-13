@@ -347,7 +347,6 @@ export function getAssignFieldValue(name, assignField, option, allDataset = unde
     assignField.split(',').forEach(item => {
       const arrAssign = item.split('=');
       if (item.indexOf('=') > -1) {
-        console.log('arrAssign', arrAssign, arrAssign[0], arrAssign[1]);
         returnField[arrAssign[0].trim()] = isNotEmptyObj(option) ? copeDataSetValue(name, option, arrAssign[1].trim(), allDataset): '';
       } else if (isNotEmpty(item)) {
         returnField[arrAssign[0].trim()] = isNotEmptyObj(option) ? option[arrAssign[1].trim()] : '';
@@ -767,7 +766,12 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
     + isEmptyorZeroDefault(dataRow.proofingMoney, 0)
     + isEmptyorZeroDefault(dataRow.freightMoney, 0)
     + isEmptyorZeroDefault(dataRow.businessMoney, 0), moneyPlace);
-  returnRow[type + 'Price'] = stdQty === 0 ? 0 : round(returnRow[type + 'Money'] / stdQty, pricePlace);
+  returnRow[type + 'Price'] = stdQty === 0 ? 0 :
+    isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.makePlateMoney, 0)
+    + isEmptyorZeroDefault(dataRow.proofingMoney, 0)
+    + isEmptyorZeroDefault(dataRow.freightMoney, 0)
+    + isEmptyorZeroDefault(dataRow.businessMoney, 0) > 0 ? round(returnRow[type + 'Money'] / stdQty, pricePlace) : returnRow[type + 'StdPrice'];
 
   returnRow[type + 'WithoutTaxMoney'] = round(returnRow[type + 'Money'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
   returnRow[type + 'WithoutTaxPrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxMoney'] / stdQty, pricePlace);

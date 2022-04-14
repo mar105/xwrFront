@@ -77,10 +77,10 @@ const commonDocEvent = (WrapComponent) => {
       } else if (key === 'cancelButton') {
         if (masterDataOld.handleType === 'add') {
           if (props.listRouteId) {
-            const returnData: any = await props.getDataList({ name: 'slave', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: props.listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
+            const returnData: any = await props.getDataList({ name: 'slave', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: props.listRowIndex <= 0 ? 1 : props.listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
             if (commonUtils.isNotEmptyArr(returnData.slaveData)) {
               const returnState: any = await props.getAllData({ dataId: returnData.slaveData[0].id });
-              dispatchModifyState({...returnState, listRowIndex: props.listRowIndex});
+              dispatchModifyState({...returnState, listRowIndex: props.listRowIndex <= 0 ? 1 : props.listRowIndex});
             }
           } else {
             props.callbackRemovePane(tabId);

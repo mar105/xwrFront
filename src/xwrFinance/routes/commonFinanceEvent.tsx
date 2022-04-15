@@ -71,8 +71,8 @@ const commonFinanceEvent = (WrapComponent) => {
 
     const onDataChange = (params) => {
       const { name, fieldName, isWait } = params;
-      const { slaveData: slaveDataOld, slaveModifyData: slaveModifyDataOld } = propsRef.current;
-
+      const { commonModel, slaveData: slaveDataOld, slaveModifyData: slaveModifyDataOld } = propsRef.current;
+      const moneyPlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.moneyPlace : 6;
       // 开始修改数据
       const addState: any = {};
       let returnData = props.onDataChange({...params, isWait: true});
@@ -127,26 +127,26 @@ const commonFinanceEvent = (WrapComponent) => {
               minusMoney = returnData.masterData.totalInvoiceMoney + Math.abs(negativeMoney);
             }
 
-              // returnData.masterData.totalInvoiceMoney + Math.abs(negativeMoney);
             slaveData.forEach((slaveOld, index) => {
               const slave = {...slaveOld};
               slave.handleType = commonUtils.isEmpty(slave.handleType) ? 'modify' : slave.handleType;
               if (isNegative) {
                 if (slave.originalUnMoney < 0) {
-                  slave.invoiceMoney = minusMoney - Math.ceil(slave.originalUnMoney) > 0 ? slave.originalUnMoney : -minusMoney;
-                  minusMoney = minusMoney - Math.ceil(slave.originalUnMoney) > 0 ? -(minusMoney - Math.ceil(slave.originalUnMoney)) : 0;
+                  slave.invoiceMoney = commonUtils.round(minusMoney - Math.abs(slave.originalUnMoney) > 0 ? slave.originalUnMoney : -minusMoney, moneyPlace);
+                  minusMoney = commonUtils.round(minusMoney - Math.abs(slave.originalUnMoney) > 0 ? -(minusMoney - Math.abs(slave.originalUnMoney)) : 0, moneyPlace);
                 } else {
                   slave.invoiceMoney = slave.originalUnMoney;
                 }
               } else {
                 if (slave.originalUnMoney > 0) {
-                  slave.invoiceMoney = minusMoney - Math.ceil(slave.originalUnMoney) > 0 ? slave.originalUnMoney : minusMoney;
-                  minusMoney = minusMoney - Math.ceil(slave.originalUnMoney) > 0 ? minusMoney - Math.ceil(slave.originalUnMoney) : 0;
+                  slave.invoiceMoney = commonUtils.round(minusMoney - Math.abs(slave.originalUnMoney) > 0 ? slave.originalUnMoney : minusMoney, moneyPlace);
+                  minusMoney = commonUtils.round(minusMoney - Math.abs(slave.originalUnMoney) > 0 ? minusMoney - Math.abs(slave.originalUnMoney) : 0, moneyPlace);
                 } else {
                   slave.invoiceMoney = slave.originalUnMoney;
                 }
               }
               slaveData[index] = slave;
+
 
               if (slave.handleType === 'modify') {
                 const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);

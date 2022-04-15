@@ -43,9 +43,11 @@ const Container = (props) => {
       && props.commonModel.stompClient.connected) {
       const syncToMongo = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongo', syncToMongoResult);
       const syncToMongoIndex = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncToMongoIndex', syncToMongoResult);
+      const dropCollectionMongo = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/dropCollectionMongo', syncToMongoResult);
       return () => {
         syncToMongo.unsubscribe();
         syncToMongoIndex.unsubscribe();
+        dropCollectionMongo.unsubscribe();
       };
     }
 
@@ -326,6 +328,15 @@ const Container = (props) => {
       const { stompClient } = commonModel;
       const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName, virtualIndex: masterData.virtualIndex, tableKey: masterData.tableKey };
       stompClient.send('/websocket/container/syncToMongoIndex', {}, JSON.stringify(application.paramInit(params)));
+
+    } else if (key === 'dropCollectionMongoButton') {
+      if (commonUtils.isEmpty(masterData.virtualName)) {
+        props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
+        return;
+      }
+      const { stompClient } = commonModel;
+      const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName };
+      stompClient.send('/websocket/container/dropCollectionMongo', {}, JSON.stringify(application.paramInit(params)));
 
     } else if (key === 'copyButton') {
       const { commonModel, dispatch, masterData, dispatchModifyState } = props;
@@ -645,6 +656,7 @@ const Container = (props) => {
   buttonAddGroup.push({ key: 'copyButton', caption: '复制', htmlType: 'button', onClick, sortNum: 100, disabled: props.enabled });
   buttonAddGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick, sortNum: 101, disabled: props.enabled });
   buttonAddGroup.push({ key: 'syncToMongoIndexButton', caption: '同步到mongo索引', htmlType: 'button', onClick, sortNum: 102, disabled: props.enabled });
+  buttonAddGroup.push({ key: 'dropCollectionMongoButton', caption: '删除mongo表', htmlType: 'button', onClick, sortNum: 103, disabled: props.enabled });
   const buttonGroup = { userInfo: commonModel.userInfo, onClick, enabled, buttonGroup: buttonAddGroup };
   const tree =  useMemo(()=>{ return (<TreeModule {...props} form={form} onSelect={onTreeSelect} />
   )}, [treeData, treeSelectedKeys, treeExpandedKeys, enabled, treeSearchData, treeSearchValue, treeSearchIsVisible, treeSearchSelectedRowKeys]);

@@ -308,6 +308,18 @@ const commonDocEvent = (WrapComponent) => {
           returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...moneyCalcData};
           returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, ...moneyCalcData} : returnData[name + 'ModifyData'];
         }
+
+        //工艺计算
+        else if (container.containerModel.includes('/process') && (fieldName === 'measureQty' || fieldName === 'processName' || fieldName === 'processStyle')) {
+          const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, returnData[name + 'Data'],'process', 'measureQty', 'processQty', 'measureToProcessFormulaId', 'measureToProcessCoefficient');
+          returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...qtyCalcData};
+          const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, returnData[name + 'Data'],'process', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+          returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...convertCalcData};
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, returnData[name + 'Data'],'process', fieldName, 'costMoney');
+          returnData[name + 'Data'] = { ...returnData[name + 'Data'], ...moneyCalcData};
+          returnData[name + 'ModifyData'] = returnData[name + 'Data'].handleType === 'modify' ? { ...returnData[name + 'ModifyData'], ...qtyCalcData, ...convertCalcData, ...moneyCalcData} : returnData[name + 'ModifyData'];
+        }
+
         // 主表仓库数据带到从表
         else if (fieldName === 'warehouseLocationName') {
           const { slaveData: slaveDataOld, slaveModifyData: slaveModifyDataOld } = propsRef.current;
@@ -374,6 +386,21 @@ const commonDocEvent = (WrapComponent) => {
           }
         }
 
+        //工艺计算
+        else if (container.containerModel.includes('/process') && (fieldName === 'measureQty' || fieldName === 'processName' || fieldName === 'processStyle')) {
+          const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'process', 'measureQty', 'processQty', 'measureToProcessFormulaId', 'measureToProcessCoefficient');
+          dataRow = { ...dataRow, ...qtyCalcData};
+          const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, dataRow,'process', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+          dataRow = { ...dataRow, ...convertCalcData};
+          dataRow = { ...dataRow};
+          if (dataRow.handleType === 'modify') {
+            const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+            if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
+              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+            }
+          }
+        }
+
 
 
 
@@ -420,6 +447,31 @@ const commonDocEvent = (WrapComponent) => {
         }
         else if (container.containerModel.includes('/material') && (fieldName === 'materialStdMoney' || fieldName === 'costMoney' || fieldName === 'taxName')) {
           const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'material', fieldName);
+          dataRow = { ...dataRow, ...moneyCalcData};
+          if (dataRow.handleType === 'modify') {
+            const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+            if (indexModify > -1) {
+              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+            }
+          }
+        }
+
+
+        //工艺计算
+        else if (container.containerModel.includes('/process') && (fieldName === 'measureQty' || fieldName === 'processQty' || fieldName === 'convertQty'
+          || fieldName === 'processName' || fieldName === 'processStyle'
+          || fieldName === 'processStdPrice' || fieldName === 'costPrice')) {
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, dataRow,'process', fieldName);
+          dataRow = { ...dataRow, ...moneyCalcData};
+          if (dataRow.handleType === 'modify') {
+            const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+            if (indexModify > -1) {
+              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+            }
+          }
+        }
+        else if (container.containerModel.includes('/process') && (fieldName === 'processStdMoney' || fieldName === 'costMoney' || fieldName === 'taxName')) {
+          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'process', fieldName);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);

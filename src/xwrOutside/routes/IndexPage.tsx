@@ -4,8 +4,8 @@ import { connect } from 'dva';
 function IndexPage() {
   return (
     <div>
-      <a href="/xwrPurchase">完善店铺</a>
-      <a href="/xwrPurchase/purchaseOrder">purchaseOrder</a>
+      <a href="/xwrOutside">完善店铺</a>
+      <a href="/xwrOutside/outsideOrder">saleOrder</a>
     </div>
   );
 }

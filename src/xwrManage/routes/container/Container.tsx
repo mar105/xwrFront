@@ -587,6 +587,13 @@ const Container = (props) => {
     event: { onChange: props.onDataChange }
   };
 
+  const isVirtualRecent = {
+    name: 'master',
+    config: { fieldName: 'isVirtualRecent', viewName: '虚拟最近数据' },
+    property: { checkedChildren: '是', unCheckedChildren: '否', checked: commonUtils.isEmptyObj(masterData) ? 0 : masterData.isVirtualRecent, disabled: !enabled },
+    event: { onChange: props.onDataChange }
+  };
+
   const serialCodeField = {
     name: 'master',
     config: { fieldName: 'serialCodeField', viewName: '单据号字段' },
@@ -686,6 +693,7 @@ const Container = (props) => {
         <Col><NumberComponent {...sortNum} /></Col>
         <Col><InputComponent {...serialCodeField} /></Col>
         <Col><InputComponent {...containerModel} /></Col>
+        <Col><SwitchComponent {...isVirtualRecent} /></Col>
       </Row>
       <Row>
         <Col><SwitchComponent {...isVisible} /></Col>

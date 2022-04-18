@@ -26,7 +26,7 @@ const SlaveContainer = (props) => {
     { title: '是否求和', dataIndex: 'isSum', fieldType: 'tinyint', sortNum: 36, width: 150 },
     { title: '宽度', dataIndex: 'width', fieldType: 'decimal', sortNum: 37, width: 150 },
     { title: '字段|类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const',
-      viewDrop: '{ "field": "字段", "relevance": "关联性字段", "spare": "备用字段", "control": "控件", "cascader": "级联" }', defaultValue: 'field', sortNum: 38, width: 150 },
+      viewDrop: '{ "field": "字段", "relevance": "关联性字段", "relevanceNotView": "关联性不展现字段", "spare": "备用字段", "control": "控件", "cascader": "级联" }', defaultValue: 'field', sortNum: 38, width: 150 },
     { title: '字段|字段类型', dataIndex: 'fieldType', isRequired: true, fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "varchar": "字符型", "decimal": "数字型", "int": "整型", "smallint": "微整型", "datetime": "日期型", "tinyint": "布尔型", "text": "备注型" }', sortNum: 40, width: 150 },
     { title: '字段|关联性', dataIndex: 'fieldRelevance', fieldType: 'varchar', sortNum: 50, width: 150 },
     { title: '字段|关联性条件', dataIndex: 'conditionRelevance', fieldType: 'varchar', sortNum: 60, width: 150 },

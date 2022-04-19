@@ -196,7 +196,7 @@ const Search = (props) => {
     } else if (thirdConfig.fieldType === 'tinyint') {
       thirdComponent = <CheckboxComponent {...thirdParams}  />;
     } else if (thirdConfig.fieldType === 'datetime') {
-      thirdComponent = <DatePickerComponent {...props}  />;
+      thirdComponent = <DatePickerComponent {...thirdParams} />;
     }
 
     return <div>{firstComponent} {secondComponent} {thirdComponent}

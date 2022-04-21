@@ -10,6 +10,7 @@ import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
 import commonBillEvent from "../../../common/commonBillEvent";
+import commonPurchaseEvent from "../../../common/commonPurchaseEvent";
 
 const OutsideOrder = (props) => {
   const [form] = Form.useForm();
@@ -55,4 +56,4 @@ const OutsideOrder = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(OutsideOrder))));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonPurchaseEvent(OutsideOrder)))));

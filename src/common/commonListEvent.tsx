@@ -149,7 +149,7 @@ const commonListEvent = (WrapComponent) => {
       if (interfaceReturn.code === 1) {
         const { container, data } = interfaceReturn.data;
         const columns: any = [];
-        container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance' || item.containerType === 'spare' || item.containerType === 'cascader') && item.isVisible).forEach(item => {
+        container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance' || item.containerType === 'relevanceNotView' || item.containerType === 'spare' || item.containerType === 'cascader') && item.isVisible).forEach(item => {
           const column = { title: item.viewName, dataIndex: item.fieldName, fieldType: item.fieldType, sortNum: item.sortNum, width: item.width };
           columns.push(column);
         });

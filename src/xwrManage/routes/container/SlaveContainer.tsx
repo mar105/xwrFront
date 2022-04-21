@@ -83,7 +83,7 @@ const SlaveContainer = (props) => {
   }, []);
 
   const onClick = async (name, e) => {
-    const { commonModel, dispatch, dispatchModifyState, slaveContainer, slaveData: slaveDataOld, slaveDelData: slaveDelDataOld, slaveSelectedRows } = propsRef.current;
+    const { commonModel, dispatch, dispatchModifyState, slaveContainer, slaveData: slaveDataOld, slaveModifyData: slaveModifyDataOld, slaveDelData: slaveDelDataOld, slaveSelectedRows } = propsRef.current;
     if (name === 'slaveAddButton') {
       const data = props.onAdd(slaveContainer);
       data.superiorId = propsRef.current.masterData.id;
@@ -107,6 +107,7 @@ const SlaveContainer = (props) => {
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         const slaveData = [...slaveDataOld];
+        const slaveModifyData = commonUtils.isEmptyArr(slaveModifyDataOld) ? [] : [...slaveModifyDataOld];
         const slaveDelData = commonUtils.isEmptyArr(slaveDelDataOld) ? [] : [...slaveDelDataOld];
         if (commonUtils.isNotEmptyArr(interfaceReturn.data)) {
           for(const dataRow of slaveData.filter(item => item.containerType === 'field')) {
@@ -150,9 +151,15 @@ const SlaveContainer = (props) => {
               data.chineseName = dataRow.columnComment;
               data.containerType = 'field';
               slaveData[index] = data;
+              const indexModify = slaveModifyData.findIndex(item => item.id === data.id);
+              if (indexModify > -1) {
+                slaveModifyData[indexModify] = {...slaveModifyData[indexModify], chineseName: dataRow.columnComment, containerType: 'field' };
+              } else {
+                slaveModifyData.push({ id: data.id, handleType: data.handleType, chineseName: dataRow.columnComment, containerType: 'field' })
+              }
             }
           });
-          dispatchModifyState({ slaveData, slaveDelData });
+          dispatchModifyState({ slaveData, slaveModifyData, slaveDelData });
         }
 
       } else {

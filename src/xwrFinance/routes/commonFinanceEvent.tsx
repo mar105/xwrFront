@@ -181,16 +181,9 @@ const commonFinanceEvent = (WrapComponent) => {
       }
     }
 
-    const getButtonGroup = () => {
-      const buttonAddGroup: any = props.getButtonGroup();
-      buttonAddGroup.push({ key: 'copyFromButton', caption: '复制从', htmlType: 'button', onClick: onButtonClick, sortNum: 121, disabled: !props.enabled });
-      return buttonAddGroup;
-    }
-
     return <div>
       <WrapComponent
         {...props}
-        getButtonGroup={getButtonGroup}
         onButtonClick={onButtonClick}
         onFinish={onFinish}
         onDataChange={onDataChange}

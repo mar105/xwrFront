@@ -5,6 +5,8 @@ export const routeInfo: any[] = [
       path: '/xwrMaterialInventory/initMaterial', title: '材料期初', name: 'initMaterial', component: () => import('./routes/initMaterial/InitMaterial'),
     }, {
       path: '/xwrMaterialInventory/purchaseStorage', title: '采购入库', name: 'purchaseStorage', component: () => import('./routes/purchaseStorage/PurchaseStorage'),
+    }, {
+      path: '/xwrMaterialInventory/materialDraw', title: '材料领用', name: 'materialDraw', component: () => import('./routes/materialDraw/MaterialDraw'),
     }]
   },
 ];

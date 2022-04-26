@@ -158,9 +158,9 @@ const commonProductionEvent = (WrapComponent) => {
       if(name === 'material') {
         if (fieldName === 'materialGenre') {
           if (valueOld !== '2product' && commonUtils.isEmptyArr(partSelectedRowKeys)) {
-            const index = props.constantData.filter(item => item.constantName === 'pleaseChoosePart');
+            const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChoosePart');
             if (index > -1) {
-              props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
+              props.gotoError(dispatch, {code: '6001', msg: props.commonModel.commonConstant[index].viewName});
             } else {
               props.gotoError(dispatch, {code: '6001', msg: '请选择部件！'});
             }
@@ -169,9 +169,9 @@ const commonProductionEvent = (WrapComponent) => {
         }
       } else if(name === 'process') {
         if (valueOld !== '3product' && commonUtils.isEmptyArr(partSelectedRowKeys)) {
-          const index = props.constantData.filter(item => item.constantName === 'pleaseChoosePart');
+          const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChoosePart');
           if (index > -1) {
-            props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
+            props.gotoError(dispatch, {code: '6001', msg: props.commonModel.commonConstant[index].viewName});
           } else {
             props.gotoError(dispatch, {code: '6001', msg: '请选择部件！'});
           }
@@ -318,9 +318,9 @@ const commonProductionEvent = (WrapComponent) => {
       if (name === 'part' || name === 'material' || name === 'process') {
         if (name === 'part') {
           if (commonUtils.isEmptyArr(slaveSelectedRows)) {
-            const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
+            const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
-              props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
+              props.gotoError(dispatch, {code: '6001', msg: props.commonModel.commonConstant[index].viewName});
             } else {
               props.gotoError(dispatch, {code: '6001', msg: '请选择从表！'});
             }
@@ -336,9 +336,9 @@ const commonProductionEvent = (WrapComponent) => {
           addState[name + 'SelectedRows'] = [part];
         } else if (name === 'material') {
           if (commonUtils.isEmptyArr(slaveSelectedRows)) {
-            const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
+            const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
-              props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
+              props.gotoError(dispatch, {code: '6001', msg: props.commonModel.commonConstant[index].viewName});
             } else {
               props.gotoError(dispatch, {code: '6001', msg: '请选择从表！'});
             }
@@ -360,9 +360,9 @@ const commonProductionEvent = (WrapComponent) => {
           }
         } else if (name === 'process') {
           if (commonUtils.isEmptyArr(slaveSelectedRows)) {
-            const index = props.constantData.filter(item => item.constantName === 'pleaseChooseSlave');
+            const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseSlave');
             if (index > -1) {
-              props.gotoError(dispatch, {code: '6001', msg: props.constantData[index].viewName});
+              props.gotoError(dispatch, {code: '6001', msg: props.commonModel.commonConstant[index].viewName});
             } else {
               props.gotoError(dispatch, {code: '6001', msg: '请选择从表！'});
             }

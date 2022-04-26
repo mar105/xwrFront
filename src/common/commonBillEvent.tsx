@@ -39,7 +39,16 @@ const commonBillEvent = (WrapComponent) => {
     }, [props.masterContainer.dataSetName]);
 
     const onFinish = async (values: any) => {
-      const { slaveData, slaveModifyData, slaveDelData } = props;
+      const { dispatch, slaveContainer, slaveData, slaveModifyData, slaveDelData } = props;
+      if (commonUtils.isEmptyArr(slaveData) && commonUtils.isNotEmptyObj(slaveContainer)) {
+        const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'tableNotNull');
+        if (index > -1) {
+          props.gotoError(dispatch, {code: '6001', msg: props.commonModel.commonConstant[index].viewName});
+        } else {
+          props.gotoError(dispatch, {code: '6001', msg: '从表不能为空！'});
+        }
+        return;
+      }
       const childCallback = (params) => {
         const saveData: any = [];
         saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, false));

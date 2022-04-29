@@ -166,7 +166,7 @@ const commonPurchaseEvent = (WrapComponent) => {
             if (container.containerModel.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialName' || fieldName === 'materialStyle')) {
               let measureQty = 0;
               superiorRow.children.forEach((dataRow) => {
-                measureQty = measureQty + dataRow.measureQty;
+                measureQty = measureQty + commonUtils.isEmptyDefault(dataRow.measureQty, 0);
               });
               superiorRow = { ...superiorRow, handleType: commonUtils.isEmpty(superiorRow.handleType) ? 'modify' : superiorRow.handleType  };
               superiorRow.measureQty = measureQty;

@@ -304,6 +304,7 @@ const commonBase = (WrapComponent) => {
       dataRow.handleType = 'add';
       dataRow.id = commonUtils.newId();
       dataRow.key = dataRow.id;
+      dataRow.allId = dataRow.id;
       dataRow.groupId = commonModel.userInfo.groupId;
       dataRow.shopId = commonModel.userInfo.shopId;
       dataRow.routeId = modifyState.routeId;

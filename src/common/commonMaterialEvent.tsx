@@ -1,6 +1,8 @@
 import * as React from "react";
 import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
+import * as application from "../xwrMaterialInventory/application";
+import * as request from "../utils/request";
 
 const commonMaterialEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -45,10 +47,71 @@ const commonMaterialEvent = (WrapComponent) => {
       }
     }
 
+
+    const onButtonClick = async (key, config, e, childParams: any = undefined) => {
+      if (key === 'inventoryButton') {
+        const { dispatch, slaveData: slaveDataOld, slaveContainer: container, masterContainer, slaveDelData: slaveDelDataOld, masterData } = propsRef.current;
+        const slaveDelData: any = commonUtils.isEmptyArr(slaveDelDataOld) ? [] : slaveDelDataOld;
+        const slaveData: any = [];
+
+        if (commonUtils.isEmpty(masterData.warehouseLocationId)) {
+          let notNull = '';
+          let index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'notNull');
+          if (index > -1) {
+            notNull = props.commonModel.commonConstant[index].viewName;
+          } else {
+            notNull = '不能为空！';
+          }
+          index = masterContainer.slaveData.findIndex(item => item.fieldName === 'warehouseLocationName');
+          if (index > -1) {
+            props.gotoError(dispatch, {code: '6001', msg: masterContainer.slaveData[index].viewName + notNull });
+          } else {
+            props.gotoError(dispatch, {code: '6001', msg: '仓库不能为空！'});
+          }
+          return;
+        }
+
+        const name = 'slave';
+        props.dispatchModifyState({ [name + 'Loading']: true });
+        let returnData = await props.getSelectList({name, record: masterData, containerSlaveId: config.id, pageNum: 1, isWait: true, config });
+        if (commonUtils.isNotEmptyArr(returnData.list)) {
+          returnData.list.forEach(select => {
+            const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, select, propsRef.current);
+            slaveData.push({ ...props.onAdd(container), ...assignValue, superiorId: masterData.id })
+          });
+        }
+        while (!returnData.isLastPage) {
+          returnData = await props.getSelectList({name, record: masterData, containerSlaveId: config.id, pageNum: returnData.pageNum + 1, isWait: true, config });
+          if (commonUtils.isNotEmptyArr(returnData.list)) {
+            returnData.list.forEach(select => {
+              const assignValue = commonUtils.getAssignFieldValue(name, config.assignField, select, propsRef.current);
+              slaveData.push({ ...props.onAdd(container), ...assignValue, superiorId: masterData.id })
+            });
+          }
+        }
+        console.log('slaveData, slaveDelData', slaveData, slaveDelData);
+
+        if (commonUtils.isNotEmptyArr(slaveData)) {
+          slaveDataOld.forEach(slave => {
+            if (slave.handleType !== 'add') {
+              slave.handleType = 'del';
+              slaveDelData.push(slave);
+            }
+
+          });
+          props.dispatchModifyState({slaveData, slaveDelData, [name + 'Loading']: false });
+        }
+      } else {
+        props.onButtonClick(key, config, e, childParams);
+      }
+    }
+
+
     return <div>
       <WrapComponent
         {...props}
         onDataChange={onDataChange}
+        onButtonClick={onButtonClick}
       />
     </div>
   };

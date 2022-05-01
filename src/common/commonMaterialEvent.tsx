@@ -89,7 +89,6 @@ const commonMaterialEvent = (WrapComponent) => {
             });
           }
         }
-        console.log('slaveData, slaveDelData', slaveData, slaveDelData);
 
         if (commonUtils.isNotEmptyArr(slaveData)) {
           slaveDataOld.forEach(slave => {

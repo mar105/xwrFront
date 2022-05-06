@@ -129,6 +129,8 @@ export function getWebSocketData(stompClientOld, onSuccess, authorization) {
   } else {
     stompClient = stompClientOld;
   }
+  // 关闭控制台打印debug
+  stompClient.debug = () => {};
   stompClient.connect({authorization}, frame => {
     onSuccess();
     // // websocket订阅一个topic，第一个参数是top名称

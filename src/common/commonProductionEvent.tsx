@@ -596,7 +596,7 @@ const commonProductionEvent = (WrapComponent) => {
           let inOutRate = 1;
           let diffQty = 0;
           partLastLevelData.forEach(part => {
-            // 成品工艺数据计算
+            // 产品工艺数据计算
             slave.allId.split(',').forEach((key, index) => {
               let processSlaveData = processData.filter(item => item.slaveId === key && commonUtils.isEmpty(item.partId));
               processSlaveData = sortData(partData, processSlaveData, 'desc');

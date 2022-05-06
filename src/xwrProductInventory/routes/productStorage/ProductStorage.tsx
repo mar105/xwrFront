@@ -9,7 +9,8 @@ import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
-import commonProductInventoryEvent from "../commonProductInventoryEvent";
+import commonProductEvent from "../commonProductEvent";
+import commonBillEvent from "../../../common/commonBillEvent";
 
 const ProductStorage = (props) => {
   const [form] = Form.useForm();
@@ -55,4 +56,4 @@ const ProductStorage = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonProductInventoryEvent(ProductStorage))));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonProductEvent(ProductStorage)))));

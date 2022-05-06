@@ -15,21 +15,21 @@ const commonMaterialEvent = (WrapComponent) => {
       const { name, fieldName, isWait } = params;
       let returnData = props.onDataChange({...params, isWait: true});
       if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
-        if (fieldName === 'outWarehouseLocationName') {
+        if (fieldName === 'inWarehouseLocationName') {
           const { slaveData: slaveDataOld, slaveModifyData: slaveModifyDataOld } = propsRef.current;
           const slaveData: any = [];
           const slaveModifyData: any = commonUtils.isEmptyArr(slaveModifyDataOld) ? [] : slaveModifyDataOld;
           if (commonUtils.isNotEmptyObj(slaveDataOld)) {
             slaveDataOld.forEach(slaveOld => {
-              const outWarehoseLocationData = { outWarehouseLocationName: returnData[name + 'Data'].outWarehouseLocationName, outWarehouseLocationCode: returnData[name + 'Data'].outWarehouseLocationCode, outWarehouseLocationId: returnData[name + 'Data'].outWarehouseLocationId };
-              const slave = {...slaveOld, handleType: commonUtils.isEmpty(slaveOld.handleType) ? 'modify' : slaveOld.handleType, ...outWarehoseLocationData};
+              const inWarehouseLocationData = { inWarehouseLocationName: returnData[name + 'Data'].inWarehouseLocationName, inWarehouseLocationCode: returnData[name + 'Data'].inWarehouseLocationCode, inWarehouseLocationId: returnData[name + 'Data'].inWarehouseLocationId };
+              const slave = {...slaveOld, handleType: commonUtils.isEmpty(slaveOld.handleType) ? 'modify' : slaveOld.handleType, ...inWarehouseLocationData};
               slaveData.push(slave);
               if (slave.handleType === 'modify') {
                 const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
                 if (indexModify > -1) {
-                  slaveModifyData[indexModify] = { ...slaveModifyData[indexModify], ...outWarehoseLocationData };
+                  slaveModifyData[indexModify] = { ...slaveModifyData[indexModify], ...inWarehouseLocationData };
                 } else {
-                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, ...outWarehoseLocationData });
+                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, ...inWarehouseLocationData });
                 }
               }
             });

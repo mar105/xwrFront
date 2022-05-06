@@ -283,7 +283,7 @@ const commonDocEvent = (WrapComponent) => {
     const calcOperation = (params) => {
       const {name, fieldName, record, returnData } = params;
       const { [name + 'Container']: container } = props;
-      //成品计算
+      //产品计算
       if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
         if (fieldName === 'customerName' || fieldName === 'settleName') {
           let settleDate = commonUtils.getSettleDate(returnData[name + 'Data']);
@@ -357,7 +357,7 @@ const commonDocEvent = (WrapComponent) => {
             dataRow = returnData[name + 'Data'][index];
           }
         }
-        //成品计算
+        //产品计算
         if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle')) {
           const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
           dataRow = { ...dataRow, ...qtyCalcData};
@@ -405,7 +405,7 @@ const commonDocEvent = (WrapComponent) => {
 
 
         //算完数量后还需要计算金额价格。
-        //成品计算
+        //产品计算
         if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productQty' || fieldName === 'convertQty'
           || fieldName === 'productName' || fieldName === 'productStyle'
           || fieldName === 'productStdPrice' || fieldName === 'costPrice')) {

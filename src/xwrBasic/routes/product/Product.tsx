@@ -112,11 +112,15 @@ const Product = (props) => {
   }
 
   const onLastColumnClick = (name, key, record, e, isWait = false) => {
-    const { dispatchModifyState, masterData: masterDataOld }: any = props;
+    const { dispatchModifyState, masterData: masterDataOld, masterModifyData: masterModifyDataOld }: any = props;
     if (name === 'customer') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, defaultCustomerId: record.id };
-        dispatchModifyState({ masterData });
+        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultCustomerId: record.supplyId };
+
+        const masterModifyData = masterData.handleType === 'modify' ?
+          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultCustomerId: record.supplyId } :
+            { ...masterModifyDataOld, id: masterData.id, defaultCustomerId: record.supplyId } : masterModifyDataOld;
+        dispatchModifyState({ masterData, masterModifyData });
       }
     }
   };

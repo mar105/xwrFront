@@ -73,16 +73,24 @@ const Customer = (props) => {
   }
 
   const onLastColumnClick = (name, key, record, e, isWait = false) => {
-    const { dispatchModifyState, masterData: masterDataOld }: any = props;
+    const { dispatchModifyState, masterData: masterDataOld, masterModifyData: masterModifyDataOld }: any = props;
     if (name === 'contact') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, defaultContactId: record.id };
-        dispatchModifyState({ masterData });
+        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultContactId: record.supplyId };
+
+        const masterModifyData = masterData.handleType === 'modify' ?
+          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultContactId: record.supplyId } :
+            { ...masterModifyDataOld, id: masterData.id, defaultContactId: record.supplyId } : masterModifyDataOld;
+        dispatchModifyState({ masterData, masterModifyData });
       }
     } else if (name === 'address') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, defaultAddressId: record.id };
-        dispatchModifyState({ masterData });
+        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultAddressId: record.supplyId };
+
+        const masterModifyData = masterData.handleType === 'modify' ?
+          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultAddressId: record.supplyId } :
+            { ...masterModifyDataOld, id: masterData.id, defaultAddressId: record.supplyId } : masterModifyDataOld;
+        dispatchModifyState({ masterData, masterModifyData });
       }
     }
   };

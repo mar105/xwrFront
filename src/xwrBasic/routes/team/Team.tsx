@@ -73,11 +73,15 @@ const Team = (props) => {
   }
 
   const onLastColumnClick = (name, key, record, e, isWait = false) => {
-    const { dispatchModifyState, masterData: masterDataOld }: any = props;
+    const { dispatchModifyState, masterData: masterDataOld, masterModifyData: masterModifyDataOld }: any = props;
     if (name === 'machine') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, defaultMachineId: record.id };
-        dispatchModifyState({ masterData });
+        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultMachineId: record.supplyId };
+
+        const masterModifyData = masterData.handleType === 'modify' ?
+          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultMachineId: record.supplyId } :
+            { ...masterModifyDataOld, id: masterData.id, defaultMachineId: record.supplyId } : masterModifyDataOld;
+        dispatchModifyState({ masterData, masterModifyData });
       }
     }
   };

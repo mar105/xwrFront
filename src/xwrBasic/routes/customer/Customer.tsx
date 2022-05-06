@@ -76,20 +76,20 @@ const Customer = (props) => {
     const { dispatchModifyState, masterData: masterDataOld, masterModifyData: masterModifyDataOld }: any = props;
     if (name === 'contact') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultContactId: record.supplyId };
+        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultContactId: record.id };
 
         const masterModifyData = masterData.handleType === 'modify' ?
-          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultContactId: record.supplyId } :
-            { ...masterModifyDataOld, id: masterData.id, defaultContactId: record.supplyId } : masterModifyDataOld;
+          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultContactId: record.id } :
+            { ...masterModifyDataOld, id: masterData.id, defaultContactId: record.id } : masterModifyDataOld;
         dispatchModifyState({ masterData, masterModifyData });
       }
     } else if (name === 'address') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultAddressId: record.supplyId };
+        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultAddressId: record.id };
 
         const masterModifyData = masterData.handleType === 'modify' ?
-          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultAddressId: record.supplyId } :
-            { ...masterModifyDataOld, id: masterData.id, defaultAddressId: record.supplyId } : masterModifyDataOld;
+          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultAddressId: record.id } :
+            { ...masterModifyDataOld, id: masterData.id, defaultAddressId: record.id } : masterModifyDataOld;
         dispatchModifyState({ masterData, masterModifyData });
       }
     }

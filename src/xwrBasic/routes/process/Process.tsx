@@ -80,11 +80,11 @@ const Process = (props) => {
     const { dispatchModifyState, masterData: masterDataOld, masterModifyData: masterModifyDataOld }: any = props;
     if (name === 'machine') {
       if (key === 'defaultButton') {
-        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultMachineId: record.supplyId };
+        const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultMachineId: record.machineId };
 
         const masterModifyData = masterData.handleType === 'modify' ?
-          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultMachineId: record.supplyId } :
-            { ...masterModifyDataOld, id: masterData.id, defaultMachineId: record.supplyId } : masterModifyDataOld;
+          commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultMachineId: record.machineId } :
+            { ...masterModifyDataOld, id: masterData.id, defaultMachineId: record.machineId } : masterModifyDataOld;
         dispatchModifyState({ masterData, masterModifyData });
       }
     }
@@ -99,7 +99,7 @@ const Process = (props) => {
     render: (text,record, index)=> {
     return <div>
       <a onClick={onLastColumnClick.bind(this, 'machine', 'defaultButton', record)}>
-        <Tooltip placement="top" title="默认"> {commonUtils.isNotEmptyObj(masterData) && masterData.defaultMachineId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
+        <Tooltip placement="top" title="默认"> {commonUtils.isNotEmptyObj(masterData) && masterData.defaultMachineId === record.machineId ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
       <a onClick={props.onLastColumnClick.bind(this, 'machine', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
     </div>
   }, width: 50 , fixed: 'right' };

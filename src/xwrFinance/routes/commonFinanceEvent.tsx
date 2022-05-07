@@ -25,8 +25,8 @@ const commonFinanceEvent = (WrapComponent) => {
       let returnData = props.onDataChange({...params, isWait: true});
       if (name === 'master') {
         if (fieldName === 'totalInvoiceMoney' || fieldName === 'totalReceiptMoney' || fieldName === 'totalPaymentMoney') {
-          const typeLower = fieldName === totalInvoiceMoney ? 'invoice' : fieldName === 'totalReceiptMoney' ? 'receipt' : 'payment';
-          const typeUpper = fieldName === totalInvoiceMoney ? 'Invoice' : fieldName === 'totalReceiptMoney' ? 'Receipt' : 'Payment';
+          const typeLower = fieldName === 'totalInvoiceMoney' ? 'invoice' : fieldName === 'totalReceiptMoney' ? 'receipt' : 'payment';
+          const typeUpper = fieldName === 'totalInvoiceMoney' ? 'Invoice' : fieldName === 'totalReceiptMoney' ? 'Receipt' : 'Payment';
           let negativeMoney = 0; // 负数金额
           let positiveMoney = 0; // 正数金额
           const slaveData = [...slaveDataOld];

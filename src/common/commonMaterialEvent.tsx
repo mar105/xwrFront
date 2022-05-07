@@ -1,8 +1,6 @@
 import * as React from "react";
 import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
-import * as application from "../xwrMaterialInventory/application";
-import * as request from "../utils/request";
 
 const commonMaterialEvent = (WrapComponent) => {
   return function ChildComponent(props) {

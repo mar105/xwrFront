@@ -10,6 +10,7 @@ import {TableComponent} from "../../../components/TableComponent";
 import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
 import commonBillEvent from "../../../common/commonBillEvent";
+import commonMaterialEvent from "../../../common/commonMaterialEvent";
 
 const MaterialDraw = (props) => {
   const [form] = Form.useForm();
@@ -55,4 +56,4 @@ const MaterialDraw = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(MaterialDraw))));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonMaterialEvent(MaterialDraw)))));

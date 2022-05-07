@@ -1,6 +1,6 @@
 export const routeInfo: any[] = [
   {
-    path: '/xwrSale', name: 'index', component: () => import('./routes/IndexPage'),
+    path: '/xwrFinance', name: 'index', component: () => import('./routes/IndexPage'),
     children: [{
       path: '/xwrFinance/initCustomer', title: '客户期初', name: 'initCustomer', component: () => import('./routes/initCustomer/InitCustomer'),
     }, {
@@ -15,10 +15,6 @@ export const routeInfo: any[] = [
       path: '/xwrFinance/purchaseReconcile', title: '采购对账', name: 'purchaseReconcile', component: () => import('./routes/purchaseReconcile/PurchaseReconcile'),
     },{
       path: '/xwrFinance/purchaseInvoice', title: '采购发票', name: 'purchaseInvoice', component: () => import('./routes/purchaseInvoice/PurchaseInvoice'),
-    }, {
-      path: '/xwrFinance/outsideReconcile', title: '外协对账', name: 'outsideReconcile', component: () => import('./routes/outsideReconcile/OutsideReconcile'),
-    },{
-      path: '/xwrFinance/outsideInvoice', title: '外协发票', name: 'outsideInvoice', component: () => import('./routes/outsideInvoice/OutsideInvoice'),
     }]
   },
 ];

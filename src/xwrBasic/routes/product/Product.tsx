@@ -120,7 +120,6 @@ const Product = (props) => {
         const masterModifyData = masterData.handleType === 'modify' ?
           commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, defaultCustomerId: record.customerId } :
             { ...masterModifyDataOld, id: masterData.id, defaultCustomerId: record.customerId } : masterModifyDataOld;
-        console.log('masterData', masterData);
         dispatchModifyState({ masterData, masterModifyData });
       }
     }

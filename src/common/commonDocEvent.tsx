@@ -409,7 +409,8 @@ const commonDocEvent = (WrapComponent) => {
         if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productQty' || fieldName === 'convertQty'
           || fieldName === 'productName' || fieldName === 'productStyle'
           || fieldName === 'productStdPrice' || fieldName === 'costPrice')) {
-          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, dataRow,'product', fieldName);
+          const isWhole = container.containerModel.includes('/productWhole');
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, dataRow,'product', fieldName, isWhole);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
@@ -421,7 +422,8 @@ const commonDocEvent = (WrapComponent) => {
         else if (container.containerModel.includes('/product') && (fieldName === 'productStdMoney'
           || fieldName === 'knifePlateMoney' || fieldName === 'makePlateMoney' || fieldName === 'proofingMoney' || fieldName === 'freightMoney' || fieldName === 'businessMoney'
           || fieldName === 'costMoney' || fieldName === 'taxName')) {
-          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'product', fieldName);
+          const isWhole = container.containerModel.includes('/productWhole');
+          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'product', fieldName, isWhole);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);

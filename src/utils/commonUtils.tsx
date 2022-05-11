@@ -753,11 +753,13 @@ export function getMeasureQtyToConvertCalc(commonModel, dataRow, type, fieldName
   return returnRow;
 }
 
-export function getStdPriceToMoney(commonModel, masterData, dataRow, type, fieldName) {
+export function getStdPriceToMoney(commonModel, masterData, dataRow, type, fieldName, isWhole?) {
   const moneyPlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.moneyPlace : 6;
   const pricePlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.pricePlace : 6;
   const returnRow: any = {};
-  const stdQty = isEmptyorZeroDefault(dataRow[type + 'Qty'], 0);
+  const stdQty = isWhole ? isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) :
+    isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) +
+    isEmptyorZeroDefault(dataRow[type + 'GiveQty'], 0) + isEmptyorZeroDefault(dataRow[type + 'StockUpQty'], 0);
   returnRow[type + 'StdPrice'] = round(isEmptyorZeroDefault(dataRow[type + 'StdPrice'], 0), pricePlace);
 
   // 计算金额
@@ -802,12 +804,14 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
   return returnRow;
 }
 
-export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, fieldName) {
+export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, fieldName, isWhole?) {
   const moneyPlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.moneyPlace : 6;
   const pricePlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.pricePlace : 6;
 
   const returnRow: any = {};
-  const stdQty = isEmptyorZeroDefault(dataRow[type + 'Qty'], 0);
+  const stdQty = isWhole ? isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) :
+    isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) +
+    isEmptyorZeroDefault(dataRow[type + 'GiveQty'], 0) + isEmptyorZeroDefault(dataRow[type + 'StockUpQty'], 0);
   returnRow[type + 'StdMoney'] = round(isEmptyorZeroDefault(dataRow[type + 'StdMoney'], 0), moneyPlace);
 
   // 计算价格

@@ -11,6 +11,8 @@ export const routeInfo: any[] = [
       path: '/xwrFinance/saleInvoice', title: '销售发票', name: 'saleInvoice', component: () => import('./routes/saleInvoice/SaleInvoice'),
     },{
       path: '/xwrFinance/purchaseInvoice', title: '采购发票', name: 'purchaseInvoice', component: () => import('./routes/purchaseInvoice/PurchaseInvoice'),
+    },{
+      path: '/xwrFinance/customerFinance', title: '客户财务调整', name: 'customerFinance', component: () => import('./routes/customerFinance/CustomerFinance'),
     }]
   },
 ];

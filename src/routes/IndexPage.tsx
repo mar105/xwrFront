@@ -146,6 +146,32 @@ function IndexPage(props) {
     });
   }
 
+  const onClearBusinessData = async () => {
+    return;
+    const {dispatch, commonModel} = props;
+    const url: string = application.urlPrefix + '/clearData/clearBusinessData';
+    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,
+      shopId: commonModel.userInfo.shopId }))).data;
+    if (interfaceReturn.code === 1) {
+      props.gotoSuccess(dispatch, interfaceReturn);
+    } else {
+      props.gotoError(dispatch, interfaceReturn);
+    }
+  }
+
+  const onClearAllData = async () => {
+    return;
+    const {dispatch, commonModel} = props;
+    const url: string = application.urlPrefix + '/clearData/clearAllData';
+    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,
+      shopId: commonModel.userInfo.shopId }))).data;
+    if (interfaceReturn.code === 1) {
+      props.gotoSuccess(dispatch, interfaceReturn);
+    } else {
+      props.gotoError(dispatch, interfaceReturn);
+    }
+  }
+
   const callbackRemovePane = useCallback((targetKey) => {
     const {dispatch, dispatchModifyState } = props;
     const panesOld = commonUtils.isEmptyArr(panesRef.current) ? [] : panesRef.current;
@@ -284,6 +310,8 @@ function IndexPage(props) {
         <a href="/login"> login</a>
         <button onClick={onClear}> 清除缓存</button>
         <button onClick={onExit}> 退出</button>
+        <button onClick={onClearBusinessData}> 初始化业务数据</button>
+        <button onClick={onClearAllData}> 初始化所有数据</button>
         {shop}
       </Row>
       <div><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} /></div>

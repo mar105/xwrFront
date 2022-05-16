@@ -1,5 +1,5 @@
 import { connect } from 'dva';
-import React, {useEffect, useMemo} from 'react';
+import React, {useEffect, useMemo, useRef} from 'react';
 import {Col, Form, Row, Tooltip} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
@@ -10,12 +10,17 @@ import {TableComponent} from "../../../components/TableComponent";
 import { StarTwoTone, DeleteOutlined, StarFilled } from '@ant-design/icons';
 
 const Material = (props) => {
+  const propsRef: any = useRef();
   const [form] = Form.useForm();
   props.onSetForm(form);
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
+
+  useEffect(() => {
+    propsRef.current = props;
+  }, [props]);
 
   const onFinish = async (values: any) => {
     const { supplyData, supplyModifyData, supplyDelData, inventoryData, inventoryModifyData,
@@ -43,7 +48,7 @@ const Material = (props) => {
             if (commonUtils.isNotEmptyArr(props.copyToData[dataSetName + 'Data'])) {
               const copyData: any = [];
               for(const data of props.copyToData[dataSetName + 'Data']) {
-                copyData.push({...commonUtils.getAssignFieldValue(name, config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
+                copyData.push({...commonUtils.getAssignFieldValue(dataSetName, config.assignField, data), ...props.onAdd(), superiorId: masterData.id });
               }
               childParams[dataSetName + 'Data'] = copyData;
               childParams[dataSetName + 'ModifyData'] = [];
@@ -77,7 +82,7 @@ const Material = (props) => {
   }
 
   const onLastColumnClick = (name, key, record, e, isWait = false) => {
-    const { dispatchModifyState, masterData: masterDataOld, masterModifyData: masterModifyDataOld }: any = props;
+    const { dispatchModifyState, masterData: masterDataOld, masterModifyData: masterModifyDataOld }: any = propsRef.current;
     if (name === 'supply') {
       if (key === 'defaultButton') {
         const masterData = { ...masterDataOld, handleType: commonUtils.isEmpty(masterDataOld.handleType) ? 'modify' : masterDataOld.handleType, defaultSupplyId: record.supplyId };

@@ -145,9 +145,11 @@ const Product = (props) => {
   }, width: 50 , fixed: 'right' };
   const inventoryParam: any = commonUtils.getTableProps('inventory', props);
   inventoryParam.pagination = false;
+  inventoryParam.isDragRow = true;
 
   const inventorySumParam: any = commonUtils.getTableProps('inventorySum', props);
   inventorySumParam.pagination = false;
+  inventorySumParam.isDragRow = true;
 
   const uploadParam: any = commonUtils.getUploadProps('upload', props);
 

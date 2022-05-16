@@ -105,6 +105,7 @@ const Customer = (props) => {
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const contactParam: any = commonUtils.getTableProps('contact', props);
   contactParam.pagination = false;
+  contactParam.isDragRow = true;
   contactParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultContactId,
     render: (text,record, index)=> {
     return <div>
@@ -115,6 +116,7 @@ const Customer = (props) => {
   }, width: 50 , fixed: 'right' };
   const addressParam: any = commonUtils.getTableProps('address', props);
   addressParam.pagination = false;
+  addressParam.isDragRow = true;
   addressParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultAddressId,
     render: (text,record, index)=> {
       return <div>

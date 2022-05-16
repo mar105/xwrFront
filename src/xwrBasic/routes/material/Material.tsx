@@ -112,9 +112,11 @@ const Material = (props) => {
   }, width: 50 , fixed: 'right' };
   const inventoryParam: any = commonUtils.getTableProps('inventory', props);
   inventoryParam.pagination = false;
+  inventoryParam.isDragRow = true;
 
   const inventorySumParam: any = commonUtils.getTableProps('inventorySum', props);
   inventorySumParam.pagination = false;
+  inventorySumParam.isDragRow = true;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);

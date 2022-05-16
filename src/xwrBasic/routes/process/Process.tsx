@@ -100,6 +100,7 @@ const Process = (props) => {
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const machineParam: any = commonUtils.getTableProps('machine', props);
   machineParam.pagination = false;
+  machineParam.isDragRow = true;
   machineParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultMachineId,
     render: (text,record, index)=> {
     return <div>
@@ -110,9 +111,11 @@ const Process = (props) => {
   }, width: 50 , fixed: 'right' };
   const matchParam: any = commonUtils.getTableProps('match', props);
   matchParam.pagination = false;
+  matchParam.isDragRow = true;
 
   const outsourceParam: any = commonUtils.getTableProps('outsource', props);
   outsourceParam.pagination = false;
+  outsourceParam.isDragRow = true;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);

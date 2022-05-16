@@ -106,6 +106,7 @@ const Team = (props) => {
   }, width: 50 , fixed: 'right' };
   const userBusinessParam: any = commonUtils.getTableProps('userBusiness', props);
   userBusinessParam.pagination = false;
+  userBusinessParam.isDragRow = true;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);

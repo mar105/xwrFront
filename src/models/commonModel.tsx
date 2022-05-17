@@ -71,7 +71,9 @@ export default {
     * gotoSuccess({ payload }, { put }) {
       const { msg } = payload;
       // message.destroy();
-      notification.success({message: msg});
+      if (msg !== undefined) {
+        notification.success({message: msg});
+      }
     },
   },
 };

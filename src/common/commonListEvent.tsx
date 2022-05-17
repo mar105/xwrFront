@@ -41,7 +41,7 @@ const commonListEvent = (WrapComponent) => {
       const { dispatch, commonModel, dispatchModifyState, ['slaveContainer']: container, slaveData, slaveSum, slaveSelectedRowKeys,
         slaveSearchCondition: searchCondition, slaveSorterInfo: sorterInfo, routeId } = props;
       if (key === 'addButton') {
-        props.callbackAddPane(config.popupSelectId, {handleType: 'add',
+        props.callbackAddPane(config.popupSelectId, {handleType: 'add', listTabId: props.tabId,
           listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: container.tableKey,
           listRowIndex: slaveSum.total, listRowTotal: slaveSum.total });
       } else if (key === 'modifyButton') {
@@ -58,7 +58,7 @@ const commonListEvent = (WrapComponent) => {
           }
           const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === slaveSelectedRowKeys[0]);
           const selectKey = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? 'id' : container.slaveData[index].popupSelectKey;
-          props.callbackAddPane(container.slaveData[index].popupSelectId, { handleType: 'modify',
+          props.callbackAddPane(container.slaveData[index].popupSelectId, { handleType: 'modify', listTabId: props.tabId,
             listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: container.tableKey,
             listRowIndex: slaveIndex > -1 ? slaveIndex + 1 : 1, listRowTotal: slaveSum.total,
             dataId: slaveData[slaveIndex][selectKey] });
@@ -113,7 +113,7 @@ const commonListEvent = (WrapComponent) => {
         if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {
           const slaveIndex = slaveData.findIndex(item => item[container.tableKey] === record[container.tableKey]);
           const key = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? container.tableKey : container.slaveData[index].popupSelectKey;
-          props.callbackAddPane(container.slaveData[index].popupSelectId, {
+          props.callbackAddPane(container.slaveData[index].popupSelectId, { listTabId: props.tabId,
             listRouteId: routeId, listContainerId: container.id, listCondition: { searchCondition, sorterInfo }, listTableKey: key,
             listRowIndex: slaveIndex > -1 ? slaveIndex + 1 : 1, listRowTotal: slaveSum.total,
             dataId: record[key] });

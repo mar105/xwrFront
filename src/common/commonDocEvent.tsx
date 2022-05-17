@@ -38,6 +38,10 @@ const commonDocEvent = (WrapComponent) => {
         } else {
           const returnState: any = await props.getAllData({ dataId: propsRef.current.masterData.id });
           dispatchModifyState({...returnState});
+          if (commonUtils.isNotEmpty(props.listTabId)) {
+            props.commonModel.stompClient.send('/websocket/saveDataReturn', {},
+              JSON.stringify( { authorization: props.commonModel.token, tabId: props.listTabId, result: { code: 1 }} ));
+          }
         }
         props.gotoSuccess(dispatch, returnBody);
       } else {
@@ -223,6 +227,11 @@ const commonDocEvent = (WrapComponent) => {
             returnState = {...returnState, ...returnChild};
           }
           dispatchModifyState({...returnState });
+          //刷新列表数据
+          if (commonUtils.isNotEmpty(props.listTabId)) {
+            props.commonModel.stompClient.send('/websocket/saveDataReturn', {},
+              JSON.stringify( { authorization: props.commonModel.token, tabId: props.listTabId, result: { code: 1, msg: '' }} ));
+          }
         }
         props.gotoSuccess(dispatch, interfaceReturn);
         return 1;

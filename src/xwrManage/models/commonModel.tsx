@@ -57,7 +57,9 @@ export default {
       const { msg } = payload;
       // message.destroy();
       // message.success(msg);
-      notification.success({message: msg});
+      if (msg !== undefined) {
+        notification.success({message: msg});
+      }
     },
   },
 };

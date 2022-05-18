@@ -230,7 +230,7 @@ const commonDocEvent = (WrapComponent) => {
           //刷新列表数据
           if (commonUtils.isNotEmpty(props.listTabId)) {
             props.commonModel.stompClient.send('/websocket/saveDataReturn', {},
-              JSON.stringify( { authorization: props.commonModel.token, tabId: props.listTabId, result: { code: 1, msg: '' }} ));
+              JSON.stringify( { authorization: props.commonModel.token, tabId: props.listTabId, result: { code: 1 }} ));
           }
         }
         props.gotoSuccess(dispatch, interfaceReturn);

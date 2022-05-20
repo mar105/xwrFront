@@ -155,7 +155,7 @@ export function setFieldsValue(value, container: any = null) {
       if (index > -1) {
         const config = container.slaveData[index];
         if (config.containerType === 'cascader') {
-          returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : value[config.fieldName].split(',');
+          returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? [] : typeof value[config.fieldName] === 'string' ? value[config.fieldName].split(',') : value[config.fieldName];
         } else if (config.fieldType === 'datetime') {
           returnValue[config.fieldName] = isEmpty(value[config.fieldName]) ? null : moment(value[config.fieldName]);
         } else if (config.multiple) {

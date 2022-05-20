@@ -147,7 +147,6 @@ function IndexPage(props) {
   }
 
   const onClearBusinessData = async () => {
-    return;
     const {dispatch, commonModel} = props;
     const url: string = application.urlPrefix + '/clearData/clearBusinessData';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,

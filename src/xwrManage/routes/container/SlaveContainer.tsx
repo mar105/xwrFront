@@ -15,6 +15,8 @@ const SlaveContainer = (props) => {
     propsRef.current = props;
   }, [props]);
   const { name } = props;
+  // queryFieldsAll中 fieldNotSelect 字段在select中不查询。
+  // queryFields中 relevanceNotView 此字段虽然不显示，但还是要返回值。
   const columns = [
     { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 100, fixed: 'left' },
     { title: '名称', dataIndex: 'fieldName', isRequired: true, fieldType: 'varchar', sortNum: 20, width: 300, fixed: 'left' },
@@ -26,7 +28,7 @@ const SlaveContainer = (props) => {
     { title: '是否求和', dataIndex: 'isSum', fieldType: 'tinyint', sortNum: 36, width: 150 },
     { title: '宽度', dataIndex: 'width', fieldType: 'decimal', sortNum: 37, width: 150 },
     { title: '字段|类型', dataIndex: 'containerType', fieldType: 'varchar', dropType: 'const',
-      viewDrop: '{ "field": "字段", "relevance": "关联性字段", "relevanceNotView": "关联性不展现字段", "spare": "备用字段", "control": "控件", "cascader": "级联" }', defaultValue: 'field', sortNum: 38, width: 150 },
+      viewDrop: '{ "field": "字段", "fieldNotSelect": "字段不查询", "relevance": "关联性字段", "relevanceNotView": "关联性不展现字段", "spare": "备用字段", "control": "控件", "cascader": "级联" }', defaultValue: 'field', sortNum: 38, width: 150 },
     { title: '字段|字段类型', dataIndex: 'fieldType', isRequired: true, fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "varchar": "字符型", "decimal": "数字型", "int": "整型", "smallint": "微整型", "datetime": "日期型", "tinyint": "布尔型", "text": "备注型" }', sortNum: 40, width: 150 },
     { title: '字段|关联性', dataIndex: 'fieldRelevance', fieldType: 'varchar', sortNum: 50, width: 150 },
     { title: '字段|关联性条件', dataIndex: 'conditionRelevance', fieldType: 'varchar', sortNum: 60, width: 150 },
@@ -110,7 +112,7 @@ const SlaveContainer = (props) => {
         const slaveModifyData = commonUtils.isEmptyArr(slaveModifyDataOld) ? [] : [...slaveModifyDataOld];
         const slaveDelData = commonUtils.isEmptyArr(slaveDelDataOld) ? [] : [...slaveDelDataOld];
         if (commonUtils.isNotEmptyArr(interfaceReturn.data)) {
-          for(const dataRow of slaveData.filter(item => item.containerType === 'field')) {
+          for(const dataRow of slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'fieldNotSelect'))) {
             const index = interfaceReturn.data.findIndex(item => item.columnName === dataRow.fieldName);
             if (!(index > -1)) {
               dataRow.handleType = 'del';
@@ -128,7 +130,7 @@ const SlaveContainer = (props) => {
           }
 
           interfaceReturn.data.forEach((dataRow, rowIndex)  => {
-            const index = slaveData.findIndex(item => item.containerType === 'field' && item.fieldName === dataRow.columnName);
+            const index = slaveData.findIndex(item => (item.containerType === 'field' || item.containerType === 'fieldNotSelect') && item.fieldName === dataRow.columnName);
             if (!(index > -1)) {
               const data = props.onAdd(slaveContainer);
               data.superiorId = propsRef.current.masterData.id;
@@ -147,15 +149,17 @@ const SlaveContainer = (props) => {
               data.englishDrop = '';
               slaveData.push(data);
             } else {
-              const data = { ...props.onModify(), ...slaveData[index] };
+              const data = { ...slaveData[index], handleType: commonUtils.isEmpty(slaveData[index].handleType) ? 'modify' : slaveData[index].handleType  };
               data.chineseName = dataRow.columnComment;
               data.containerType = 'field';
               slaveData[index] = data;
-              const indexModify = slaveModifyData.findIndex(item => item.id === data.id);
-              if (indexModify > -1) {
-                slaveModifyData[indexModify] = {...slaveModifyData[indexModify], chineseName: dataRow.columnComment, containerType: 'field' };
-              } else {
-                slaveModifyData.push({ id: data.id, handleType: data.handleType, chineseName: dataRow.columnComment, containerType: 'field' })
+              if (data.handleType === 'modify') {
+                const indexModify = slaveModifyData.findIndex(item => item.id === data.id);
+                if (indexModify > -1) {
+                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], chineseName: dataRow.columnComment, containerType: 'field' };
+                } else {
+                  slaveModifyData.push({ id: data.id, handleType: data.handleType, chineseName: dataRow.columnComment, containerType: 'field' })
+                }
               }
             }
           });

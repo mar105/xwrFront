@@ -27,7 +27,7 @@ const Permission = (props) => {
         const {treeData} = returnRoute;
         const selectedKeys = [treeData[0].id];
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(treeData[0]), treeSearchValue: props.treeSearchValue });
         dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], masterModifyData: {}, enabled: false});
       }
     }
@@ -64,7 +64,7 @@ const Permission = (props) => {
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
       addState.masterModifyData = {};
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), treeSearchValue: props.treeSearchValue });
       dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
     } else {
       props.gotoError(dispatch, interfaceReturn);
@@ -89,7 +89,7 @@ const Permission = (props) => {
       let treeData = commonUtils.isNotEmptyArr(treeSelectedKeys) ? [...treeDataOld] : [];
       treeData = props.setNewTreeNode(treeData, allList.join(), masterData);
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), treeSearchValue: props.treeSearchValue });
       dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true });
     } else if (key === 'addChildButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
@@ -112,7 +112,7 @@ const Permission = (props) => {
         treeExpandedKeys = [masterDataOld.id];
       }
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), treeSearchValue: props.treeSearchValue });
       dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys });
 
     } else if (key === 'modifyButton') {
@@ -145,7 +145,7 @@ const Permission = (props) => {
         addState.masterData = {...props.getTreeNode(treeData, allList.join()) };
         addState.treeSelectedKeys = [addState.masterData.id];
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), treeSearchValue: props.treeSearchValue });
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
         let url: string = application.urlCommon + '/verify/removeModifying';
@@ -185,7 +185,7 @@ const Permission = (props) => {
           addState.masterData = {...returnRoute.treeData[0]};
           addState.masterModifyData = {};
           form.resetFields();
-          form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
+          form.setFieldsValue({ ...commonUtils.setFieldsValue(returnRoute.treeData[0]), treeSearchValue: props.treeSearchValue });
         }
         dispatchModifyState({ ...returnRoute, enabled: false, ...addState });
       } else {
@@ -206,7 +206,7 @@ const Permission = (props) => {
         addState.masterData = {...props.getTreeNode(returnRoute.treeData, interfaceReturn.data.allId) };
         addState.masterModifyData = {};
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), treeSearchValue: props.treeSearchValue });
         dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [addState.masterData.id], ...addState });
       } else {
         props.gotoError(dispatch, interfaceReturn);

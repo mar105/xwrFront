@@ -151,7 +151,6 @@ const SlaveContainer = (props) => {
             } else {
               const data = { ...slaveData[index], handleType: commonUtils.isEmpty(slaveData[index].handleType) ? 'modify' : slaveData[index].handleType  };
               data.chineseName = dataRow.columnComment;
-              data.containerType = 'field';
               slaveData[index] = data;
               if (data.handleType === 'modify') {
                 const indexModify = slaveModifyData.findIndex(item => item.id === data.id);

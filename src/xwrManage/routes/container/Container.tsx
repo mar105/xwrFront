@@ -31,7 +31,7 @@ const Container = (props) => {
         const {treeData} = returnRoute;
         const selectedKeys = [treeData[0].id];
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(treeData[0]));
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(treeData[0]), searchValue: props.treeSearchValue });
         dispatchModifyState({...returnRoute, treeSelectedKeys: selectedKeys, masterData: treeData[0], masterModifyData: {}, enabled: false});
       }
     }
@@ -115,7 +115,7 @@ const Container = (props) => {
       addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
       addState.masterModifyData = {};
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), searchValue: props.treeSearchValue });
       dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
     } else {
       props.gotoError(dispatch, interfaceReturn);
@@ -152,7 +152,7 @@ const Container = (props) => {
       addState.syncSelectedRowKeys = [];
       addState.syncDelData = [];
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), searchValue: props.treeSearchValue });
       dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.id], treeSelectedOldKeys: treeSelectedKeys, enabled: true, ...addState });
     } else if (key === 'addChildButton') {
       if (commonUtils.isEmptyArr(treeSelectedKeys)) {
@@ -186,7 +186,7 @@ const Container = (props) => {
       addState.syncSelectedRowKeys = [];
       addState.syncDelData = [];
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(masterData));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(masterData), searchValue: props.treeSearchValue });
       dispatchModifyState({ masterData, masterModifyData: {}, treeData, treeSelectedKeys: [masterData.key], treeSelectedOldKeys: treeSelectedKeys, enabled: true, treeExpandedKeys, ...addState });
 
     } else if (key === 'modifyButton') {
@@ -228,7 +228,7 @@ const Container = (props) => {
         addState.syncSelectedRowKeys = [];
         addState.syncDelData = [];
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), searchValue: props.treeSearchValue });
       } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
         const {dispatch, commonModel, tabId, masterData} = props;
         const url: string = application.urlCommon + '/verify/removeModifying';
@@ -292,7 +292,7 @@ const Container = (props) => {
           addState.treeSelectedKeys = [returnRoute.treeData[0].id];
           addState.masterData = {...returnRoute.treeData[0]};
           form.resetFields();
-          form.setFieldsValue(commonUtils.setFieldsValue(returnRoute.treeData[0]));
+          form.setFieldsValue(commonUtils.setFieldsValue({ ...returnRoute.treeData[0], searchValue: props.treeSearchValue }));
         }
         addState.slaveData = [];
         addState.slaveModifyData = [];
@@ -374,7 +374,7 @@ const Container = (props) => {
         }
 
         form.resetFields();
-        form.setFieldsValue(commonUtils.setFieldsValue(addState.masterData));
+        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), searchValue: props.treeSearchValue });
         dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [addState.masterData.id], ...addState });
       } else {
         props.gotoError(dispatch, interfaceReturn);
@@ -418,7 +418,7 @@ const Container = (props) => {
       addState.syncSelectedRowKeys = [];
       addState.syncDelData = [];
       form.resetFields();
-      form.setFieldsValue(commonUtils.setFieldsValue(e.node));
+      form.setFieldsValue({ ...commonUtils.setFieldsValue(e.node), searchValue: props.treeSearchValue });
       dispatchModifyState(addState);
     }
   }

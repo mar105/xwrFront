@@ -104,7 +104,7 @@ const SlaveContainer = (props) => {
       slaveData.push(data);
       dispatchModifyState({ slaveData });
       setTimeout(() => {
-        scrollTo({row: slaveData.length, vid: 'slave' });
+        scrollTo({row: slaveData.length, vid: props.tabId + 'slave' });
       }, 200);
     } else if (name === 'slaveSyncDataButton') {
       if (propsRef.current.masterData.containerName === 'noTable') { return };
@@ -199,7 +199,7 @@ const SlaveContainer = (props) => {
           }
           dispatchModifyState({ slaveData });
           setTimeout(() => {
-            scrollTo({row: slaveData.length, vid: 'slave' });
+            scrollTo({row: slaveData.length, vid: props.tabId + 'slave' });
           }, 200);
         } else {
           props.gotoError(dispatch, {code: '5000', msg: '不能复制其他数据！'});

@@ -50,7 +50,7 @@ export function TableComponent(params: any) {
   useEffect(() => {
     const addState: any = { columns: getColumn(params.property.columns) };
     addState.enabled = params.enabled;
-    const addComponents: any = { ...VList({ height: 500, vid: params.name, onReachEnd: onReachEnd })};
+    const addComponents: any = { ...VList({ height: 500, vid: params.vid, onReachEnd: onReachEnd })};
 
     // 树形通过配置展开列名找到展开列
     if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {

@@ -46,7 +46,7 @@ const SyncContainer = (props) => {
       syncData.push(data);
       dispatchModifyState({ syncData });
       setTimeout(() => {
-        scrollTo({row: syncData.length, vid: 'sync'});
+        scrollTo({row: syncData.length, vid: props.tabId + 'sync'});
       }, 200);
     } else if (name === 'syncCopyToMultiButton') {
       copy(JSON.stringify(syncSelectedRows));
@@ -74,7 +74,7 @@ const SyncContainer = (props) => {
             syncData.push(data);
           }
           setTimeout(() => {
-            scrollTo({ row: syncData.length, vid: 'sync' });
+            scrollTo({ row: syncData.length, vid: props.tabId + 'sync' });
           }, 200);
         } else {
           props.gotoError(dispatch, {code: '5000', msg: '不能复制其他数据！'});

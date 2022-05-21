@@ -197,7 +197,6 @@ export function getTableProps(name, props) {
     name,
     enabled: props.enabled,
     dispatchModifyState: props.dispatchModifyState,
-    scrollToRow: props[name + 'ScrollToRow'],
     property: { columns: props[name + 'Columns'], dataSource: props[name + 'Data'], loading: props[name + 'Loading'] },
     sum: props[name + 'Sum'],
     eventOnRow: { onRowClick: props.onRowClick },

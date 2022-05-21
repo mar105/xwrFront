@@ -1,6 +1,6 @@
 import {InputComponent} from "../../components/InputComponent";
 import {TreeComponent} from "../../components/TreeComponent";
-import React, {useEffect, useMemo} from "react";
+import React, {useEffect, useMemo, useRef} from "react";
 import {Modal} from "antd";
 import {TableComponent} from "../../components/TableComponent";
 import * as commonUtils from "../../utils/commonUtils";
@@ -8,6 +8,7 @@ import * as application from "../application";
 import * as request from "../../utils/request";
 
 const TreeModule = (props) => {
+  const treeRef: any = useRef();
   useEffect(() => {
     const { dispatchModifyState } = props;
     const treeSearchContainer: any = {};
@@ -59,6 +60,9 @@ const TreeModule = (props) => {
     const { dispatchModifyState, treeExpandedKeys: treeExpandedKeysOld } = props;
     const expandedKeys = commonUtils.isEmptyArr(treeExpandedKeysOld) ? [...record.allId.split(',')] : [...record.allId.split(','), ...treeExpandedKeysOld];
     dispatchModifyState({ treeSelectedKeys: [record.id], treeExpandedKeys: expandedKeys, masterData: {...record}, masterModifyData: {}, treeSearchIsVisible: false });
+    setTimeout(() => {
+      treeRef.current.scrollTo({ key: record.id });
+    }, 200);
   }
 
   const onDrop = async (info) => {
@@ -231,7 +235,7 @@ const TreeModule = (props) => {
     event: { onChange, onSearch }
   };
   const treeParam = {
-    property: { treeData, selectedKeys: treeSelectedKeys, expandedKeys: treeExpandedKeys, height: 500, draggable: !enabled && props.getAllRoute !== undefined, blockNode: true },
+    property: { ref: treeRef, treeData, selectedKeys: treeSelectedKeys, expandedKeys: treeExpandedKeys, height: 500, draggable: !enabled && props.getAllRoute !== undefined, blockNode: true },
     event: { onSelect: props.onSelect, onExpand, onDrop: onDrop },
   };
   const columns = [

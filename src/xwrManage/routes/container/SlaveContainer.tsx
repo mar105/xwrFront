@@ -7,6 +7,7 @@ import { PlusOutlined, CloudSyncOutlined, CopyOutlined, DeleteOutlined, Snippets
 import {Tooltip} from "antd";
 import copy from "copy-to-clipboard";
 import {isJson} from "../../../utils/commonUtils";
+import { scrollTo } from 'virtuallist-antd';
 
 
 const SlaveContainer = (props) => {
@@ -101,7 +102,10 @@ const SlaveContainer = (props) => {
       data.englishDrop = '';
       const slaveData = [...slaveDataOld];
       slaveData.push(data);
-      dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
+      dispatchModifyState({ slaveData });
+      setTimeout(() => {
+        scrollTo({row: slaveData.length, vid: 'slave' });
+      }, 200);
     } else if (name === 'slaveSyncDataButton') {
       if (propsRef.current.masterData.containerName === 'noTable') { return };
       const containerName = propsRef.current.masterData.containerName.replace('_V', '');
@@ -193,7 +197,10 @@ const SlaveContainer = (props) => {
             data = { ...clipboardValue, ...data };
             slaveData.push(data);
           }
-          dispatchModifyState({ slaveData, slaveScrollToRow: slaveData.length });
+          dispatchModifyState({ slaveData });
+          setTimeout(() => {
+            scrollTo({row: slaveData.length, vid: 'slave' });
+          }, 200);
         } else {
           props.gotoError(dispatch, {code: '5000', msg: '不能复制其他数据！'});
         }

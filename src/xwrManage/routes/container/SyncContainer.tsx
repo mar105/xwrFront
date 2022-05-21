@@ -5,7 +5,7 @@ import { PlusOutlined, CopyOutlined, DeleteOutlined, SnippetsOutlined } from '@a
 import {Tooltip} from "antd";
 import copy from "copy-to-clipboard";
 import {isJson} from "../../../utils/commonUtils";
-
+import { scrollTo } from 'virtuallist-antd';
 
 const SyncContainer = (props) => {
   const propsRef: any = useRef();
@@ -44,7 +44,10 @@ const SyncContainer = (props) => {
       data.sortNum = syncDataOld.length + 1;
       const syncData = [...syncDataOld];
       syncData.push(data);
-      dispatchModifyState({ syncData, syncScrollToRow: syncData.length });
+      dispatchModifyState({ syncData });
+      setTimeout(() => {
+        scrollTo({row: syncData.length, vid: 'sync'});
+      }, 200);
     } else if (name === 'syncCopyToMultiButton') {
       copy(JSON.stringify(syncSelectedRows));
       props.gotoSuccess(dispatch, {code: '1', msg: '已复制到剪贴板'});
@@ -70,7 +73,9 @@ const SyncContainer = (props) => {
             data = { ...clipboardValue, ...data };
             syncData.push(data);
           }
-          dispatchModifyState({ syncData, syncScrollToRow: syncData.length });
+          setTimeout(() => {
+            scrollTo({ row: syncData.length, vid: 'sync' });
+          }, 200);
         } else {
           props.gotoError(dispatch, {code: '5000', msg: '不能复制其他数据！'});
         }

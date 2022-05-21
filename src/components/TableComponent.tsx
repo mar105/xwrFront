@@ -1,7 +1,7 @@
 import React, {useEffect, useReducer} from 'react';
 import {Button, Input, Space, Table } from 'antd';
 import * as commonUtils from "../utils/commonUtils";
-import { VList, scrollTo } from 'virtuallist-antd';
+import { VList } from 'virtuallist-antd';
 import {InputComponent} from "./InputComponent";
 import {NumberComponent} from "./NumberComponent";
 import {DatePickerComponent} from "./DatePickerComponent";
@@ -39,7 +39,7 @@ const ResizeableTitle = (props) => {
 export function TableComponent(params: any) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
     return {...state, ...action };
-  },{ vid: commonUtils.newId(), columns: [], components: {}, sorterInfo: [], searchText: '', filteredInfo: [], searchedColumn: ''});
+  },{ columns: [], components: {}, sorterInfo: [], searchText: '', filteredInfo: [], searchedColumn: ''});
 
   let searchInput;
   const onReachEnd = () => {
@@ -50,7 +50,7 @@ export function TableComponent(params: any) {
   useEffect(() => {
     const addState: any = { columns: getColumn(params.property.columns) };
     addState.enabled = params.enabled;
-    const addComponents: any = { ...VList({ height: 500, vid: modifySelfState.vid, onReachEnd: onReachEnd })};
+    const addComponents: any = { ...VList({ height: 500, vid: params.name, onReachEnd: onReachEnd })};
 
     // 树形通过配置展开列名找到展开列
     if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
@@ -104,26 +104,13 @@ export function TableComponent(params: any) {
       ...addComponents
     }
 
-
-
-    if (params.scrollToRow) {
-      setTimeout(() => {
-        scrollTo({row: params.scrollToRow, vid: modifySelfState.vid });
-      });
-    }
-
     //-----列宽拖拽结束------------------------------
     dispatchModifySelfState({components, ...addState });
     //params.lastColumn.changeValue 判断是否需要重新渲染最后一列。
     //filteredInfo 用于包含搜索的变黄色
-  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, params.scrollToRow, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
+  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
 
-  // useEffect(() => {
-  //   //试过按钮放在render里可以滚动，外面滚动不了。此功能未成功
-  //   if (params.scrollToRow) {
-  //     scrollTo({row: params.scrollToRow });
-  //   }
-  // }, [params.scrollToRow]);
+
   // 数据行拖动
   const onSortEnd = ({ oldIndex, newIndex }) => {
     params.onSortEnd(params.name, oldIndex, newIndex);

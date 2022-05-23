@@ -713,8 +713,8 @@ const commonProductionEvent = (WrapComponent) => {
 
             process.inOutRate = inOutRate;
             const processInQty = part.totalPQty > 4 && process.processGenre !== '3product' && commonUtils.isEmptyorZero(process.inOutAdjustRate) ?
-              processOutQty * inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty) :
-              processOutQty / inOutRate + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty);
+              Math.ceil(processOutQty * inOutRate) + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty) :
+              Math.ceil(processOutQty / inOutRate) + (commonUtils.isEmptyorZero(process.adjustLossQty) ? process.lossQty : process.adjustLossQty);
             process.processInQty = processInQty;
             processOutQty = processInQty;
             processId = process.id;
@@ -898,7 +898,9 @@ const commonProductionEvent = (WrapComponent) => {
           }
         }
         const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, {...materialData[index]},'material', 'measureQty', 'materialQty', 'measureToMaterialFormulaId', 'measureToMaterialCoefficient');
-        const materialCalcData = { processId, measureQty: materialData[index].measureQty, ...qtyCalcData };
+        const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, {...materialData[index], ...qtyCalcData},'material', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+        const materialCalcData = { processId, measureQty: materialData[index].measureQty, ...qtyCalcData, ...convertCalcData };
+
         materialData[index] = { ...materialData[index], ...materialCalcData };
         if (materialIndex === 0 && material.materialGenre === '0main') {
           materialDataRow = materialData[index];

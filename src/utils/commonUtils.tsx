@@ -211,6 +211,7 @@ export function getTableProps(name, props) {
     onLastColumnClick: props.onLastColumnClick,
     onTableChange: props.onTableChange,
     tableNestParam,
+    onCellClick: props.onCellClick,
     expandable: {onExpand: props.onExpand, expandedRowKeys: props[name + 'ExpandedRowKeys']},
     pagination: true, // 是否分页
     event: { onDataChange: props.onDataChange, getSelectList: props.getSelectList, onDropPopup: props.onDropPopup },

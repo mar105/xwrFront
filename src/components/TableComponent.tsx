@@ -337,31 +337,31 @@ export function TableComponent(params: any) {
               event: {onChange: params.event.onDataChange}
             };
             if (column.dataIndex === 'sortNum' && params.isDragRow) {
-              const component = <div><DragHandle/> <NumberComponent {...numberParams}  /></div>;
+              const component = <div><DragHandle/> <NumberComponent {...numberParams} /></div>;
               return component;
             } else if (column.fieldType === 'varchar' || column.fieldType === 'text') {
               if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
-                return <ProvinceCityArea {...provinceCityAreaParams}  />;
+                return <ProvinceCityArea {...provinceCityAreaParams} />;
               } else if (config.dropType === 'sql' || config.dropType === 'current' || config.dropType === 'const' || config.dropType === 'popup') {
                 let component;
                 if (config.isTreeDrop) {
-                  component = <TreeSelectComponent {...treeSelectParams}  />;
+                  component = <TreeSelectComponent {...treeSelectParams} />;
                 } else {
-                  component = <SelectComponent {...selectParams}  />
+                  component = <SelectComponent {...selectParams} />;
                 }
                 return component;
               } else {
-                const component = <InputComponent {...inputParams}  />
+                const component = <InputComponent {...inputParams} />;
                 return component;
               }
             } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
-              const component = <NumberComponent {...numberParams}  />;
+              const component = <NumberComponent {...numberParams} />;
               return component;
             } else if (column.fieldType === 'tinyint') {
-              const component = <CheckboxComponent {...checkboxParams}  />;
+              const component = <CheckboxComponent {...checkboxParams} />;
               return component;
             } else if (column.fieldType === 'datetime') {
-              const component = <DatePickerComponent {...datePickerParams}  />;
+              const component = <DatePickerComponent {...datePickerParams} />;
               return component;
             } else {
               return text;
@@ -372,9 +372,14 @@ export function TableComponent(params: any) {
             if (config.dropType === 'const') {
               const dropObject: any = commonUtils.stringToObj(config.viewDrop);
               return dropObject[text];
-            } else if (config.fieldType === 'tinyint') {
+            }
+            else if (config.fieldType === 'tinyint') {
               return text ? <CheckSquareOutlined /> : <BorderOutlined />;
-            } else {
+            }
+            else if (commonUtils.isNotEmpty(config.popupSelectId) && commonUtils.isNotEmpty(text)) {
+              return <div style={{ color:'blue', width: '100%' }} onClick={params.onCellClick.bind(this, params.name, config, record)}>{text}</div>
+            }
+            else {
               return modifySelfState.searchedColumn === columnOld.dataIndex ? (
                 <Highlighter
                   highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}

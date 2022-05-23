@@ -1110,6 +1110,15 @@ const commonBase = (WrapComponent) => {
       dispatchModifyState({ [name + 'ExpandedRowKeys']: expandedRowKeys });
     }
 
+    const onCellClick = async (name, config, record) => {
+      const {[name + 'Container']: container } = props;
+      if (commonUtils.isNotEmpty(config.popupSelectId)) {
+        const key = commonUtils.isEmpty(config.popupSelectKey) ? container.tableKey : config.popupSelectKey;
+        props.callbackAddPane(config.popupSelectId, { dataId: record[key] });
+      }
+
+    }
+
     return <Spin spinning={modifyState.pageLoading ? true : false}>
       <WrapComponent
       {...props}
@@ -1142,6 +1151,7 @@ const commonBase = (WrapComponent) => {
       setTreeNode={setTreeNode}
       onDataChange={onDataChange}
       delTableData={delTableData}
+      onCellClick={onCellClick}
     />
     </Spin>
   };

@@ -7,7 +7,7 @@ import * as request from "../utils/request";
 import TabsPages from "../TabsPages";
 import commonBase from "../common/commonBase";
 import IndexMenu from "./IndexMenu";
-import {Dropdown, Menu, Row} from "antd";
+import {Dropdown, Menu, Row, Progress, Modal} from "antd";
 import {useRef} from "react";
 import {replacePath, routeInfo} from "../routeInfo";
 import { DownOutlined } from '@ant-design/icons';
@@ -47,9 +47,13 @@ function IndexPage(props) {
   useEffect(() => {
     if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
       && props.commonModel.stompClient.connected) {
+      //这个是广播推送
       const syncRefreshData = props.commonModel.stompClient.subscribe('/topic-websocket/syncRefreshData', syncRefreshDataResult);
+      //这个是单人推送
+      const progress = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/progress' + commonModel.userInfo.userId, progressResult);
       return () => {
         syncRefreshData.unsubscribe();
+        progress.unsubscribe();
       };
     }
 
@@ -104,6 +108,12 @@ function IndexPage(props) {
     }
   }
 
+  const progressResult = (data) => {
+    // const { dispatch } = props;
+    const returnBody = JSON.parse(data.body);
+    props.dispatchModifyState({ progressPercent: returnBody });
+  }
+
   const connectionWebsocket = async () => {
     const {dispatch, commonModel } = props;
     if (commonUtils.isEmpty(stompClientRef.current) || !stompClientRef.current.connected) {
@@ -147,7 +157,8 @@ function IndexPage(props) {
   }
 
   const onClearBusinessData = async () => {
-    const {dispatch, commonModel} = props;
+    const {dispatch, dispatchModifyState, commonModel} = props;
+    dispatchModifyState({ progressIsVisible: true });
     const url: string = application.urlPrefix + '/clearData/clearBusinessData';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,
       shopId: commonModel.userInfo.shopId }))).data;
@@ -156,6 +167,7 @@ function IndexPage(props) {
     } else {
       props.gotoError(dispatch, interfaceReturn);
     }
+    dispatchModifyState({ progressIsVisible: false, progressPercent: 0 });
   }
 
   const onClearAllData = async () => {
@@ -311,6 +323,9 @@ function IndexPage(props) {
         <button onClick={onExit}> 退出</button>
         <button onClick={onClearBusinessData}> 初始化业务数据</button>
         <button onClick={onClearAllData}> 初始化所有数据</button>
+        <Modal width={800} visible={props.progressIsVisible} closable={false} mask={false} maskClosable={false} footer={null}>
+          <Progress type="circle" percent={props.progressPercent} />
+        </Modal>
         {shop}
       </Row>
       <div><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} /></div>

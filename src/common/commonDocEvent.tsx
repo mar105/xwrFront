@@ -367,30 +367,74 @@ const commonDocEvent = (WrapComponent) => {
           }
         }
         //产品计算
-        if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle')) {
-          const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
-          dataRow = { ...dataRow, ...qtyCalcData};
-          const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, dataRow,'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
-          dataRow = { ...dataRow, ...convertCalcData};
-          if (dataRow.handleType === 'modify') {
-            const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-            if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
-              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+        if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'measureGiveQty' || fieldName === 'measureStockUpQty' || fieldName === 'productName' || fieldName === 'productStyle')) {
+          if (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle') {
+            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'product', 'measureQty', 'productQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
+            dataRow = { ...dataRow, ...qtyCalcData};
+            const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, dataRow,'product', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+            dataRow = { ...dataRow, ...convertCalcData};
+            if (dataRow.handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+              }
             }
           }
+
+          if (fieldName === 'measureGiveQty' || fieldName === 'productName' || fieldName === 'productStyle') {
+            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'product', 'measureGiveQty', 'productGiveQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
+            dataRow = { ...dataRow, ...qtyCalcData};
+            const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, dataRow,'product', 'measureGiveQty', 'convertGiveQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+            dataRow = { ...dataRow, ...convertCalcData};
+            if (dataRow.handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+              }
+            }
+          }
+          if (fieldName === 'measureStockUpQty' || fieldName === 'productName' || fieldName === 'productStyle') {
+            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'product', 'measureStockUpQty', 'productStockUpQty', 'measureToProductFormulaId', 'measureToProductCoefficient');
+            dataRow = { ...dataRow, ...qtyCalcData};
+            const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, dataRow,'product', 'measureStockUpQty', 'convertStockUpQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+            dataRow = { ...dataRow, ...convertCalcData};
+            if (dataRow.handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+              }
+            }
+          }
+
         }
 
         //材料计算
-        else if (container.containerModel.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialName' || fieldName === 'materialStyle')) {
-          const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'material', 'measureQty', 'materialQty', 'measureToMaterialFormulaId', 'measureToMaterialCoefficient');
-          dataRow = { ...dataRow, ...qtyCalcData};
-          const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, dataRow,'material', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
-          dataRow = { ...dataRow, ...convertCalcData};
-          dataRow = { ...dataRow};
-          if (dataRow.handleType === 'modify') {
-            const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
-            if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
-              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+        else if (container.containerModel.includes('/material') && (fieldName === 'measureQty' || fieldName === 'measureGiveQty' || fieldName === 'materialName' || fieldName === 'materialStyle')) {
+          if (fieldName === 'measureQty' || fieldName === 'productName' || fieldName === 'productStyle') {
+            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'material', 'measureQty', 'materialQty', 'measureToMaterialFormulaId', 'measureToMaterialCoefficient');
+            dataRow = { ...dataRow, ...qtyCalcData};
+            const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, dataRow,'material', 'measureQty', 'convertQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+            dataRow = { ...dataRow, ...convertCalcData};
+            dataRow = { ...dataRow};
+            if (dataRow.handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+              }
+            }
+          }
+
+          if (fieldName === 'measureGiveQty' || fieldName === 'productName' || fieldName === 'productStyle') {
+            const qtyCalcData = commonUtils.getMeasureQtyToQtyCalc(props.commonModel, dataRow,'material', 'measureGiveQty', 'materialGiveQty', 'measureToMaterialFormulaId', 'measureToMaterialCoefficient');
+            dataRow = { ...dataRow, ...qtyCalcData};
+            const convertCalcData = commonUtils.getMeasureQtyToConvertCalc(props.commonModel, dataRow,'material', 'measureGiveQty', 'convertGiveQty', 'measureToConvertFormulaId', 'measureToConvertCoefficient');
+            dataRow = { ...dataRow, ...convertCalcData};
+            dataRow = { ...dataRow};
+            if (dataRow.handleType === 'modify') {
+              const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
+              if (indexModify > -1) {  // returnData如果有修改indexModify 一定 > -1
+                returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...qtyCalcData, ...convertCalcData };
+              }
             }
           }
         }

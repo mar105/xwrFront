@@ -9,6 +9,27 @@ const commonPurchaseEvent = (WrapComponent) => {
       propsRef.current = props;
     }, [props]);
 
+    const childDataChange = (name, returnData, container, slaveDataOld, slaveModifyData) => {
+      const slaveData: any = [];
+      slaveDataOld.forEach(slaveOld => {
+        const taxData = { taxId: returnData[name + 'Data'].taxId, taxNo: returnData[name + 'Data'].taxNo, taxName: returnData[name + 'Data'].taxName, taxRate: returnData[name + 'Data'].taxRate };
+        let slave = {...slaveOld, handleType: commonUtils.isEmpty(slaveOld.handleType) ? 'modify' : slaveOld.handleType, ...taxData};
+        const type = container.containerModel.includes('/material') ? 'material' : 'process';
+        const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, slave, type, type + 'StdMoney');
+        slave = {...slave, ...moneyCalcData};
+        if (slave.handleType === 'modify') {
+          const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
+          if (indexModify > -1) {
+            slaveModifyData[indexModify] = { ...slaveModifyData[indexModify], ...taxData, ...moneyCalcData };
+          } else {
+            slaveModifyData.push({ id: slave.id, handleType: slave.handleType, ...taxData, ...moneyCalcData });
+          }
+        }
+        slaveData.push(slave);
+      });
+      return slaveData;
+    }
+
     const onDataChange = (params) => {
       const { name, fieldName, record, isWait } = params;
       const { [name + 'Container']: container } = props;
@@ -25,7 +46,6 @@ const commonPurchaseEvent = (WrapComponent) => {
             const type = container.containerModel.includes('/material') ? 'material' : 'process';
             const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, slave, type, type + 'StdMoney');
             slave = {...slave, ...moneyCalcData};
-            slaveData.push(slave);
             if (slave.handleType === 'modify') {
               const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
               if (indexModify > -1) {
@@ -34,6 +54,11 @@ const commonPurchaseEvent = (WrapComponent) => {
                 slaveModifyData.push({ id: slave.id, handleType: slave.handleType, ...taxData, ...moneyCalcData });
               }
             }
+
+            if (commonUtils.isNotEmpty(slaveOld.children)) {
+              slave.children = childDataChange(name, returnData, container, slaveOld.children, slaveModifyData);
+            }
+            slaveData.push(slave);
           });
           returnData.slaveData = slaveData;
           returnData.slaveModifyData = slaveModifyData;

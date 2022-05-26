@@ -1111,10 +1111,31 @@ const commonBase = (WrapComponent) => {
     }
 
     const onCellClick = async (name, config, record) => {
-      const {[name + 'Container']: container } = props;
+      const {[name + 'Container']: container } = stateRef.current;
+      const addState: any = {};
       if (commonUtils.isNotEmpty(config.popupSelectId)) {
-        const key = commonUtils.isEmpty(config.popupSelectKey) ? container.tableKey : config.popupSelectKey;
-        props.callbackAddPane(config.popupSelectId, { dataId: record[key] });
+        const condition = commonUtils.getCondition(name, record, config.sqlCondition, props);
+        const searchCondition: any = [];
+        const searchRowKeys: any = [];
+        const searchData: any = {};
+        Object.keys(condition).forEach(key => {
+          const value = commonUtils.isEmpty(condition[key]) ? '' : condition[key];
+          searchRowKeys.push(key);
+          searchCondition.push({ fieldName: key, condition: '=', fieldValue: value  });
+          searchData['first' + key] = key;
+          searchData['second' + key] = '=';
+          searchData['third' + key] = value;
+        });
+
+        if (commonUtils.isNotEmpty(config.sqlCondition)) {
+          addState.searchRowKeys = searchRowKeys;
+          addState.slaveSearchCondition = searchCondition;
+          addState.searchData = searchData;
+        } else {
+          const key = commonUtils.isEmpty(config.popupSelectKey) ? container.tableKey : config.popupSelectKey;
+          addState.dataId = record[key];
+        }
+        props.callbackAddPane(config.popupSelectId, addState);
       }
 
     }

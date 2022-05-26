@@ -86,6 +86,7 @@ const Login = ({ dispatch }) => {
               <Button type="primary" htmlType="submit">
                   登录
               </Button>
+            <a href="/register"> register</a>
           </Form.Item>
       </Form>
   );

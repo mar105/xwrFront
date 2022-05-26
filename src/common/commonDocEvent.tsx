@@ -187,13 +187,12 @@ const commonDocEvent = (WrapComponent) => {
         const searchRowKeys: any = [];
         const searchData: any = {};
         Object.keys(condition).forEach(key => {
-          if (commonUtils.isNotEmpty(condition[key])) {
-            searchRowKeys.push(key);
-            searchCondition.push({ fieldName: key, condition: '=', fieldValue: condition[key] });
-            searchData['first' + key] = key;
-            searchData['second' + key] = '=';
-            searchData['third' + key] = condition[key];
-          }
+          const value = commonUtils.isEmpty(condition[key]) ? '' : condition[key];
+          searchRowKeys.push(key);
+          searchCondition.push({ fieldName: key, condition: '=', fieldValue: value  });
+          searchData['first' + key] = key;
+          searchData['second' + key] = '=';
+          searchData['third' + key] = value;
         });
 
         // routeName配置的未清为commonList转换为selectList

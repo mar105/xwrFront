@@ -642,6 +642,7 @@ export function getMeasureQtyToQtyCalc(commonModel, dataRow, type, fieldName, ca
     commonConstant[indexM].englishName === dataRow.measureStoreUnit ||
     commonConstant[indexM].traditionalName === dataRow.measureStoreUnit);
 
+  dataRow[fieldName] = isEmptyorZeroDefault(dataRow[fieldName], 0);
   if (isNotEmpty(dataRow[formulaIdFieldName])) {
     returnRow[calcFieldName] = round(getFormulaValue('slave', dataRow, dataRow[formulaIdFieldName], { slave: dataRow }, commonModel), 6);
     returnRow.measureUnit = dataRow.measureStoreUnit;
@@ -759,8 +760,8 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
   const pricePlace = commonModel.userInfo.shopInfo ? commonModel.userInfo.shopInfo.pricePlace : 6;
   const returnRow: any = {};
   const stdQty = isWhole ? isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) :
-    isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) +
-    isEmptyorZeroDefault(dataRow[type + 'GiveQty'], 0) + isEmptyorZeroDefault(dataRow[type + 'StockUpQty'], 0);
+    (isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) +
+    isEmptyorZeroDefault(dataRow[type + 'GiveQty'], 0) + isEmptyorZeroDefault(dataRow[type + 'StockUpQty'], 0));
   returnRow[type + 'StdPrice'] = round(isEmptyorZeroDefault(dataRow[type + 'StdPrice'], 0), pricePlace);
 
   // 计算金额
@@ -811,8 +812,8 @@ export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, field
 
   const returnRow: any = {};
   const stdQty = isWhole ? isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) :
-    isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) +
-    isEmptyorZeroDefault(dataRow[type + 'GiveQty'], 0) + isEmptyorZeroDefault(dataRow[type + 'StockUpQty'], 0);
+    (isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) +
+    isEmptyorZeroDefault(dataRow[type + 'GiveQty'], 0) + isEmptyorZeroDefault(dataRow[type + 'StockUpQty'], 0));
   returnRow[type + 'StdMoney'] = round(isEmptyorZeroDefault(dataRow[type + 'StdMoney'], 0), moneyPlace);
 
   // 计算价格

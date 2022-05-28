@@ -183,16 +183,19 @@ const commonDocEvent = (WrapComponent) => {
       } else if (key === 'copyFromButton' || key === 'copyFromMenu') {
         const fromConfig = key === 'copyFromMenu' ? e.item.props.config : config;
         const condition = commonUtils.getCondition('master', masterDataOld, config.sqlCondition, props);
+
         const searchCondition: any = [];
         const searchRowKeys: any = [];
         const searchData: any = {};
         Object.keys(condition).forEach(key => {
           const value = commonUtils.isEmpty(condition[key]) ? '' : condition[key];
-          searchRowKeys.push(key);
-          searchCondition.push({ fieldName: key, condition: '=', fieldValue: value  });
-          searchData['first' + key] = key;
-          searchData['second' + key] = '=';
-          searchData['third' + key] = value;
+          if (commonUtils.isNotEmpty(value)) {
+            searchRowKeys.push(key);
+            searchCondition.push({fieldName: key, condition: '=', fieldValue: value});
+            searchData['first' + key] = key;
+            searchData['second' + key] = '=';
+            searchData['third' + key] = value;
+          }
         });
 
         // routeName配置的未清为commonList转换为selectList

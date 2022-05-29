@@ -465,7 +465,7 @@ const commonDocEvent = (WrapComponent) => {
           || fieldName === 'productName' || fieldName === 'productStyle'
           || fieldName === 'productStdPrice' || fieldName === 'costPrice')) {
           const isWhole = container.containerModel.includes('/productWhole');
-          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, dataRow,'product', fieldName, isWhole);
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, dataRow,'product', fieldName, isWhole);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
@@ -478,7 +478,7 @@ const commonDocEvent = (WrapComponent) => {
           || fieldName === 'knifePlateMoney' || fieldName === 'makePlateMoney' || fieldName === 'proofingMoney' || fieldName === 'freightMoney' || fieldName === 'businessMoney'
           || fieldName === 'costMoney' || fieldName === 'taxName')) {
           const isWhole = container.containerModel.includes('/productWhole');
-          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'product', fieldName, isWhole);
+          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, dataRow,'product', fieldName, isWhole);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
@@ -493,7 +493,7 @@ const commonDocEvent = (WrapComponent) => {
         else if (container.containerModel.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialQty' || fieldName === 'convertQty'
           || fieldName === 'materialName' || fieldName === 'materialStyle'
           || fieldName === 'materialStdPrice' || fieldName === 'costPrice')) {
-          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, dataRow,'material', fieldName);
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, dataRow,'material', fieldName);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
@@ -503,7 +503,7 @@ const commonDocEvent = (WrapComponent) => {
           }
         }
         else if (container.containerModel.includes('/material') && (fieldName === 'materialStdMoney' || fieldName === 'costMoney' || fieldName === 'taxName')) {
-          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'material', fieldName);
+          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, dataRow,'material', fieldName);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
@@ -518,7 +518,7 @@ const commonDocEvent = (WrapComponent) => {
         else if (container.containerModel.includes('/process') && (fieldName === 'measureQty' || fieldName === 'processQty' || fieldName === 'convertQty'
           || fieldName === 'processName' || fieldName === 'processStyle'
           || fieldName === 'processStdPrice' || fieldName === 'costPrice')) {
-          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, dataRow,'process', fieldName);
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, dataRow,'process', fieldName);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
@@ -528,7 +528,7 @@ const commonDocEvent = (WrapComponent) => {
           }
         }
         else if (container.containerModel.includes('/process') && (fieldName === 'processStdMoney' || fieldName === 'costMoney' || fieldName === 'taxName')) {
-          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, dataRow,'process', fieldName);
+          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, dataRow,'process', fieldName);
           dataRow = { ...dataRow, ...moneyCalcData};
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);

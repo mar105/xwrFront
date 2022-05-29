@@ -15,7 +15,7 @@ const commonPurchaseEvent = (WrapComponent) => {
         const taxData = { taxId: returnData[name + 'Data'].taxId, taxNo: returnData[name + 'Data'].taxNo, taxName: returnData[name + 'Data'].taxName, taxRate: returnData[name + 'Data'].taxRate };
         let slave = {...slaveOld, handleType: commonUtils.isEmpty(slaveOld.handleType) ? 'modify' : slaveOld.handleType, ...taxData};
         const type = container.containerModel.includes('/material') ? 'material' : 'process';
-        const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, slave, type, type + 'StdMoney');
+        const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, slave, type, type + 'StdMoney');
         slave = {...slave, ...moneyCalcData};
         if (slave.handleType === 'modify') {
           const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
@@ -44,7 +44,7 @@ const commonPurchaseEvent = (WrapComponent) => {
             const taxData = { taxId: returnData[name + 'Data'].taxId, taxNo: returnData[name + 'Data'].taxNo, taxName: returnData[name + 'Data'].taxName, taxRate: returnData[name + 'Data'].taxRate };
             let slave = {...slaveOld, handleType: commonUtils.isEmpty(slaveOld.handleType) ? 'modify' : slaveOld.handleType, ...taxData};
             const type = container.containerModel.includes('/material') ? 'material' : 'process';
-            const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, slave, type, type + 'StdMoney');
+            const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, slave, type, type + 'StdMoney');
             slave = {...slave, ...moneyCalcData};
             if (slave.handleType === 'modify') {
               const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
@@ -127,7 +127,7 @@ const commonPurchaseEvent = (WrapComponent) => {
                   }
                 }
 
-                const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, dataRow,'material', fieldName);
+                const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, dataRow,'material', fieldName);
                 dataRow = { ...dataRow, ...moneyCalcData};
                 if (dataRow.handleType === 'modify') {
                   const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === dataRow.id);
@@ -161,7 +161,7 @@ const commonPurchaseEvent = (WrapComponent) => {
                   }
                 }
                 // 此数还是通过价格算金额
-                const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, dataRow,'material', fieldName);
+                const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, dataRow,'material', fieldName);
                 dataRow = { ...dataRow, ...moneyCalcData};
                 if (dataRow.handleType === 'modify') {
                   const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === dataRow.id);
@@ -214,7 +214,7 @@ const commonPurchaseEvent = (WrapComponent) => {
             if (container.containerModel.includes('/material') && (fieldName === 'measureQty' || fieldName === 'materialQty' || fieldName === 'convertQty'
               || fieldName === 'materialName' || fieldName === 'materialStyle'
               || fieldName === 'materialStdPrice' || fieldName === 'costPrice')) {
-              const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, props.masterData, superiorRow,'material', fieldName);
+              const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, superiorRow,'material', fieldName);
               superiorRow = { ...superiorRow, ...moneyCalcData};
               if (superiorRow.handleType === 'modify') {
                 const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === superiorRow.id);
@@ -226,7 +226,7 @@ const commonPurchaseEvent = (WrapComponent) => {
               }
             }
             else if (container.containerModel.includes('/material') && (fieldName === 'materialStdMoney' || fieldName === 'costMoney' || fieldName === 'taxName')) {
-              const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, props.masterData, superiorRow,'product', fieldName);
+              const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, superiorRow,'product', fieldName);
               superiorRow = { ...superiorRow, ...moneyCalcData};
               if (superiorRow.handleType === 'modify') {
                 const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === superiorRow.id);
@@ -250,6 +250,7 @@ const commonPurchaseEvent = (WrapComponent) => {
         }
       }
 
+      console.log('propsRef.current.masterData', returnData, propsRef.current.masterData);
 
       if (isWait) {
         return { ...returnData };

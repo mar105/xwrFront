@@ -787,6 +787,7 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
   // 计算金额（本位币）
   const exchangeRate = isEmptyorZeroDefault(masterData.exchangeRate, 1);
   returnRow[type + 'StdBaseMoney'] = round(returnRow[type + 'StdMoney'] / exchangeRate, moneyPlace);
+  returnRow[type + 'StdBasePrice'] = round(returnRow[type + 'StdBaseMoney'] / stdQty, pricePlace);
   returnRow[type + 'BaseMoney'] = round((returnRow[type + 'Money']
     + isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
     + isEmptyorZeroDefault(dataRow.makePlateMoney, 0)
@@ -803,6 +804,7 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
   //计算成本金额
   returnRow.costMoney = round(stdQty * isEmptyorZeroDefault(dataRow.costPrice, 0), moneyPlace);
 
+  console.log('1111', returnRow, masterData, exchangeRate);
   return returnRow;
 }
 
@@ -834,6 +836,7 @@ export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, field
   // 计算金额（本位币）
   const exchangeRate = isEmptyorZeroDefault(masterData.exchangeRate, 1);
   returnRow[type + 'StdBaseMoney'] = round(returnRow[type + 'StdMoney'] / exchangeRate, moneyPlace);
+  returnRow[type + 'StdBasePrice'] = round(returnRow[type + 'StdBaseMoney'] / stdQty, pricePlace);
   returnRow[type + 'BaseMoney'] = round((returnRow[type + 'Money']
     + isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
     + isEmptyorZeroDefault(dataRow.makePlateMoney, 0)

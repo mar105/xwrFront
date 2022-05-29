@@ -804,7 +804,6 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
   //计算成本金额
   returnRow.costMoney = round(stdQty * isEmptyorZeroDefault(dataRow.costPrice, 0), moneyPlace);
 
-  console.log('1111', returnRow, masterData, exchangeRate);
   return returnRow;
 }
 

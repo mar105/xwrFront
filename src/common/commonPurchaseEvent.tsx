@@ -250,8 +250,6 @@ const commonPurchaseEvent = (WrapComponent) => {
         }
       }
 
-      console.log('propsRef.current.masterData', returnData, propsRef.current.masterData);
-
       if (isWait) {
         return { ...returnData };
       } else {

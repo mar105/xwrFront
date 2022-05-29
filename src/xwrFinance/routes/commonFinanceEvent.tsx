@@ -38,28 +38,31 @@ const commonFinanceEvent = (WrapComponent) => {
               negativeMoney = negativeMoney + slave.originalUnMoney;
             }
           });
+          const exchangeRate = commonUtils.isEmptyorZeroDefault(returnData.masterData.exchangeRate, 1);
           // 当总金额 > 正数与负数金额时 明细金额与未清金额直接一致，剩余为预收。
           if (returnData.masterData['total' + typeUpper + 'Money'] - Math.abs(positiveMoney + negativeMoney) >= 0) {
             slaveDataOld.forEach((slaveOld, index) => {
               const slave = { ...slaveOld };
               slave.handleType = commonUtils.isEmpty(slave.handleType) ? 'modify' : slave.handleType;
               slave[typeLower + 'Money'] = slave.originalUnMoney;
+              slave[typeLower + 'BaseMoney'] = slave.originalUnMoney / exchangeRate;
               slaveData[index] = slave;
               if (slave.handleType === 'modify') {
                 const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
                 if (indexModify > -1) {
-                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], [typeLower + 'Money']: slave[typeLower + 'Money'] };
+                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], [typeLower + 'Money']: slave[typeLower + 'Money'], [typeLower + 'BaseMoney']: slave[typeLower + 'BaseMoney'] };
                 } else {
-                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, [typeLower + 'Money']: slave[typeLower + 'Money'] })
+                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, [typeLower + 'Money']: slave[typeLower + 'Money'], [typeLower + 'BaseMoney']: slave[typeLower + 'BaseMoney'] })
                 }
               }
             });
             addState.slaveData = slaveData;
             addState.slaveModifyData = slaveModifyData;
-            const exchangeRate = commonUtils.isEmptyorZeroDefault(returnData.masterData.exchangeRate, 1);
+            returnData.masterData['total' + typeUpper + 'Money'] = returnData.masterData['total' + typeUpper + 'Money'] / exchangeRate;
             returnData.masterData['pre' + typeUpper + 'Money'] = returnData.masterData['total' + typeUpper + 'Money'] - (positiveMoney + negativeMoney);
             returnData.masterData['pre' + typeUpper + 'BaseMoney'] = returnData.masterData['pre' + typeUpper + 'Money'] / exchangeRate;
-            const modifyData = { ['pre' + typeUpper + 'Money']: returnData.masterData['pre' + typeUpper + 'Money'],
+            const modifyData = { ['total' + typeUpper + 'Money']: returnData.masterData['total' + typeUpper + 'Money'],
+              ['pre' + typeUpper + 'Money']: returnData.masterData['pre' + typeUpper + 'Money'],
               ['pre' + typeUpper + 'BaseMoney'] : returnData.masterData['pre' + typeUpper + 'BaseMoney']};
 
             returnData.masterModifyData = returnData.masterData.handleType === 'modify' ?
@@ -89,16 +92,21 @@ const commonFinanceEvent = (WrapComponent) => {
               if (isNegative) {
                 if (slave.originalUnMoney < 0) {
                   slave[typeLower + 'Money'] = commonUtils.round(minusMoney - Math.abs(slave.originalUnMoney) > 0 ? slave.originalUnMoney : -minusMoney, moneyPlace);
+                  slave[typeLower + 'BaseMoney'] = slave.originalUnMoney / exchangeRate;
                   minusMoney = commonUtils.round(minusMoney - Math.abs(slave.originalUnMoney) > 0 ? -(minusMoney - Math.abs(slave.originalUnMoney)) : 0, moneyPlace);
                 } else {
                   slave[typeLower + 'Money'] = slave.originalUnMoney;
+                  slave[typeLower + 'BaseMoney'] = slave.originalUnMoney / exchangeRate;
                 }
               } else {
                 if (slave.originalUnMoney > 0) {
                   slave[typeLower + 'Money'] = commonUtils.round(minusMoney - Math.abs(slave.originalUnMoney) > 0 ? slave.originalUnMoney : minusMoney, moneyPlace);
+                  slave[typeLower + 'BaseMoney'] = slave.originalUnMoney / exchangeRate;
                   minusMoney = commonUtils.round(minusMoney - Math.abs(slave.originalUnMoney) > 0 ? minusMoney - Math.abs(slave.originalUnMoney) : 0, moneyPlace);
+
                 } else {
                   slave[typeLower + 'Money'] = slave.originalUnMoney;
+                  slave[typeLower + 'BaseMoney'] = slave.originalUnMoney / exchangeRate;
                 }
               }
               slaveData[index] = slave;
@@ -107,18 +115,20 @@ const commonFinanceEvent = (WrapComponent) => {
               if (slave.handleType === 'modify') {
                 const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
                 if (indexModify > -1) {
-                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], [typeLower + 'Money']: slave[typeLower + 'Money'] };
+                  slaveModifyData[indexModify] = {...slaveModifyData[indexModify], [typeLower + 'Money']: slave[typeLower + 'Money'], [typeLower + 'BaseMoney']: slave[typeLower + 'BaseMoney'] };
                 } else {
-                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, [typeLower + 'Money']: slave[typeLower + 'Money'] })
+                  slaveModifyData.push({ id: slave.id, handleType: slave.handleType, [typeLower + 'Money']: slave[typeLower + 'Money'], [typeLower + 'BaseMoney']: slave[typeLower + 'BaseMoney'] })
                 }
               }
             });
 
             addState.slaveData = slaveData;
             addState.slaveModifyData = slaveModifyData;
+            returnData.masterData['total' + typeUpper + 'Money'] = returnData.masterData['total' + typeUpper + 'Money'] / exchangeRate;
             returnData.masterData['pre' + typeUpper + 'Money'] = 0;
             returnData.masterData['pre' + typeUpper + 'BaseMoney'] = 0;
-            const modifyData = { ['pre' + typeUpper + 'Money']: returnData.masterData['pre' + typeUpper + 'Money'],
+            const modifyData = { ['total' + typeUpper + 'Money']: returnData.masterData['total' + typeUpper + 'Money'],
+              ['pre' + typeUpper + 'Money']: returnData.masterData['pre' + typeUpper + 'Money'],
               ['pre' + typeUpper + 'BaseMoney'] : returnData.masterData['pre' + typeUpper + 'BaseMoney']};
 
             returnData.masterModifyData = returnData.masterData.handleType === 'modify' ?

@@ -762,8 +762,10 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
   const stdQty = isWhole ? isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) :
     (isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) +
     isEmptyorZeroDefault(dataRow[type + 'GiveQty'], 0) + isEmptyorZeroDefault(dataRow[type + 'StockUpQty'], 0));
-  returnRow[type + 'StdPrice'] = round(isEmptyorZeroDefault(dataRow[type + 'StdPrice'], 0), pricePlace);
+  const taxRate = isWhole ? dataRow.taxRate : dataRow.productTaxRate;
+  type = isWhole ? 'process' : type;
 
+  returnRow[type + 'StdPrice'] = round(isEmptyorZeroDefault(dataRow[type + 'StdPrice'], 0), pricePlace);
   // 计算金额
   returnRow[type + 'StdMoney'] = round(stdQty * isEmptyorZeroDefault(dataRow[type + 'StdPrice'], 0), moneyPlace);
   returnRow[type + 'Money'] = round(returnRow[type + 'StdMoney']
@@ -773,13 +775,12 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
     + isEmptyorZeroDefault(dataRow.freightMoney, 0)
     + isEmptyorZeroDefault(dataRow.businessMoney, 0), moneyPlace);
   returnRow[type + 'Price'] = stdQty === 0 ? 0 :
-    isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
+    (isEmptyorZeroDefault(dataRow.knifePlateMoney, 0)
     + isEmptyorZeroDefault(dataRow.makePlateMoney, 0)
     + isEmptyorZeroDefault(dataRow.proofingMoney, 0)
     + isEmptyorZeroDefault(dataRow.freightMoney, 0)
-    + isEmptyorZeroDefault(dataRow.businessMoney, 0) > 0 ? round(returnRow[type + 'Money'] / stdQty, pricePlace) : returnRow[type + 'StdPrice'];
-
-  returnRow[type + 'WithoutTaxMoney'] = round(returnRow[type + 'Money'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
+    + isEmptyorZeroDefault(dataRow.businessMoney, 0)) > 0 ? round(returnRow[type + 'Money'] / stdQty, pricePlace) : returnRow[type + 'StdPrice'];
+  returnRow[type + 'WithoutTaxMoney'] = round(returnRow[type + 'Money'] / (1 + isEmptyorZeroDefault(taxRate, 0) / 100), moneyPlace);
   returnRow[type + 'WithoutTaxPrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxMoney'] / stdQty, pricePlace);
 
   returnRow[type + 'TaxMoney'] = round(returnRow[type + 'Money'] - returnRow[type + 'WithoutTaxMoney'], moneyPlace);
@@ -796,7 +797,7 @@ export function getStdPriceToMoney(commonModel, masterData, dataRow, type, field
     + isEmptyorZeroDefault(dataRow.businessMoney, 0)) / exchangeRate, moneyPlace);
   returnRow[type + 'BasePrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'BaseMoney'] / stdQty, pricePlace);
 
-  returnRow[type + 'WithoutTaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
+  returnRow[type + 'WithoutTaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] / (1 + isEmptyorZeroDefault(taxRate, 0) / 100), moneyPlace);
   returnRow[type + 'WithoutTaxBasePrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxBaseMoney'] / stdQty, pricePlace);
 
   returnRow[type + 'TaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] - returnRow[type + 'WithoutTaxBaseMoney'], moneyPlace);
@@ -815,8 +816,11 @@ export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, field
   const stdQty = isWhole ? isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) :
     (isEmptyorZeroDefault(dataRow[type + 'Qty'], 0) +
     isEmptyorZeroDefault(dataRow[type + 'GiveQty'], 0) + isEmptyorZeroDefault(dataRow[type + 'StockUpQty'], 0));
-  returnRow[type + 'StdMoney'] = round(isEmptyorZeroDefault(dataRow[type + 'StdMoney'], 0), moneyPlace);
 
+  const taxRate = isWhole ? dataRow.taxRate : dataRow.productTaxRate;
+  type = isWhole ? 'process' : type;
+
+  returnRow[type + 'StdMoney'] = round(isEmptyorZeroDefault(dataRow[type + 'StdMoney'], 0), moneyPlace);
   // 计算价格
   returnRow[type + 'StdPrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'StdMoney'] / stdQty, pricePlace);
   returnRow[type + 'Money'] = round(returnRow[type + 'StdMoney']
@@ -827,7 +831,7 @@ export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, field
     + isEmptyorZeroDefault(dataRow.businessMoney, 0), moneyPlace);
   returnRow[type + 'Price'] = stdQty === 0 ? 0 : round(returnRow[type + 'Money'] / stdQty, pricePlace);
 
-  returnRow[type + 'WithoutTaxMoney'] = round(returnRow[type + 'Money'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
+  returnRow[type + 'WithoutTaxMoney'] = round(returnRow[type + 'Money'] / (1 + isEmptyorZeroDefault(taxRate, 0) / 100), moneyPlace);
   returnRow[type + 'WithoutTaxPrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxMoney'] / stdQty, pricePlace);
 
   returnRow[type + 'TaxMoney'] = round(returnRow[type + 'Money'] - returnRow[type + 'WithoutTaxMoney'], moneyPlace);
@@ -844,7 +848,7 @@ export function getStdMoneyToPrice(commonModel, masterData, dataRow, type, field
     + isEmptyorZeroDefault(dataRow.businessMoney, 0)) / exchangeRate, moneyPlace);
   returnRow[type + 'BasePrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'BaseMoney'] / stdQty, pricePlace);
 
-  returnRow[type + 'WithoutTaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] / (1 + isEmptyorZeroDefault(dataRow.taxRate, 0) / 100), moneyPlace);
+  returnRow[type + 'WithoutTaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] / (1 + isEmptyorZeroDefault(taxRate, 0) / 100), moneyPlace);
   returnRow[type + 'WithoutTaxBasePrice'] = stdQty === 0 ? 0 : round(returnRow[type + 'WithoutTaxBaseMoney'] / stdQty, pricePlace);
 
   returnRow[type + 'TaxBaseMoney'] = round(returnRow[type + 'BaseMoney'] - returnRow[type + 'WithoutTaxBaseMoney'], moneyPlace);

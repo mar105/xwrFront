@@ -32,7 +32,7 @@ const commonPurchaseEvent = (WrapComponent) => {
 
     const onDataChange = (params) => {
       const { name, fieldName, record, isWait } = params;
-      const { [name + 'Container']: container } = props;
+      const { [name + 'Container']: container, slaveContainer } = props;
       let returnData = props.onDataChange({...params, isWait: true});
       if (typeof returnData[name + 'Data'] === 'object' && returnData[name + 'Data'].constructor === Object) {
         if (fieldName === 'supplyName') {
@@ -43,9 +43,18 @@ const commonPurchaseEvent = (WrapComponent) => {
           slaveDataOld.forEach(slaveOld => {
             const taxData = { taxId: returnData[name + 'Data'].taxId, taxNo: returnData[name + 'Data'].taxNo, taxName: returnData[name + 'Data'].taxName, taxRate: returnData[name + 'Data'].taxRate };
             let slave = {...slaveOld, handleType: commonUtils.isEmpty(slaveOld.handleType) ? 'modify' : slaveOld.handleType, ...taxData};
-            const type = container.containerModel.includes('/material') ? 'material' : 'process';
-            const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, slave, type, type + 'StdMoney');
-            slave = {...slave, ...moneyCalcData};
+            let type = slaveContainer.containerModel.includes('/material') ? 'material' : 'process';
+            const isWhole = slaveContainer.containerModel.includes('/productWhole');
+            let moneyCalcData = {};
+            if (isWhole) {
+              type = 'product';
+              moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, slave, type, type + 'StdMoney', isWhole);
+              slave = {...slave, ...moneyCalcData};
+            } else {
+              moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, slave, type, type + 'StdMoney');
+              slave = {...slave, ...moneyCalcData};
+            }
+
             if (slave.handleType === 'modify') {
               const indexModify = slaveModifyData.findIndex(item => item.id === slave.id);
               if (indexModify > -1) {

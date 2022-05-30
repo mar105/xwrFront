@@ -461,29 +461,43 @@ const commonDocEvent = (WrapComponent) => {
 
         //算完数量后还需要计算金额价格。
         //产品计算
+        // isWhole 外协整单放入成品一起计算
         if (container.containerModel.includes('/product') && (fieldName === 'measureQty' || fieldName === 'productQty' || fieldName === 'convertQty'
           || fieldName === 'productName' || fieldName === 'productStyle'
-          || fieldName === 'productStdPrice' || fieldName === 'costPrice')) {
-          const isWhole = container.containerModel.includes('/productWhole');
-          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, dataRow,'product', fieldName, isWhole);
+          || fieldName === 'productStdPrice' || fieldName === 'costPrice'
+          || fieldName === 'processStdPrice')) {
+          const moneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, dataRow,'product', fieldName);
           dataRow = { ...dataRow, ...moneyCalcData};
+          const isWhole = container.containerModel.includes('/productWhole');
+          let wholeMoneyCalcData = {};
+          if (isWhole) {
+            wholeMoneyCalcData = commonUtils.getStdPriceToMoney(props.commonModel, propsRef.current.masterData, dataRow,'product', fieldName, isWhole);
+            dataRow = { ...dataRow, ...wholeMoneyCalcData};
+          }
+
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData, ...wholeMoneyCalcData };
             }
           }
         }
         else if (container.containerModel.includes('/product') && (fieldName === 'productStdMoney'
           || fieldName === 'knifePlateMoney' || fieldName === 'makePlateMoney' || fieldName === 'proofingMoney' || fieldName === 'freightMoney' || fieldName === 'businessMoney'
           || fieldName === 'costMoney' || fieldName === 'taxName')) {
-          const isWhole = container.containerModel.includes('/productWhole');
-          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, dataRow,'product', fieldName, isWhole);
+          const moneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, dataRow,'product', fieldName);
           dataRow = { ...dataRow, ...moneyCalcData};
+          const isWhole = container.containerModel.includes('/productWhole');
+          let wholeMoneyCalcData = {};
+          if (isWhole) {
+            wholeMoneyCalcData = commonUtils.getStdMoneyToPrice(props.commonModel, propsRef.current.masterData, dataRow,'product', fieldName, isWhole);
+            dataRow = { ...dataRow, ...wholeMoneyCalcData};
+          }
+
           if (dataRow.handleType === 'modify') {
             const indexModify = returnData[name + 'ModifyData'].findIndex(item => item.id === record.id);
             if (indexModify > -1) {
-              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData };
+              returnData[name + 'ModifyData'][indexModify] = { ...returnData[name + 'ModifyData'][indexModify], ...moneyCalcData, ...wholeMoneyCalcData };
             }
           }
         }

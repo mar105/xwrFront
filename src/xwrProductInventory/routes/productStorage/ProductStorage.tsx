@@ -11,6 +11,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
 import commonProductEvent from "../commonProductEvent";
 import commonBillEvent from "../../../common/commonBillEvent";
+import commonPurchaseEvent from "../../../common/commonPurchaseEvent";
 
 const ProductStorage = (props) => {
   const [form] = Form.useForm();
@@ -56,4 +57,4 @@ const ProductStorage = (props) => {
   );
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonProductEvent(ProductStorage)))));
+export default connect(commonUtils.mapStateToProps)(commonBase(commonDocEvent(commonBillEvent(commonProductEvent(commonPurchaseEvent(ProductStorage))))));

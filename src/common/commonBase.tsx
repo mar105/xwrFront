@@ -1131,11 +1131,22 @@ const commonBase = (WrapComponent) => {
           addState.searchRowKeys = searchRowKeys;
           addState.slaveSearchCondition = searchCondition;
           addState.searchData = searchData;
+          props.callbackAddPane(config.popupSelectId, addState);
         } else {
-          const key = commonUtils.isEmpty(config.popupSelectKey) ? container.tableKey : config.popupSelectKey;
+          let key = '';
+          let popupSelectId = '';
+          if (config.popupSelectKey.indexOf('.') > -1) {
+            key = config.popupSelectKey.split('.')[0];
+            const routeIdKey = config.popupSelectKey.split('.')[1];
+            popupSelectId = commonUtils.isEmpty(record[routeIdKey]) ? config.popupSelectId : record[routeIdKey];
+          } else {
+            key = commonUtils.isEmpty(config.popupSelectKey) ? container.tableKey : config.popupSelectKey;
+            popupSelectId = config.popupSelectId;
+          }
           addState.dataId = record[key];
+          props.callbackAddPane(popupSelectId, addState);
         }
-        props.callbackAddPane(config.popupSelectId, addState);
+
       }
 
     }

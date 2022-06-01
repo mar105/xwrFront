@@ -200,7 +200,7 @@ const commonDocEvent = (WrapComponent) => {
 
         // routeName配置的未清为commonList转换为selectList
         const dropParam = { name: 'slave', type: 'popupFrom', config: fromConfig, routeName: '/xwrBasic/selectList', onModalOk,
-          state: { searchRowKeys, slaveSearchCondition: searchCondition, searchData }  };
+          state: { searchRowKeys, copyFromCondition: condition, slaveSearchCondition: searchCondition, searchData }  };
         props.onDropPopup(dropParam);
       }
     }
@@ -577,34 +577,60 @@ const commonDocEvent = (WrapComponent) => {
         const assignField = params.config.assignField;
         const data = [...dataOld];
         const addState: any = {};
+
+
+        //校验选择框选择数据是否相同
+        const sqlConditionNew: any = [];
+        params.config.sqlCondition.split(',').forEach(condition => {
+          if (condition.split('.').length > 2) {
+            sqlConditionNew.push(condition.split('.')[0] + '.' + condition.split('.')[2]);
+          } else if (condition.split('.').length > 1) {
+            sqlConditionNew.push(condition.split('.')[0] + '.' + condition.split('.')[1]);
+          }
+        });
+        const conditionSelect = commonUtils.getCondition('master', params.selectList[0], sqlConditionNew.toString(), props);
+        let selectListFilter: any = [...params.selectList];
+        for(const key of Object.keys(conditionSelect)) {
+          selectListFilter = selectListFilter.filter(item =>  item[key] === conditionSelect[key]);
+        }
+        if (selectListFilter.length != params.selectList.length) {
+          const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseSameMasterData');
+          if (index > -1) {
+            props.gotoError(dispatch, { code: '6001', msg: commonModel.commonConstant[index].viewName });
+          } else {
+            props.gotoError(dispatch, { code: '6001', msg: '请选择相同主表数据！' });
+          }
+          return;
+        }
+
         //复制从时，从表没有数据，直接覆盖主表数据。
         if (commonUtils.isEmptyArr(data)) {
           const assignValue = commonUtils.getAssignFieldValue(name, assignField, params.selectList[0], propsRef.current);
           const masterData = { ...masterDataOld, ...assignValue };
           addState.masterData = masterData;
-
           const masterModifyData = masterData.handleType === 'modify' ?
             commonUtils.isEmptyObj(masterModifyDataOld) ? { id: masterData.id, handleType: masterData.handleType, ...assignValue } :
               { ...masterModifyDataOld, id: masterData.id, ...assignValue } : masterModifyDataOld;
           addState.masterModifyData = masterModifyData;
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(masterData, props.masterContainer));
-        } else {
-          const assignValue = commonUtils.getAssignFieldValue(name, assignField, params.selectList[0], propsRef.current);
-          const conditionOld = commonUtils.getCondition('master', masterDataOld, params.config.sqlCondition, props);
-          const conditionNew = commonUtils.getCondition('master', assignValue, params.config.sqlCondition, props);
-          for(const key of Object.keys(conditionOld)) {
-            if (conditionOld[key] !== conditionNew[key]) {
-              const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseSameMasterData');
-              if (index > -1) {
-                props.gotoError(dispatch, { code: '6001', msg: commonModel.commonConstant[index].viewName });
-              } else {
-                props.gotoError(dispatch, { code: '6001', msg: '请选择相同主表数据！' });
-              }
-              return;
-            }
-          }
         }
+        // else {
+        //   const assignValue = commonUtils.getAssignFieldValue(name, assignField, params.selectList[0], propsRef.current);
+        //   const conditionOld = commonUtils.getCondition('master', masterDataOld, params.config.sqlCondition, props);
+        //   const conditionNew = commonUtils.getCondition('master', assignValue, params.config.sqlCondition, props);
+        //   for(const key of Object.keys(conditionOld)) {
+        //     if (conditionOld[key] !== conditionNew[key]) {
+        //       const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseSameMasterData');
+        //       if (index > -1) {
+        //         props.gotoError(dispatch, { code: '6001', msg: commonModel.commonConstant[index].viewName });
+        //       } else {
+        //         props.gotoError(dispatch, { code: '6001', msg: '请选择相同主表数据！' });
+        //       }
+        //       return;
+        //     }
+        //   }
+        // }
         const index = commonUtils.isEmptyArr(params.config.children) ? -1 : params.config.children.findIndex(item => item.fieldName === params.config.fieldName + '.slave');
         const assignFieldSlave = index > -1 ? params.config.children[index].assignField : '';
         const nestIndex = commonUtils.isEmptyArr(params.config.children) ? -1 : params.config.children.findIndex(item => item.fieldName === params.config.fieldName + '.slaveNest');

@@ -423,7 +423,7 @@ export function getChildTreeNodeById(treeData, id) {
 // 处理赋值赋值字段、默认值赋值字段 其他数据集value;
 export function copeDataSetValue(name, record, assignValueField, allDataset) {
   const fieldName = assignValueField.trim();
-  const dataSetName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[0].trim() + 'Data' : name;
+  const dataSetName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[0].trim() + 'Data' : name + 'Data';
   const tableFieldName = fieldName.indexOf('.') > -1 ? fieldName.split('.')[1].trim() : fieldName;
   if (tableFieldName.split('&').length > 1 || tableFieldName.includes('+') || tableFieldName.includes('-') || tableFieldName.includes('*') ||
     tableFieldName.includes('/') || tableFieldName.includes('(') || tableFieldName.includes(')')) {

@@ -6,6 +6,7 @@ import dynamic from "dva/dynamic";
 import * as React from "react";
 import {Tooltip} from "antd";
 import { PlusSquareOutlined, PlusOutlined, DeleteOutlined, SaveOutlined, CopyOutlined } from '@ant-design/icons';
+import isNumeric from "antd/lib/_util/isNumeric";
 
 var Snowflake = (function() {
   function Snowflake(_workerId, _dataCenterId, _sequence) {
@@ -453,7 +454,7 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
           formula = formula.replace(oldFieldItem, '(' + allDataset[dataSetName][tableFieldName] + ')');
         } else if (tableFieldName.substring(0, 1) === '&') {
           formula = formula.replace(oldFieldItem, '');
-        } else {
+        } else if (!isNumeric(tableFieldName)) {
           formula = formula.replace(oldFieldItem, '0');
         }
       } else if (isNotEmpty(allDataset[dataSetName])) {
@@ -463,7 +464,7 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
           formula = formula.replace(tableFieldName, '(' + allDataset[dataSetName][tableFieldName] + ')');
         } else if (tableFieldName.substring(0, 1) === '&') {
           formula = formula.replace(tableFieldName, '');
-        } else {
+        } else if (!isNumeric(tableFieldName)) {
           formula = formula.replace(tableFieldName, '0');
         }
       } else {
@@ -473,7 +474,7 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
           formula = formula.replace(tableFieldName, '(' + record[tableFieldName] + ')');
         } else if (tableFieldName.substring(0, 1) === '&') {
           formula = formula.replace(tableFieldName, '');
-        } else {
+        } else if (!isNumeric(tableFieldName)) {
           formula = formula.replace(tableFieldName, '0');
         }
       }

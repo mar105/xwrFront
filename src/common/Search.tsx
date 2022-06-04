@@ -56,7 +56,14 @@ const Search = (props) => {
         dispatchModifyState({ ...returnData });
       }
     } else if (fieldName.indexOf('second') > -1) {
+      const firstFieldName = fieldName.replace('second', 'first');
       const thirdFieldName = fieldName.replace('second', 'third');
+      const index = searchConfig.findIndex(item => item.fieldName === returnData.searchData[firstFieldName]);
+      if (index > -1 && searchConfig[index].fieldType === 'datetime') {
+        // 防止月转=或者今天时日期格式不对
+        returnData.searchData[thirdFieldName] = moment().format('YYYY-MM-DD');
+      }
+      //-------------------------------
       if (returnData.searchData[fieldName] === 'today') {
         returnData.searchData[thirdFieldName] = moment().format('YYYY-MM-DD');
       }

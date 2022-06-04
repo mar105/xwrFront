@@ -9,6 +9,8 @@ import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
 import {ButtonComponent} from "../components/ButtonComponent";
 import { DeleteOutlined } from '@ant-design/icons';
+import moment from 'moment';
+
 const Search = (props) => {
   useEffect(() => {
     const { slaveContainer, searchData: searchDataOld, searchRowKeys: searchRowKeysOld, dispatchModifyState } = props;
@@ -37,18 +39,38 @@ const Search = (props) => {
     dispatchModifyState({ searchConfig, searchRowKeys, searchData, firstViewDrop });
   }, []);
 
-  // const onSelectChange = (name, fieldName, record, assignField, value, option) => {
-  //   const { dispatchModifyState }: any = props;
-  //   const returnData = props.onSelectChange(name, fieldName, record, assignField, value, option, true);
-  //   if (fieldName.indexOf('first') > -1) {
-  //     returnData.secondViewDrop = searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
-  //       searchConfig[0].fieldType === 'datetime' ? searchType.datetime :
-  //         searchConfig[0].fieldType === 'tinyint' ? searchType.tinyint :
-  //           searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
-  //             searchConfig[0].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
-  //     dispatchModifyState({ secondViewDrop });
-  //   }
-  // }
+  const onDataChange = (params) => {
+    const { fieldName, value } = params;
+    const { searchConfig, dispatchModifyState }: any = props;
+    const returnData = props.onDataChange({ ...params, isWait: true});
+    if (fieldName.indexOf('first') > -1) {
+      const index = searchConfig.findIndex(item => item.fieldName === value);
+      if (index > -1) {
+        const secondFieldName = fieldName.replace('first', 'second');
+        const secondViewDrop = searchConfig[index].fieldType === 'varchar' ? searchType.varchar :
+          searchConfig[index].fieldType === 'datetime' ? searchType.datetime :
+            searchConfig[index].fieldType === 'tinyint' ? searchType.tinyint :
+              searchConfig[index].fieldType === 'varchar' ? searchType.varchar :
+                searchConfig[index].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
+        returnData.searchData[secondFieldName] = secondViewDrop[0].id;
+        dispatchModifyState({ ...returnData });
+      }
+    } else if (fieldName.indexOf('second') > -1) {
+      const thirdFieldName = fieldName.replace('second', 'third');
+      if (returnData.searchData[fieldName] === 'today') {
+        returnData.searchData[thirdFieldName] = moment().format('YYYY-MM-DD');
+      }
+      else if (returnData.searchData[fieldName] === 'month') {
+        returnData.searchData[thirdFieldName] = moment().format("YYYY-MM");
+      }
+      else if (returnData.searchData[fieldName] === 'monthPre') {
+        returnData.searchData[thirdFieldName] = moment().startOf('month').subtract('month', 1).format('YYYY-MM');
+      }
+      dispatchModifyState({ ...returnData });
+    } else {
+      dispatchModifyState({ ...returnData });
+    }
+  }
 
   const onButtonClick = async (key, e) => {
     const name = 'slave';
@@ -130,7 +152,7 @@ const Search = (props) => {
         config: firstConfig,
         property: {value: searchData['first' + key]},
         record: searchData,
-        event: {onChange: props.onDataChange, getSelectList: props.getSelectList }
+        event: {onChange: onDataChange, getSelectList: props.getSelectList }
       };
 
       const index = commonUtils.isEmptyArr(searchConfig) ? -1 : searchConfig.findIndex(item => item.fieldName === searchData['first' + key]);
@@ -154,7 +176,7 @@ const Search = (props) => {
         config: secondConfig,
         property: {value: searchData['second' + key]},
         record: searchData,
-        event: {onChange: props.onDataChange, getSelectList: props.getSelectList }
+        event: {onChange: onDataChange, getSelectList: props.getSelectList }
       };
 
       const thirdConfig = index > -1 ? {
@@ -169,20 +191,28 @@ const Search = (props) => {
       const thirdParams = {
         name: props.name,
         componentType: componentType.Soruce,
+        // -----------------日期使用-----------------
+        dateType: searchData['second' + key] === 'between' || searchData['second' + key] === 'betweenTime' ? 'RangePicker' : '',
+        // ----------------------------------
         config: thirdConfig,
-        property: {value: searchData['third' + key]},
+        property: {
+          // -----------------日期使用-----------------
+          showTime: searchData['second' + key] === 'betweenTime',
+          picker: searchData['second' + key] === 'month' || searchData['second' + key] === 'monthPre' ? 'month' : undefined,
+          // ----------------------------------
+          value: searchData['third' + key]},
         record: searchData,
-        event: {onChange: props.onDataChange, getSelectList: props.getSelectList }
+        event: {onChange: onDataChange, getSelectList: props.getSelectList }
       };
 
-      const thirdInputprops = {
-        name: props.name,
-        componentType: componentType.Soruce,
-        config: thirdConfig,
-        property: {value: searchData['third' + key]},
-        record: searchData,
-        event: {onChange: props.onDataChange}
-      };
+      // const thirdInputProps = {
+      //   name: props.name,
+      //   componentType: componentType.Soruce,
+      //   config: thirdConfig,
+      //   property: {value: searchData['third' + key]},
+      //   record: searchData,
+      //   event: {onChange: onDataChange}
+      // };
 
       const firstComponent = <SelectComponent {...firstParams} />;
       const secondComponent = <SelectComponent {...secondParams}  />;
@@ -191,7 +221,7 @@ const Search = (props) => {
         if (thirdConfig.dropType === 'sql' || thirdConfig.dropType === 'const') {
           thirdComponent = <SelectComponent {...thirdParams}  />;
         } else {
-          thirdComponent = <div style={{width: 200}}><InputComponent {...thirdInputprops}  /> </div>;
+          thirdComponent = <div style={{width: 200}}><InputComponent {...thirdParams}  /> </div>;
         }
       } else if (thirdConfig.fieldType === 'decimal' || thirdConfig.fieldType === 'smallint' || thirdConfig.fieldType === 'int') {
         thirdComponent = <NumberComponent {...thirdParams}  />;

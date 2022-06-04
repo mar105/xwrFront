@@ -724,6 +724,10 @@ const commonBase = (WrapComponent) => {
             assignValue[field] = valueOld[fieldIndex];
           });
         }
+      } else if (componentType === 'RangePicker') {
+        value = valueOld.toString();
+      } else if (componentType === 'DatePicker') {
+        value = commonUtils.isEmpty(valueOld) ? null : valueOld;
       } else if (componentType === 'TreeSelect') {
         value = valueOld === undefined ? '' : valueOld.toString();
         const assignOption = commonUtils.isEmptyObj(extra) || commonUtils.isEmptyObj(extra.triggerNode) || commonUtils.isEmptyObj(extra.triggerNode.props) ? {} : extra.triggerNode.props;

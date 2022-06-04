@@ -18,9 +18,8 @@ export const searchType = {
     {value: '小于', id: '<'},
     {value: '大于等于', id: '>='},
     {value: '小于等于', id: '<='},
-    {value: '今日', id: 'day'},
+    {value: '今日', id: 'today'},
     {value: '本月', id: 'month'},
-    {value: '上月', id: 'monthPre'},
-    {value: '本周', id: 'week'}],
+    {value: '上月', id: 'monthPre'}],
   month: [{value: '等于', id: '='}],
 }

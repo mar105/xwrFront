@@ -75,7 +75,7 @@ const commonBase = (WrapComponent) => {
             addState[container.dataSetName + 'Container'] = container;
             if (container.isTable && commonUtils.isEmptyArr(modifyState[container.dataSetName + 'Columns'])) {
               const columns: any = [];
-              container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance' || item.containerType === 'relevanceNotView' || item.containerType === 'spare' || item.containerType === 'cascader') && item.isVisible).forEach(item => {
+              container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance' || item.containerType === 'relevanceNotView' || item.containerType === 'relevanceInstant' || item.containerType === 'spare' || item.containerType === 'cascader') && item.isVisible).forEach(item => {
                 const column = { title: item.viewName, dataIndex: item.fieldName, fieldType: item.fieldType, sortNum: item.sortNum, width: item.width };
                 columns.push(column);
               });
@@ -1125,10 +1125,15 @@ const commonBase = (WrapComponent) => {
         Object.keys(condition).forEach(key => {
           const value = commonUtils.isEmpty(condition[key]) ? '' : condition[key];
           searchRowKeys.push(key);
-          searchCondition.push({ fieldName: key, condition: '=', fieldValue: value  });
-          searchData['first' + key] = key;
-          searchData['second' + key] = '=';
-          searchData['third' + key] = value;
+          if (key.endsWith('Date') && commonUtils.isNotEmpty(value) && value.split(',')) {
+
+          } else {
+            searchCondition.push({ fieldName: key, condition: '=', fieldValue: value  });
+            searchData['first' + key] = key;
+            searchData['second' + key] = '=';
+            searchData['third' + key] = value;
+          }
+
         });
 
         if (commonUtils.isNotEmpty(config.sqlCondition)) {

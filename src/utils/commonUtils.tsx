@@ -484,7 +484,18 @@ export function copeDataSetValue(name, record, assignValueField, allDataset) {
   } else if ((name + 'Data') === dataSetName) {
     return record[tableFieldName];
   } else if (isNotEmpty(allDataset) && isNotEmpty(allDataset[dataSetName]) && typeof allDataset[dataSetName] === 'object' && allDataset[dataSetName].constructor === Object) {
-    return allDataset[dataSetName][tableFieldName];
+    if (dataSetName === 'searchData') {
+      const { searchRowKeys } = allDataset;
+      if (isNotEmptyArr(searchRowKeys)) {
+        for(const key of searchRowKeys) {
+          if (allDataset[dataSetName]['first' + key] === tableFieldName) {
+            return allDataset[dataSetName]['third' + key];
+          }
+        };
+      }
+    } else {
+      return allDataset[dataSetName][tableFieldName];
+    }
   } else if (isNotEmpty(allDataset) && isNotEmpty(allDataset[dataSetName])) {
     const selectedName = fieldName.split('.')[0].trim() + 'SelectedRowKeys';
     if (isNotEmptyArr(allDataset[selectedName])) {

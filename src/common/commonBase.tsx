@@ -1118,7 +1118,7 @@ const commonBase = (WrapComponent) => {
       const {[name + 'Container']: container } = stateRef.current;
       const addState: any = {};
       if (commonUtils.isNotEmpty(config.popupSelectId)) {
-        const condition = commonUtils.getCondition(name, record, config.sqlCondition, props);
+        const condition = commonUtils.getCondition(name, record, config.sqlCondition, {...props, ...stateRef.current});
         const searchCondition: any = [];
         const searchRowKeys: any = [];
         const searchData: any = {};
@@ -1126,7 +1126,10 @@ const commonBase = (WrapComponent) => {
           const value = commonUtils.isEmpty(condition[key]) ? '' : condition[key];
           searchRowKeys.push(key);
           if (key.endsWith('Date') && commonUtils.isNotEmpty(value) && value.split(',')) {
-
+            searchCondition.push({ fieldName: key, condition: 'between', fieldValue: value  });
+            searchData['first' + key] = key;
+            searchData['second' + key] = 'between';
+            searchData['third' + key] = value;
           } else {
             searchCondition.push({ fieldName: key, condition: '=', fieldValue: value  });
             searchData['first' + key] = key;

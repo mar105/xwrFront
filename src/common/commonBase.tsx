@@ -1115,7 +1115,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onCellClick = async (name, config, record) => {
-      const {[name + 'Container']: container } = stateRef.current;
+      const {[name + 'Container']: container, searchRowKeys: searchRowKeysOld, searchData: searchDataOld } = stateRef.current;
       const addState: any = {};
       if (commonUtils.isNotEmpty(config.popupSelectId)) {
         const condition = commonUtils.getCondition(name, record, config.sqlCondition, {...props, ...stateRef.current});
@@ -1125,11 +1125,23 @@ const commonBase = (WrapComponent) => {
         Object.keys(condition).forEach(key => {
           const value = commonUtils.isEmpty(condition[key]) ? '' : condition[key];
           searchRowKeys.push(key);
-          if (key.endsWith('Date') && commonUtils.isNotEmpty(value) && value.split(',')) {
-            searchCondition.push({ fieldName: key, condition: 'between', fieldValue: value  });
-            searchData['first' + key] = key;
-            searchData['second' + key] = 'between';
-            searchData['third' + key] = value;
+          if (key.endsWith('Date') && commonUtils.isNotEmpty(value)) {
+            for(const conditionOld of config.sqlCondition.split(',')) {
+              const fieldName = conditionOld.split('.').length > 2 ? conditionOld.split('.')[2] : conditionOld.split('.')[1];
+              console.log('111', conditionOld.split('.')[1], key, searchDataOld);
+              for(const oldKey of searchRowKeysOld) {
+                if (searchDataOld['first' + oldKey] === conditionOld.split('.')[1] && fieldName === key) {
+                  searchCondition.push({ fieldName: key, condition: searchDataOld['second' + oldKey], fieldValue: value  });
+                  searchData['first' + key] = key;
+                  searchData['second' + key] = searchDataOld['second' + oldKey];
+                  searchData['third' + key] = value;
+                  break;
+                }
+              }
+              break;
+
+            }
+
           } else {
             searchCondition.push({ fieldName: key, condition: '=', fieldValue: value  });
             searchData['first' + key] = key;

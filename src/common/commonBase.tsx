@@ -1128,7 +1128,6 @@ const commonBase = (WrapComponent) => {
           if (key.endsWith('Date') && commonUtils.isNotEmpty(value)) {
             for(const conditionOld of config.sqlCondition.split(',')) {
               const fieldName = conditionOld.split('.').length > 2 ? conditionOld.split('.')[2] : conditionOld.split('.')[1];
-              console.log('111', conditionOld.split('.')[1], key, searchDataOld);
               for(const oldKey of searchRowKeysOld) {
                 if (searchDataOld['first' + oldKey] === conditionOld.split('.')[1] && fieldName === key) {
                   searchCondition.push({ fieldName: key, condition: searchDataOld['second' + oldKey], fieldValue: value  });

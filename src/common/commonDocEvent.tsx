@@ -85,6 +85,8 @@ const commonDocEvent = (WrapComponent) => {
             if (commonUtils.isNotEmptyArr(returnData.slaveData)) {
               const returnState: any = await props.getAllData({ dataId: returnData.slaveData[0].id });
               dispatchModifyState({...returnState, listRowIndex: props.listRowIndex <= 0 ? 1 : props.listRowIndex});
+            } else {
+              props.callbackRemovePane(tabId);
             }
           } else {
             props.callbackRemovePane(tabId);

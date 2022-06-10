@@ -84,12 +84,13 @@ const commonDocEvent = (WrapComponent) => {
           const originalSlaveIds: any = [];
           slaveData.forEach(slave => {
             if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-              originalSlaveIds.push(slave.originalSlaveId);
+              originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
             }
           });
           if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
             const url: string = application.urlCommon + '/verify/removeModifyingMulti';
-            const paramsModify: any = {selectKeys: originalSlaveIds, tabId: props.tabId};
+            const paramsModify: any = {selectKeys: originalSlaveIds, isSelect: 0, groupId: commonModel.userInfo.groupId,
+              shopId: commonModel.userInfo.shopId, tabId: masterDataOld.id};
             const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
             if (interfaceReturn.code !== 1) {
               props.gotoError(props.dispatch, interfaceReturn);
@@ -114,12 +115,13 @@ const commonDocEvent = (WrapComponent) => {
           const originalSlaveIds: any = [];
           slaveData.filter(item => item.handleType === 'add').forEach(slave => {
             if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-              originalSlaveIds.push(slave.originalSlaveId);
+              originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
             }
           });
           if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
             const url: string = application.urlCommon + '/verify/removeModifyingMulti';
-            const paramsModify: any = {selectKeys: originalSlaveIds, tabId: props.tabId};
+            const paramsModify: any = {selectKeys: originalSlaveIds, isSelect: 0, groupId: commonModel.userInfo.groupId,
+              shopId: commonModel.userInfo.shopId, tabId: masterData.id};
             const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
             if (interfaceReturn.code !== 1) {
               props.gotoError(props.dispatch, interfaceReturn);
@@ -130,11 +132,12 @@ const commonDocEvent = (WrapComponent) => {
           const selectKeys: any = [];
           slaveDelData.forEach(slave => {
             if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-              selectKeys.push(slave.originalSlaveId);
+              selectKeys.push(slave.originalId + '_' + slave.originalSlaveId);
             }
           });
           const urlModify: string = application.urlCommon + '/verify/isExistModifyingMulti';
-          const paramsModify: any = {selectKeys, tabId};
+          const paramsModify: any = {selectKeys, isSelect: 0, groupId: commonModel.userInfo.groupId,
+            shopId: commonModel.userInfo.shopId, tabId: masterData.id};
           const interfaceReturnModify = (await request.postRequest(urlModify, commonModel.token, application.paramInit(paramsModify))).data;
           if (interfaceReturnModify.code !== 1) {
             props.gotoError(dispatch, interfaceReturnModify);
@@ -615,7 +618,6 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     const onModalOk = async (params, isWait) => {
-      const { tabId } = propsRef.current;
       if (commonUtils.isEmpty(params)) {
         props.dispatchModifyState({ modalVisible: false });
         return;
@@ -654,13 +656,20 @@ const commonDocEvent = (WrapComponent) => {
           return;
         }
 
-
+        const originalSlaveIds: any = [];
+        params.selectList.forEach(slave => {
+          if (commonUtils.isNotEmpty(slave.id)) {
+            originalSlaveIds.push(slave.masterId + '_' + slave.id);
+          }
+        });
         let url: string = application.urlCommon + '/verify/isExistModifyingMulti';
-        let paramsModify: any = {selectKeys: params.selectKeys, isSelect: 1, tabId};
+        let paramsModify: any = {selectKeys: originalSlaveIds, isSelect: 1, groupId: commonModel.userInfo.groupId,
+          shopId: commonModel.userInfo.shopId, tabId: masterDataOld.id};
         let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsModify))).data;
         if (interfaceReturn.code === 1) {
           url = application.urlCommon + '/verify/isExistModifyingMulti';
-          paramsModify = {selectKeys: params.selectKeys, isSelect: 0, tabId};
+          paramsModify = {selectKeys: originalSlaveIds, isSelect: 0, groupId: commonModel.userInfo.groupId,
+            shopId: commonModel.userInfo.shopId, tabId: masterDataOld.id};
           interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsModify))).data;
           if (interfaceReturn.code !== 1) {
             props.gotoError(dispatch, interfaceReturn);

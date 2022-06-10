@@ -140,7 +140,7 @@ const Product = (props) => {
     return <div>
       <a onClick={onLastColumnClick.bind(this, 'customer', 'defaultButton', record)}>
         <Tooltip placement="top" title="默认"> {commonUtils.isNotEmptyObj(masterData) && masterData.defaultCustomerId === record.customerId ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
-      <a onClick={props.onLastColumnClick.bind(this, 'customer', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+      { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'customer', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a> }
     </div>
   }, width: 50 , fixed: 'right' };
   const inventoryParam: any = commonUtils.getTableProps('inventory', props);

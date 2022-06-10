@@ -44,12 +44,13 @@ const commonBase = (WrapComponent) => {
             const originalSlaveIds: any = [];
             slaveData.filter(item => item.handleType === 'add').forEach(slave => {
               if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-                originalSlaveIds.push(slave.originalSlaveId);
+                originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
               }
             });
             if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
               const url: string = application.urlCommon + '/verify/removeModifyingMulti';
-              const paramsModify: any = {selectKeys: originalSlaveIds, tabId: props.tabId};
+              const paramsModify: any = {selectKeys: originalSlaveIds, isSelect: 0, groupId: commonModel.userInfo.groupId,
+                shopId: commonModel.userInfo.shopId, tabId: masterData.id};
               const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
               if (interfaceReturn.code !== 1) {
                 props.gotoError(props.dispatch, interfaceReturn);
@@ -60,11 +61,12 @@ const commonBase = (WrapComponent) => {
             const selectKeys: any = [];
             slaveDelData.forEach(slave => {
               if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-                selectKeys.push(slave.originalSlaveId);
+                selectKeys.push(slave.originalId + '_' + slave.originalSlaveId);
               }
             });
             const urlModify: string = application.urlCommon + '/verify/isExistModifyingMulti';
-            const paramsModify: any = {selectKeys, tabId};
+            const paramsModify: any = {selectKeys, isSelect: 0, groupId: commonModel.userInfo.groupId,
+              shopId: commonModel.userInfo.shopId, tabId: masterData.id};
             const interfaceReturnModify = (await request.postRequest(urlModify, commonModel.token, application.paramInit(paramsModify))).data;
             if (interfaceReturnModify.code !== 1) {
               props.gotoError(dispatch, interfaceReturnModify);
@@ -357,9 +359,9 @@ const commonBase = (WrapComponent) => {
     };
 
     const delTableData = async (name, keyName, keyValue) => {
-      const { [name + 'Container']: container, [name + 'Data']: dataOld, [name + 'DelData']: delDataOld,
+      const { masterData, [name + 'Container']: container, [name + 'Data']: dataOld, [name + 'DelData']: delDataOld,
         [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
-
+      const { commonModel } = props;
       const data = [...dataOld];
       const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
       const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
@@ -379,7 +381,7 @@ const commonBase = (WrapComponent) => {
             delData.push(data[index]);
           }
           if (commonUtils.isNotEmpty(data[index].originalSlaveId)) {
-            originalSlaveIds.push(data[index].originalSlaveId);
+            originalSlaveIds.push(data[index].originalId + '_' + data[index].originalSlaveId);
           }
           data.splice(index, 1);
 
@@ -399,7 +401,8 @@ const commonBase = (WrapComponent) => {
 
       if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
         const url: string = application.urlCommon + '/verify/removeModifyingMulti';
-        const paramsModify: any = {selectKeys: originalSlaveIds, tabId: props.tabId};
+        const paramsModify: any = {selectKeys: originalSlaveIds, isSelect: 0, groupId: commonModel.userInfo.groupId,
+          shopId: commonModel.userInfo.shopId, tabId: masterData.id};
         const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
         if (interfaceReturn.code !== 1) {
           gotoError(props.dispatch, interfaceReturn);
@@ -620,7 +623,7 @@ const commonBase = (WrapComponent) => {
       for(let index = 0; index < treeData.length; index++) {
         if (treeData[index][keyName] === keyValue) {
           if (commonUtils.isNotEmpty(treeData[index].originalSlaveId)) {
-            originalSlaveIds.push(treeData[index].originalSlaveId);
+            originalSlaveIds.push(treeData[index].originalId + '_' + treeData[index].originalSlaveId);
           }
           treeDataOld.splice(index, 1);
           const indexRow = selectedRows.findIndex(item => item.id === keyValue);
@@ -651,7 +654,7 @@ const commonBase = (WrapComponent) => {
         for(let index = 0; index < treeNode.length; index++) {
           if (treeNode[index][keyName] === keyValue) {
             if (commonUtils.isNotEmpty(treeNode[index].originalSlaveId)) {
-              originalSlaveIds.push(treeNode[index].originalSlaveId);
+              originalSlaveIds.push(treeNode[index].originalId + '_' + treeNode[index].originalSlaveId);
             }
             treeNodeOld.splice(index, 1);
             const indexRow = selectedRows.findIndex(item => item.id === keyValue);

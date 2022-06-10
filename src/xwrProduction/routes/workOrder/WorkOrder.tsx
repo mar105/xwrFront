@@ -94,8 +94,7 @@ const WorkOrder = (props) => {
   slaveParam.lastColumn = { title: 'o',
     render: (text,record, index)=> {
       return <div>
-        <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
-
+        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
       </div>
     }, width: 100, fixed: 'right' };
   slaveParam.eventOnRow.onRowClick = props.onRowClick;
@@ -107,7 +106,7 @@ const WorkOrder = (props) => {
   partParam.lastColumn = { title: 'o', changeValue: props.slaveSelectedRowKeys,
     render: (text,record, index)=> {
       return <div>
-        <a onClick={props.onLastColumnClick.bind(this, 'part', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'part', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
       </div>
     }, width: 100 , fixed: 'right' };
   partParam.onFilter = onFilter;
@@ -121,7 +120,7 @@ const WorkOrder = (props) => {
       props.slaveSelectedRowKeys ? props.slaveSelectedRowKeys : props.partSelectedRowKeys ? props.partSelectedRowKeys : '',
     render: (text,record, index)=> {
       return <div>
-        <a onClick={props.onLastColumnClick.bind(this, 'material', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'material', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
       </div>
     }, width: 100 , fixed: 'right' };
   materialParam.onFilter = onFilter;
@@ -134,7 +133,7 @@ const WorkOrder = (props) => {
       props.slaveSelectedRowKeys ? props.slaveSelectedRowKeys : props.partSelectedRowKeys ? props.partSelectedRowKeys : '',
     render: (text,record, index)=> {
       return <div>
-        <a onClick={props.onLastColumnClick.bind(this, 'process', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'process', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
       </div>
     }, width: 100 , fixed: 'right' };
   processParam.onFilter = onFilter;

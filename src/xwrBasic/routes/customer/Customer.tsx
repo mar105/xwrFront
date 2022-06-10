@@ -111,7 +111,7 @@ const Customer = (props) => {
     return <div>
       <a onClick={onLastColumnClick.bind(this, 'contact', 'defaultButton', record)}>
         <Tooltip placement="top" title="默认"> {commonUtils.isNotEmptyObj(masterData) && masterData.defaultContactId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
-      <a onClick={props.onLastColumnClick.bind(this, 'contact', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+      { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'contact', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
     </div>
   }, width: 50 , fixed: 'right' };
   const addressParam: any = commonUtils.getTableProps('address', props);
@@ -122,7 +122,7 @@ const Customer = (props) => {
       return <div>
         <a onClick={onLastColumnClick.bind(this, 'address', 'defaultButton', record)}>
           <Tooltip placement="top" title="默认">{commonUtils.isNotEmptyObj(masterData) && masterData.defaultAddressId === record.id ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
-        <a onClick={props.onLastColumnClick.bind(this, 'address', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'address', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
       </div>
     }, width: 50 , fixed: 'right' };
 

@@ -103,7 +103,7 @@ const SyncContainer = (props) => {
   tableParam.width = 1200;
   tableParam.lastColumn = { title: 'o',
     render: (text,record, index)=> {
-    return <div>
+    return !props.enabled ? '' : <div>
       <a onClick={onLastColumnClick.bind(this, name, 'copyToClipboardButton', record)}>
       <Tooltip placement="top" title="复制到剪贴版"><CopyOutlined /></Tooltip></a>
       <a onClick={onLastColumnClick.bind(this, name, 'delButton', record)}>

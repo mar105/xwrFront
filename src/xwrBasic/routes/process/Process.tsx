@@ -106,7 +106,7 @@ const Process = (props) => {
     return <div>
       <a onClick={onLastColumnClick.bind(this, 'machine', 'defaultButton', record)}>
         <Tooltip placement="top" title="默认"> {commonUtils.isNotEmptyObj(masterData) && masterData.defaultMachineId === record.machineId ? <StarFilled /> : <StarTwoTone /> }</Tooltip></a>
-      <a onClick={props.onLastColumnClick.bind(this, 'machine', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>
+      { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'machine', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
     </div>
   }, width: 50 , fixed: 'right' };
   const matchParam: any = commonUtils.getTableProps('match', props);

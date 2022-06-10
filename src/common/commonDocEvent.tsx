@@ -52,7 +52,7 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e, childParams) => {
-      const { commonModel, tabId, dispatch, dispatchModifyState, masterContainer, masterData: masterDataOld } = props;
+      const { commonModel, tabId, dispatch, dispatchModifyState, masterContainer, masterData: masterDataOld, slaveData, slaveDelData } = props;
       if (key === 'addButton') {
         const masterData = childParams && childParams.masterData ? childParams.masterData : props.onAdd();
         masterData.examineStatus = 'create';
@@ -80,6 +80,23 @@ const commonDocEvent = (WrapComponent) => {
 
       } else if (key === 'cancelButton') {
         if (masterDataOld.handleType === 'add') {
+          // 清除复制从数据锁定数据。
+          const originalSlaveIds: any = [];
+          slaveData.forEach(slave => {
+            if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
+              originalSlaveIds.push(slave.originalSlaveId);
+            }
+          });
+          if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
+            const url: string = application.urlCommon + '/verify/removeModifyingMulti';
+            const paramsModify: any = {selectKeys: originalSlaveIds, tabId: props.tabId};
+            const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
+            if (interfaceReturn.code !== 1) {
+              props.gotoError(props.dispatch, interfaceReturn);
+              return;
+            }
+          }
+          //------------------------------------
           if (props.listRouteId) {
             const returnData: any = await props.getDataList({ name: 'slave', routeId: props.listRouteId, containerId: props.listContainerId, pageNum: props.listRowIndex <= 0 ? 1 : props.listRowIndex, pageSize: 1, condition: props.listCondition, isWait: true });
             if (commonUtils.isNotEmptyArr(returnData.slaveData)) {
@@ -93,6 +110,37 @@ const commonDocEvent = (WrapComponent) => {
           }
         } else if (masterDataOld.handleType === 'modify' || masterDataOld.handleType === 'copyToAdd') {
           const {dispatch, commonModel, tabId, masterData} = props;
+          // 清除复制从数据锁定数据。
+          const originalSlaveIds: any = [];
+          slaveData.filter(item => item.handleType === 'add').forEach(slave => {
+            if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
+              originalSlaveIds.push(slave.originalSlaveId);
+            }
+          });
+          if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
+            const url: string = application.urlCommon + '/verify/removeModifyingMulti';
+            const paramsModify: any = {selectKeys: originalSlaveIds, tabId: props.tabId};
+            const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
+            if (interfaceReturn.code !== 1) {
+              props.gotoError(props.dispatch, interfaceReturn);
+              return;
+            }
+          }
+
+          const selectKeys: any = [];
+          slaveDelData.forEach(slave => {
+            if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
+              selectKeys.push(slave.originalSlaveId);
+            }
+          });
+          const urlModify: string = application.urlCommon + '/verify/isExistModifyingMulti';
+          const paramsModify: any = {selectKeys, tabId};
+          const interfaceReturnModify = (await request.postRequest(urlModify, commonModel.token, application.paramInit(paramsModify))).data;
+          if (interfaceReturnModify.code !== 1) {
+            props.gotoError(dispatch, interfaceReturnModify);
+            return;
+          }
+          //------------------------------------
           const url: string = application.urlCommon + '/verify/removeModifying';
           const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
             shopId: commonModel.userInfo.shopId};
@@ -567,6 +615,7 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     const onModalOk = async (params, isWait) => {
+      const { tabId } = propsRef.current;
       if (commonUtils.isEmpty(params)) {
         props.dispatchModifyState({ modalVisible: false });
         return;
@@ -602,6 +651,23 @@ const commonDocEvent = (WrapComponent) => {
           } else {
             props.gotoError(dispatch, { code: '6001', msg: '请选择相同主表数据！' });
           }
+          return;
+        }
+
+
+        let url: string = application.urlCommon + '/verify/isExistModifyingMulti';
+        let paramsModify: any = {selectKeys: params.selectKeys, isSelect: 1, tabId};
+        let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsModify))).data;
+        if (interfaceReturn.code === 1) {
+          url = application.urlCommon + '/verify/isExistModifyingMulti';
+          paramsModify = {selectKeys: params.selectKeys, isSelect: 0, tabId};
+          interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsModify))).data;
+          if (interfaceReturn.code !== 1) {
+            props.gotoError(dispatch, interfaceReturn);
+            return;
+          }
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
           return;
         }
 

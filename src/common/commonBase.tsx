@@ -38,8 +38,39 @@ const commonBase = (WrapComponent) => {
         const clearModifying = async () => {
           const {dispatch, commonModel, tabId} = props;
           //为什么要用stateRef.current？是因为 masterData数据改变后，useEffect使用的是[]不重新更新state，为老数据,使用 useRef来存储变量。
-          const { masterData }: any = stateRef.current;
+          const { masterData, slaveData, slaveDelData }: any = stateRef.current;
           if (commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.handleType)) {
+            // 清除复制从数据锁定数据。
+            const originalSlaveIds: any = [];
+            slaveData.filter(item => item.handleType === 'add').forEach(slave => {
+              if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
+                originalSlaveIds.push(slave.originalSlaveId);
+              }
+            });
+            if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
+              const url: string = application.urlCommon + '/verify/removeModifyingMulti';
+              const paramsModify: any = {selectKeys: originalSlaveIds, tabId: props.tabId};
+              const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
+              if (interfaceReturn.code !== 1) {
+                props.gotoError(props.dispatch, interfaceReturn);
+                return;
+              }
+            }
+
+            const selectKeys: any = [];
+            slaveDelData.forEach(slave => {
+              if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
+                selectKeys.push(slave.originalSlaveId);
+              }
+            });
+            const urlModify: string = application.urlCommon + '/verify/isExistModifyingMulti';
+            const paramsModify: any = {selectKeys, tabId};
+            const interfaceReturnModify = (await request.postRequest(urlModify, commonModel.token, application.paramInit(paramsModify))).data;
+            if (interfaceReturnModify.code !== 1) {
+              props.gotoError(dispatch, interfaceReturnModify);
+              return;
+            }
+            //------------------------------------
             const url: string = application.urlCommon + '/verify/removeModifying';
             const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
               shopId: commonModel.userInfo.shopId};
@@ -325,17 +356,18 @@ const commonBase = (WrapComponent) => {
       return dataRow;
     };
 
-    const delTableData = (name, keyName, keyValue) => {
-      const { [name + 'Container']: container, [name + 'Data']: dataOld, [name + 'DelData']: delDataOld, [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
+    const delTableData = async (name, keyName, keyValue) => {
+      const { [name + 'Container']: container, [name + 'Data']: dataOld, [name + 'DelData']: delDataOld,
+        [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
 
       const data = [...dataOld];
       const delData = commonUtils.isEmptyArr(delDataOld) ? [] : [...delDataOld];
       const selectedRows = commonUtils.isEmptyArr(selectedRowsOld) ? [] : [...selectedRowsOld];
       const selectedRowKeys = commonUtils.isEmptyArr(selectedRowKeysOld) ? [] : [...selectedRowKeysOld];
-
+      const originalSlaveIds: any = [];
       let index = -1;
       if (container.isTree) {
-        delTreeNode(data, selectedRows, selectedRowKeys, keyName, keyValue);
+        delTreeNode(data, selectedRows, selectedRowKeys, keyName, keyValue, originalSlaveIds);
       } else {
         index = data.findIndex(item => item[keyName] === keyValue);
 
@@ -345,6 +377,9 @@ const commonBase = (WrapComponent) => {
           if (data[index].handleType !== 'add') {
             data[index].handleType = 'del';
             delData.push(data[index]);
+          }
+          if (commonUtils.isNotEmpty(data[index].originalSlaveId)) {
+            originalSlaveIds.push(data[index].originalSlaveId);
           }
           data.splice(index, 1);
 
@@ -362,14 +397,23 @@ const commonBase = (WrapComponent) => {
         }
       }
 
+      if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
+        const url: string = application.urlCommon + '/verify/removeModifyingMulti';
+        const paramsModify: any = {selectKeys: originalSlaveIds, tabId: props.tabId};
+        const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
+        if (interfaceReturn.code !== 1) {
+          gotoError(props.dispatch, interfaceReturn);
+          return;
+        }
+      }
       return { [name + 'Data']: data, [name + 'DelData']: delData, [name + 'SelectedRows']: selectedRows, [name + 'SelectedRowKeys']: selectedRowKeys };
     }
 
-    const onLastColumnClick = (name, key, record, e, isWait = false) => {
+    const onLastColumnClick = async (name, key, record, e, isWait = false) => {
       const { [name + 'SelectedRows']: selectedRowsOld, [name + 'SelectedRowKeys']: selectedRowKeysOld }: any = stateRef.current;
       let addState = {};
       if (key === 'delButton') {
-        const returnData = delTableData(name, 'id', record.id);
+        const returnData = await delTableData(name, 'id', record.id);
         if (isWait) {
           return { ...returnData };
         } else {
@@ -571,10 +615,13 @@ const commonBase = (WrapComponent) => {
     }
 
 
-    const delTreeNode = (treeDataOld, selectedRows, selectedRowKeys, keyName, keyValue) => {
+    const delTreeNode = (treeDataOld, selectedRows, selectedRowKeys, keyName, keyValue, originalSlaveIds) => {
       const treeData = [...treeDataOld];
       for(let index = 0; index < treeData.length; index++) {
         if (treeData[index][keyName] === keyValue) {
+          if (commonUtils.isNotEmpty(treeData[index].originalSlaveId)) {
+            originalSlaveIds.push(treeData[index].originalSlaveId);
+          }
           treeDataOld.splice(index, 1);
           const indexRow = selectedRows.findIndex(item => item.id === keyValue);
           if (indexRow > -1) {
@@ -588,7 +635,7 @@ const commonBase = (WrapComponent) => {
         } else {
           const indexOld = treeDataOld.findIndex(item => item.id === treeData[index].id);
           if (commonUtils.isNotEmptyArr(treeDataOld[indexOld].children)) {
-            delChildTreeNode(treeDataOld[indexOld].children, selectedRows, selectedRowKeys, keyName, keyValue);
+            delChildTreeNode(treeDataOld[indexOld].children, selectedRows, selectedRowKeys, keyName, keyValue, originalSlaveIds);
             if (commonUtils.isEmptyArr(treeDataOld[indexOld].children)) {
               delete treeDataOld[indexOld].children;
             }
@@ -598,11 +645,14 @@ const commonBase = (WrapComponent) => {
 
     }
 
-    const delChildTreeNode = (treeNodeOld, selectedRows, selectedRowKeys, keyName, keyValue) => {
+    const delChildTreeNode = (treeNodeOld, selectedRows, selectedRowKeys, keyName, keyValue, originalSlaveIds) => {
       const treeNode = [...treeNodeOld];
       if (commonUtils.isNotEmptyArr(treeNode)) {
         for(let index = 0; index < treeNode.length; index++) {
           if (treeNode[index][keyName] === keyValue) {
+            if (commonUtils.isNotEmpty(treeNode[index].originalSlaveId)) {
+              originalSlaveIds.push(treeNode[index].originalSlaveId);
+            }
             treeNodeOld.splice(index, 1);
             const indexRow = selectedRows.findIndex(item => item.id === keyValue);
             if (indexRow > -1) {
@@ -613,10 +663,11 @@ const commonBase = (WrapComponent) => {
             if (indexRowKey > -1) {
               selectedRowKeys.splice(indexRowKey, 1);
             }
+
           } else {
             const indexOld = treeNodeOld.findIndex(item => item.id === treeNode[index].id);
             if (commonUtils.isNotEmptyArr(treeNodeOld[indexOld].children)) {
-              delChildTreeNode(treeNodeOld[indexOld].children, selectedRows, selectedRowKeys, keyName, keyValue);
+              delChildTreeNode(treeNodeOld[indexOld].children, selectedRows, selectedRowKeys, keyName, keyValue, originalSlaveIds);
               if (commonUtils.isEmptyArr(treeNodeOld[indexOld].children)) {
                 delete treeNodeOld[indexOld].children;
               }

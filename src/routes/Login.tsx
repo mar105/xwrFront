@@ -32,10 +32,10 @@ const Login = ({ dispatch }) => {
     values.userPwd = Md5.hashAsciiStr(Md5.hashAsciiStr(values.userPwd).toString());
     const interfaceReturn = (await request.postRequest(url, null, application.paramInit(values))).data;
     if (interfaceReturn.code === 1) {
-      localStorage.setItem(application.prefix + 'token', '');
-      localStorage.setItem(application.prefix + 'userInfo', '');
-      localStorage.setItem(application.prefix + 'panes', '[]');
-      localStorage.setItem(application.prefix + 'activePane', '{}');
+      // localStorage.setItem(application.prefix + 'token', '');
+      // localStorage.setItem(application.prefix + 'userInfo', '');
+      // localStorage.setItem(application.prefix + 'panes', '[]');
+      // localStorage.setItem(application.prefix + 'activePane', '{}');
       const userInfo: any = { userId: interfaceReturn.data.userId, userName: values.userName };
       if (commonUtils.isNotEmptyArr(interfaceReturn.data.userShop)) {
         userInfo.groupId = interfaceReturn.data.userShop[0].groupId;
@@ -45,6 +45,10 @@ const Login = ({ dispatch }) => {
         userInfo.isManage = interfaceReturn.data.userShop[0].isManage;
         userInfo.shopInfo = interfaceReturn.data.userShop[0].shopInfo;
       }
+      dispatch({
+        type: 'commonModel/savePanes',
+        payload: [],
+      });
       dispatch({
         type: 'commonModel/saveToken',
         payload: interfaceReturn.data.token,

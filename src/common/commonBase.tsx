@@ -40,13 +40,16 @@ const commonBase = (WrapComponent) => {
           //为什么要用stateRef.current？是因为 masterData数据改变后，useEffect使用的是[]不重新更新state，为老数据,使用 useRef来存储变量。
           const { masterData, slaveData }: any = stateRef.current;
           if (commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.handleType)) {
-            // 清除复制从数据锁定数据。
+            // 清除复制从数据锁定数据。修改时单据数据
             const originalSlaveIds: any = [];
-            slaveData.filter(item => item.handleType === 'add').forEach(slave => {
-              if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-                originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
-              }
-            });
+            if (commonUtils.isNotEmptyArr(slaveData)) {
+              slaveData.filter(item => item.handleType === 'add').forEach(slave => {
+                if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
+                  originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
+                }
+              });
+            }
+
             const url: string = application.urlCommon + '/verify/removeModifyingMulti';
             const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
               shopId: commonModel.userInfo.shopId, selectKeys: originalSlaveIds};

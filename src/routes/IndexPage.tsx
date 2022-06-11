@@ -13,6 +13,7 @@ import {replacePath, routeInfo} from "../routeInfo";
 import { DownOutlined } from '@ant-design/icons';
 import {useMemo} from "react";
 import {useReducer} from "react";
+import ShopInvitation from "./shop/ShopInvitation";
 
 function IndexPage(props) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
@@ -131,6 +132,21 @@ function IndexPage(props) {
     const routeId = '1394810844327579648'; // 公司信息
     callbackAddPane(routeId, { dataId: commonModel.userInfo.shopId });
   }
+
+  const onAddSet = () => {
+    const routeId = '1394810844327579648'; // 公司信息
+    callbackAddPane(routeId, { handleType: 'add' });
+  }
+
+  const onInvitation = () => {
+    props.dispatchModifyState({invitationIsVisible: true});
+  }
+
+  const onInvitationClose = () => {
+    props.dispatchModifyState({invitationIsVisible: false});
+  }
+
+
 
   const onClear = async () => {
     const {dispatch, commonModel} = props;
@@ -301,7 +317,12 @@ function IndexPage(props) {
     return (
     <div>{commonModel.userInfo.userName}
       {
-        commonModel.userInfo && commonModel.userShop && commonModel.userShop.length === 1 ?
+        commonUtils.isEmptyArr(commonModel.userShop) ?
+          <div>
+            <button onClick={onInvitation}> 加入公司</button>
+            <button onClick={onAddSet}> 创建公司</button>
+          </div> :
+          commonModel.userInfo && commonModel.userShop && commonModel.userShop.length === 1 ?
           commonModel.userInfo.shopName :
           <Dropdown overlay={menu}>
             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
@@ -323,8 +344,11 @@ function IndexPage(props) {
         <button onClick={onExit}> 退出</button>
         <button onClick={onClearBusinessData}> 初始化业务数据</button>
         <button onClick={onClearAllData}> 初始化所有数据</button>
-        <Modal width={800} visible={props.progressIsVisible} closable={false} mask={false} maskClosable={false} footer={null}>
+        <Modal width={800} visible={props.progressIsVisible} closable={false} mask={false} footer={null}>
           <Progress type="circle" percent={props.progressPercent} />
+        </Modal>
+        <Modal width={800} visible={props.invitationIsVisible} closable={false} maskClosable={true} footer={null}>
+          <ShopInvitation {...props} onInvitationClose={onInvitationClose} />
         </Modal>
         {shop}
       </Row>

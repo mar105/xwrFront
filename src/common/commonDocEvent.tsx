@@ -52,7 +52,7 @@ const commonDocEvent = (WrapComponent) => {
     }
 
     const onButtonClick = async (key, config, e, childParams) => {
-      const { commonModel, tabId, dispatch, dispatchModifyState, masterContainer, masterData: masterDataOld, slaveData, slaveDelData } = props;
+      const { commonModel, tabId, dispatch, dispatchModifyState, masterContainer, masterData: masterDataOld, slaveData } = props;
       if (key === 'addButton') {
         const masterData = childParams && childParams.masterData ? childParams.masterData : props.onAdd();
         masterData.examineStatus = 'create';
@@ -80,7 +80,7 @@ const commonDocEvent = (WrapComponent) => {
 
       } else if (key === 'cancelButton') {
         if (masterDataOld.handleType === 'add') {
-          // 清除复制从数据锁定数据。
+          // ------------清除复制从数据锁定数据。---------------------
           const originalSlaveIds: any = [];
           slaveData.forEach(slave => {
             if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
@@ -89,9 +89,9 @@ const commonDocEvent = (WrapComponent) => {
           });
           if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
             const url: string = application.urlCommon + '/verify/removeModifyingMulti';
-            const paramsModify: any = {selectKeys: originalSlaveIds, isSelect: 0, groupId: commonModel.userInfo.groupId,
-              shopId: commonModel.userInfo.shopId, tabId: masterDataOld.id};
-            const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
+            const params: any = {selectKeys: originalSlaveIds, groupId: commonModel.userInfo.groupId,
+              shopId: commonModel.userInfo.shopId, tabId};
+            const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(params))).data;
             if (interfaceReturn.code !== 1) {
               props.gotoError(props.dispatch, interfaceReturn);
               return;
@@ -118,35 +118,10 @@ const commonDocEvent = (WrapComponent) => {
               originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
             }
           });
-          if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
-            const url: string = application.urlCommon + '/verify/removeModifyingMulti';
-            const paramsModify: any = {selectKeys: originalSlaveIds, isSelect: 0, groupId: commonModel.userInfo.groupId,
-              shopId: commonModel.userInfo.shopId, tabId: masterData.id};
-            const interfaceReturn = (await request.postRequest(url, props.commonModel.token, application.paramInit(paramsModify))).data;
-            if (interfaceReturn.code !== 1) {
-              props.gotoError(props.dispatch, interfaceReturn);
-              return;
-            }
-          }
 
-          const selectKeys: any = [];
-          slaveDelData.forEach(slave => {
-            if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-              selectKeys.push(slave.originalId + '_' + slave.originalSlaveId);
-            }
-          });
-          const urlModify: string = application.urlCommon + '/verify/isExistModifyingMulti';
-          const paramsModify: any = {selectKeys, isSelect: 0, groupId: commonModel.userInfo.groupId,
-            shopId: commonModel.userInfo.shopId, tabId: masterData.id};
-          const interfaceReturnModify = (await request.postRequest(urlModify, commonModel.token, application.paramInit(paramsModify))).data;
-          if (interfaceReturnModify.code !== 1) {
-            props.gotoError(dispatch, interfaceReturnModify);
-            return;
-          }
-          //------------------------------------
-          const url: string = application.urlCommon + '/verify/removeModifying';
+          const url: string = application.urlCommon + '/verify/removeModifyingMulti';
           const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,
-            shopId: commonModel.userInfo.shopId};
+            shopId: commonModel.userInfo.shopId, selectKeys: originalSlaveIds };
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
             const returnState = await props.getAllData({dataId: masterDataOld.id });
@@ -661,21 +636,28 @@ const commonDocEvent = (WrapComponent) => {
           if (commonUtils.isNotEmpty(slave.id)) {
             originalSlaveIds.push(slave.masterId + '_' + slave.id);
           }
-        });
-        let url: string = application.urlCommon + '/verify/isExistModifyingMulti';
-        let paramsModify: any = {selectKeys: originalSlaveIds, isSelect: 1, groupId: commonModel.userInfo.groupId,
-          shopId: commonModel.userInfo.shopId, tabId: masterDataOld.id};
-        let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsModify))).data;
-        if (interfaceReturn.code === 1) {
-          url = application.urlCommon + '/verify/isExistModifyingMulti';
-          paramsModify = {selectKeys: originalSlaveIds, isSelect: 0, groupId: commonModel.userInfo.groupId,
-            shopId: commonModel.userInfo.shopId, tabId: masterDataOld.id};
-          interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsModify))).data;
-          if (interfaceReturn.code !== 1) {
-            props.gotoError(dispatch, interfaceReturn);
-            return;
+          if (commonUtils.isNotEmptyObj(params.selectNestContainer)) {
+            //嵌套表数据加入
+            params.selectNestList.filter(item => item[params.selectNestContainer.treeSlaveKey] === slave[params.selectNestContainer.treeKey]).forEach(nest => {
+              if (commonUtils.isNotEmpty(nest.id)) {
+                originalSlaveIds.push(nest.masterId + '_' + nest.id);
+              }
+            });
           }
-        } else {
+          else if (commonUtils.isNotEmptyArr(slave.children)) {
+            //子表数据加入
+            slave.children.forEach(child => {
+              if (commonUtils.isNotEmpty(child.id)) {
+                originalSlaveIds.push(child.masterId + '_' + child.id);
+              }
+            });
+          }
+        });
+        const url: string = application.urlCommon + '/verify/isExistModifyingMulti';
+        const paramsModify: any = {selectKeys: originalSlaveIds, groupId: commonModel.userInfo.groupId,
+          shopId: commonModel.userInfo.shopId, tabId: props.tabId};
+        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(paramsModify))).data;
+        if (interfaceReturn.code !== 1) {
           props.gotoError(dispatch, interfaceReturn);
           return;
         }
@@ -692,22 +674,7 @@ const commonDocEvent = (WrapComponent) => {
           form.resetFields();
           form.setFieldsValue(commonUtils.setFieldsValue(masterData, props.masterContainer));
         }
-        // else {
-        //   const assignValue = commonUtils.getAssignFieldValue(name, assignField, params.selectList[0], propsRef.current);
-        //   const conditionOld = commonUtils.getCondition('master', masterDataOld, params.config.sqlCondition, props);
-        //   const conditionNew = commonUtils.getCondition('master', assignValue, params.config.sqlCondition, props);
-        //   for(const key of Object.keys(conditionOld)) {
-        //     if (conditionOld[key] !== conditionNew[key]) {
-        //       const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseSameMasterData');
-        //       if (index > -1) {
-        //         props.gotoError(dispatch, { code: '6001', msg: commonModel.commonConstant[index].viewName });
-        //       } else {
-        //         props.gotoError(dispatch, { code: '6001', msg: '请选择相同主表数据！' });
-        //       }
-        //       return;
-        //     }
-        //   }
-        // }
+
         const index = commonUtils.isEmptyArr(params.config.children) ? -1 : params.config.children.findIndex(item => item.fieldName === params.config.fieldName + '.slave');
         const assignFieldSlave = index > -1 ? params.config.children[index].assignField : '';
         const nestIndex = commonUtils.isEmptyArr(params.config.children) ? -1 : params.config.children.findIndex(item => item.fieldName === params.config.fieldName + '.slaveNest');

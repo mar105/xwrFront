@@ -101,7 +101,7 @@ const Customer = (props) => {
   };
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const contactParam: any = commonUtils.getTableProps('contact', props);
   contactParam.pagination = false;

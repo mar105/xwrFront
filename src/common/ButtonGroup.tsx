@@ -68,15 +68,20 @@ export function ButtonGroup(params) {
       let isDropDown = false;
       let menusData;
       let disabled;
-      disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName && item.permissionName === buttonConfig.fieldName) > -1) : false;
+      if (params.permissionEntityData && params.permissionEntityData.findIndex(item => item.permissionName === buttonConfig.key) > -1) {
+        disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName && item.permissionName === buttonConfig.key) > -1) : false;
 
-      if (buttonConfig.key === 'postButton' || buttonConfig.key === 'cancelButton') {
-        disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName &&
-          (buttonConfig.key === 'addButton' || buttonConfig.key === 'modifyButton')) > -1) : false;
-      }
+        if (buttonConfig.key === 'modifyButton' || buttonConfig.key === 'postButton' || buttonConfig.key === 'cancelButton') {
+          disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName === 'addButton') > -1) : false;
+        }
 
-      if (params.userInfo.isManage || buttonConfig.key === 'refreshButton' || buttonConfig.key === 'cancelButton') {
-        disabled = false;
+        if (buttonConfig.key === 'cancelExamineButton') {
+          disabled = params.permissionData ? !(params.permissionData.findIndex(item => item.permissionName === 'examineButton') > -1) : false;
+        }
+
+        if (params.userInfo.isManage || buttonConfig.key === 'refreshButton' || buttonConfig.key === 'cancelButton') {
+          disabled = false;
+        }
       }
       buttonConfig = {...buttonConfig, disabled: disabled ? disabled : buttonOld.disabled };
       // let buttonItem = {...buttonOld, disabled: disabled ? disabled : buttonOld.disabled }; // buttonItem 作用是有copyToButton有子菜单，需要使用子菜单的配置

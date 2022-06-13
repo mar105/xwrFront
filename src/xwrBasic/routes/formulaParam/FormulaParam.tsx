@@ -135,7 +135,7 @@ const FormulaParam = (props) => {
 
 
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel, masterContainer } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;

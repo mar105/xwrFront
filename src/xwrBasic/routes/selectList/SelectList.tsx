@@ -133,7 +133,7 @@ const SelectList = (props) => {
 
   const { commonModel, enabled, slaveContainer, searchRowKeys, searchData } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, token: commonModel.token, routeId: props.routeId, groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId,
-    onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer, buttonGroup: getButtonGroup(), isModal: props.isModal, modalType: 'select',
+    onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: slaveContainer, buttonGroup: getButtonGroup(), isModal: props.isModal, modalType: 'select',
     onUploadSuccess: props.onUploadSuccess, dispatchModifyState: props.dispatchModifyState };
 
   const tableParam: any = commonUtils.getTableProps('slave', props);

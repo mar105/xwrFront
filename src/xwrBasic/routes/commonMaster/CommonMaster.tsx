@@ -45,7 +45,7 @@ const CommonMaster = (props) => {
   }, [props.masterContainer.dataSetName]);
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);

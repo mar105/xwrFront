@@ -88,7 +88,7 @@ const Shop = (props) => {
   buttonAddGroup.push({ key: 'invitationButton', caption: '生成邀请码', htmlType: 'button', sortNum: 3000, disabled: props.enabled });
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: buttonAddGroup };
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);

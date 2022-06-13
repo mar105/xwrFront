@@ -111,7 +111,7 @@ const InitSupply = (props) => {
   }
 
   const { enabled, masterIsVisible, slaveContainer, searchRowKeys, searchData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: slaveContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: slaveContainer,
     isModal: props.isModal, buttonGroup: getButtonGroup() };
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;

@@ -96,7 +96,7 @@ const Process = (props) => {
   };
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const machineParam: any = commonUtils.getTableProps('machine', props);
   machineParam.pagination = false;

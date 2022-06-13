@@ -244,7 +244,7 @@ const BusinessPermission = (props) => {
 
 
   const { enabled, masterContainer, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionData: props.permissionData, container: masterContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
     isModal: props.isModal, buttonGroup: getButtonGroup() };
   const userParam: any = commonUtils.getTableProps('user', props);
   userParam.pagination = false;

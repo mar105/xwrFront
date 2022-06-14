@@ -203,6 +203,7 @@ export function getTableProps(name, props) {
     sum: props[name + 'Sum'],
     eventOnRow: { onRowClick: props.onRowClick },
     rowSelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
+    selections: [{key: 'set', text: '设置', onSelect: props.onSetPersonal.bind(this, name)}],
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
     config: props[name + 'Container'],
     onReachEnd: props.onReachEnd, //分页滚动 拖动到最后调用接口

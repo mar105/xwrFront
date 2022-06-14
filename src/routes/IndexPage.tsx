@@ -7,13 +7,14 @@ import * as request from "../utils/request";
 import TabsPages from "../TabsPages";
 import commonBase from "../common/commonBase";
 import IndexMenu from "./IndexMenu";
-import {Dropdown, Menu, Row, Progress, Modal} from "antd";
+import {Dropdown, Menu, Row, Progress, Modal, ConfigProvider} from "antd";
 import {useRef} from "react";
 import {replacePath, routeInfo} from "../routeInfo";
 import { DownOutlined } from '@ant-design/icons';
 import {useMemo} from "react";
 import {useReducer} from "react";
 import ShopInvitation from "./shop/ShopInvitation";
+import zhCN from 'antd/lib/locale/zh_CN';
 
 function IndexPage(props) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
@@ -334,6 +335,7 @@ function IndexPage(props) {
       </div>)}, [commonModel.userInfo]);
   return (
     <div>
+      <ConfigProvider locale={zhCN}>
       <Row>
         <IndexMenu {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} />
         <a href="/">主页</a>
@@ -353,6 +355,7 @@ function IndexPage(props) {
         {shop}
       </Row>
       <div><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} /></div>
+      </ConfigProvider>
     </div>
   );
 }

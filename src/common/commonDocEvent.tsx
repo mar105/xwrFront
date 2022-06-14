@@ -230,6 +230,9 @@ const commonDocEvent = (WrapComponent) => {
         const dropParam = { name: 'slave', type: 'popupFrom', config: fromConfig, routeName: '/xwrBasic/selectList', onModalOk,
           state: { searchRowKeys, copyFromCondition: condition, slaveSearchCondition: searchCondition, searchData }  };
         props.onDropPopup(dropParam);
+
+      } else if (key === 'setButton') {
+        props.onSetPersonal('master', config);
       }
     }
 
@@ -306,6 +309,7 @@ const commonDocEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 130, disabled: props.enabled || isInvalid || isExamine });
       buttonGroup.push({ key: 'printButton', caption: '打印', htmlType: 'button', sortNum: 120, disabled: !props.enabled });
       buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 140, disabled: props.enabled });
+      buttonGroup.push({ key: 'setButton', caption: '设置', htmlType: 'button', sortNum: 140, disabled: false });
       return buttonGroup;
     }
 

@@ -19,6 +19,8 @@ const xwrMainRouteInfo: any[] = [{
       path: '/userPermission', name: 'userPermission', title: '用户信息', component: () => import('./routes/userPermission/UserPermission'),
     }, {
       path: '/businessPermission', name: 'businessPermission', title: '用户权限', component: () => import('./routes/businessPermission/BusinessPermission'),
+    }, {
+      path: '/personalContainer', name: 'personalContainer', title: '个性化设置', component: () => import('./routes/personalContainer/PersonalContainer'),
     }]
   },
 ];

@@ -491,7 +491,7 @@ export function TableComponent(params: any) {
     components: modifySelfState.components,
     // checkStrictly 为false 勾选主数据从数据连动勾选。去除，要用到连动的各自界面上加入
     rowSelection: { type: params.config.isMultiChoise ? 'checkbox' : 'radio', fixed: true, ...params.rowSelection,
-      selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
+      selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE, ...params.selections],
       getCheckboxProps: (record) => ({ disabled: record.disabled }),
       onChange: (selectedRowKeys, selectedRows) => { params.eventSelection.onRowSelectChange(params.name, selectedRowKeys, selectedRows) } },
     pagination: false,

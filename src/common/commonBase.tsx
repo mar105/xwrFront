@@ -8,7 +8,6 @@ import reqwest from 'reqwest';
 import {Md5} from "ts-md5";
 import {replacePath, routeInfo} from "../routeInfo";
 
-
 const commonBase = (WrapComponent) => {
   return function ChildComponent(props) {
     const stateRef: any = useRef();
@@ -1213,6 +1212,15 @@ const commonBase = (WrapComponent) => {
 
     }
 
+    const onSetPersonal = (name, config) => {
+      const state = { routeId: undefined, isModal: true, masterData:  stateRef.current[name + 'Container'], slaveData: stateRef.current[name + 'Container'].slaveData,
+        modalParams: { name: 'master', type: 'popupSet'}, dataId: undefined };
+      const path = '/personalContainer';
+      const route: any = commonUtils.getRouteComponent(routeInfo, path);
+      dispatchModifyState({ modalVisible: true, modalTitle: config ? config.viewName : '设置', modalPane:
+        commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, state).component });
+    }
+
     return <Spin spinning={modifyState.pageLoading ? true : false}>
       <WrapComponent
       {...props}
@@ -1246,6 +1254,7 @@ const commonBase = (WrapComponent) => {
       onDataChange={onDataChange}
       delTableData={delTableData}
       onCellClick={onCellClick}
+      onSetPersonal={onSetPersonal}
     />
     </Spin>
   };

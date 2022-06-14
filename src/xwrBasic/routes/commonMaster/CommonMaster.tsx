@@ -6,6 +6,7 @@ import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../../../common/ButtonGroup";
 import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
+import CommonModal from "../../../common/commonModal";
 
 const CommonMaster = (props) => {
   const [form] = Form.useForm();
@@ -57,6 +58,7 @@ const CommonMaster = (props) => {
         </Col>
       </Row>
       <ButtonGroup {...buttonGroup} />
+      <CommonModal {...props} />
     </Form>
   );
 }

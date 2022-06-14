@@ -8,6 +8,7 @@ import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import Search from "../../../common/Search";
 import categoryListEvent from "../../../common/categoryListEvent";
+import CommonModal from "../../../common/commonModal";
 const ProductCategory = (props) => {
   const propsRef: any = useRef();
   useEffect(() => {
@@ -163,6 +164,7 @@ const ProductCategory = (props) => {
           <TableComponent {...processCategoryParam} />
         </Form>
       </Drawer>
+      <CommonModal {...props} />
     </div>
 
   );

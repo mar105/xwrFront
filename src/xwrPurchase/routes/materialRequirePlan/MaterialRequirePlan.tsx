@@ -8,6 +8,7 @@ import {Form, Tooltip} from "antd";
 import Search from "../../../common/Search";
 import commonListEvent from "../../../common/commonListEvent";
 import { SaveOutlined } from '@ant-design/icons';
+import CommonModal from "../../../common/commonModal";
 
 const CommonList = (props) => {
   const [form] = Form.useForm();
@@ -151,6 +152,7 @@ const CommonList = (props) => {
           <TableComponent {...tableParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} />
+      <CommonModal {...props} />
     </div>
 
   );

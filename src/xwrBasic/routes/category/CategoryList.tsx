@@ -10,6 +10,7 @@ import categoryListEvent from "../../../common/categoryListEvent";
 import Search from "../../../common/Search";
 import * as application from "../../application";
 import * as request from "../../../utils/request";
+import CommonModal from "../../../common/commonModal";
 const CategoryList = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
@@ -94,6 +95,7 @@ const CategoryList = (props) => {
           <CommonExhibit name="master" {...props} />
         </Form>
       </Drawer>
+      <CommonModal {...props} />
     </div>
 
   );

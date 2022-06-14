@@ -10,6 +10,7 @@ import categoryListEvent from "../../../common/categoryListEvent";
 import Search from "../../../common/Search";
 import * as application from "../../../xwrMaterialInventory/application";
 import * as request from "../../../utils/request";
+import CommonModal from "../../../common/commonModal";
 const InitFinance = (props) => {
   const [form] = Form.useForm();
   props.onSetForm(form);
@@ -130,6 +131,7 @@ const InitFinance = (props) => {
           <CommonExhibit name="master" {...props} onDataChange={onDataChange} />
         </Form>
       </Drawer>
+      <CommonModal {...props} />
     </div>
 
   );

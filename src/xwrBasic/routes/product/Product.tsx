@@ -11,6 +11,7 @@ import { StarTwoTone, DeleteOutlined, StarFilled } from '@ant-design/icons';
 import {UploadFile} from "../../../common/UploadFile";
 import * as request from "../../../utils/request";
 import * as application from "../../application";
+import CommonModal from "../../../common/commonModal";
 
 const Product = (props) => {
   const propsRef: any = useRef();
@@ -184,6 +185,7 @@ const Product = (props) => {
         </Col>
       </Row>
       <ButtonGroup {...buttonGroup} />
+      <CommonModal {...props} />
     </Form>
   );
 }

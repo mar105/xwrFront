@@ -9,6 +9,7 @@ import Search from "../../../common/Search";
 import commonListEvent from "../../../common/commonListEvent";
 import ImportList from "./ImportList";
 import { SaveOutlined } from '@ant-design/icons';
+import CommonModal from "../../../common/commonModal";
 
 const CommonList = (props) => {
   const [form] = Form.useForm();
@@ -45,7 +46,7 @@ const CommonList = (props) => {
       <Modal width={1500} maskClosable={false}  visible={importIsVisible} onCancel={props.onImportModalCancel.bind(this, 'import')} onOk={props.onImportModalOk.bind(this, 'import')}>
         <ImportList {...props } />
       </Modal>
-
+      <CommonModal {...props} />
     </div>
 
   );

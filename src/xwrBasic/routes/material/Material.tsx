@@ -8,6 +8,7 @@ import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
 import { StarTwoTone, DeleteOutlined, StarFilled } from '@ant-design/icons';
+import CommonModal from "../../../common/commonModal";
 
 const Material = (props) => {
   const propsRef: any = useRef();
@@ -143,6 +144,7 @@ const Material = (props) => {
         </Col>
       </Row>
       <ButtonGroup {...buttonGroup} />
+      <CommonModal {...props} />
     </Form>
   );
 }

@@ -8,6 +8,7 @@ import {Form, Tooltip} from "antd";
 import Search from "../../../common/Search";
 import commonListEvent from "../../../common/commonListEvent";
 import { DeleteOutlined } from '@ant-design/icons';
+import CommonModal from "../../../common/commonModal";
 
 const SelectList = (props) => {
   const [form] = Form.useForm();
@@ -187,6 +188,7 @@ const SelectList = (props) => {
           <TableComponent {...selectParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} />
+      <CommonModal {...props} />
     </div>
 
   );

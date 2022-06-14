@@ -8,6 +8,7 @@ import {Button, Drawer, Form} from "antd";
 import {CommonExhibit} from "../../../common/CommonExhibit";
 import Search from "../../../common/Search";
 import categoryListEvent from "../../../common/categoryListEvent";
+import CommonModal from "../../../common/commonModal";
 const Exchange = (props) => {
   const propsRef: any = useRef();
   useEffect(() => {
@@ -101,6 +102,7 @@ const Exchange = (props) => {
           <TableComponent {...exchangeRateParam} />
         </Form>
       </Drawer>
+      <CommonModal {...props} />
     </div>
 
   );

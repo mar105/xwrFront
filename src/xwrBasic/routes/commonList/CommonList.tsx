@@ -46,7 +46,7 @@ const CommonList = (props) => {
       <Modal width={1500} maskClosable={false}  visible={importIsVisible} onCancel={props.onImportModalCancel.bind(this, 'import')} onOk={props.onImportModalOk.bind(this, 'import')}>
         <ImportList {...props } />
       </Modal>
-      <CommonModal {...props} />
+      <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
     </div>
 
   );

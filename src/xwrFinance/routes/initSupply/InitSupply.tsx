@@ -138,7 +138,7 @@ const InitSupply = (props) => {
           <CommonExhibit name="master" {...props} onDataChange={onDataChange} />
         </Form>
       </Drawer>
-      <CommonModal {...props} />
+      <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
     </div>
 
   );

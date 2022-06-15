@@ -95,7 +95,7 @@ const CategoryList = (props) => {
           <CommonExhibit name="master" {...props} />
         </Form>
       </Drawer>
-      <CommonModal {...props} />
+      <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
     </div>
 
   );

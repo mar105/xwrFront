@@ -44,7 +44,7 @@ const CustomerFinance = (props) => {
         </Row>
         <ButtonGroup {...buttonGroup} />
       </Form>
-      <CommonModal {...props} />
+      <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
     </div>
   );
 }

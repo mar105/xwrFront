@@ -143,7 +143,7 @@ const Process = (props) => {
         </Col>
       </Row>
       <ButtonGroup {...buttonGroup} />
-      <CommonModal {...props} />
+      <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
     </Form>
   );
 }

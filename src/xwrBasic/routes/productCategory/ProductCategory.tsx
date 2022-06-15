@@ -164,7 +164,7 @@ const ProductCategory = (props) => {
           <TableComponent {...processCategoryParam} />
         </Form>
       </Drawer>
-      <CommonModal {...props} />
+      <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
     </div>
 
   );

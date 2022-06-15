@@ -1,6 +1,6 @@
 import {connect} from "react-redux";
 import commonBase from "../../common/commonBase";
-import {Col, Form, Row} from "antd";
+import {Col, Form, Row, Tooltip} from "antd";
 import {ButtonGroup} from "../../common/ButtonGroup";
 import React, {useEffect, useMemo} from "react";
 import * as commonUtils from "../../utils/commonUtils";
@@ -11,8 +11,8 @@ import {InputComponent} from "../../components/InputComponent";
 import {NumberComponent} from "../../components/NumberComponent";
 import {SwitchComponent} from "../../components/SwitchComponent";
 import SlaveContainer from "../../xwrManage/routes/container/SlaveContainer";
-// import SyncContainer from "./SyncContainer";
 import {TreeSelectComponent} from "../../components/TreeSelectComponent";
+import { EditOutlined } from '@ant-design/icons';
 
 const PersonalContainer = (props) => {
   const [form] = Form.useForm();
@@ -56,6 +56,7 @@ const PersonalContainer = (props) => {
       props.gotoError(dispatch, returnBody);
     }
   }
+
 
   const onFinish = async (values: any) => {
     // const { commonModel, dispatch, masterData, masterModifyData, slaveData, slaveModifyData, slaveDelData, dispatchModifyState, tabId, syncData, syncModifyData, syncDelData } = props;
@@ -469,9 +470,11 @@ const PersonalContainer = (props) => {
         <Col><InputComponent {...englishName} /></Col>
       </Row>
       <Row>
-        <Col><InputComponent {...entitySelect} /></Col>
-        <Col><InputComponent {...entityWhere} /></Col>
-        <Col><InputComponent {...entitySort} /></Col>
+        <Col><InputComponent {...entitySelect} />
+          <a>
+          <Tooltip placement="top" title="修改"><EditOutlined /></Tooltip></a></Col>
+        <Col><InputComponent {...entityWhere} /><EditOutlined /></Col>
+        <Col><InputComponent {...entitySort} /><EditOutlined /></Col>
       </Row>
       <Row>
         <Col><InputComponent {...virtualName} /></Col>

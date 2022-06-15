@@ -1214,7 +1214,7 @@ const commonBase = (WrapComponent) => {
 
     const onSetPersonal = (name, config) => {
       const state = { routeId: undefined, isModal: true, masterData:  stateRef.current[name + 'Container'], slaveData: stateRef.current[name + 'Container'].slaveData,
-        modalParams: { name: 'master', type: 'popupSet'}, dataId: undefined };
+        setPersonalData: stateRef.current[name + 'SetPersonalData'], modalParams: { name, type: 'popupSet'}, dataId: undefined };
       const path = '/personalContainer';
       const route: any = commonUtils.getRouteComponent(routeInfo, path);
       dispatchModifyState({ modalVisible: true, modalTitle: config ? config.viewName : '设置', modalPane:

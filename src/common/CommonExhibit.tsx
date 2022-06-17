@@ -85,7 +85,7 @@ export const CommonExhibit = (props) => {
       } else if (item.fieldType === 'datetime') {
         component = <DatePickerComponent {...dateParams}  />
       }
-      component = useMemo(()=>{ return (component)}, [masterData[item.fieldName], enabled]);
+      component = useMemo(()=>{ return (component)}, [masterData[item.fieldName], enabled, item.viewName]);
       return <Col span={8}>{component}</Col>;
     });
 

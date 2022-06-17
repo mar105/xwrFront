@@ -1047,7 +1047,7 @@ const commonBase = (WrapComponent) => {
         const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: type === 'popupAdd' ? 'add' : undefined, isModal: true, ...params.state, modalParams: params, dataId: undefined };
         const path = replacePath(params.routeName ? params.routeName : state.routeData.routeName);
         const route: any = commonUtils.getRouteComponent(routeInfo, path);
-        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, params.onModalOk ? params.onModalOk : onModalOk, state).component });
+        dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null,params.onModalOk ? params.onModalOk : onModalOk, null, state).component });
       } else {
         gotoError(dispatch, interfaceReturn);
       }
@@ -1055,7 +1055,7 @@ const commonBase = (WrapComponent) => {
 
 
 
-    const onModalOk = (params, isWait) => {
+    const onModalOk = async (params, isWait) => {
       if (commonUtils.isEmpty(params)) {
         dispatchModifyState({ modalVisible: false });
       } else if (params.type === 'popupAdd') { //选择框界面弹出后点增加保存后重新刷新下拉数据。
@@ -1132,8 +1132,38 @@ const commonBase = (WrapComponent) => {
           }
 
         }
-      }
+      } else if (params.type === 'popupSet') {  //弹出框设置
+        const { masterData, routeId } = stateRef.current;
+        const { commonModel } = props;
+        const addState: any = {};
 
+        let state: any = { handleType: masterData.handleType, dataId: masterData.handleType === 'add' ? undefined : masterData.id,
+          listTabId: props.listTabId,
+          listRouteId: props.listRouteId, listContainerId: props.listContainerId, listCondition: props.listCondition, listTableKey: props.listTableKey,
+          listRowIndex: props.listRowIndex, listRowTotal: props.listRowTotal};
+        const url: string = application.urlPrefix + '/getData/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+        const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+        if (interfaceReturn.code === 1) {
+          state = { ...state, routeId, ...interfaceReturn.data };
+          for(let container of state.containerData) {
+            if (params.name === container.dataSetName) {
+              addState[params.name + 'Container'] = container;
+              if (container.isTable) {
+                const columns: any = [];
+                container.slaveData.filter(item => (item.containerType === 'field' || item.containerType === 'relevance' || item.containerType === 'relevanceNotView' || item.containerType === 'relevanceInstant' || item.containerType === 'spare' || item.containerType === 'cascader') && item.isVisible).forEach(item => {
+                  const column = { title: item.viewName, dataIndex: item.fieldName, fieldType: item.fieldType, sortNum: item.sortNum, width: item.width };
+                  columns.push(column);
+                });
+                addState[container.dataSetName + 'Columns'] = columns;
+              }
+            }
+          }
+          dispatchModifyState({ ...addState, modalVisible: false });
+          //需要更新pane中的state，防止刷新还是老数据。
+          props.callbackModifyPane(props.tabId, state);
+        }
+
+      }
     }
 
     const onModalCancel = () => {
@@ -1214,11 +1244,11 @@ const commonBase = (WrapComponent) => {
 
     const onSetPersonal = (name, config) => {
       const state = { routeId: undefined, isModal: true, masterData:  stateRef.current[name + 'Container'], slaveData: stateRef.current[name + 'Container'].slaveData,
-        setPersonalData: stateRef.current[name + 'SetPersonalData'], modalParams: { name, type: 'popupSet'}, dataId: undefined };
+        setPersonalData: stateRef.current.setPersonalData, modalParams: { name, type: 'popupSet'}, dataId: undefined, tabId: props.tabId  };
       const path = '/personalContainer';
       const route: any = commonUtils.getRouteComponent(routeInfo, path);
       dispatchModifyState({ modalVisible: true, modalTitle: config ? config.viewName : '设置', modalPane:
-        commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, state).component });
+        commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, null, state).component });
     }
 
     return <Spin spinning={modifyState.pageLoading ? true : false}>

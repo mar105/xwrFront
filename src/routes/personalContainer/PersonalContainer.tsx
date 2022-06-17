@@ -4,15 +4,16 @@ import {Col, Form, Row, Tooltip} from "antd";
 import {ButtonGroup} from "../../common/ButtonGroup";
 import React, {useEffect, useMemo} from "react";
 import * as commonUtils from "../../utils/commonUtils";
-import * as application from "../../xwrBasic/application";
+import * as application from "../../application";
 import * as request from "../../utils/request";
 import {DatePickerComponent} from "../../components/DatePickerComponent";
 import {InputComponent} from "../../components/InputComponent";
 import {NumberComponent} from "../../components/NumberComponent";
 import {SwitchComponent} from "../../components/SwitchComponent";
-import SlaveContainer from "../../xwrManage/routes/container/SlaveContainer";
+import PersonalSlaveContainer from "./PersonalSlaveContainer";
 import {TreeSelectComponent} from "../../components/TreeSelectComponent";
-import { EditOutlined } from '@ant-design/icons';
+import { MinusOutlined } from '@ant-design/icons';
+import personalEvent from "./personalEvent";
 
 const PersonalContainer = (props) => {
   const [form] = Form.useForm();
@@ -57,161 +58,6 @@ const PersonalContainer = (props) => {
     }
   }
 
-
-  const onFinish = async (values: any) => {
-    // const { commonModel, dispatch, masterData, masterModifyData, slaveData, slaveModifyData, slaveDelData, dispatchModifyState, tabId, syncData, syncModifyData, syncDelData } = props;
-    // const saveData: any = [];
-    // saveData.push(commonUtils.mergeData('master', [{ ...masterData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType }],
-    //   commonUtils.isNotEmptyObj(masterModifyData) ? [masterModifyData] : [], [], false));
-    // saveData.push(commonUtils.mergeData('slave', slaveData, slaveModifyData, slaveDelData, false));
-    // // saveData.push(commonUtils.mergeData('sync', syncData, syncModifyData, syncDelData, false));
-    // const params = { id: masterData.id, tabId, saveData };
-    // const url: string = application.urlPrefix + '/container/saveContainer';
-    // const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-    // if (interfaceReturn.code === 1) {
-    //   // const returnRoute: any = await getAllContainer({isWait: true});
-    //   const addState: any = {};
-    //   const url: string = application.urlPrefix + '/container/getContainerSlaveList?superiorId=' + masterData.id;
-    //   const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-    //   if (interfaceReturn.code === 1) {
-    //     addState.slaveData = interfaceReturn.data;
-    //     addState.slaveModifyData = [];
-    //     addState.slaveDelData = [];
-    //   } else {
-    //     props.gotoError(dispatch, interfaceReturn);
-    //   }
-    //
-    //   // const urlSync: string = application.urlPrefix + '/container/getContainerSyncList?superiorId=' + masterData.id;
-    //   // const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
-    //   // if (interfaceReturnSync.code === 1) {
-    //   //   addState.syncData = interfaceReturnSync.data;
-    //   //   addState.syncModifyData = [];
-    //   //   addState.syncDelData = [];
-    //   // } else {
-    //   //   props.gotoError(dispatch, interfaceReturnSync);
-    //   // }
-    //
-    //   addState.masterData = {...props.getTreeNode(returnRoute.treeData, masterData.allId) };
-    //   addState.masterModifyData = {};
-    //   form.resetFields();
-    //   form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), searchValue: props.treeSearchValue });
-    //   dispatchModifyState({ ...returnRoute, enabled: false, treeSelectedKeys: [masterData.id], ...addState });
-    // } else {
-    //   props.gotoError(dispatch, interfaceReturn);
-    // }
-  };
-
-  const onClick = async (key, e) => {
-    const { commonModel, tabId, treeData: treeDataOld, dispatch, dispatchModifyState, treeSelectedKeys, masterData: masterDataOld } = props;
-    if (key === 'modifyButton') {
-      if (commonUtils.isEmptyArr(treeSelectedKeys)) {
-        props.gotoError(dispatch, { code: '6001', msg: '请选择数据' });
-        return;
-      }
-      if (commonUtils.isEmpty(masterDataOld.containerName)) {
-        props.gotoError(dispatch, { code: '6003', msg: '容器界面才可修改' });
-        return;
-      }
-      const data = props.onModify();
-      const masterData = {...masterDataOld, ...data };
-      const url: string = application.urlCommon + '/verify/isExistModifying';
-      const params = {id: masterData.id, tabId};
-      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-      if (interfaceReturn.code === 1) {
-        dispatchModifyState({ masterData, masterModifyData: {}, enabled: true });
-      } else {
-        props.gotoError(dispatch, interfaceReturn);
-      }
-
-    } else if (key === 'cancelButton') {
-      let treeData = [...treeDataOld];
-      const addState: any = {};
-      if (masterData.handleType === 'add') {
-        const allList = masterDataOld.allId.split(',');
-        allList.splice(allList.length - 1, 1);
-        treeData = props.setNewTreeNode(treeData, allList.join(), masterData, masterData.id);
-        addState.masterData = {...props.getTreeNode(treeData, allList.join()) };
-        addState.treeSelectedKeys = [addState.masterData.id];
-        addState.slaveData = [];
-        addState.slaveModifyData = [];
-        addState.slaveSelectedRows = [];
-        addState.slaveSelectedRowKeys = [];
-        addState.slaveDelData = [];
-        // addState.syncModifyData = [];
-        // addState.syncSelectedRows = [];
-        // addState.syncSelectedRowKeys = [];
-        // addState.syncDelData = [];
-        form.resetFields();
-        form.setFieldsValue({ ...commonUtils.setFieldsValue(addState.masterData), searchValue: props.treeSearchValue });
-      } else if (masterData.handleType === 'modify' || masterData.handleType === 'copyToAdd') {
-        const {dispatch, commonModel, tabId, masterData} = props;
-        const url: string = application.urlCommon + '/verify/removeModifying';
-        const params = {id: masterData.id, tabId};
-        let interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-        if (interfaceReturn.code === 1) {
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-        }
-        const urlSlave = application.urlPrefix + '/container/getContainerSlaveList?superiorId=' + masterData.id;
-        const interfaceReturnSlave = (await request.getRequest(urlSlave, commonModel.token)).data;
-        if (interfaceReturnSlave.code === 1) {
-          addState.slaveData = interfaceReturnSlave.data;
-          addState.slaveModifyData = [];
-          addState.slaveSelectedRows = [];
-          addState.slaveSelectedRowKeys = [];
-          addState.slaveDelData = [];
-        } else {
-          props.gotoError(dispatch, interfaceReturnSlave);
-        }
-
-        // const urlSync = application.urlPrefix + '/container/getContainerSyncList?superiorId=' + masterData.id;
-        // const interfaceReturnSync = (await request.getRequest(urlSync, commonModel.token)).data;
-        // if (interfaceReturnSync.code === 1) {
-        //   addState.syncData = interfaceReturnSync.data;
-        //   addState.syncModifyData = [];
-        //   addState.syncSelectedRows = [];
-        //   addState.syncSelectedRowKeys = [];
-        //   addState.syncDelData = [];
-        // } else {
-        //   props.gotoError(dispatch, interfaceReturnSync);
-        // }
-      }
-      dispatchModifyState({...addState, treeData, enabled: false});
-
-    } else if (key === 'syncToMongoButton') {
-      if (commonUtils.isEmpty(masterData.virtualName)) {
-        props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
-        return;
-      }
-      const { stompClient } = commonModel;
-      const params = { routeId: masterData.superiorId, containerId: masterData.id };
-      stompClient.send('/websocket/container/syncToMongo', {}, JSON.stringify(application.paramInit(params)));
-    } else if (key === 'syncToMongoIndexButton') {
-      if (commonUtils.isEmpty(masterData.virtualName)) {
-        props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
-        return;
-      }
-      if (commonUtils.isEmpty(masterData.virtualIndex)) {
-        props.gotoError(dispatch, { code: '6003', msg: '虚拟索引不能为空！' });
-        return;
-      }
-      const { stompClient } = commonModel;
-      const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName, virtualIndex: masterData.virtualIndex, tableKey: masterData.tableKey };
-      stompClient.send('/websocket/container/syncToMongoIndex', {}, JSON.stringify(application.paramInit(params)));
-
-    } else if (key === 'dropCollectionMongoButton') {
-      if (commonUtils.isEmpty(masterData.virtualName)) {
-        props.gotoError(dispatch, { code: '6003', msg: '虚拟名称不能为空！' });
-        return;
-      }
-      const { stompClient } = commonModel;
-      const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName };
-      stompClient.send('/websocket/container/dropCollectionMongo', {}, JSON.stringify(application.paramInit(params)));
-
-    }
-
-  }
-
   const getSelectList = async (params) => {
     const { commonModel, dispatch } = props;
     const { isWait } = params;
@@ -253,7 +99,7 @@ const PersonalContainer = (props) => {
     return {};
   }
 
-  const { enabled, masterData, slaveData, slaveColumns, slaveSelectedRowKeys, commonModel } = props;
+  const { enabled, masterData, slaveData, slaveColumns, slaveSelectedRowKeys, setPersonalData, commonModel } = props;
 
   const createDate = {
     name: 'master',
@@ -279,25 +125,14 @@ const PersonalContainer = (props) => {
     property: { disabled: !enabled },
     event: { onChange: props.onDataChange }
   };
-  const chineseName = {
+  const viewName = {
     name: 'master',
     form,
-    config: { fieldName: 'chineseName', isRequired: true, viewName: '中文名称' },
+    config: { fieldName: 'viewName', isRequired: true, viewName: '中文名称' },
     property: { disabled: !enabled },
     event: { onChange: props.onDataChange }
   };
-  const traditionalName = {
-    name: 'master',
-    config: { fieldName: 'traditionalName', viewName: '繁体名称' },
-    property: { disabled: !enabled },
-    event: { onChange: props.onDataChange }
-  };
-  const englishName = {
-    name: 'master',
-    config: { fieldName: 'englishName', viewName: '英文名称' },
-    property: { disabled: !enabled },
-    event: { onChange: props.onDataChange }
-  };
+
   const entitySelect = {
     name: 'master',
     config: { fieldName: 'entitySelect', viewName: '实体查询' },
@@ -447,17 +282,9 @@ const PersonalContainer = (props) => {
     event: { onChange: props.onDataChange }
   };
 
-  const getButtonGroup = () => {
-    const buttonGroup: any = [];
-    buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 30, disabled: props.enabled });
-    buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !props.enabled });
-    buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !props.enabled });
-    buttonGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick, sortNum: 101, disabled: props.enabled });
-    return buttonGroup;
-  }
-
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick, enabled, buttonGroup: getButtonGroup() };
-  const component = useMemo(()=>{ return (
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, buttonGroup: props.getButtonGroup() };
+  const component = useMemo(()=>{
+    return (
     <div>
       <Row>
         <Col><DatePickerComponent {...createDate} /></Col>
@@ -465,16 +292,21 @@ const PersonalContainer = (props) => {
         <Col><InputComponent {...dataSetName} /></Col>
       </Row>
       <Row>
-        <Col><InputComponent {...chineseName} /></Col>
-        <Col><InputComponent {...traditionalName} /></Col>
-        <Col><InputComponent {...englishName} /></Col>
+        <Col><InputComponent {...viewName} />
+          { enabled && masterData && setPersonalData && setPersonalData.findIndex(item => item.keyType === 'containerMaster' &&
+            item.keyName === masterData.id && item.keyFieldName === 'viewName' && item.handleType !== 'del') > -1 ?
+            <a onClick={props.delPersonalClick.bind(this, 'master', 'viewName')}><Tooltip placement="top" title="删除"><MinusOutlined /> </Tooltip></a> : ''}</Col>
       </Row>
       <Row>
         <Col><InputComponent {...entitySelect} />
-          <a>
-          <Tooltip placement="top" title="修改"><EditOutlined /></Tooltip></a></Col>
-        <Col><InputComponent {...entityWhere} /><EditOutlined /></Col>
-        <Col><InputComponent {...entitySort} /><EditOutlined /></Col>
+          { enabled && masterData && setPersonalData && setPersonalData.findIndex(item => item.keyType === 'containerMaster' && item.keyName === masterData.id && item.keyFieldName === 'entitySelect' && item.handleType !== 'del') > -1 ?
+            <a onClick={props.delPersonalClick.bind(this, 'master', 'entitySelect')}><Tooltip placement="top" title="删除"><MinusOutlined /> </Tooltip></a> : ''}</Col>
+        <Col><InputComponent {...entityWhere} />
+          { enabled && masterData && setPersonalData && setPersonalData.findIndex(item => item.keyType === 'containerMaster' && item.keyName === masterData.id && item.keyFieldName === 'entityWhere' && item.handleType !== 'del') > -1 ?
+            <a onClick={props.delPersonalClick.bind(this, 'master', 'entityWhere')}><Tooltip placement="top" title="删除"><MinusOutlined /> </Tooltip></a> : ''}</Col>
+        <Col><InputComponent {...entitySort} />
+          { enabled && masterData && setPersonalData && setPersonalData.findIndex(item => item.keyType === 'containerMaster' && item.keyName === masterData.id && item.keyFieldName === 'entitySort' && item.handleType !== 'del') > -1 ?
+            <a onClick={props.delPersonalClick.bind(this, 'master', 'entitySort')}><Tooltip placement="top" title="删除"><MinusOutlined /> </Tooltip></a> : ''}</Col>
       </Row>
       <Row>
         <Col><InputComponent {...virtualName} /></Col>
@@ -524,20 +356,20 @@ const PersonalContainer = (props) => {
           </Row>
         </div>
         : ''}
-    </div>)}, [masterData, enabled]);
+    </div>)}, [masterData, enabled, setPersonalData]);
 
   const containerNameValue = commonUtils.isNotEmptyObj(masterData) && commonUtils.isNotEmpty(masterData.containerName) ? masterData.containerName : '';
   // const syncTable = useMemo(()=>{ return (
   //   <SyncContainer name='sync' {...props} getSelectList={getSelectList} onClick={onClick} />
   // )}, [syncColumns, syncData, enabled, syncSelectedRowKeys]);
   const slaveTable = useMemo(()=>{ return (
-    <SlaveContainer name='slave' {...props} getSelectList={getSelectList} onClick={onClick} />
+    <PersonalSlaveContainer name='slave' {...props} getSelectList={getSelectList} onClick={props.onButtonClick} />
   )}, [containerNameValue, slaveColumns, slaveData, enabled, slaveSelectedRowKeys]);
   const button = useMemo(()=>{ return (
     <ButtonGroup {...buttonGroup} />
   )}, [props.enabled, props.masterData]);
   return (
-    <Form {...layout} name="basic" form={form} onFinish={onFinish}>
+    <Form {...layout} name="basic" form={form} onFinish={props.onFinish}>
       <Row>
         <Col>
           <Row>
@@ -552,4 +384,4 @@ const PersonalContainer = (props) => {
     </Form>
   );
 }
-export default connect(commonUtils.mapStateToProps)(commonBase(PersonalContainer));
+export default connect(commonUtils.mapStateToProps)(commonBase(personalEvent(PersonalContainer)));

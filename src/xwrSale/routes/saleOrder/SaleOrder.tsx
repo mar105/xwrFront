@@ -26,7 +26,7 @@ const SaleOrder = (props) => {
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;
   slaveParam.width = 2000;
-  slaveParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultslaveId,
+  slaveParam.lastColumn = { title: 'o', changeValue: '',
     render: (text,record, index)=> {
     return <div>
       { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}

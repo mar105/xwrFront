@@ -59,7 +59,7 @@ function IndexPage(props) {
         const panes = commonModel.panes;
         const pane = { key, title: route.title, route: path };
         panes.push(pane);
-        panesComponents.push(commonUtils.panesComponent(pane, route, null, null));
+        panesComponents.push(commonUtils.panesComponent(pane, route, null, null, null));
         dispatch({
           type: 'commonModel/saveActivePane',
           payload: { ...pane },

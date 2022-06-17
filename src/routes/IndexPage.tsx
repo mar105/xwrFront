@@ -239,6 +239,30 @@ function IndexPage(props) {
 
   }, [panesComponentsRef.current]);
 
+  const callbackModifyPane = useCallback((targetKey, stateInfo) => {
+    const {dispatch } = props;
+    const panes = commonUtils.isEmptyArr(panesRef.current) ? [] : panesRef.current;
+    const index = panes.findIndex(pane => pane.key.toString() === targetKey);
+
+    if (index > -1) {
+      const activePane = { ...panes[index], ...stateInfo };
+      panes[index] = activePane;
+      const params = 'routeId=' + activePane.routeId + '&tabId=' + activePane.key + (activePane.dataId ? '&dataId=' + activePane.dataId : '');
+      dispatch({
+        type: 'commonModel/saveActivePane',
+        payload: activePane,
+      });
+      dispatch({
+        type: 'commonModel/savePanes',
+        payload: panes,
+      });
+      dispatch({
+        type: 'commonModel/gotoNewPage',
+        payload: {newPage: activePane.route + '?' + params},
+      });
+    }
+  }, [panesComponentsRef.current]);
+
   const callbackAddPane = useCallback(async (routeId, stateInfo) => {
     const {dispatch, dispatchModifyState, commonModel } = props;
     if (commonUtils.isEmpty(routeId)) {
@@ -259,7 +283,7 @@ function IndexPage(props) {
         const pane = {key, title: state.routeData.viewName, route: path, ...state };
         panes.push(pane);
         const panesComponents = commonUtils.isEmptyArr(panesComponentsRef.current) ? [] : panesComponentsRef.current;
-        panesComponents.push(commonUtils.panesComponent(pane, route, callbackAddPane, callbackRemovePane));
+        panesComponents.push(commonUtils.panesComponent(pane, route, callbackAddPane, callbackRemovePane, callbackModifyPane));
         dispatchModifyState({panesComponents});
         dispatch({
           type: 'commonModel/saveActivePane',
@@ -337,7 +361,7 @@ function IndexPage(props) {
     <div>
       <ConfigProvider locale={zhCN}>
       <Row>
-        <IndexMenu {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} />
+        <IndexMenu {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} />
         <a href="/">主页</a>
         <a href="/xwrManage">管理主页</a>
         <a href="/register"> register</a>
@@ -354,7 +378,7 @@ function IndexPage(props) {
         </Modal>
         {shop}
       </Row>
-      <div><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} /></div>
+      <div><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} /></div>
       </ConfigProvider>
     </div>
   );

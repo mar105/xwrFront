@@ -1041,7 +1041,7 @@ const commonBase = (WrapComponent) => {
         gotoError(dispatch, { code: '6002', msg: '路由Id不能为空！' });
         return;
       }
-      const url: string = application.urlPrefix + '/getData/getRouteContainer?id=' + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+      const url: string = application.urlPrefix + '/personal/getRouteContainer?id=' + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: type === 'popupAdd' ? 'add' : undefined, isModal: true, ...params.state, modalParams: params, dataId: undefined };
@@ -1141,7 +1141,7 @@ const commonBase = (WrapComponent) => {
           listTabId: props.listTabId,
           listRouteId: props.listRouteId, listContainerId: props.listContainerId, listCondition: props.listCondition, listTableKey: props.listTableKey,
           listRowIndex: props.listRowIndex, listRowTotal: props.listRowTotal};
-        const url: string = application.urlPrefix + '/getData/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+        const url: string = application.urlPrefix + '/personal/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           state = { ...state, routeId, ...interfaceReturn.data };

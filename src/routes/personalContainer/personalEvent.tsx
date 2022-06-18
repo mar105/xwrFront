@@ -87,7 +87,7 @@ const personalEvent = (WrapComponent) => {
       const { commonModel, dispatch, masterData, setPersonalData, tabId, dispatchModifyState } = propsRef.current;
       const saveData: any = [];
       saveData.push({ name: 'slave', data: setPersonalData });
-      const params = { id: masterData.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
+      const params = { id: masterData.id, tabId, routeId: masterData.superiorId, groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId, saveData, handleType: commonUtils.isEmpty(masterData.handleType) ? 'modify' : masterData.handleType };
       const url: string = application.urlPrefix + '/personal/savePersonal';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;

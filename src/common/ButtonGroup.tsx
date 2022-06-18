@@ -64,6 +64,9 @@ export function ButtonGroup(params) {
          buttonConfig.isVisible = false;
        }
     }
+    if (params.userInfo.shopId === '1395719229487058944' && buttonConfig.key === 'setButton') {
+      buttonConfig.isVisible = false;
+    }
     if (buttonConfig.isVisible) {
       let isDropDown = false;
       let menusData;

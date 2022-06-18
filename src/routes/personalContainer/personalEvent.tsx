@@ -40,7 +40,7 @@ const personalEvent = (WrapComponent) => {
             if (indexModify > -1) {
               for(const key of Object.keys(returnData[name + 'ModifyData'][indexModify])) {
                 if (key === 'id' || key === 'handleType') continue;
-                const index = setPersonalData.findIndex(item => item.keyType === 'containerSlave' && item.keyName === returnData[name + 'Data'][indexData].fieldName && item.keyFieldName === fieldName);
+                const index = setPersonalData.findIndex(item => item.keyType === 'containerSlave' && item.originalContainerId === propsRef.current.masterData.id && item.keyName === returnData[name + 'Data'][indexData].fieldName && item.keyFieldName === fieldName);
                 if (index > -1) {
                   setPersonalData[index].handleType = commonUtils.isEmpty(setPersonalData[index].handleType) ? 'modify': setPersonalData[index].handleType;
                   setPersonalData[index].keyValue = returnData[name + 'ModifyData'][indexModify][key];
@@ -58,7 +58,7 @@ const personalEvent = (WrapComponent) => {
           } else if (returnData[name + 'Data'][indexData].handleType === 'add') {
             for(const key of Object.keys(returnData[name + 'Data'][indexData])) {
               if (key === 'handleType') continue;
-              const index = setPersonalData.findIndex(item => item.keyType === 'containerSlave' && item.keyName === returnData[name + 'Data'][indexData].fieldName && item.keyFieldName === fieldName);
+              const index = setPersonalData.findIndex(item => item.keyType === 'containerSlave' && item.originalContainerId === propsRef.current.masterData.id && item.keyName === returnData[name + 'Data'][indexData].fieldName && item.keyFieldName === fieldName);
               if (index > -1) {
                 setPersonalData[index].handleType = commonUtils.isEmpty(setPersonalData[index].handleType) ? 'modify': setPersonalData[index].handleType;
                 setPersonalData[index].keyValue = returnData[name + 'Data'][indexData][key];

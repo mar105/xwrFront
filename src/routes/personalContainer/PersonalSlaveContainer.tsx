@@ -21,7 +21,7 @@ const SlaveContainer = (props) => {
   const columns = [
     { title: '排序号', dataIndex: 'sortNum', fieldType: 'decimal', sortNum: 10, width: 100, fixed: 'left' },
     { title: '名称', dataIndex: 'fieldName', isRequired: true, fieldType: 'varchar', sortNum: 20, width: 300, fixed: 'left' },
-    { title: '名称|中文', dataIndex: 'viewName', isRequired: true, fieldType: 'varchar', sortNum: 31, width: 150 },
+    { title: '名称', dataIndex: 'viewName', isRequired: true, fieldType: 'varchar', sortNum: 31, width: 150 },
     { title: '是否显示', dataIndex: 'isVisible', fieldType: 'tinyint', sortNum: 34, width: 150 },
     { title: '是否必填', dataIndex: 'isRequired', fieldType: 'tinyint', sortNum: 35, width: 150 },
     { title: '是否求和', dataIndex: 'isSum', fieldType: 'tinyint', sortNum: 36, width: 150 },
@@ -39,7 +39,7 @@ const SlaveContainer = (props) => {
     { title: '查询界面Key', dataIndex: 'popupSelectKey', fieldType: 'varchar', sortNum: 190, width: 150 },
 
     { title: '下拉|类型', dataIndex: 'dropType', fieldType: 'varchar', dropType: 'const', isDropEmpty: true, viewDrop: '{ "sql": "sql语句", "const": "常量", "popup": "选择框与定位", "current": "界面数据" }', sortNum: 200, width: 150 },
-    { title: '下拉|中文', dataIndex: 'viewDrop', fieldType: 'varchar', sortNum: 210, width: 150 },
+    { title: '下拉|显示', dataIndex: 'viewDrop', fieldType: 'varchar', sortNum: 210, width: 150 },
     { title: '下拉|关键字', dataIndex: 'keyUpFieldDrop', fieldType: 'varchar', sortNum: 240, width: 150 },
     { title: '下拉|赋值字段', dataIndex: 'assignField', fieldType: 'varchar', sortNum: 241, width: 150 },
     { title: '下拉|虚拟方式', dataIndex: 'virtualDrop', fieldType: 'varchar', sortNum: 250, width: 150 },

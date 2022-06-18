@@ -190,7 +190,7 @@ export function getTableProps(name, props) {
   //标准配置配置，直接把配置保存后后台配置表
   const configSetting = props.commonModel.userInfo.shopId === '1395719229487058944' ?
     <a onClick={props.onTableConfigSaveClick.bind(this, name)}> <Tooltip placement="top" title="列宽保存"><SaveOutlined /> </Tooltip></a> : '';
-
+  const setPersonal = props.commonModel.userInfo.shopId === '1395719229487058944' ? [] : [{key: 'set', text: '设置', onSelect: props.onSetPersonal.bind(this, name)}];
   const index = props.containerData && props[name + 'Container'] ? props.containerData.findIndex(item => item.superiorContainerId === props[name + 'Container'].id) : -1;
   const tableNestParam = index > -1 ? getTableProps(props.containerData[index].dataSetName, props) : {};
 
@@ -203,7 +203,7 @@ export function getTableProps(name, props) {
     sum: props[name + 'Sum'],
     eventOnRow: { onRowClick: props.onRowClick },
     rowSelection: { selectedRowKeys: props[name + 'SelectedRowKeys'] },
-    selections: [{key: 'set', text: '设置', onSelect: props.onSetPersonal.bind(this, name)}],
+    selections: setPersonal,
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
     config: props[name + 'Container'],
     onReachEnd: props.onReachEnd, //分页滚动 拖动到最后调用接口

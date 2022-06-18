@@ -1147,6 +1147,7 @@ const commonBase = (WrapComponent) => {
           state = { ...state, routeId, ...interfaceReturn.data };
           for(let container of state.containerData) {
             if (params.name === container.dataSetName) {
+              addState.setPersonalData = state.setPersonalData;
               addState[params.name + 'Container'] = container;
               if (container.isTable) {
                 const columns: any = [];

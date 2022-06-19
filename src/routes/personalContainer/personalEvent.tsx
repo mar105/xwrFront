@@ -126,7 +126,7 @@ const personalEvent = (WrapComponent) => {
           return;
         }
         const { stompClient } = commonModel;
-        const params = { routeId: masterData.superiorId, containerId: masterData.id };
+        const params = { routeId: masterData.superiorId, containerId: masterData.id, groupId: props.commonModel.userInfo.groupId, shopId: props.commonModel.userInfo.shopId };
         stompClient.send('/websocket/container/syncToMongo', {}, JSON.stringify(application.paramInit(params)));
       } else if (key === 'syncToMongoIndexButton') {
         const masterData = {...masterDataOld };
@@ -139,7 +139,8 @@ const personalEvent = (WrapComponent) => {
           return;
         }
         const { stompClient } = commonModel;
-        const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName, virtualIndex: masterData.virtualIndex, tableKey: masterData.tableKey };
+        const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName,
+          virtualIndex: masterData.virtualIndex, tableKey: masterData.tableKey, groupId: props.commonModel.userInfo.groupId, shopId: props.commonModel.userInfo.shopId };
         stompClient.send('/websocket/container/syncToMongoIndex', {}, JSON.stringify(application.paramInit(params)));
 
       } else if (key === 'dropCollectionMongoButton') {
@@ -149,7 +150,8 @@ const personalEvent = (WrapComponent) => {
           return;
         }
         const { stompClient } = commonModel;
-        const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName };
+        const params = { routeId: masterData.superiorId, containerId: masterData.id, virtualName: masterData.virtualName,
+          groupId: props.commonModel.userInfo.groupId, shopId: props.commonModel.userInfo.shopId };
         stompClient.send('/websocket/container/dropCollectionMongo', {}, JSON.stringify(application.paramInit(params)));
 
       }
@@ -178,7 +180,9 @@ const personalEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'modifyButton', caption: '修改', htmlType: 'button', sortNum: 30, disabled: props.enabled });
       buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 40, disabled: !props.enabled });
       buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: !props.enabled });
-      buttonGroup.push({ key: 'syncToMongoButton', caption: '同步到mongo数据', htmlType: 'button', onClick: onButtonClick, sortNum: 101, disabled: props.enabled });
+      buttonGroup.push({ key: 'syncToMongoButton', caption: '更新数据', htmlType: 'button', onClick: onButtonClick, sortNum: 101, disabled: props.enabled || !props.commonModel.userInfo.isManage });
+      buttonGroup.push({ key: 'syncToMongoIndexButton', caption: '更新索引', htmlType: 'button', onButtonClick, sortNum: 102, disabled: props.enabled || !props.commonModel.userInfo.isManage});
+      buttonGroup.push({ key: 'dropCollectionMongoButton', caption: '删除表', htmlType: 'button', onButtonClick, sortNum: 103, disabled: props.enabled || !props.commonModel.userInfo.isManage });
       return buttonGroup;
     }
 

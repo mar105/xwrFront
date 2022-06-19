@@ -12,7 +12,7 @@ export function InputComponent(params) {
   }
   const onChange = (e) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Input', record: params.record, value: e.target.value});
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, fieldType: params.config.fieldType, componentType: 'Input', record: params.record, value: e.target.value});
     }
   }
   const event = {

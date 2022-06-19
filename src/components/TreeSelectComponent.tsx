@@ -42,7 +42,7 @@ export function TreeSelectComponent(params) {
 
   const onChange = (value, label, extra) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'TreeSelect', record: params.record, assignField: params.config.assignField, value, extra});
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, fieldType: params.config.fieldType, componentType: 'TreeSelect', record: params.record, assignField: params.config.assignField, value, extra});
     }
     dispatchModifySelfState({ searchValue: '' });
   }

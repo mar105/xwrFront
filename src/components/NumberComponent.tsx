@@ -11,7 +11,7 @@ export function NumberComponent(params) {
   }
   const onChange = (value) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Number', record: params.record, value});
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, fieldType: params.config.fieldType, componentType: 'Number', record: params.record, value});
     }
   }
   const event = {

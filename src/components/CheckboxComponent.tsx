@@ -10,7 +10,7 @@ export function CheckboxComponent(params) {
   }
   const onChange = (e) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Checkbox', record: params.record, value: e.target.checked});
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, fieldType: params.config.fieldType, componentType: 'Checkbox', record: params.record, value: e.target.checked});
     }
   }
   if (params.componentType === componentType.Soruce) {

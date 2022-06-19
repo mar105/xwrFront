@@ -14,7 +14,7 @@ export function DatePickerComponent(params) {
   }
   const onChange = (date, dateString) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange({name: params.name, fieldName: params.config.fieldName,
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, fieldType: params.config.fieldType,
         componentType: params.dateType === 'RangePicker' ? 'RangePicker' : 'DatePicker', record: params.record, value: dateString});
     }
   }

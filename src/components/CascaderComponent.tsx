@@ -12,7 +12,7 @@ export function CascaderComponent(params) {
   }
   const onChange = (value, option) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Cascader', record: params.record, value, fieldRelevance: params.config.fieldRelevance});
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, fieldType: params.config.fieldType, componentType: 'Cascader', record: params.record, value, fieldRelevance: params.config.fieldRelevance});
     }
   }
   const event = {

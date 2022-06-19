@@ -11,7 +11,7 @@ const personalEvent = (WrapComponent) => {
     }, [props]);
 
     const onDataChange = (params) => {
-      const { name, fieldName, record, isWait } = params;
+      const { name, fieldName, fieldType, record, isWait } = params;
       const { commonModel, setPersonalData: setPersonalDataOld } = propsRef.current;
 
       const setPersonalData = commonUtils.isNotEmptyArr(setPersonalDataOld) ? setPersonalDataOld : [];
@@ -27,7 +27,7 @@ const personalEvent = (WrapComponent) => {
             const dataRow = {id: commonUtils.newId(), keyType: 'containerMaster', handleType: 'add', routeId: commonModel.userInfo.shopId, groupId: commonModel.userInfo.groupId,
               shopId: commonModel.userInfo.shopId, userId: commonModel.userInfo.userId,
               originalRouteId: returnData[name + 'Data'].superiorId, originalContainerId: returnData[name + 'Data'].id,
-              keyName: returnData[name + 'ModifyData'].id, keyFieldName: fieldName, keyValue: returnData[name + 'ModifyData'][fieldName], sortNum: 1};
+              keyName: returnData[name + 'ModifyData'].id, keyFieldName: fieldName, keyFieldType: fieldType, keyValue: returnData[name + 'ModifyData'][fieldName], sortNum: 1};
             setPersonalData.push(dataRow);
           }
         }
@@ -48,7 +48,7 @@ const personalEvent = (WrapComponent) => {
                   const dataRow = {id: commonUtils.newId(), keyType: 'containerSlave', handleType: 'add', routeId: commonModel.userInfo.shopId, groupId: commonModel.userInfo.groupId,
                     shopId: commonModel.userInfo.shopId, userId: commonModel.userInfo.userId,
                     originalRouteId: propsRef.current.masterData.superiorId, originalContainerId: propsRef.current.masterData.id,
-                    keyName: returnData[name + 'Data'][indexData].fieldName, keyFieldName: fieldName, keyValue: returnData[name + 'ModifyData'][indexModify][fieldName], sortNum: 1};
+                    keyName: returnData[name + 'Data'][indexData].fieldName, keyFieldName: fieldName, keyFieldType: fieldType, keyValue: returnData[name + 'ModifyData'][indexModify][fieldName], sortNum: 1};
                   setPersonalData.push(dataRow);
                 }
               }
@@ -66,7 +66,7 @@ const personalEvent = (WrapComponent) => {
                 const dataRow = {id: commonUtils.newId(), keyType: 'containerSlave', handleType: 'add', routeId: commonModel.userInfo.shopId, groupId: commonModel.userInfo.groupId,
                     shopId: commonModel.userInfo.shopId, userId: commonModel.userInfo.userId,
                   originalRouteId: propsRef.current.masterData.superiorId, originalContainerId: propsRef.current.masterData.id,
-                  keyName: returnData[name + 'Data'][indexData].fieldName, keyFieldName: fieldName, keyValue: returnData[name + 'Data'][indexData][fieldName], sortNum: 1};
+                  keyName: returnData[name + 'Data'][indexData].fieldName, keyFieldName: fieldName, keyFieldType: fieldType, keyValue: returnData[name + 'Data'][indexData][fieldName], sortNum: 1};
                 setPersonalData.push(dataRow);
               }
 

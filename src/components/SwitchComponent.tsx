@@ -10,7 +10,7 @@ export function SwitchComponent(params) {
   }
   const onChange = (checked) => {
     if (params.event && params.event.onChange) {
-      params.event.onChange({name: params.name, fieldName: params.config.fieldName, componentType: 'Switch', record: params.record, value: checked});
+      params.event.onChange({name: params.name, fieldName: params.config.fieldName, fieldType: params.config.fieldType, componentType: 'Switch', record: params.record, value: checked});
     }
   }
   if (params.componentType === componentType.Soruce) {

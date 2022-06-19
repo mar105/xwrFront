@@ -1,5 +1,5 @@
 import {Col, Row} from "antd";
-import React, {useMemo} from "react";
+import React from "react";
 import * as commonUtils from "../utils/commonUtils";
 import {SelectComponent} from "../components/SelectComponent";
 import {InputComponent} from "../components/InputComponent";
@@ -85,7 +85,8 @@ export const CommonExhibit = (props) => {
       } else if (item.fieldType === 'datetime') {
         component = <DatePickerComponent {...dateParams}  />
       }
-      component = useMemo(()=>{ return (component)}, [masterData[item.fieldName], enabled, item.viewName]);
+      //只能在最外围使用钩子函数，里面再用的话，不能减少组件与增加组件显示不显示。否则报 Rendered fewer hooks than expected
+      // component = useMemo(()=>{ return (component)}, [masterData[item.fieldName], enabled, item.viewName]);
       return <Col span={8}>{component}</Col>;
     });
 

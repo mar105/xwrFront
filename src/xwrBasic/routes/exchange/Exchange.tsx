@@ -59,14 +59,14 @@ const Exchange = (props) => {
     }
   }
 
-  const onModalOk = async (e) => {
+  const onDrawerOk = async (e) => {
     const { exchangeRateData, exchangeRateModifyData, exchangeRateDelData } = props;
     const childCallback = (params) => {
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('exchangeRate', exchangeRateData, exchangeRateModifyData, exchangeRateDelData, false));
       return saveData;
     }
-    props.onModalOk(e, {childCallback});
+    props.onDrawerOk(e, {childCallback});
   }
 
 
@@ -91,10 +91,10 @@ const Exchange = (props) => {
           <TableComponent {...tableParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} onClick={onButtonClick}/>
-      <Drawer width={600} visible={masterIsVisible} maskClosable={false} onClose={props.onModalCancel} footer={
+      <Drawer width={600} visible={masterIsVisible} maskClosable={false} onClose={props.onDrawerCancel} footer={
         <div>
-          <Button onClick={onModalOk} type="primary">Submit</Button>
-          <Button onClick={props.onModalCancel} style={{ marginRight: 8 }}>Cancel</Button>
+          <Button onClick={onDrawerOk} type="primary">Submit</Button>
+          <Button onClick={props.onDrawerCancel} style={{ marginRight: 8 }}>Cancel</Button>
         </div>}
       >
         <Form form={form} >

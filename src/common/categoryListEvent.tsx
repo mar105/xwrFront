@@ -173,7 +173,7 @@ const categoryListEvent = (WrapComponent) => {
         dispatchModifyState({ ...returnState });
       }
     }
-    const onDrawCancel = async (e) => {
+    const onDrawerCancel = async (e) => {
       const { dispatchModifyState } = props;
       const {dispatch, commonModel, tabId, masterData} = props;
       const url: string = application.urlCommon + '/verify/removeModifying';
@@ -191,7 +191,7 @@ const categoryListEvent = (WrapComponent) => {
 
     }
 
-    const onDrawOk = async (e, childParams) => {
+    const onDrawerOk = async (e, childParams) => {
       const { dispatchModifyState, commonModel, dispatch, masterData, masterModifyData, tabId } = props;
       // const values = await form.validateFields();
       const saveData: any = [];
@@ -246,8 +246,8 @@ const categoryListEvent = (WrapComponent) => {
     return <WrapComponent
       {...props}
       onSetForm={onSetForm}
-      onDrawOk={onDrawOk}
-      onDrawCancel={onDrawCancel}
+      onDrawerOk={onDrawerOk}
+      onDrawerCancel={onDrawerCancel}
       onButtonClick={onButtonClick}
       getButtonGroup={getButtonGroup}
       onTableChange={onTableChange}

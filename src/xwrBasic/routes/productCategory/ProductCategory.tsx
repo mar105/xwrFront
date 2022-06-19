@@ -96,7 +96,7 @@ const ProductCategory = (props) => {
     }
   }
 
-  const onModalOk = async (e) => {
+  const onDrawerOk = async (e) => {
     const { processCategoryData: processCategoryDataOld, processCategorySelectedRowKeys: processCategorySelectedRowKeysOld, processCategoryDelData } = props;
     const childCallback = (params) => {
       const saveData: any = [];
@@ -112,7 +112,7 @@ const ProductCategory = (props) => {
       saveData.push(commonUtils.mergeData('processCategory', processCategoryData.filter(item => commonUtils.isNotEmpty(item.handleType)), [], processCategoryDelData, true));
       return saveData;
     }
-    props.onModalOk(e, {childCallback});
+    props.onDrawerOk(e, {childCallback});
   }
 
   const getSelectList = async (params) => {
@@ -153,10 +153,10 @@ const ProductCategory = (props) => {
           <TableComponent {...tableParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} onClick={onButtonClick}/>
-      <Drawer width={600} visible={masterIsVisible} maskClosable={false} onClose={props.onModalCancel} footer={
+      <Drawer width={600} visible={masterIsVisible} maskClosable={false} onClose={props.onDrawerCancel} footer={
         <div>
-          <Button onClick={onModalOk} type="primary">Submit</Button>
-          <Button onClick={props.onModalCancel} style={{ marginRight: 8 }}>Cancel</Button>
+          <Button onClick={onDrawerOk} type="primary">Submit</Button>
+          <Button onClick={props.onDrawerCancel} style={{ marginRight: 8 }}>Cancel</Button>
         </div>}
       >
         <Form form={form} >

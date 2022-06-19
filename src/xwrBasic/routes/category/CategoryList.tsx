@@ -85,10 +85,10 @@ const CategoryList = (props) => {
           <TableComponent {...tableParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} />
-      <Drawer width={600} visible={masterIsVisible} maskClosable={false} onClose={props.onDrawCancel} footer={
+      <Drawer width={600} visible={masterIsVisible} maskClosable={false} onClose={props.onDrawerCancel} footer={
         <div>
-          <Button onClick={props.onDrawOk} type="primary">Submit</Button>
-          <Button onClick={props.onDrawCancel} style={{ marginRight: 8 }}>Cancel</Button>
+          <Button onClick={props.onDrawerOk} type="primary">Submit</Button>
+          <Button onClick={props.onDrawerCancel} style={{ marginRight: 8 }}>Cancel</Button>
         </div>}
       >
         <Form form={form} >

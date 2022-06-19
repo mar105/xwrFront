@@ -109,7 +109,7 @@ const FormulaParam = (props) => {
     }
   }
 
-  const onModalOk = async (e) => {
+  const onDrawerOk = async (e) => {
     const { categoryData: categoryDataOld, categorySelectedRowKeys: categorySelectedRowKeysOld, categoryDelData } = props;
     const childCallback = (params) => {
       const saveData: any = [];
@@ -125,7 +125,7 @@ const FormulaParam = (props) => {
       saveData.push(commonUtils.mergeData('category', categoryData.filter(item => commonUtils.isNotEmpty(item.handleType)), [], categoryDelData, true));
       return saveData;
     }
-    const returnData = await props.onModalOk(e, {childCallback});
+    const returnData = await props.onDrawerOk(e, {childCallback});
     if (returnData) {
       props.commonModel.stompClient.send('/websocket/syncRefreshData', {}, JSON.stringify({ userName: props.commonModel.userInfo.userName, type: 'formulaParam'}));
     }
@@ -155,10 +155,10 @@ const FormulaParam = (props) => {
           <TableComponent {...tableParam} />
         </div>: ''}
       <ButtonGroup {...buttonGroup} onClick={onButtonClick}/>
-      <Drawer width={900} visible={masterIsVisible} maskClosable={false} onClose={props.onModalCancel} footer={
+      <Drawer width={900} visible={masterIsVisible} maskClosable={false} onClose={props.onDrawerCancel} footer={
         <div>
-          <Button onClick={onModalOk} type="primary">Submit</Button>
-          <Button onClick={props.onModalCancel} style={{ marginRight: 8 }}>Cancel</Button>
+          <Button onClick={onDrawerOk} type="primary">Submit</Button>
+          <Button onClick={props.onDrawerCancel} style={{ marginRight: 8 }}>Cancel</Button>
         </div>}
       >
         <Form form={form} >

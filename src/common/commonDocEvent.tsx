@@ -144,6 +144,10 @@ const commonDocEvent = (WrapComponent) => {
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
           if (interfaceReturn.code === 1) {
             props.gotoSuccess(dispatch, interfaceReturn);
+            if (commonUtils.isNotEmpty(props.listTabId)) {
+              props.commonModel.stompClient.send('/websocket/saveDataReturn', {},
+                JSON.stringify( { authorization: props.commonModel.token, tabId: props.listTabId, result: { code: 1 }} ));
+            }
             props.callbackRemovePane(tabId);
           } else {
             props.gotoError(dispatch, interfaceReturn);

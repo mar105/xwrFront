@@ -3,6 +3,8 @@ import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
+import {Modal} from "antd";
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
 const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -131,30 +133,39 @@ const commonDocEvent = (WrapComponent) => {
           }
         }
       } else if (key === 'delButton' || key === 'invalidButton') {
-        if (commonUtils.isNotEmpty(masterDataOld.id)) {
-          const saveData: any = [];
-          saveData.push(commonUtils.mergeData('master', [masterDataOld], [], [], true));
-          if (childParams && childParams.childCallback) {
-            const saveChildData = await childParams.childCallback({masterDataOld});
-            saveData.push(...saveChildData);
-          }
-          const params = { id: masterDataOld.id, tabId, routeId: props.routeId, saveData, groupId: commonModel.userInfo.groupId,
-            shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
-          const url: string = application.urlPrefix + '/getData/saveData';
-          const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
-          if (interfaceReturn.code === 1) {
-            props.gotoSuccess(dispatch, interfaceReturn);
-            if (commonUtils.isNotEmpty(props.listTabId)) {
-              props.commonModel.stompClient.send('/websocket/saveDataReturn', {},
-                JSON.stringify( { authorization: props.commonModel.token, tabId: props.listTabId, result: { code: 1 }} ));
+        let index = commonModel.commonConstant.findIndex(item => item.constantName === 'confirmVar');
+        const confirmVar = index > -1 ? commonModel.commonConstant[index].viewName : '确定#var#吗？';
+        Modal.confirm({
+          icon: <QuestionCircleOutlined />,
+          content: confirmVar.replace('#var#', config.viewName),
+          onOk: async () => {
+            if (commonUtils.isNotEmpty(masterDataOld.id)) {
+              const saveData: any = [];
+              saveData.push(commonUtils.mergeData('master', [masterDataOld], [], [], true));
+              if (childParams && childParams.childCallback) {
+                const saveChildData = await childParams.childCallback({masterDataOld});
+                saveData.push(...saveChildData);
+              }
+              const params = { id: masterDataOld.id, tabId, routeId: props.routeId, saveData, groupId: commonModel.userInfo.groupId,
+                shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
+              const url: string = application.urlPrefix + '/getData/saveData';
+              const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+              if (interfaceReturn.code === 1) {
+                props.gotoSuccess(dispatch, interfaceReturn);
+                if (commonUtils.isNotEmpty(props.listTabId)) {
+                  props.commonModel.stompClient.send('/websocket/saveDataReturn', {},
+                    JSON.stringify( { authorization: props.commonModel.token, tabId: props.listTabId, result: { code: 1 }} ));
+                }
+                props.callbackRemovePane(tabId);
+              } else {
+                props.gotoError(dispatch, interfaceReturn);
+              }
+            } else {
+              props.callbackRemovePane(tabId);
             }
-            props.callbackRemovePane(tabId);
-          } else {
-            props.gotoError(dispatch, interfaceReturn);
-          }
-        } else {
-          props.callbackRemovePane(tabId);
-        }
+          },
+        });
+
       } else if (key === 'refreshButton') {
         dispatchModifyState({ pageLoading: true });
         const returnState = await props.getAllData({dataId: masterDataOld.id });

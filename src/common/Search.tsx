@@ -8,7 +8,7 @@ import {NumberComponent} from "../components/NumberComponent";
 import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
 import {ButtonComponent} from "../components/ButtonComponent";
-import { DeleteOutlined, PlusOutlined, MinusOutlined, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined, MinusOutlined, EditOutlined, QuestionCircleOutlined, StarTwoTone } from '@ant-design/icons';
 import moment from 'moment';
 import * as application from "../application";
 import * as request from "../utils/request";
@@ -154,9 +154,13 @@ const Search = (props) => {
     } else if (key === 'cancelSchemeButton') {
       dispatchModifyState({ schemeIsVisible: false });
     } else if (key === 'delSchemeButton') {
+      let index = commonModel.commonConstant.findIndex(item => item.constantName === 'confirmVar');
+      const confirmVar = index > -1 ? commonModel.commonConstant[index].viewName : '确定#var#吗？';
+      index = commonModel.commonConstant.findIndex(item => item.constantName === 'delScheme');
+      const delScheme = index > -1 ? commonModel.commonConstant[index].viewName : '删除方案';
       Modal.confirm({
         icon: <QuestionCircleOutlined />,
-        content: '确定删除吗?',
+        content: confirmVar.replace('#var#', delScheme),
         onOk: async () => {
           const index = searchSchemeData.findIndex(item => item.id === props.searchSchemeId);
           if (index > -1) {
@@ -184,7 +188,24 @@ const Search = (props) => {
           }
         },
       });
-
+    } else if (key === 'setDefaultButton') {
+      const params = { defaultSearchSchemeId: props.searchSchemeId, tabId, routeId,  groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId };
+      const url: string = application.urlPrefix + '/search/saveSearchDefault';
+      const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+      if (interfaceReturn.code === 1) {
+        const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+        const interfaceRouteReturn = (await request.getRequest(urlRoute, commonModel.token)).data;
+        if (interfaceRouteReturn.code === 1) {
+          const addState = { routeId, ...interfaceRouteReturn.data };
+          dispatchModifyState({ ...addState });
+          //需要更新pane中的state，防止刷新还是老数据。
+          props.callbackModifyPane(props.tabId, addState);
+        } else {
+          props.gotoError(dispatch, interfaceRouteReturn);
+        }
+      } else {
+        props.gotoError(dispatch, interfaceReturn);
+      }
     }
   }
 
@@ -357,6 +378,9 @@ const Search = (props) => {
   index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseInputScheme');
   const pleaseInputScheme = index > -1 ? commonModel.commonConstant[index].viewName : '请输入方案名称';
 
+  index = commonModel.commonConstant.findIndex(item => item.constantName === 'setDefault');
+  const setDefault = index > -1 ? commonModel.commonConstant[index].viewName : '设置默认';
+
   const addConditionButton = {
     caption: addCondition,
     property: { name: 'addConditionButton', htmlType: 'button' },
@@ -388,6 +412,7 @@ const Search = (props) => {
         <a onClick={onButtonClick.bind(this, 'addSchemeButton')}> <Tooltip placement="top" title={addScheme}><PlusOutlined /></Tooltip></a>
         <a onClick={onButtonClick.bind(this, 'delSchemeButton')}> <Tooltip placement="top" title={delScheme}><MinusOutlined /></Tooltip></a>
         <a onClick={onButtonClick.bind(this, 'modifySchemeButton')}> <Tooltip placement="top" title={modifyScheme}><EditOutlined /></Tooltip></a>
+        <a onClick={onButtonClick.bind(this, 'setDefaultButton')}> <Tooltip placement="top" title={setDefault}><StarTwoTone /></Tooltip></a>
 
         {searchComponent}
         <ButtonComponent {...addConditionButton} />

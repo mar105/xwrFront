@@ -19,7 +19,7 @@ const CommonList = (props) => {
   const configSetting = props.commonModel.userInfo.shopId === '1395719229487058944' ?
     <a onClick={props.onTableConfigSaveClick.bind(this, 'slave')}> <Tooltip placement="top" title="列宽保存"><SaveOutlined /> </Tooltip></a> : '';
 
-  const { commonModel, enabled, slaveContainer, searchRowKeys, searchData, importIsVisible } = props;
+  const { commonModel, enabled, slaveContainer, searchRowKeys, searchData, importIsVisible, searchSchemeData, searchSchemeId, schemeIsVisible } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, token: commonModel.token, routeId: props.routeId, groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId,
     onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup(), isModal: props.isModal,
     onUploadSuccess: props.onUploadSuccess, dispatchModifyState: props.dispatchModifyState };
@@ -33,7 +33,7 @@ const CommonList = (props) => {
     return <div />
   }, width: 50 , fixed: 'right' }
   const search = useMemo(() => {
-    return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
+    return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData, searchSchemeData, searchSchemeId, schemeIsVisible]);
 
   return (
     <div>

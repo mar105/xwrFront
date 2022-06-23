@@ -2,16 +2,19 @@ import React, {useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import { componentType, searchType } from "../utils/commonTypes";
 import {SelectComponent} from "../components/SelectComponent";
-import {Form} from "antd";
+import {Form, Modal, Segmented, Tooltip} from "antd";
 import {InputComponent} from "../components/InputComponent";
 import {NumberComponent} from "../components/NumberComponent";
 import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
 import {ButtonComponent} from "../components/ButtonComponent";
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined, MinusOutlined, EditOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import moment from 'moment';
+import * as application from "../application";
+import * as request from "../utils/request";
 
 const Search = (props) => {
+  const [form] = Form.useForm();
   useEffect(() => {
     const { slaveContainer, searchData: searchDataOld, searchRowKeys: searchRowKeysOld, dispatchModifyState } = props;
     const searchConfig = slaveContainer.slaveData.filter(item => item.isSearch === 1);
@@ -81,7 +84,8 @@ const Search = (props) => {
 
   const onButtonClick = async (key, e) => {
     const name = 'slave';
-    const { containerData, searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState, [name + 'Container']: container, [name + 'SorterInfo']: sorterInfo } = props;
+    const { dispatch, commonModel, tabId, routeId, containerData, searchSchemeData, searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState,
+      [name + 'Container']: container, [name + 'SorterInfo']: sorterInfo } = props;
     const searchData = {...searchDataOld};
     const searchRowKeys = [...searchRowKeysOld];
     let addState: any = {};
@@ -127,6 +131,93 @@ const Search = (props) => {
       }
 
       dispatchModifyState({...addState});
+    } else if (key === 'addSchemeButton') {
+      form.setFieldsValue({searchSchemeName: ''});
+      dispatchModifyState({ sechemeHandleType: 'add', schemeIsVisible: true });
+    } else if (key === 'modifySchemeButton') {
+      if (commonUtils.isEmpty(props.searchSchemeId)) {
+        const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseData');
+        const pleaseChooseData = index > -1 ? commonModel.commonConstant[index].viewName : '请选择数据！';
+        props.gotoError(dispatch, { code: '6001', msg: pleaseChooseData });
+        return;
+      }
+      const index = searchSchemeData.findIndex(item => item.id === props.searchSchemeId);
+      if (index > -1) {
+        form.setFieldsValue({searchSchemeName: searchSchemeData[index].searchSchemeName});
+        dispatchModifyState({ sechemeHandleType: 'modify', schemeIsVisible: true });
+      } else {
+        const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseData');
+        const pleaseChooseData = index > -1 ? commonModel.commonConstant[index].viewName : '请选择数据！';
+        props.gotoError(dispatch, { code: '6001', msg: pleaseChooseData });
+        return;
+      }
+    } else if (key === 'cancelSchemeButton') {
+      dispatchModifyState({ schemeIsVisible: false });
+    } else if (key === 'delSchemeButton') {
+      Modal.confirm({
+        icon: <QuestionCircleOutlined />,
+        content: '确定删除吗?',
+        onOk: async () => {
+          const index = searchSchemeData.findIndex(item => item.id === props.searchSchemeId);
+          if (index > -1) {
+            const saveData: any = [];
+            const searchScheme = { ...searchSchemeData[index], handleType: 'del' };
+            saveData.push(commonUtils.mergeData('searchScheme', [searchScheme], [], [], true));
+            const params = { id: searchScheme.id, tabId, routeId, groupId: commonModel.userInfo.groupId,
+              shopId: commonModel.userInfo.shopId,  saveData, handleType: 'del' };
+            const url: string = application.urlPrefix + '/search/saveSearchScheme';
+            const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+            if (interfaceReturn.code === 1) {
+              const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+              const interfaceRouteReturn = (await request.getRequest(urlRoute, commonModel.token)).data;
+              if (interfaceRouteReturn.code === 1) {
+                const addState = { routeId, ...interfaceRouteReturn.data };
+                dispatchModifyState({ ...addState });
+                //需要更新pane中的state，防止刷新还是老数据。
+                props.callbackModifyPane(props.tabId, addState);
+              } else {
+                props.gotoError(dispatch, interfaceRouteReturn);
+              }
+            } else {
+              props.gotoError(dispatch, interfaceReturn);
+            }
+          }
+        },
+      });
+
+    }
+  }
+
+  const onChange = (value) => {
+    props.dispatchModifyState({ searchSchemeId: value });
+  }
+
+  const onFinish = async (values: any, childParams) => {
+    const { dispatch, tabId, commonModel, dispatchModifyState, routeId, searchSchemeId, sechemeHandleType } = props;
+    const saveData: any = [];
+    const searchCondition: any = [];
+    searchRowKeys.forEach(key => {
+      searchCondition.push({ fieldName: searchData['first' + key], condition: searchData['second' + key], fieldValue: searchData['third' + key] });
+    });
+    const searchScheme = {id: sechemeHandleType === 'add' ? commonUtils.newId() : searchSchemeId, groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId, routeId,
+      searchCondition: JSON.stringify(searchCondition), searchSchemeName: values.searchSchemeName, sortNum: searchSchemeData.length + 1, handleType: sechemeHandleType };
+    saveData.push(commonUtils.mergeData('searchScheme', [searchScheme], [], [], true));
+    const params = { id: searchScheme.id, tabId, routeId, groupId: commonModel.userInfo.groupId,
+      shopId: commonModel.userInfo.shopId,  saveData, handleType: sechemeHandleType };
+    const url: string = application.urlPrefix + '/search/saveSearchScheme';
+    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+    if (interfaceReturn.code === 1) {
+      const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+      const interfaceRouteReturn = (await request.getRequest(urlRoute, commonModel.token)).data;
+      if (interfaceRouteReturn.code === 1) {
+        const addState = { routeId, ...interfaceRouteReturn.data, searchSchemeId };
+        dispatchModifyState({ ...addState, schemeIsVisible: false });
+        props.callbackModifyPane(props.tabId, addState);
+      } else {
+        props.gotoError(dispatch, interfaceRouteReturn);
+      }
+    } else {
+      props.gotoError(dispatch, interfaceReturn);
     }
   }
 
@@ -140,9 +231,14 @@ const Search = (props) => {
     }
   }
 
-  const { searchData: searchDataOld, searchRowKeys: searchRowKeysOld, firstViewDrop, searchConfig } = props;
+  const { commonModel, searchSchemeData: searchSchemeDataOld, searchData: searchDataOld, searchRowKeys: searchRowKeysOld, firstViewDrop, searchConfig } = props;
+  const searchSchemeData = commonUtils.isEmptyArr(searchSchemeDataOld) ? [] : searchSchemeDataOld;
   const searchData = commonUtils.isEmptyObj(searchDataOld) ? {} : searchDataOld;
   const searchRowKeys = commonUtils.isEmptyArr(searchRowKeysOld) ? [] : searchRowKeysOld;
+  const searchSchemeComponent = commonUtils.isEmptyArr(searchSchemeData) ? '' :
+    <Segmented value={props.searchSchemeId} onChange={onChange} options={searchSchemeData.map(scheme => {
+      return {label: scheme.searchSchemeName, value: scheme.id}
+    })}/>;
   const searchComponent = searchRowKeys.map(key => {
     // 判断值要在下拉中存在的才显示出来。
     if (firstViewDrop && firstViewDrop.findIndex(item => item.id === searchData['first' + key]) > -1) {
@@ -244,29 +340,67 @@ const Search = (props) => {
     }
 
   });
+
+  let index = commonModel.commonConstant.findIndex(item => item.constantName === 'addScheme');
+  const addScheme = index > -1 ? commonModel.commonConstant[index].viewName : '增加方案';
+  index = commonModel.commonConstant.findIndex(item => item.constantName === 'delScheme');
+  const delScheme = index > -1 ? commonModel.commonConstant[index].viewName : '删除方案';
+  index = commonModel.commonConstant.findIndex(item => item.constantName === 'modifyScheme');
+  const modifyScheme = index > -1 ? commonModel.commonConstant[index].viewName : '修改方案';
+
+  index = commonModel.commonConstant.findIndex(item => item.constantName === 'addCondition');
+  const addCondition = index > -1 ? commonModel.commonConstant[index].viewName : '添加条件';
+  index = commonModel.commonConstant.findIndex(item => item.constantName === 'search');
+  const search = index > -1 ? commonModel.commonConstant[index].viewName : '修改方案';
+  index = commonModel.commonConstant.findIndex(item => item.constantName === 'post');
+  const post = index > -1 ? commonModel.commonConstant[index].viewName : '保存';
+  index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseInputScheme');
+  const pleaseInputScheme = index > -1 ? commonModel.commonConstant[index].viewName : '请输入方案名称';
+
   const addConditionButton = {
-    caption: '添加条件',
+    caption: addCondition,
     property: { name: 'addConditionButton', htmlType: 'button' },
     event: { onClick: onButtonClick.bind(this, 'addConditionButton') },
     componentType: componentType.Soruce,
   };
 
   const searchButton = {
-    caption: '搜索',
+    caption: search,
     property: { name: 'searchButton', htmlType: 'button' },
     event: { onClick: onButtonClick.bind(this, 'searchButton') },
     componentType: componentType.Soruce,
   };
 
-  return (<Form>
+  const schemePostButton = {
+    caption: post,
+    property: { name: 'schemePostButton', htmlType: 'submit' },
+    componentType: componentType.Soruce,
+  };
+  const searchSchemeName = {
+    config: { fieldName: 'searchSchemeName', isRequired: true },
+    property: { placeholder:  pleaseInputScheme},
+  };
+
+  return (<div><Form >
     {commonUtils.isEmptyArr(searchRowKeys) ? '' :
       <div>
+        {searchSchemeComponent}
+        <a onClick={onButtonClick.bind(this, 'addSchemeButton')}> <Tooltip placement="top" title={addScheme}><PlusOutlined /></Tooltip></a>
+        <a onClick={onButtonClick.bind(this, 'delSchemeButton')}> <Tooltip placement="top" title={delScheme}><MinusOutlined /></Tooltip></a>
+        <a onClick={onButtonClick.bind(this, 'modifySchemeButton')}> <Tooltip placement="top" title={modifyScheme}><EditOutlined /></Tooltip></a>
+
         {searchComponent}
         <ButtonComponent {...addConditionButton} />
         <ButtonComponent {...searchButton} />
+        <Modal width={800} visible={props.schemeIsVisible} footer={null} onCancel={onButtonClick.bind(this, 'cancelSchemeButton')} >
+          <Form form={form} onFinish={onFinish}>
+            <InputComponent {...searchSchemeName} />
+            <ButtonComponent {...schemePostButton} />
+          </Form>
+        </Modal>
       </div>
     }
-  </Form>);
+  </Form></div>);
 }
 
 export default Search;

@@ -496,11 +496,8 @@ const commonBase = (WrapComponent) => {
 
       if (commonUtils.isEmptyArr(selectedRows)) {
         const index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseChooseData');
-        if (index > -1) {
-          gotoError(dispatch, { code: '6001', msg: commonModel.commonConstant[index].viewName });
-        } else {
-          gotoError(dispatch, { code: '6001', msg: '请选择数据！' });
-        }
+        const pleaseChooseData = index > -1 ? commonModel.commonConstant[index].viewName : '请选择数据！';
+        props.gotoError(dispatch, { code: '6001', msg: pleaseChooseData });
         return;
       }
       const data = onAdd(container);

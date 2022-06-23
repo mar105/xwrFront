@@ -7,6 +7,7 @@ import arrayMove from "array-move";
 import reqwest from 'reqwest';
 import {Md5} from "ts-md5";
 import {replacePath, routeInfo} from "../routeInfo";
+import { scrollTo } from 'virtuallist-antd';
 
 const commonBase = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -176,6 +177,10 @@ const commonBase = (WrapComponent) => {
         pageSize: params.pageSize ? params.pageSize : application.pageSize,
         condition: params.condition,
         createDate: params.createDate,
+      }
+
+      if (params.pageNum === 1 && commonUtils.isNotEmptyArr(stateRef.current[params.name + 'Data'])) {
+        scrollTo({row: 1, vid: props.tabId + params.name });
       }
 
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;
@@ -825,10 +830,11 @@ const commonBase = (WrapComponent) => {
     }
 
     const onReachEnd = async (name) => {
-      const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage, [name + 'CreateDate']: createDate }: any = stateRef.current;
+      const { [name + 'Container']: container, [name + 'Data']: data, [name + 'PageNum']: pageNum, [name + 'IsLastPage']: isLastPage, [name + 'CreateDate']: createDate,
+        [name + 'SearchCondition']: searchCondition, [name + 'SorterInfo']: sorterInfo }: any = stateRef.current;
       if (!isLastPage && commonUtils.isEmpty(container.superiorContainerId) && !container.isTree) {
         dispatchModifyState({[name + 'Loading']: true });
-        const returnData: any = await getDataList({ name, containerId: container.id, pageNum: pageNum + 1, condition: {}, isWait: true, createDate });
+        const returnData: any = await getDataList({ name, containerId: container.id, pageNum: pageNum + 1, condition: { searchCondition, sorterInfo }, isWait: true, createDate });
         const addState = {...returnData};
         addState[name + 'Data'] = commonUtils.isEmptyArr(returnData[name + 'Data']) ? addState[name + 'Data'] : [...data, ...returnData[name + 'Data']];
         dispatchModifyState({...addState});

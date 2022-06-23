@@ -16,12 +16,13 @@ import * as request from "../utils/request";
 const Search = (props) => {
   const [form] = Form.useForm();
   useEffect(() => {
-    const { slaveContainer, searchData: searchDataOld, searchRowKeys: searchRowKeysOld, dispatchModifyState } = props;
+    const { slaveContainer, searchData: searchDataOld, searchRowKeys: searchRowKeysOld, dispatchModifyState, searchSchemeData } = props;
     const searchConfig = slaveContainer.slaveData.filter(item => item.isSearch === 1);
     const searchRowKeys: any = commonUtils.isEmptyArr(searchRowKeysOld) ? [] : [...searchRowKeysOld];
     const searchData = commonUtils.isEmptyArr(searchDataOld) ? {} : {...searchDataOld};
     const firstViewDrop: any = [];
 
+    let addState = {};
     if (commonUtils.isNotEmptyArr(searchConfig)) {
       if (commonUtils.isEmptyArr(searchRowKeys)) {
         const key = commonUtils.newId();
@@ -39,7 +40,19 @@ const Search = (props) => {
       });
 
     }
-    dispatchModifyState({ searchConfig, searchRowKeys, searchData, firstViewDrop });
+
+    if (commonUtils.isNotEmpty(props.searchSchemeId)) {
+      const index = searchSchemeData.findIndex(item => item.id === props.searchSchemeId);
+      if (index > -1 && commonUtils.isNotEmpty(searchSchemeData[index].searchCondition)) {
+        const searchCondition = JSON.parse(searchSchemeData[index].searchCondition);
+        addState = { searchConfig, firstViewDrop, ...searchCondition };
+        onButtonClick('searchButton', null, addState);
+      }
+
+    } else {
+      dispatchModifyState({ searchConfig, searchRowKeys, searchData, firstViewDrop, ...addState });
+    }
+
   }, []);
 
   const onDataChange = (params) => {
@@ -82,12 +95,12 @@ const Search = (props) => {
     }
   }
 
-  const onButtonClick = async (key, e) => {
+  const onButtonClick = async (key, e, newState) => {
     const name = 'slave';
     const { dispatch, commonModel, tabId, routeId, containerData, searchSchemeData, searchRowKeys: searchRowKeysOld, searchData: searchDataOld, dispatchModifyState,
       [name + 'Container']: container, [name + 'SorterInfo']: sorterInfo } = props;
-    const searchData = {...searchDataOld};
-    const searchRowKeys = [...searchRowKeysOld];
+    let searchData = commonUtils.isEmptyObj(searchDataOld) ? {} : {...searchDataOld};
+    let searchRowKeys = commonUtils.isEmptyArr(searchRowKeysOld) ? [] : [...searchRowKeysOld];
     let addState: any = {};
     const searchConfig = container.slaveData.filter(item => item.isSearch === 1);
     if (key === 'addConditionButton') {
@@ -102,6 +115,11 @@ const Search = (props) => {
       searchData['second' + key] = secondViewDrop[0].id;
       dispatchModifyState({ searchRowKeys, searchData });
     } else if (key === 'searchButton') {
+      if (commonUtils.isNotEmptyObj(newState)) {
+        searchRowKeys = newState.searchRowKeys;
+        searchData = newState.searchData;
+        addState = {...addState, ...newState};
+      }
       const searchCondition: any = [];
       searchRowKeys.forEach(key => {
         searchCondition.push({ fieldName: searchData['first' + key], condition: searchData['second' + key], fieldValue: searchData['third' + key] });
@@ -200,6 +218,7 @@ const Search = (props) => {
           dispatchModifyState({ ...addState });
           //需要更新pane中的state，防止刷新还是老数据。
           props.callbackModifyPane(props.tabId, addState);
+          props.gotoSuccess(dispatch, interfaceReturn);
         } else {
           props.gotoError(dispatch, interfaceRouteReturn);
         }
@@ -210,16 +229,20 @@ const Search = (props) => {
   }
 
   const onChange = (value) => {
-    props.dispatchModifyState({ searchSchemeId: value });
+    let addState = {searchSchemeId: value};
+    const index = searchSchemeData.findIndex(item => item.id === value);
+    if (index > -1 && commonUtils.isNotEmpty(searchSchemeData[index].searchCondition)) {
+      const searchCondition = JSON.parse(searchSchemeData[index].searchCondition);
+      addState = { ...addState, ...searchCondition };
+      onButtonClick('searchButton', null, addState);
+    }
+    // props.dispatchModifyState({ addState });
   }
 
-  const onFinish = async (values: any, childParams) => {
-    const { dispatch, tabId, commonModel, dispatchModifyState, routeId, searchSchemeId, sechemeHandleType } = props;
+  const onFinish = async (values: any) => {
+    const { dispatch, tabId, commonModel, dispatchModifyState, routeId, searchSchemeId, sechemeHandleType, searchRowKeys, searchData } = props;
     const saveData: any = [];
-    const searchCondition: any = [];
-    searchRowKeys.forEach(key => {
-      searchCondition.push({ fieldName: searchData['first' + key], condition: searchData['second' + key], fieldValue: searchData['third' + key] });
-    });
+    const searchCondition = {searchRowKeys, searchData};
     const searchScheme = {id: sechemeHandleType === 'add' ? commonUtils.newId() : searchSchemeId, groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId, routeId,
       searchCondition: JSON.stringify(searchCondition), searchSchemeName: values.searchSchemeName, sortNum: searchSchemeData.length + 1, handleType: sechemeHandleType };
     saveData.push(commonUtils.mergeData('searchScheme', [searchScheme], [], [], true));

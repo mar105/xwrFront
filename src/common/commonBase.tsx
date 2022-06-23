@@ -68,7 +68,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const getAllData = async (paramsOld) => {
-      const { containerData } = modifyState;
+      const { containerData, searchSchemeId } = modifyState;
       const params = commonUtils.isEmptyObj(paramsOld) ? {} : paramsOld;
       if (commonUtils.isNotEmptyArr(containerData)) {
         let addState = { enabled: false, pageLoading: false };
@@ -108,7 +108,7 @@ const commonBase = (WrapComponent) => {
                 }
               }
             }
-          } else if (params.handleType !== 'add' && container.isSelect) {
+          } else if (params.handleType !== 'add' && container.isSelect && commonUtils.isEmptyObj(searchSchemeId)) { // searchSchemeId不为空时，列表方案直接搜索。
             //列表获取
             if (container.isTable) {
               if (commonUtils.isEmpty(container.superiorContainerId)) {

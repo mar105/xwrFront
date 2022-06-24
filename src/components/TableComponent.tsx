@@ -9,6 +9,7 @@ import {CheckboxComponent} from "./CheckboxComponent";
 import {SelectComponent} from "./SelectComponent";
 import {componentType} from "../utils/commonTypes";
 import { Resizable } from 'react-resizable';
+import { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import "react-resizable/css/styles.css";
 import { SearchOutlined, CheckSquareOutlined, BorderOutlined, MenuOutlined } from '@ant-design/icons';
@@ -63,11 +64,15 @@ export function TableComponent(params: any) {
     //-----增加行拖拽------------------------------
     const VRow: any = addComponents.body.row;
     const VWapper: any = addComponents.body.wrapper;
-    const SortableItem = SortableElement(props => <VRow {...props} />);
-    const SortableContainerA = SortableContainer(props => <VWapper {...props} />);
+    const SortableItem = SortableElement((props: React.HTMLAttributes<HTMLTableRowElement>) => (
+      <VRow {...props} />
+    ));
+    const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => (
+      <VWapper {...props} />
+    ));
 
-    const DraggableContainer = props => (
-      <SortableContainerA
+    const DraggableContainer = (props: SortableContainerProps) => (
+      <SortableBody
         useDragHandle
         disableAutoscroll
         helperClass="row-dragging"
@@ -108,11 +113,11 @@ export function TableComponent(params: any) {
     dispatchModifySelfState({components, ...addState });
     //params.lastColumn.changeValue 判断是否需要重新渲染最后一列。
     //filteredInfo 用于包含搜索的变黄色
-  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, modifySelfState.filteredInfo]); //, modifySelfState.rowSort
+  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, modifySelfState.filteredInfo, params.sortEnd]); //, modifySelfState.rowSort
 
 
   // 数据行拖动
-  const onSortEnd = ({ oldIndex, newIndex }) => {
+  const onSortEnd = ({ oldIndex, newIndex }: SortEnd) => {
     params.onSortEnd(params.name, oldIndex, newIndex);
     // dispatchModifySelfState({ rowSort: !modifySelfState.rowSort });
   };

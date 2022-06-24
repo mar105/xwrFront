@@ -3,7 +3,7 @@ import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
 import {Spin} from "antd";
-import arrayMove from "array-move";
+import { arrayMoveImmutable } from "array-move";
 import reqwest from 'reqwest';
 import {Md5} from "ts-md5";
 import {replacePath, routeInfo} from "../routeInfo";
@@ -857,7 +857,8 @@ const commonBase = (WrapComponent) => {
         const data: any = [];
 
         //数组合并
-        const newData = arrayMove([].concat(dataOld), oldIndex, newIndex).filter(el => !!el);
+        const newData = arrayMoveImmutable(dataOld.slice(), oldIndex, newIndex).filter(el => !!el);
+        // arrayMove([].concat(dataOld), oldIndex, newIndex).filter(el => !!el);
         const dataModify = commonUtils.isEmptyArr(dataModifyOld) ? [] : [...dataModifyOld];
         newData.forEach((itemData: any, index) => {
           const rowData = { ...itemData };
@@ -873,7 +874,11 @@ const commonBase = (WrapComponent) => {
             }
           }
         });
-        dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify });
+        dispatchModifyState({ [name + 'Data']: data, [name + 'ModifyData']: dataModify, [name + 'SortEnd']: commonUtils.newId() });
+
+        setTimeout(() => {
+          scrollTo({row: newIndex, vid: props.tabId + name });
+        }, 500);
       }
     };
 

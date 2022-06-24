@@ -206,6 +206,7 @@ export function getTableProps(name, props) {
     selections: setPersonal,
     eventSelection: { onRowSelectChange: props.onRowSelectChange },
     config: props[name + 'Container'],
+    sortEnd: props[name + 'SortEnd'],
     onReachEnd: props.onReachEnd, //分页滚动 拖动到最后调用接口
     onSortEnd: props.onSortEnd,
     draggableBodyRow: props.draggableBodyRow,

@@ -101,6 +101,8 @@ const commonListEvent = (WrapComponent) => {
         // }
         // const interfaceReturn = await request.postExcelRequest(url, commonModel.token, application.paramInit(requestParam));
         // commonUtils.downloadExcel(interfaceReturn);
+      } else if (key === 'printButton') {
+        props.onPrint();
       }
     }
 
@@ -131,7 +133,8 @@ const commonListEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 60, disabled: props.enabled });
       buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 70, disabled: props.enabled });
       buttonGroup.push({ key: 'exportExcelButton', caption: '导出excel', htmlType: 'button', sortNum: 80, disabled: false });
-      buttonGroup.push({ key: 'importExcelButton', caption: '导入数据', htmlType: 'button', sortNum: 80, disabled: false });
+      buttonGroup.push({ key: 'importExcelButton', caption: '导入数据', htmlType: 'button', sortNum: 90, disabled: false });
+      buttonGroup.push({ key: 'printButton', caption: '打印', htmlType: 'button', sortNum: 100, disabled: false });
       return buttonGroup;
     }
 

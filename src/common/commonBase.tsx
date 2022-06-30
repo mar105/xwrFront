@@ -1049,7 +1049,8 @@ const commonBase = (WrapComponent) => {
         gotoError(dispatch, { code: '6002', msg: '路由Id不能为空！' });
         return;
       }
-      const url: string = application.urlPrefix + '/personal/getRouteContainer?id=' + config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+      const url: string = application.urlPrefix + '/personal/getRouteContainer?id=' +
+        config.popupActiveId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
         const state = { routeId: config.popupActiveId, ...interfaceReturn.data, handleType: type === 'popupAdd' ? 'add' : undefined, isModal: true, ...params.state, modalParams: params, dataId: undefined };
@@ -1150,7 +1151,8 @@ const commonBase = (WrapComponent) => {
           listTabId: props.listTabId,
           listRouteId: props.listRouteId, listContainerId: props.listContainerId, listCondition: props.listCondition, listTableKey: props.listTableKey,
           listRowIndex: props.listRowIndex, listRowTotal: props.listRowTotal} : {};
-        const url: string = application.urlPrefix + '/personal/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+        const url: string = application.urlPrefix + '/personal/getRouteContainer?id=' +
+          routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         if (interfaceReturn.code === 1) {
           state = { ...state, routeId, ...interfaceReturn.data };
@@ -1261,6 +1263,63 @@ const commonBase = (WrapComponent) => {
         commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, null, state).component });
     }
 
+    const onPrint = () => {
+      const { routeId, containerData, dataId, routeData } = stateRef.current;
+      const { commonModel } = props;
+      const requestParam = {
+        routeId: routeId,
+        groupId: commonModel.userInfo.groupId,
+        shopId: commonModel.userInfo.shopId,
+        dataId
+      };
+      for(const container of containerData) {
+        requestParam[container.dataSetName + 'ContainerId'] = container.id;
+        if (container.dataSetName !== 'master') {
+          requestParam[container.dataSetName + 'PageNum'] = stateRef.current[container.dataSetName + 'PageNum'];
+          requestParam[container.dataSetName + 'PageSize'] = application.pageSize;
+          requestParam[container.dataSetName + 'Condition'] =
+            JSON.stringify({ dataId, searchCondition: stateRef.current[container.dataSetName + 'SearchCondition'], sorterInfo: stateRef.current[container.dataSetName + 'SorterInfo'] })
+        }
+      }
+
+      // @ts-ignore
+      FR.doHyperlinkByPost({
+        //报表路径
+        url: application.urlReport + '/webroot/decision/view/report?viewlet=doc/2.cpt',
+        //参数
+        para: requestParam,
+        target:'_dialog',    //对话框方式打开
+        feature:{
+          width:1200,
+          height:800,
+          title: routeData.viewName,
+        }
+      });
+//
+//       var printurl="http://192.168.3.3:8075/webroot/decision/view/report";
+//       var reportlets =[{reportlet: '2.cpt', ...requestParam}, {reportlet: 'GettingStarted.cpt', 地区: '华东'}];
+//       var config = {
+//         printUrl : printurl,
+//         isPopUp : true,
+// // 是否弹出设置窗口，true为弹出，false为不弹出
+//         data :{
+// // 多模板格式： [{reportlet: 'name.cpt', a: 'a1'}, {reportlet: 'name.cpt', b: 'b1'}]  同样的模板会出现多页
+// // 单模板格式： [{reportlet: 'name.cpt', a: 'a1', b: 'b1'}]  同样的模板只会有单页
+//           reportlets: reportlets // 需要打印的模板列表
+//         },
+//         printType : 1, // 打印类型，0为零客户端打印，1为本地打印
+// // 以下为零客户端打印的参数，仅当 printType 为 0 时生效
+//         ieQuietPrint : false,// IE静默打印设置 true为静默，false为不静默
+// // 以下为本地打印的参数，仅当 printType 为 1 时生效
+//         printerName : 'Microsoft Print to PDF', // 打印机名
+//         pageType: 0, // 打印页码类型：0：所有页，1：当前页，2：指定页
+//         pageIndex: '1-3', // 页码范围。当 pageType 为 2 时有效
+//         copy: 1, // 打印份数
+//       };
+//       // @ts-ignore
+//       FR.doURLPrint(config);
+    }
+
     return <Spin spinning={modifyState.pageLoading ? true : false}>
       <WrapComponent
       {...props}
@@ -1295,6 +1354,7 @@ const commonBase = (WrapComponent) => {
       delTableData={delTableData}
       onCellClick={onCellClick}
       onSetPersonal={onSetPersonal}
+      onPrint={onPrint}
     />
     </Spin>
   };

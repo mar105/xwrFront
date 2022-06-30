@@ -190,7 +190,8 @@ const Search = (props) => {
             const url: string = application.urlPrefix + '/search/saveSearchScheme';
             const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
             if (interfaceReturn.code === 1) {
-              const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+              const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' +
+                routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
               const interfaceRouteReturn = (await request.getRequest(urlRoute, commonModel.token)).data;
               if (interfaceRouteReturn.code === 1) {
                 const addState = { routeId, ...interfaceRouteReturn.data };
@@ -211,7 +212,8 @@ const Search = (props) => {
       const url: string = application.urlPrefix + '/search/saveSearchDefault';
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
       if (interfaceReturn.code === 1) {
-        const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+        const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' +
+          routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
         const interfaceRouteReturn = (await request.getRequest(urlRoute, commonModel.token)).data;
         if (interfaceRouteReturn.code === 1) {
           const addState = { routeId, ...interfaceRouteReturn.data };
@@ -251,7 +253,8 @@ const Search = (props) => {
     const url: string = application.urlPrefix + '/search/saveSearchScheme';
     const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
     if (interfaceReturn.code === 1) {
-      const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' + routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId;
+      const urlRoute: string = application.urlPrefix + '/personal/getRouteContainer?id=' +
+        routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
       const interfaceRouteReturn = (await request.getRequest(urlRoute, commonModel.token)).data;
       if (interfaceRouteReturn.code === 1) {
         const addState = { routeId, ...interfaceRouteReturn.data, searchSchemeId };

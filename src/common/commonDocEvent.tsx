@@ -248,6 +248,8 @@ const commonDocEvent = (WrapComponent) => {
 
       } else if (key === 'setButton') {
         props.onSetPersonal('master', config);
+      } else if (key === 'printButton') {
+        props.onPrint();
       }
     }
 
@@ -322,9 +324,9 @@ const commonDocEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'lastButton', caption: '末条', htmlType: 'button', sortNum: 110, disabled: props.enabled });
       buttonGroup.push({ key: 'copyToButton', caption: '复制', htmlType: 'button', sortNum: 120, disabled: props.enabled });
       buttonGroup.push({ key: 'invalidButton', caption: '作废', htmlType: 'button', sortNum: 130, disabled: props.enabled || isInvalid || isExamine });
-      buttonGroup.push({ key: 'printButton', caption: '打印', htmlType: 'button', sortNum: 120, disabled: !props.enabled });
-      buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 140, disabled: props.enabled });
-      buttonGroup.push({ key: 'setButton', caption: '设置', htmlType: 'button', sortNum: 140, disabled: false });
+      buttonGroup.push({ key: 'printButton', caption: '打印', htmlType: 'button', sortNum: 140, disabled: props.enabled });
+      buttonGroup.push({ key: 'refreshButton', caption: '刷新', htmlType: 'button', sortNum: 150, disabled: props.enabled });
+      buttonGroup.push({ key: 'setButton', caption: '设置', htmlType: 'button', sortNum: 160, disabled: false });
       return buttonGroup;
     }
 

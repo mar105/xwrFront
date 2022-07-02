@@ -1,13 +1,13 @@
 import { connect } from 'dva';
 import React, { useMemo} from 'react';
-import {Col, Form, Row, Tooltip} from "antd";
+import {Col, Form, Row} from "antd";
 import commonBase from "../../../common/commonBase";
 import * as commonUtils from "../../../utils/commonUtils";
 import {ButtonGroup} from "../../../common/ButtonGroup";
 import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import {TableComponent} from "../../../components/TableComponent";
-import { DeleteOutlined } from '@ant-design/icons';
+
 import CommonModal from "../../../common/commonModal";
 import commonBillEvent from "../../../common/commonBillEvent";
 
@@ -27,10 +27,8 @@ const SaleOrder = (props) => {
   slaveParam.pagination = false;
   slaveParam.width = 2000;
   slaveParam.lastColumn = { title: 'o', changeValue: '',
-    render: (text,record, index)=> {
-    return <div>
-      { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
-    </div>
+    render: (text, record, index)=> {
+    return props.getLastColumnButton(text, record, index);
   }, width: 50 , fixed: 'right' };
 
   const component = useMemo(()=>{ return (

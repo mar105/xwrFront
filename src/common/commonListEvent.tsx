@@ -139,11 +139,13 @@ const commonListEvent = (WrapComponent) => {
     }
 
     const onTableChange = async (name, pagination, filters, sorterInfo, extra) => {
-      const {dispatchModifyState, [name + 'Container']: container, [name + 'SearchCondition']: searchCondition } = props;
-      dispatchModifyState({[name + 'Loading']: true });
-      const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: commonUtils.isNotEmpty(container.superiorContainerId) || container.isTree === 1 ? undefined : 1, condition: { searchCondition, sorterInfo }, isWait: true });
-      const addState = {...returnData, [name + 'SorterInfo']: sorterInfo};
-      dispatchModifyState({...addState});
+      if (extra.action === 'sort') {
+        const {dispatchModifyState, [name + 'Container']: container, [name + 'SearchCondition']: searchCondition } = props;
+        dispatchModifyState({[name + 'Loading']: true });
+        const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: commonUtils.isNotEmpty(container.superiorContainerId) || container.isTree === 1 ? undefined : 1, condition: { searchCondition, sorterInfo }, isWait: true });
+        const addState = {...returnData, [name + 'SorterInfo']: sorterInfo, [name + 'Loading']: false};
+        dispatchModifyState({...addState});
+      }
     }
 
     const onUploadSuccess = (buttonName, interfaceReturn) => {

@@ -110,14 +110,14 @@ export function ButtonGroup(params) {
           buttonConfig.children = buttonChildrenSlave;
         } else if (buttonChildren.length > 1) {
           isDropDown = true;
-          menusData = <Menu onClick={commonUtils.isEmpty(params.onClick) ? undefined :
-            params.onClick.bind(this, buttonConfig.key === 'copyToButton' ? 'copyToMenu' : 'copyFromMenu', null)}>{buttonChildren.map(menu => {
+          const menuItems = buttonChildren.map(menu => {
             const buttonChildrenSlave = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item =>
               item.containerType === 'control' && item.fieldName.startsWith(menu.fieldName + '.'));
             menu.children = buttonChildrenSlave;
-            // @ts-ignore
-            return <Menu.Item key={menu.fieldName} config={menu} > {menu.viewName} </Menu.Item>})
-          }</Menu>
+            return { label: menu.viewName, key: menu.fieldName, config: menu, children: buttonChildrenSlave}});
+
+          menusData = <Menu items={menuItems} onClick={commonUtils.isEmpty(params.onClick) ? undefined :
+            params.onClick.bind(this, buttonConfig.key === 'copyToButton' ? 'copyToMenu' : 'copyFromMenu', null)} />
         }
       }
       

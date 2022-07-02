@@ -48,18 +48,11 @@ export function TableComponent(params: any) {
       params.onReachEnd(params.name);
     }
   }
+
   useEffect(() => {
-    const addState: any = { columns: getColumn(params.property.columns) };
+    const addState: any = {};
     addState.enabled = params.enabled;
     const addComponents: any = { ...VList({ height: 500, vid: params.vid, onReachEnd: onReachEnd })};
-
-    // 树形通过配置展开列名找到展开列
-    if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
-      let selectionMinus = params.property.rowSelection === null ? 0 : 2;  // 为2的原因 index从0开始，要多加1
-      // selectionMinus = params.config.isRowNum ? selectionMinus + 1 : selectionMinus; // addState.columns已经包含了rowNum
-      const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
-      addState.expandable = { expandIconColumnIndex: index + selectionMinus }
-    }
 
     //-----增加行拖拽------------------------------
     const VRow: any = addComponents.body.row;
@@ -83,11 +76,6 @@ export function TableComponent(params: any) {
 
     const DraggableBodyRow = ({ className, style, ...restProps }) => {
       return params.draggableBodyRow(params.name, rowKey, SortableItem, className, style, restProps);
-      // const { dataSource: dataSourceOld }: any = params.property;
-      // // function findIndex base on Table rowKey props and should always be a right array index
-      // const dataSource = commonUtils.isEmptyArr(dataSourceOld) ? [] : dataSourceOld;
-      // const index = dataSource.findIndex((x: any) => x[rowKey] === restProps['data-row-key']);
-      // return <SortableItem index={index} {...restProps} />;
     };
 
     //有行isDragRow 行拖拽功能时表格中组件显示正常，不然是缩小版，样式要调整。
@@ -113,8 +101,21 @@ export function TableComponent(params: any) {
     dispatchModifySelfState({components, ...addState });
     //params.lastColumn.changeValue 判断是否需要重新渲染最后一列。
     //filteredInfo 用于包含搜索的变黄色
-  }, [params.lastColumn.changeValue, params.property.columns, params.enabled, modifySelfState.filteredInfo, params.sortEnd]); //, modifySelfState.rowSort
+    //sortEnd 拖动行时数据要重新刷新，不然需要都是老序号，数据拖动位置不准
+  }, [params.sortEnd]); //, modifySelfState.rowSort
 
+  useEffect(() => {
+    const addState: any = { columns: getColumn(params.property.columns) };
+    // 树形通过配置展开列名找到展开列
+    if (params.config.isTree && commonUtils.isNotEmpty(params.config.treeColumnName)) {
+      let selectionMinus = params.property.rowSelection === null ? 0 : 2;  // 为2的原因 index从0开始，要多加1
+      // selectionMinus = params.config.isRowNum ? selectionMinus + 1 : selectionMinus; // addState.columns已经包含了rowNum
+      const index = addState.columns.findIndex(item => item.dataIndex === params.config.treeColumnName);
+      addState.expandable = { expandIconColumnIndex: index + selectionMinus }
+    }
+    //-----列宽拖拽结束------------------------------
+    dispatchModifySelfState({ ...addState });
+  }, [params.lastColumn.changeValue, params.enabled, params.property.columns]);
 
   // 数据行拖动
   const onSortEnd = ({ oldIndex, newIndex }: SortEnd) => {

@@ -6,8 +6,6 @@ import * as React from "react";
 import {Button, Menu} from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined, AppstoreOutlined } from '@ant-design/icons';
 
-const { SubMenu } = Menu;
-
 const IndexMenu = (props) => {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
     return {...state, ...action };
@@ -22,9 +20,10 @@ const IndexMenu = (props) => {
         const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
         const userPermissionReturn = commonModel.userInfo.isManage ? { code: 1, data: [] } : (await request.getRequest(userPermissionUrl, commonModel.token)).data;
         if (interfaceReturn.code === 1 && userPermissionReturn.code === 1) {
-          const menusData = interfaceReturn.data.map(menu => {
+          const childMenusData = interfaceReturn.data.map(menu => {
             return subMenu(menu, userPermissionReturn.data);
           });
+          const menusData = [{ label: '产品与服务', key: 1, icon: <AppstoreOutlined />, children: childMenusData }];
           dispatchModifySelfState({ menusData });
         } else {
           if (interfaceReturn.code !== 1) {
@@ -41,15 +40,11 @@ const IndexMenu = (props) => {
 
   const subMenu = (menu, userPermission) => {
     if (commonUtils.isNotEmptyArr(menu.children) && menu.isVisible) {
-      return <SubMenu key={menu.id} title={menu.viewName}>
-        {menu.children.map(menu => {
-          return subMenu(menu, userPermission);
-        })}
-      </SubMenu>
-    } else {
+      return {label: menu.viewName, key: menu.id, children: menu.children.map(menu => { return subMenu(menu, userPermission) })
+      };
+    } else { //if (menu.isVisible) {
       const disabled = props.commonModel.userInfo.isManage ? false : !(userPermission.findIndex(item => item.permissionRouteId === menu.id) > -1);
-      // @ts-ignore
-      return menu.isVisible ? <Menu.Item key={menu.id} menuData={menu} disabled={disabled}>{menu.viewName}</Menu.Item> : '';
+      return menu.isVisible ? {label: menu.viewName, key: menu.id, menuData: menu, disabled} : undefined;
     }
   }
 
@@ -67,11 +62,7 @@ const IndexMenu = (props) => {
         {modifySelfState.collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       </Button>
       {!modifySelfState.collapsed ? '' :
-        <Menu onClick={onClick} mode="vertical" subMenuCloseDelay={0.6}>
-          <SubMenu key="1" icon={<AppstoreOutlined />} title="产品与服务">
-            {modifySelfState.menusData}
-          </SubMenu>
-        </Menu>
+        <Menu onClick={onClick} mode="vertical" subMenuCloseDelay={0.6} items={modifySelfState.menusData} />
       }
     </div>
   );

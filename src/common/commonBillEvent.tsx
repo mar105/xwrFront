@@ -1,6 +1,8 @@
 import * as React from "react";
 import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
+import {Tooltip} from "antd";
+import { UpSquareOutlined, DownSquareOutlined } from '@ant-design/icons';
 
 const commonBillEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -78,12 +80,28 @@ const commonBillEvent = (WrapComponent) => {
       return buttonAddGroup;
     }
 
+    const getLastColumnButton = (text,record, index)=> {
+      const { commonModel } = props;
+      const upperIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'upperButton');
+      const upperButton = upperIndex > -1 ? commonModel.commonConstant[upperIndex].viewName : '上查';
+      const lowerIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'lowerButton');
+      const lowerButton = lowerIndex > -1 ? commonModel.commonConstant[lowerIndex].viewName : '下查';
+      return <div>
+        { commonUtils.isEmpty(record.originalId) ? '' : <a onClick={props.onLastColumnClick.bind(this, 'slave', 'upperButton', record)}> <Tooltip placement="top" title={upperButton}><UpSquareOutlined /> </Tooltip></a>}
+        { <a onClick={props.onLastColumnClick.bind(this, 'slave', 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>}
+      </div>
+      {props.getLastColumnButton(text, record, index)}
+    }
+
+
+
     return <div>
       <WrapComponent
         {...props}
         getButtonGroup={getButtonGroup}
         onButtonClick={onButtonClick}
         onFinish={onFinish}
+        getLastColumnButton={getLastColumnButton}
       />
     </div>
   };

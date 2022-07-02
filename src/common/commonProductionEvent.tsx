@@ -3,6 +3,8 @@ import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../xwrProduction/application";
 import * as request from "../utils/request";
+import {Dropdown, Tooltip} from "antd";
+import { UpSquareOutlined, DownSquareOutlined } from '@ant-design/icons';
 
 const commonProductionEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -283,20 +285,24 @@ const commonProductionEvent = (WrapComponent) => {
     const onLastColumnClick = async (name, key, record, e, isWait = false) => {
       let addState: any = {};
       if (name === 'slave') {
-        //部件
-        addState = { ...addState, ...await props.delTableData('part', 'slaveId', record.id) };
+        if (key === 'delButton') {
+          //部件
+          addState = { ...addState, ...await props.delTableData('part', 'slaveId', record.id) };
 
-        //材料
-        addState = { ...addState, ...await props.delTableData('material', 'slaveId', record.id) };
+          //材料
+          addState = { ...addState, ...await props.delTableData('material', 'slaveId', record.id) };
 
-        //工艺
-        addState = { ...addState, ...await props.delTableData('process', 'slaveId', record.id) };
+          //工艺
+          addState = { ...addState, ...await props.delTableData('process', 'slaveId', record.id) };
+        }
       } else if (name === 'part') {
-        //材料
-        addState = { ...addState, ...await props.delTableData('material', 'partId', record.id) };
+        if (key === 'delButton') {
+          //材料
+          addState = {...addState, ...await props.delTableData('material', 'partId', record.id)};
 
-        //工艺
-        addState = { ...addState, ...await props.delTableData('process', 'partId', record.id) };
+          //工艺
+          addState = {...addState, ...await props.delTableData('process', 'partId', record.id)};
+        }
       }
       const returnData = await props.onLastColumnClick(name, key, record, e, true);
       if (isWait) {
@@ -954,6 +960,23 @@ const commonProductionEvent = (WrapComponent) => {
       return buttonAddGroup;
     }
 
+    const getLastColumnButton = (text,record, index)=> {
+      const { commonModel } = props;
+      const upperIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'upperButton');
+      const upperButton = upperIndex > -1 ? commonModel.commonConstant[upperIndex].viewName : '上查';
+      const lowerIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'lowerButton');
+      const lowerButton = lowerIndex > -1 ? commonModel.commonConstant[lowerIndex].viewName : '下查';
+      return <div>
+        { commonUtils.isEmpty(record.originalId) ? '' :
+          <Dropdown trigger={['click']} overlay={commonUtils.isEmpty(props.upperMenus) ? '' : props.upperMenus} placement="bottomLeft">
+            <a onClick={onLastColumnClick.bind(this, 'slave', 'upperButton', record)}> <Tooltip placement="top" title={upperButton}><UpSquareOutlined /></Tooltip></a>
+          </Dropdown>
+          }
+        { <a onClick={onLastColumnClick.bind(this, 'slave', 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>}
+      </div>
+      {props.getLastColumnButton(text, record, index)}
+    }
+
     return <div>
       <WrapComponent
         {...props}
@@ -965,6 +988,7 @@ const commonProductionEvent = (WrapComponent) => {
         onRowClick={onRowClick}
         onButtonClick={onButtonClick}
         getButtonGroup={getButtonGroup}
+        getLastColumnButton={getLastColumnButton}
       />
     </div>
   };

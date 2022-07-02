@@ -179,8 +179,13 @@ const commonBase = (WrapComponent) => {
         createDate: params.createDate,
       }
 
-      if (params.pageNum === 1 && commonUtils.isNotEmptyArr(stateRef.current[params.name + 'Data'])) {
-        scrollTo({row: 1, vid: props.tabId + params.name });
+      try {
+        if (params.pageNum === 1 && commonUtils.isNotEmptyArr(stateRef.current[params.name + 'Data'])) {
+          scrollTo({row: 1, vid: props.tabId + params.name });
+        }
+      }
+      catch (e) {
+        console.error(e.message);
       }
 
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(requestParam))).data;

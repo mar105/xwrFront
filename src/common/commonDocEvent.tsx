@@ -3,8 +3,8 @@ import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
-import {Modal} from "antd";
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import {Menu, Modal, Tooltip} from "antd";
+import { QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -745,6 +745,53 @@ const commonDocEvent = (WrapComponent) => {
       }
     }
 
+    const getLastColumnButton = (text,record, index)=> {
+      const { commonModel } = props;
+      const delIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'delButton');
+      const delButton = delIndex > -1 ? commonModel.commonConstant[delIndex].viewName : '删除';
+      return <div>
+        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title={delButton}><DeleteOutlined /> </Tooltip></a>}
+      </div>;
+    }
+
+    const onMenuClick = async (name, key, record, e) => {
+      const config = e.item.props.config;
+      if (key === 'upperButton') {
+        const dataId = commonUtils.isEmpty(config.popupSelectKey) ? record.originalId :
+          config.popupSelectKey.includes('.') ? record[config.popupSelectKey.split('.')[0].trim()] : record[config.popupSelectKey.trim()];
+        if (commonUtils.isNotEmpty(dataId)) {
+          props.callbackAddPane(config.popupSelectId, {dataId});
+        }
+      }
+    };
+
+    const onLastColumnClick = async (name, key, record, e, isWait = false) => {
+      const { [name + 'Container']: container }: any = propsRef.current;
+      if (key === 'upperButton') {
+        const upperData = container.slaveData.filter(item => item.fieldName.includes(key + '.'));
+        let upperMenus;
+        if (upperData.length > 1) {
+          upperMenus = <Menu onClick={ onMenuClick.bind(this, name, key, record)} items={upperData.map(menu => {
+            const label = menu.viewName +
+              (menu.popupSelectKey.includes('.') && commonUtils.isNotEmpty(record[menu.popupSelectKey.split('.')[1].trim()]) ? ' ' + record[menu.popupSelectKey.split('.')[1].trim()] : '');
+            return { label, key: menu.id, config: menu }
+          })} />
+        } else if (upperData.length === 1) {
+          const dataId = commonUtils.isEmpty(upperData[0].popupSelectKey) ? record.originalId : record[upperData[0].popupSelectKey];
+          if (commonUtils.isNotEmpty(dataId)) {
+            props.callbackAddPane(upperData[0].popupSelectId, { dataId });
+          }
+
+        }
+        props.dispatchModifyState({ upperMenus });
+      } else if (key === 'lowerButton') {
+
+      } else {
+        return props.onLastColumnClick(name, key, record, e, isWait);
+      }
+
+    };
+
 
     return <div>
       <WrapComponent
@@ -755,6 +802,8 @@ const commonDocEvent = (WrapComponent) => {
         getButtonGroup={getButtonGroup}
         onDataChange={onDataChange}
         onModalOk={onModalOk}
+        getLastColumnButton={getLastColumnButton}
+        onLastColumnClick={onLastColumnClick}
       />
     </div>
   };

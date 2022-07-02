@@ -783,7 +783,12 @@ const commonDocEvent = (WrapComponent) => {
           }
 
         }
-        props.dispatchModifyState({ upperMenus });
+        if (isWait) {
+          return { upperMenus };
+        } else {
+          props.dispatchModifyState({ upperMenus });
+        }
+
       } else if (key === 'lowerButton') {
 
       } else {

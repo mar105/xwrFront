@@ -1,7 +1,7 @@
 import * as React from "react";
 import {useRef, useEffect} from "react";
 import * as commonUtils from "../utils/commonUtils";
-import {Tooltip} from "antd";
+import {Dropdown, Tooltip} from "antd";
 import { UpSquareOutlined, DownSquareOutlined } from '@ant-design/icons';
 
 const commonBillEvent = (WrapComponent) => {
@@ -87,8 +87,14 @@ const commonBillEvent = (WrapComponent) => {
       const lowerIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'lowerButton');
       const lowerButton = lowerIndex > -1 ? commonModel.commonConstant[lowerIndex].viewName : '下查';
       return <div>
-        { commonUtils.isEmpty(record.originalId) ? '' : <a onClick={props.onLastColumnClick.bind(this, 'slave', 'upperButton', record)}> <Tooltip placement="top" title={upperButton}><UpSquareOutlined /> </Tooltip></a>}
-        { <a onClick={props.onLastColumnClick.bind(this, 'slave', 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>}
+        { commonUtils.isEmpty(record.originalId) ? '' :
+          <Dropdown trigger={['click']} overlay={commonUtils.isEmpty(props.upperMenus) ? '' : props.upperMenus} placement="bottomLeft">
+            <a onClick={props.onLastColumnClick.bind(this, 'slave', 'upperButton', record)}> <Tooltip placement="top" title={upperButton}><UpSquareOutlined /></Tooltip></a>
+          </Dropdown>
+        }
+        { <Dropdown trigger={['click']} overlay={commonUtils.isEmpty(props.lowerMenus) ? '' : props.lowerMenus} placement="bottomLeft">
+          <a onClick={props.onLastColumnClick.bind(this, 'slave', 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>
+        </Dropdown>}
       </div>
       {props.getLastColumnButton(text, record, index)}
     }

@@ -286,6 +286,9 @@ const commonBase = (WrapComponent) => {
             record = modifyStateNew[params.name + 'Data'];
           } else if (container.isTree) {
             record = getTreeNode(tableData, record.allId);
+            if (commonUtils.isEmptyObj(record)) {
+              record = params.record;
+            }
           } else {
             const index = modifyStateNew[params.name + 'Data'].findIndex(item => item.id === params.record.id);
             record = modifyStateNew[params.name + 'Data'][index];

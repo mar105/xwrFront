@@ -275,7 +275,6 @@ function IndexPage(props) {
     const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
     if (interfaceReturn.code === 1) {
       state = { ...state, routeId, ...interfaceReturn.data };
-      console.log(props.commonModel.userInfo.isManage, interfaceReturn.data.permissionData);
       if (!props.commonModel.userInfo.isManage && commonUtils.isEmptyArr(interfaceReturn.data.permissionData)) {
         props.gotoError(dispatch, { code: '6002', msg: '没有操作权限！' });
         return;

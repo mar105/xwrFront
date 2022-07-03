@@ -762,6 +762,8 @@ const commonDocEvent = (WrapComponent) => {
         if (commonUtils.isNotEmpty(dataId)) {
           props.callbackAddPane(config.popupSelectId, {dataId});
         }
+      } else if (key === 'lowerButton') {
+        props.callbackAddPane(config.popupSelectId, {dataId: e.key});
       }
     };
 
@@ -790,7 +792,44 @@ const commonDocEvent = (WrapComponent) => {
         }
 
       } else if (key === 'lowerButton') {
-
+        const lowerData = container.slaveData.filter(item => item.fieldName.includes(key + '.'));
+        let lowerMenus;
+        if (lowerData.length > 1) {
+          const lowerItems: any = [];
+          for(const menu of lowerData) {
+            const label = menu.viewName +
+              (menu.popupSelectKey.includes('.') && commonUtils.isNotEmpty(record[menu.popupSelectKey.split('.')[1].trim()]) ? ' ' + record[menu.popupSelectKey.split('.')[1].trim()] : '');
+            const lowerBillData = (await props.getSelectList({ name, containerSlaveId: lowerData[0].id, isWait: true, config: lowerData[0], record })).list;
+            const children: any = [];
+            lowerBillData.forEach(bill => {
+              children.push({ label: bill.serialCode, key: bill.id, config: menu });
+            });
+            lowerItems.push({ label, key: menu.id, config: menu, children });
+          }
+          lowerMenus = <Menu onClick={ onMenuClick.bind(this, name, key, record)} items={lowerItems} />
+        } else if (lowerData.length === 1) {
+          const lowerItems: any = [];
+          const menu = lowerData[0];
+          const lowerBillData = (await props.getSelectList({ name, containerSlaveId: lowerData[0].id, isWait: true, config: lowerData[0], record })).list;
+          if (lowerBillData.length > 1) {
+            const label = menu.viewName +
+              (menu.popupSelectKey.includes('.') && commonUtils.isNotEmpty(record[menu.popupSelectKey.split('.')[1].trim()]) ? ' ' + record[menu.popupSelectKey.split('.')[1].trim()] : '');
+            const lowerBillData = (await props.getSelectList({ name, containerSlaveId: lowerData[0].id, isWait: true, config: lowerData[0], record })).list;
+            const children: any = [];
+            lowerBillData.forEach(bill => {
+              children.push({ label: bill.serialCode, key: bill.id, config: menu });
+            });
+            lowerItems.push({ label, key: menu.id, config: menu, children });
+            lowerMenus = <Menu onClick={ onMenuClick.bind(this, name, key, record)} items={lowerItems} />;
+          } else if (lowerBillData.length === 1) {
+            props.callbackAddPane(lowerData[0].popupSelectId, { dataId: lowerBillData[0].id });
+          }
+        }
+        if (isWait) {
+          return { lowerMenus };
+        } else {
+          props.dispatchModifyState({ lowerMenus });
+        }
       } else {
         return props.onLastColumnClick(name, key, record, e, isWait);
       }

@@ -26,7 +26,7 @@ const SaleOrder = (props) => {
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;
   slaveParam.width = 2000;
-  slaveParam.lastColumn = { title: 'o', changeValue: '',
+  slaveParam.lastColumn = { title: 'o', changeValue: props.upperMenus || props.lowerMenus,
     render: (text, record, index)=> {
     return props.getLastColumnButton(text, record, index);
   }, width: 50 , fixed: 'right' };

@@ -91,7 +91,7 @@ const WorkOrder = (props) => {
   slaveParam.pagination = false;
   slaveParam.width = 2000;
 
-  slaveParam.lastColumn = { title: 'o', changeValue: props.upperMenus,
+  slaveParam.lastColumn = { title: 'o', changeValue: props.upperMenus || props.lowerMenus,
     render: (text,record, index)=> {
       return props.getLastColumnButton(text, record, index);
     }, width: 100, fixed: 'right' };

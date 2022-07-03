@@ -972,7 +972,9 @@ const commonProductionEvent = (WrapComponent) => {
             <a onClick={onLastColumnClick.bind(this, 'slave', 'upperButton', record)}> <Tooltip placement="top" title={upperButton}><UpSquareOutlined /></Tooltip></a>
           </Dropdown>
           }
-        { <a onClick={onLastColumnClick.bind(this, 'slave', 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>}
+        { <Dropdown trigger={['click']} overlay={commonUtils.isEmpty(props.lowerMenus) ? '' : props.lowerMenus} placement="bottomLeft">
+          <a onClick={onLastColumnClick.bind(this, 'slave', 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>
+        </Dropdown>}
       </div>
       {props.getLastColumnButton(text, record, index)}
     }

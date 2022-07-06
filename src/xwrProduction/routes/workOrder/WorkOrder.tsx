@@ -93,7 +93,7 @@ const WorkOrder = (props) => {
 
   slaveParam.lastColumn = { title: 'o', changeValue: props.upperMenus || props.lowerMenus,
     render: (text,record, index)=> {
-      return props.getLastColumnButton(text, record, index);
+      return props.getLastColumnButton(slaveParam.name, text, record, index);
     }, width: 100, fixed: 'right' };
   slaveParam.eventOnRow.onRowClick = props.onRowClick;
 

@@ -745,12 +745,12 @@ const commonDocEvent = (WrapComponent) => {
       }
     }
 
-    const getLastColumnButton = (text,record, index)=> {
+    const getLastColumnButton = (name, text,record, index)=> {
       const { commonModel } = props;
       const delIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'delButton');
       const delButton = delIndex > -1 ? commonModel.commonConstant[delIndex].viewName : '删除';
       return <div>
-        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title={delButton}><DeleteOutlined /> </Tooltip></a>}
+        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, name, 'delButton', record)}> <Tooltip placement="top" title={delButton}><DeleteOutlined /> </Tooltip></a>}
       </div>;
     }
 

@@ -960,7 +960,7 @@ const commonProductionEvent = (WrapComponent) => {
       return buttonAddGroup;
     }
 
-    const getLastColumnButton = (text,record, index)=> {
+    const getLastColumnButton = (name, text,record, index)=> {
       const { commonModel } = props;
       const upperIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'upperButton');
       const upperButton = upperIndex > -1 ? commonModel.commonConstant[upperIndex].viewName : '上查';
@@ -969,14 +969,14 @@ const commonProductionEvent = (WrapComponent) => {
       return <div>
         { commonUtils.isEmpty(record.originalId) ? '' :
           <Dropdown trigger={['click']} overlay={commonUtils.isEmpty(props.upperMenus) ? '' : props.upperMenus} placement="bottomLeft">
-            <a onClick={onLastColumnClick.bind(this, 'slave', 'upperButton', record)}> <Tooltip placement="top" title={upperButton}><UpSquareOutlined /></Tooltip></a>
+            <a onClick={onLastColumnClick.bind(this, name, 'upperButton', record)}> <Tooltip placement="top" title={upperButton}><UpSquareOutlined /></Tooltip></a>
           </Dropdown>
           }
         { <Dropdown trigger={['click']} overlay={commonUtils.isEmpty(props.lowerMenus) ? '' : props.lowerMenus} placement="bottomLeft">
-          <a onClick={onLastColumnClick.bind(this, 'slave', 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>
+          <a onClick={onLastColumnClick.bind(this, name, 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>
         </Dropdown>}
       </div>
-      {props.getLastColumnButton(text, record, index)}
+      {props.getLastColumnButton(name, text, record, index)}
     }
 
     return <div>

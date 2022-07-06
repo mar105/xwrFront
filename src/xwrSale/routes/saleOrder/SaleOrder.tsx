@@ -28,7 +28,7 @@ const SaleOrder = (props) => {
   slaveParam.width = 2000;
   slaveParam.lastColumn = { title: 'o', changeValue: props.upperMenus || props.lowerMenus,
     render: (text, record, index)=> {
-    return props.getLastColumnButton(text, record, index);
+    return props.getLastColumnButton(slaveParam.name, text, record, index);
   }, width: 50 , fixed: 'right' };
 
   const component = useMemo(()=>{ return (

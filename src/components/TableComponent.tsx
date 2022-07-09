@@ -284,119 +284,124 @@ export function TableComponent(params: any) {
           column.className = 'column-money';
           column.align = 'align';
         }
-        if (params.enabled && !config.isReadOnly && config.tagType !== 'alwaysReadonly') {
-          column.render = (text, record, index) => {
-            const selectParams = {
-              name: params.name,
-              componentType: componentType.Soruce,
-              config,
-              property: {value: text},
-              record,
-              event: {onChange: params.event.onDataChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
-            };
-            const treeSelectParams = {
-              name: params.name,
-              componentType: componentType.Soruce,
-              config,
-              property: {value: text, dropdownMatchSelectWidth: config.dropdownMatchSelectWidth},
-              record,
-              event: {onChange: params.event.onDataChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
-            };
-            const inputParams = {
-              name: params.name,
-              componentType: componentType.Soruce,
-              config,
-              property: {value: text},
-              record,
-              event: {onChange: params.event.onDataChange}
-            };
-            const checkboxParams = {
-              name: params.name,
-              componentType: componentType.Soruce,
-              config,
-              property: {checked: text},
-              record,
-              event: {onChange: params.event.onDataChange}
-            };
-            const datePickerParams = {
-              name: params.name,
-              componentType: componentType.Soruce,
-              config,
-              property: {value: text},
-              record,
-              event: {onChange: params.event.onDataChange}
-            };
-            const numberParams = {
-              name: params.name,
-              componentType: componentType.Soruce,
-              config,
-              property: {value: text},
-              record,
-              event: {onChange: params.event.onDataChange}
-            };
-            const provinceCityAreaParams = {
-              name: params.name,
-              componentType: componentType.Soruce,
-              config,
-              property: {value: text },
-              record,
-              event: {onChange: params.event.onDataChange}
-            };
-            if (column.dataIndex === 'sortNum' && params.isDragRow) {
-              const component = <div><DragHandle/> <NumberComponent {...numberParams} /></div>;
-              return component;
-            } else if (column.fieldType === 'varchar' || column.fieldType === 'text') {
-              if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
-                return <ProvinceCityArea {...provinceCityAreaParams} />;
-              } else if (config.dropType === 'sql' || config.dropType === 'current' || config.dropType === 'const' || config.dropType === 'popup') {
-                let component;
-                if (config.isTreeDrop) {
-                  component = <TreeSelectComponent {...treeSelectParams} />;
+
+        //isRender 列单独不同展示，外放
+        if (!column.isRender) {
+          if (params.enabled && !config.isReadOnly && config.tagType !== 'alwaysReadonly') {
+            column.render = (text, record, index) => {
+              const selectParams = {
+                name: params.name,
+                componentType: componentType.Soruce,
+                config,
+                property: {value: text},
+                record,
+                event: {onChange: params.event.onDataChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
+              };
+              const treeSelectParams = {
+                name: params.name,
+                componentType: componentType.Soruce,
+                config,
+                property: {value: text, dropdownMatchSelectWidth: config.dropdownMatchSelectWidth},
+                record,
+                event: {onChange: params.event.onDataChange, getSelectList: params.event.getSelectList, onDropPopup: params.event.onDropPopup }
+              };
+              const inputParams = {
+                name: params.name,
+                componentType: componentType.Soruce,
+                config,
+                property: {value: text},
+                record,
+                event: {onChange: params.event.onDataChange}
+              };
+              const checkboxParams = {
+                name: params.name,
+                componentType: componentType.Soruce,
+                config,
+                property: {checked: text},
+                record,
+                event: {onChange: params.event.onDataChange}
+              };
+              const datePickerParams = {
+                name: params.name,
+                componentType: componentType.Soruce,
+                config,
+                property: {value: text},
+                record,
+                event: {onChange: params.event.onDataChange}
+              };
+              const numberParams = {
+                name: params.name,
+                componentType: componentType.Soruce,
+                config,
+                property: {value: text},
+                record,
+                event: {onChange: params.event.onDataChange}
+              };
+              const provinceCityAreaParams = {
+                name: params.name,
+                componentType: componentType.Soruce,
+                config,
+                property: {value: text },
+                record,
+                event: {onChange: params.event.onDataChange}
+              };
+              if (column.dataIndex === 'sortNum' && params.isDragRow) {
+                const component = <div><DragHandle/> <NumberComponent {...numberParams} /></div>;
+                return component;
+              } else if (column.fieldType === 'varchar' || column.fieldType === 'text') {
+                if (config.fieldName.lastIndexOf('ProvinceCityArea') > -1) {
+                  return <ProvinceCityArea {...provinceCityAreaParams} />;
+                } else if (config.dropType === 'sql' || config.dropType === 'current' || config.dropType === 'const' || config.dropType === 'popup') {
+                  let component;
+                  if (config.isTreeDrop) {
+                    component = <TreeSelectComponent {...treeSelectParams} />;
+                  } else {
+                    component = <SelectComponent {...selectParams} />;
+                  }
+                  return component;
                 } else {
-                  component = <SelectComponent {...selectParams} />;
+                  const component = <InputComponent {...inputParams} />;
+                  return component;
                 }
+              } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
+                const component = <NumberComponent {...numberParams} />;
+                return component;
+              } else if (column.fieldType === 'tinyint') {
+                const component = <CheckboxComponent {...checkboxParams} />;
+                return component;
+              } else if (column.fieldType === 'datetime') {
+                const component = <DatePickerComponent {...datePickerParams} />;
                 return component;
               } else {
-                const component = <InputComponent {...inputParams} />;
-                return component;
+                return text;
               }
-            } else if (column.fieldType === 'decimal' || column.fieldType === 'smallint' || column.fieldType === 'int') {
-              const component = <NumberComponent {...numberParams} />;
-              return component;
-            } else if (column.fieldType === 'tinyint') {
-              const component = <CheckboxComponent {...checkboxParams} />;
-              return component;
-            } else if (column.fieldType === 'datetime') {
-              const component = <DatePickerComponent {...datePickerParams} />;
-              return component;
-            } else {
-              return text;
             }
-          }
-        } else {
-          column.render = (text, record, index) => {
-            if (config.dropType === 'const') {
-              const dropObject: any = commonUtils.stringToObj(config.viewDrop);
-              return dropObject[text];
-            }
-            else if (config.fieldType === 'tinyint') {
-              return text ? <CheckSquareOutlined /> : <BorderOutlined />;
-            }
-            else if (commonUtils.isNotEmpty(config.popupSelectId) && commonUtils.isNotEmpty(text)) {
-              return <div style={{ color:'blue', width: '100%' }} onClick={params.onCellClick.bind(this, params.name, config, record)}>{text}</div>
-            }
-            else {
-              return modifySelfState.searchedColumn === columnOld.dataIndex ? (
-                <Highlighter
-                  highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                  searchWords={[modifySelfState.searchText]}
-                  autoEscape
-                  textToHighlight={text ? text.toString() : ''}
-                />
-              ) : text;
+          } else {
+            column.render = (text, record, index) => {
+              if (config.dropType === 'const') {
+                const dropObject: any = commonUtils.stringToObj(config.viewDrop);
+                return dropObject[text];
+              }
+              else if (config.fieldType === 'tinyint') {
+                return text ? <CheckSquareOutlined /> : <BorderOutlined />;
+              }
+              else if (commonUtils.isNotEmpty(config.popupSelectId) && commonUtils.isNotEmpty(text)) {
+                return <div style={{ color:'blue', width: '100%' }} onClick={params.onCellClick.bind(this, params.name, config, record)}>{text}</div>
+              }
+              else {
+                return modifySelfState.searchedColumn === columnOld.dataIndex ? (
+                  <Highlighter
+                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                    searchWords={[modifySelfState.searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                  />
+                ) : text;
+              }
             }
           }
         }
+
 
         if (column.title.indexOf('|') > -1) {
           //合并列头

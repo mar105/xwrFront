@@ -5,6 +5,7 @@ import * as application from "../application";
 import * as request from "../utils/request";
 import {Menu, Modal, Tooltip} from "antd";
 import { QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import {replacePath, routeInfo} from "../routeInfo";
 
 const commonDocEvent = (WrapComponent) => {
   return function ChildComponent(props) {
@@ -217,6 +218,20 @@ const commonDocEvent = (WrapComponent) => {
               returnState = {...returnState, ...returnChild};
             }
             dispatchModifyState({...returnState });
+          } else if (interfaceReturn.code === 6000) {
+            const examineCondition = JSON.parse(interfaceReturn.msg);
+
+            const url: string = application.urlPrefix + '/personal/getRouteContainer?id=743048326546456576&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
+            const interfaceContainer = (await request.getRequest(url, commonModel.token)).data;
+            if (interfaceContainer.code === 1) {
+              const state = { routeId: '743048326546456576', ...interfaceContainer.data, handleType: undefined, isModal: true, ...examineCondition, modalParams: {}, dataId: undefined };
+              const path = replacePath(state.routeData.routeName);
+              const route: any = commonUtils.getRouteComponent(routeInfo, path);
+              dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null,onModalOk, null, state).component });
+            } else {
+              props.gotoError(dispatch, interfaceContainer);
+            }
+
           } else {
             props.gotoError(dispatch, interfaceReturn);
           }

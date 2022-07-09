@@ -331,7 +331,7 @@ const commonBase = (WrapComponent) => {
       dataRow.shopId = commonModel.userInfo.shopId;
       dataRow.routeId = modifyState.routeId;
       dataRow.createUserId = commonModel.userInfo.userId;
-      dataRow.createUserName = commonModel.userInfo.userName;
+      dataRow.createUserName = commonModel.userInfo.userAbbr;
       dataRow.sortNum = 1;
       return dataRow;
     }

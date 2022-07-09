@@ -23,6 +23,8 @@ const xwrMainRouteInfo: any[] = [{
       path: '/personalContainer', name: 'personalContainer', title: '个性化设置', component: () => import('./routes/personalContainer/PersonalContainer'),
     }, {
       path: '/examineFlow', name: 'examineFlow', title: '审核流程', component: () => import('./routes/examineFlow/ExamineFlow'),
+    }, {
+      path: '/examineCondition', name: 'examineCondition', title: '审核条件', component: () => import('./routes/examineCondition/ExamineCondition'),
     }]
   },
 ];

@@ -345,7 +345,7 @@ function IndexPage(props) {
       }) : '' }
     </Menu>;
     return (
-    <div>{commonModel.userInfo.userName}
+    <div>{commonModel.userInfo.userName + '(' + commonModel.userInfo.userAbbr + ')'}
       {
         commonUtils.isEmptyArr(commonModel.userShop) ?
           <div>

@@ -759,8 +759,7 @@ const commonDocEvent = (WrapComponent) => {
 
       if (params.type === 'examineFlow' && commonUtils.isNotEmptyArr(params.levelData)) {
         // 审核流程
-        const masterMultiData:any = [];
-        const slaveData: any = [];
+
         const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'billExamineMsg');
         const billExamineMsg = index > -1 ? props.commonModel.commonConstant[index].viewName : "您有单据要审核啦！";
         for(const level of params.levelData) {
@@ -772,26 +771,28 @@ const commonDocEvent = (WrapComponent) => {
           // 743388356183851008 消息路由Id
           const masterMsgData = { ...props.onAdd(), billRouteId: routeId, routeId: '743388356183851008', billId: masterDataOld.id, billSerialCode: masterDataOld.serialCode, msgType: 'examineFlow',
             msgTitle: billExamineMsg, msgContent };
-          masterMultiData.push(masterMsgData);
+
+          const slaveData: any = [];
 
           level.userSelectedKeys.forEach((userId, index) => {
             slaveData.push({...props.onAdd(), routeId: '743388356183851008', superiorId: masterMsgData.id, userId, sortNum: index });
           });
+
+          const saveData: any = [];
+          saveData.push(commonUtils.mergeData('master', [masterMsgData], [], []));
+          saveData.push(commonUtils.mergeData('slave', slaveData, [], []));
+          const msgParams = { id: masterMsgData.id, tabId, routeId: '743388356183851008', groupId: commonModel.userInfo.groupId,
+            shopId: commonModel.userInfo.shopId, saveData, handleType: 'add' };
+          const url: string = application.urlPrefix + '/msg/saveAndSendMsg';
+          const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(msgParams))).data;
+          if (interfaceReturn.code === 1) {
+            props.gotoSuccess(dispatch, interfaceReturn);
+          } else {
+            props.gotoError(dispatch, interfaceReturn);
+            return;
+          }
         }
 
-        const saveData: any = [];
-        saveData.push(commonUtils.mergeData('master', masterMultiData, [], []));
-        saveData.push(commonUtils.mergeData('slave', slaveData, [], []));
-        const msgParams = { id: masterMultiData[0].id, tabId, routeId: '743388356183851008', groupId: commonModel.userInfo.groupId,
-          shopId: commonModel.userInfo.shopId, saveData, handleType: 'add' };
-        const url: string = application.urlPrefix + '/msg/saveAndSendMsg';
-        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(msgParams))).data;
-        if (interfaceReturn.code === 1) {
-          props.gotoSuccess(dispatch, interfaceReturn);
-        } else {
-          props.gotoError(dispatch, interfaceReturn);
-          return;
-        }
         props.dispatchModifyState({ modalVisible: false });
       } else {
         props.onModalOk(params);

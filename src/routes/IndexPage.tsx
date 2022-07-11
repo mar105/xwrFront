@@ -347,6 +347,11 @@ function IndexPage(props) {
     dispatchModifyState({ panesComponents: [] });
   };
 
+  const onMail = () => {
+    // 消息列表
+    callbackAddPane('743388342216818688', {});
+  }
+
 
 
   const { commonModel } = props;
@@ -372,7 +377,7 @@ function IndexPage(props) {
             </a>
           </Dropdown>
       }
-      <a><MailOutlined />{props.mailCount}</a>
+      <a onClick={onMail}><MailOutlined />{props.mailCount}</a>
       <button onClick={onSet}> 设置</button>
       </div>)}, [commonModel.userInfo, props.mailCount]);
   return (

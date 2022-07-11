@@ -10,7 +10,7 @@ import IndexMenu from "./IndexMenu";
 import {Dropdown, Menu, Row, Progress, Modal, ConfigProvider} from "antd";
 import {useRef} from "react";
 import {replacePath, routeInfo} from "../routeInfo";
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, MailOutlined } from '@ant-design/icons';
 import {useMemo} from "react";
 import {useReducer} from "react";
 import ShopInvitation from "./shop/ShopInvitation";
@@ -50,12 +50,18 @@ function IndexPage(props) {
     if (commonUtils.isNotEmptyObj(props.commonModel) && commonUtils.isNotEmpty(props.commonModel.stompClient)
       && props.commonModel.stompClient.connected) {
       //这个是广播推送
-      const syncRefreshData = props.commonModel.stompClient.subscribe('/topic-websocket/syncRefreshData', syncRefreshDataResult);
+      // const syncRefreshData = props.commonModel.stompClient.subscribe('/topic-websocket/syncRefreshData' + commonModel.userInfo.userId, syncRefreshDataResult);
+
       //这个是单人推送
+      const syncRefreshData = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncRefreshData' + commonModel.userInfo.userId, syncRefreshDataResult);
       const progress = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/progress' + commonModel.userInfo.userId, progressResult);
+
+      //
+      const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + commonModel.userInfo.userId, saveDataReturnResult);
       return () => {
         syncRefreshData.unsubscribe();
         progress.unsubscribe();
+        saveDataReturn.unsubscribe();
       };
     }
 
@@ -114,6 +120,12 @@ function IndexPage(props) {
     // const { dispatch } = props;
     const returnBody = JSON.parse(data.body);
     props.dispatchModifyState({ progressPercent: returnBody });
+  }
+
+  const saveDataReturnResult = (data) => {
+    // const { dispatch } = props;
+    const returnBody = data.body;
+    props.dispatchModifyState({ mailCount: returnBody });
   }
 
   const connectionWebsocket = async () => {
@@ -360,8 +372,9 @@ function IndexPage(props) {
             </a>
           </Dropdown>
       }
+      <a><MailOutlined />{props.mailCount}</a>
       <button onClick={onSet}> 设置</button>
-      </div>)}, [commonModel.userInfo]);
+      </div>)}, [commonModel.userInfo, props.mailCount]);
   return (
     <div>
       <ConfigProvider locale={zhCN}>

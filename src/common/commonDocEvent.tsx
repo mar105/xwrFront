@@ -227,7 +227,7 @@ const commonDocEvent = (WrapComponent) => {
               const state = { routeId: '743048326546456576', ...interfaceContainer.data, handleType: undefined, isModal: true, ...examineCondition, modalParams: {}, dataId: undefined };
               const path = replacePath(state.routeData.routeName);
               const route: any = commonUtils.getRouteComponent(routeInfo, path);
-              dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null,onModalOk, null, state).component });
+              dispatchModifyState({ modalVisible: true, modalTitle: state.routeData.viewName, modalPane: commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, null, state).component });
             } else {
               props.gotoError(dispatch, interfaceContainer);
             }
@@ -629,13 +629,13 @@ const commonDocEvent = (WrapComponent) => {
       return returnData;
     }
 
-    const onModalOk = async (params, isWait) => {
+    const onModalOk = async (params: any, isWait) => {
       if (commonUtils.isEmpty(params)) {
         props.dispatchModifyState({ modalVisible: false });
         return;
       }
       const name = params.name;
-      const { commonModel, dispatch, [name + 'Container']: container, masterModifyData: masterModifyDataOld, masterData: masterDataOld, [name + 'Data']: dataOld }: any = propsRef.current;
+      const { commonModel, dispatch, routeId, tabId, [name + 'Container']: container, masterModifyData: masterModifyDataOld, masterData: masterDataOld, [name + 'Data']: dataOld }: any = propsRef.current;
 
       //复制从功能处理。
       if (params.type === 'popupFrom' && name === 'slave' && commonUtils.isNotEmptyArr(params.selectList)) {
@@ -755,6 +755,44 @@ const commonDocEvent = (WrapComponent) => {
         } else {
           props.dispatchModifyState({ [name + 'Data']: data, ...addState, modalVisible: false });
         }
+      }
+
+      if (params.type === 'examineFlow' && commonUtils.isNotEmptyArr(params.levelData)) {
+        // 审核流程
+        const masterMultiData:any = [];
+        const slaveData: any = [];
+        const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'billExamineMsg');
+        const billExamineMsg = index > -1 ? props.commonModel.commonConstant[index].viewName : "您有单据要审核啦！";
+        for(const level of params.levelData) {
+          const formulaData = params.slaveData.filter(item => item.examineLevelId === level.id);
+          let msgContent = '';
+          for(const formula of formulaData) {
+            msgContent += formula.dataRow + ' ' + formula.formulaName + '\n';
+          }
+          // 743388356183851008 消息路由Id
+          const masterMsgData = { ...props.onAdd(), billRouteId: routeId, routeId: '743388356183851008', billId: masterDataOld.id, billSerialCode: masterDataOld.serialCode, msgType: 'examineFlow',
+            msgTitle: billExamineMsg, msgContent };
+          masterMultiData.push(masterMsgData);
+
+          level.userSelectedKeys.forEach((userId, index) => {
+            slaveData.push({...props.onAdd(), routeId: '743388356183851008', superiorId: masterMsgData.id, userId, sortNum: index });
+          });
+        }
+
+        const saveData: any = [];
+        saveData.push(commonUtils.mergeData('master', masterMultiData, [], []));
+        saveData.push(commonUtils.mergeData('slave', slaveData, [], []));
+        const msgParams = { id: masterMultiData[0].id, tabId, routeId: '743388356183851008', groupId: commonModel.userInfo.groupId,
+          shopId: commonModel.userInfo.shopId, saveData, handleType: 'add' };
+        const url: string = application.urlPrefix + '/msg/saveAndSendMsg';
+        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(msgParams))).data;
+        if (interfaceReturn.code === 1) {
+          props.gotoSuccess(dispatch, interfaceReturn);
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
+          return;
+        }
+        props.dispatchModifyState({ modalVisible: false });
       } else {
         props.onModalOk(params);
       }

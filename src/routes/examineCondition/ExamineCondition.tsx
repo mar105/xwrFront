@@ -4,6 +4,7 @@ import * as commonUtils from "../../utils/commonUtils";
 import {connect} from "react-redux";
 import commonBase from "../../common/commonBase";
 import { Checkbox } from 'antd';
+import {ButtonGroup} from "../../common/ButtonGroup";
 
 
 const ExamineCondition = (props) => {
@@ -20,6 +21,28 @@ const ExamineCondition = (props) => {
     levelData[index] = {...levelData[index], userSelectedKeys: [...selectedKeys]};
     props.dispatchModifyState({ levelData });
   };
+
+  const onButtonClick = async (key, config, e) => {
+    if (key === 'selectButton') {
+      const { dispatch, levelData, slaveData } = propsRef.current;
+      for(const level of levelData) {
+        if (level.userSelectedKeys.length < level.examineCount) {
+          props.gotoError(dispatch, {code: '6001', msg: commonUtils.getViewName(slaveContainer, 'sendPersonCountNotLessThan')});
+          return;
+        }
+      }
+      props.callbackRemovePane({ type: 'examineFlow', levelData, slaveData });
+    } else if (key === 'cancelButton') {
+      props.callbackRemovePane();
+    }
+  }
+
+  const getButtonGroup = () => {
+    const buttonGroup: any = [];
+    buttonGroup.push({ key: 'selectButton', caption: '发送', htmlType: 'button', sortNum: 10, disabled: props.enabled });
+    buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 50, disabled: props.enabled });
+    return buttonGroup;
+  }
 
 
   const tableParam: any = commonUtils.getTableProps(name, props);
@@ -46,10 +69,16 @@ const ExamineCondition = (props) => {
       }
     }
   }
+
+  const { commonModel, enabled, slaveContainer } = props;
+  const buttonGroup = { userInfo: commonModel.userInfo, token: commonModel.token, routeId: props.routeId, groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId,
+    onClick: onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: slaveContainer, buttonGroup: getButtonGroup(), isModal: props.isModal, modalType: 'select',
+    onUploadSuccess: props.onUploadSuccess, dispatchModifyState: props.dispatchModifyState };
   return (
     <div>
       {props.slaveContainer ? <TableComponent {...tableParam} /> : ''}
       {props.levelContainer ? <TableComponent {...levelParam} /> : ''}
+      <ButtonGroup {...buttonGroup} />
     </div>
   );
 }

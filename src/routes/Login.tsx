@@ -64,7 +64,7 @@ const Login = ({ dispatch }) => {
       });
       dispatch({
         type: 'commonModel/gotoNewPage',
-        payload: { newPage: '/' },
+        payload: { newPage: '/', state:  {mailCount: interfaceReturn.data.mailCount} },
       });
       dispatch({
         type: 'commonModel/saveCommonConstant',

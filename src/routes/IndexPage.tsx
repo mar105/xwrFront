@@ -18,7 +18,7 @@ import zhCN from 'antd/lib/locale/zh_CN';
 
 function IndexPage(props) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
-    return {...state, ...action};
+    return {...state, ...props.state, ...action};
   },{});
 
   const stompClientRef: any = useRef();
@@ -119,13 +119,13 @@ function IndexPage(props) {
   const progressResult = (data) => {
     // const { dispatch } = props;
     const returnBody = JSON.parse(data.body);
-    props.dispatchModifyState({ progressPercent: returnBody });
+    dispatchModifySelfState({ progressPercent: returnBody });
   }
 
   const saveDataReturnResult = (data) => {
     // const { dispatch } = props;
     const returnBody = data.body;
-    props.dispatchModifyState({ mailCount: returnBody });
+    dispatchModifySelfState({ mailCount: returnBody });
   }
 
   const connectionWebsocket = async () => {
@@ -152,11 +152,11 @@ function IndexPage(props) {
   }
 
   const onInvitation = () => {
-    props.dispatchModifyState({invitationIsVisible: true});
+    dispatchModifySelfState({invitationIsVisible: true});
   }
 
   const onInvitationClose = () => {
-    props.dispatchModifyState({invitationIsVisible: false});
+    dispatchModifySelfState({invitationIsVisible: false});
   }
 
 
@@ -377,9 +377,9 @@ function IndexPage(props) {
             </a>
           </Dropdown>
       }
-      <a onClick={onMail}><MailOutlined />{props.mailCount}</a>
+      <a onClick={onMail}><MailOutlined />{modifySelfState.mailCount}</a>
       <button onClick={onSet}> 设置</button>
-      </div>)}, [commonModel.userInfo, props.mailCount]);
+      </div>)}, [commonModel.userInfo, modifySelfState.mailCount]);
   return (
     <div>
       <ConfigProvider locale={zhCN}>
@@ -393,10 +393,10 @@ function IndexPage(props) {
         <button onClick={onExit}> 退出</button>
         <button onClick={onClearBusinessData}> 初始化业务数据</button>
         <button onClick={onClearAllData}> 初始化所有数据</button>
-        <Modal width={800} visible={props.progressIsVisible} closable={false} mask={false} footer={null}>
-          <Progress type="circle" percent={props.progressPercent} />
+        <Modal width={800} visible={modifySelfState.progressIsVisible} closable={false} mask={false} footer={null}>
+          <Progress type="circle" percent={modifySelfState.progressPercent} />
         </Modal>
-        <Modal width={800} visible={props.invitationIsVisible} closable={false} maskClosable={true} footer={null}>
+        <Modal width={800} visible={modifySelfState.invitationIsVisible} closable={false} maskClosable={true} footer={null}>
           <ShopInvitation {...props} onInvitationClose={onInvitationClose} />
         </Modal>
         {shop}

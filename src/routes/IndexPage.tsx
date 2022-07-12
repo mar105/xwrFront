@@ -136,7 +136,7 @@ function IndexPage(props) {
           type: 'commonModel/saveStompClient',
           payload: stompClient,
         });
-      }, commonModel.token);
+      }, commonModel.token, true);
     }
   }
 

@@ -38,6 +38,7 @@ const Login = ({ dispatch }) => {
       // localStorage.setItem(application.prefix + 'activePane', '{}');
       const userInfo: any = { userId: interfaceReturn.data.userId, userName: values.userName };
       if (commonUtils.isNotEmptyArr(interfaceReturn.data.userShop)) {
+        userInfo.userAbbr = interfaceReturn.data.userShop[0].userAbbr;
         userInfo.groupId = interfaceReturn.data.userShop[0].groupId;
         userInfo.groupName = interfaceReturn.data.userShop[0].groupName;
         userInfo.shopId = interfaceReturn.data.userShop[0].shopId;
@@ -74,7 +75,7 @@ const Login = ({ dispatch }) => {
           type: 'commonModel/saveStompClient',
           payload: stompClient,
         });
-      }, interfaceReturn.data.token);
+      }, interfaceReturn.data.token, true);
     } else {
       dispatch({
         type: 'commonModel/gotoError',

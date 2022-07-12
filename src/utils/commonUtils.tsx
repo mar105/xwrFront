@@ -117,7 +117,7 @@ export function isEmptyorZeroDefault(value, defaultValue) {
 }
 
 //  websocket 推送消息
-export function getWebSocketData(stompClientOld, onSuccess, authorization) {
+export function getWebSocketData(stompClientOld, onSuccess, authorization, isBusiness?) {
   let socket;
   let stompClient;
   if (stompClientOld == null) {
@@ -132,7 +132,7 @@ export function getWebSocketData(stompClientOld, onSuccess, authorization) {
   }
   // 关闭控制台打印debug
   stompClient.debug = () => {};
-  stompClient.connect({authorization}, frame => {
+  stompClient.connect({authorization, isBusiness}, frame => {
     onSuccess();
     // // websocket订阅一个topic，第一个参数是top名称
     // // 第二个参数是一个回调函数,表示订阅成功后获得的data

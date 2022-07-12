@@ -37,9 +37,20 @@ function IndexPage(props) {
   }, [props.panesComponents]);
 
   useEffect(() => {
+    const { commonModel } = props;
     const intervalWebsocket = setInterval(() => {
       connectionWebsocket();
     }, 5000);
+    const fetchData = async () => {
+      const params = { groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId };
+      const url: string = application.urlPrefix + '/msg/getMsgCount' + commonUtils.paramGet(params);
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        dispatchModifySelfState({ mailCount: interfaceReturn.data });
+      }
+    }
+    fetchData();
+
     dispatchModifySelfState({intervalWebsocket});
     syncRefreshDataResult({ body: JSON.stringify({type: 'formulaParam'})});
     syncRefreshDataResult({ body: JSON.stringify({type: 'formula'})});
@@ -326,16 +337,30 @@ function IndexPage(props) {
     }
   }, [panesComponentsRef.current]);
 
-  const onClick = ({ key }) => {
+  const onClick = async ({ key }) => {
     const { dispatch, commonModel, dispatchModifyState } = props;
+    const addState: any = {};
     const userInfo = {...commonModel.userInfo};
     const index = commonModel.userShop.findIndex(item => item.id === key);
+    userInfo.userAbbr = commonModel.userShop[index].userAbbr;
     userInfo.groupId = commonModel.userShop[index].groupId;
     userInfo.groupName = commonModel.userShop[index].groupName;
     userInfo.shopId = commonModel.userShop[index].shopId;
     userInfo.shopName = commonModel.userShop[index].shopName;
     userInfo.isManage = commonModel.userShop[index].isManage;
     userInfo.shopInfo = commonModel.userShop[index].shopInfo;
+
+    const params = { groupId: userInfo.groupId, shopId: userInfo.shopId };
+    const url: string = application.urlPrefix + '/msg/getMsgCount' + commonUtils.paramGet(params);
+    const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+    if (interfaceReturn.code === 1) {
+      addState.mailCount = interfaceReturn.data;
+      dispatchModifySelfState({ ...addState });
+    } else {
+      props.gotoError(dispatch, interfaceReturn);
+      return;
+    }
+
     dispatch({
       type: 'commonModel/saveUserInfo',
       payload: userInfo,

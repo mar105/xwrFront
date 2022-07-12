@@ -770,7 +770,7 @@ const commonDocEvent = (WrapComponent) => {
           }
           // 743388356183851008 消息路由Id
           const masterMsgData = { ...props.onAdd(), billRouteId: routeId, routeId: '743388356183851008', billId: masterDataOld.id, billSerialCode: masterDataOld.serialCode,
-            msgType: 'examineFlow', msgTitle: '[' + props.routeData.viewName + ':' + masterDataOld.serialCode + ']' + billExamineMsg, msgContent };
+            msgType: 'examineFlow', msgTitle: '【' + props.routeData.viewName + ':' + masterDataOld.serialCode + '】' + billExamineMsg, msgContent };
 
           const slaveData: any = [];
 

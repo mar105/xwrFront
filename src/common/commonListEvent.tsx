@@ -112,9 +112,11 @@ const commonListEvent = (WrapComponent) => {
       } if (props.routeData.modelType.includes('/msg')) {
         const { dispatch, commonModel, [name + 'Container']: container } = props;
         const url: string = application.urlPrefix + '/msg/markRead';
-        const params = { groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId, msgId: record.id};
+        const params = { groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId, userTbId: record.id};
         const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
         if (interfaceReturn.code === 1) {
+          props.commonModel.stompClient.send('/websocket/saveDataReturn', {},
+            JSON.stringify( { authorization: props.commonModel.token, tabId: commonModel.userInfo.userId, result: -1 } ));
           const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
           if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {
             const key = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? container.tableKey : container.slaveData[index].popupSelectKey;

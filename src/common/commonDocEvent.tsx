@@ -312,7 +312,7 @@ const commonDocEvent = (WrapComponent) => {
     const getButtonGroup = () => {
       const { masterData: masterDataOld, masterContainer } = props;
       const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
-      const { isInvalid } = masterData;
+      const { isInvalid, examineStatus } = masterData;
       let { isExamine } = masterData;
       const buttonGroup: any = [];
 
@@ -331,7 +331,7 @@ const commonDocEvent = (WrapComponent) => {
       buttonGroup.push({ key: 'postButton', caption: '保存', htmlType: 'submit', sortNum: 30, disabled: !props.enabled });
       buttonGroup.push({ key: 'cancelButton', caption: '取消', htmlType: 'button', sortNum: 40, disabled: !props.enabled });
       buttonGroup.push({ key: 'delButton', caption: '删除', htmlType: 'button', sortNum: 50, disabled: props.enabled || isExamine });
-      buttonGroup.push({ key: 'examineButton', caption: '审核', htmlType: 'button', sortNum: 60, disabled: props.enabled || isExamine });
+      buttonGroup.push({ key: 'examineButton', caption: '审核', htmlType: 'button', sortNum: 60, disabled: props.enabled || isExamine || (examineStatus != 'create' && examineStatus != 'cancelExamine') });
       buttonGroup.push({ key: 'cancelExamineButton', caption: '消审', htmlType: 'button', sortNum: 70, disabled: props.enabled || !isExamine });
 
       buttonGroup.push({ key: 'firstButton', caption: '首条', htmlType: 'button', sortNum: 80, disabled: props.enabled });
@@ -636,7 +636,7 @@ const commonDocEvent = (WrapComponent) => {
         return;
       }
       const name = params.name;
-      const { commonModel, dispatch, routeId, tabId, [name + 'Container']: container, masterModifyData: masterModifyDataOld, masterData: masterDataOld, [name + 'Data']: dataOld }: any = propsRef.current;
+      const { commonModel, dispatch, routeId, tabId, [name + 'Container']: container, masterContainer, masterModifyData: masterModifyDataOld, masterData: masterDataOld, [name + 'Data']: dataOld }: any = propsRef.current;
 
       //复制从功能处理。
       if (params.type === 'popupFrom' && name === 'slave' && commonUtils.isNotEmptyArr(params.selectList)) {
@@ -770,7 +770,7 @@ const commonDocEvent = (WrapComponent) => {
           }
           // 743388356183851008 消息 路由Id
           const masterMsgData = { ...props.onAdd(), billRouteId: routeId, routeId: '743388356183851008', billId: masterDataOld.id, billSerialCode: masterDataOld.serialCode,
-            examineLevelId: level.id, examineLevel: level.examineLevel,
+            examineLevelId: level.id, examineLevel: level.examineLevel, billTbName: masterContainer.containerName,
             msgType: 'examineFlow', msgTitle: '【' + props.routeData.viewName + ':' + masterDataOld.serialCode + '】' + billExamineMsg, msgContent };
 
           const slaveData: any = [];
@@ -788,6 +788,8 @@ const commonDocEvent = (WrapComponent) => {
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(msgParams))).data;
           if (interfaceReturn.code === 1) {
             props.gotoSuccess(dispatch, interfaceReturn);
+            let returnState: any = await props.getAllData({ dataId: masterDataOld.id });
+            props.dispatchModifyState({...returnState });
           } else {
             props.gotoError(dispatch, interfaceReturn);
             return;

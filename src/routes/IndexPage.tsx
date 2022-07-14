@@ -36,19 +36,20 @@ function IndexPage(props) {
     panesComponentsRef.current = props.panesComponents;
   }, [props.panesComponents]);
 
-  useEffect(() => {
+  const fetchData = async () => {
     const { commonModel } = props;
+    const params = { groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId };
+    const url: string = application.urlPrefix + '/msg/getMsgCount' + commonUtils.paramGet(params);
+    const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+    if (interfaceReturn.code === 1) {
+      dispatchModifySelfState({ mailCount: interfaceReturn.data });
+    }
+  }
+
+  useEffect(() => {
     const intervalWebsocket = setInterval(() => {
       connectionWebsocket();
     }, 5000);
-    const fetchData = async () => {
-      const params = { groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId };
-      const url: string = application.urlPrefix + '/msg/getMsgCount' + commonUtils.paramGet(params);
-      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-      if (interfaceReturn.code === 1) {
-        dispatchModifySelfState({ mailCount: interfaceReturn.data });
-      }
-    }
     fetchData();
 
     dispatchModifySelfState({intervalWebsocket});
@@ -136,7 +137,12 @@ function IndexPage(props) {
   const saveDataReturnResult = (data) => {
     // const { dispatch } = props;
     const returnBody = data.body;
-    dispatchModifySelfState({ mailCount: returnBody });
+    if (returnBody === '-1' || returnBody === -1) {
+      fetchData();
+    } else {
+      dispatchModifySelfState({ mailCount: returnBody });
+    }
+
   }
 
   const connectionWebsocket = async () => {

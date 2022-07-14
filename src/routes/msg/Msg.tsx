@@ -75,7 +75,7 @@ const ExamineFlow = (props) => {
         }
         // 743388356183851008 消息 路由Id
         const masterMsgData = { ...props.onAdd(), billRouteId: masterData.billRouteId, routeId: '743388356183851008', billId: masterData.billId, billSerialCode: masterData.billSerialCode,
-          examineLevelId: level.id, examineLevel: level.examineLevel,
+          examineLevelId: level.id, examineLevel: level.examineLevel, billTbName: masterData.billTbName,
           msgType: 'examineFlow', msgTitle: masterData.msgTitle, msgContent };
 
         const slaveData: any = [];
@@ -112,7 +112,7 @@ const ExamineFlow = (props) => {
     } else if (key === 'confirmButton') {
       //消息回复
       const masterMsgData = { ...props.onAdd(), billRouteId: masterData.billRouteId, routeId: '744620290109079552', billId: masterData.billId, billSerialCode: masterData.billSerialCode,
-        examineLevelId: masterData.examineLevelId, examineLevel: masterData.examineLevel,
+        examineLevelId: masterData.examineLevelId, examineLevel: masterData.examineLevel, billTbName: masterData.billTbName,
         msgId: masterData.id, replyResult: masterData.replyResult, replyContent: masterData.replyContent };
       const saveData: any = [];
       saveData.push(commonUtils.mergeData('master', [masterMsgData], [], []));
@@ -122,6 +122,8 @@ const ExamineFlow = (props) => {
       const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(msgParams))).data;
       if (interfaceReturn.code === 1) {
         props.gotoSuccess(dispatch, interfaceReturn);
+        let returnState: any = await props.getAllData({ dataId: masterData.id });
+        props.dispatchModifyState({...returnState });
       } else if (interfaceReturn.code === 6000) {
         const examineCondition = JSON.parse(interfaceReturn.msg);
 

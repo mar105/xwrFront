@@ -109,7 +109,22 @@ const commonListEvent = (WrapComponent) => {
     const onRowDoubleClick = async (name, record, e) => {
       if (props.isModal) {
         props.callbackRemovePane({...props.modalParams, selectList: [record], selectKeys: [record.id] });
-      } else {
+      } if (props.routeData.modelType.includes('/msg')) {
+        const { dispatch, commonModel, [name + 'Container']: container } = props;
+        const url: string = application.urlPrefix + '/msg/markRead';
+        const params = { groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId, msgId: record.id};
+        const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
+        if (interfaceReturn.code === 1) {
+          const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
+          if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {
+            const key = commonUtils.isEmpty(container.slaveData[index].popupSelectKey) ? container.tableKey : container.slaveData[index].popupSelectKey;
+            props.callbackAddPane(container.slaveData[index].popupSelectId, { dataId: record[key] });
+          }
+        } else {
+          props.gotoError(dispatch, interfaceReturn);
+        }
+      }
+      else {
         const {[name + 'Container']: container, routeId, slaveSum, slaveSearchCondition: searchCondition, slaveData, slaveSorterInfo: sorterInfo } = props;
         const index = container.slaveData.findIndex(item => item.fieldName === 'addButton');
         if (index > -1 && commonUtils.isNotEmpty(container.slaveData[index].popupSelectId)) {

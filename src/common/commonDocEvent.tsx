@@ -199,14 +199,14 @@ const commonDocEvent = (WrapComponent) => {
         }
       } else if (key === 'examineButton' || key === 'cancelExamineButton') {
         if (commonUtils.isNotEmpty(masterDataOld.id)) {
-          const saveData: any = [];
+          // const saveData: any = [];
           // 审核时传入数据原因是需要审核后动作。
-          saveData.push(commonUtils.mergeData('master', [masterDataOld], [], [], true));
-          if (childParams && childParams.childCallback) {
-            const saveChildData = await childParams.childCallback({masterDataOld});
-            saveData.push(...saveChildData);
-          }
-          const params = { id: masterDataOld.id, tabId, routeId: props.routeId, saveData, groupId: commonModel.userInfo.groupId,
+          // saveData.push(commonUtils.mergeData('master', [masterDataOld], [], [], true));
+          // if (childParams && childParams.childCallback) {
+          //   const saveChildData = await childParams.childCallback({masterDataOld});
+          //   saveData.push(...saveChildData);
+          // }
+          const params = { id: masterDataOld.id, tabId, routeId: props.routeId, groupId: commonModel.userInfo.groupId,
             shopId: commonModel.userInfo.shopId, handleType: key.replace('Button', '')};
           const url: string = application.urlPrefix + '/getData/examineOrCancel';
           const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit(params))).data;
@@ -221,6 +221,7 @@ const commonDocEvent = (WrapComponent) => {
           } else if (interfaceReturn.code === 6000) {
             const examineCondition = JSON.parse(interfaceReturn.msg);
 
+            // 审核条件
             const url: string = application.urlPrefix + '/personal/getRouteContainer?id=743048326546456576&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
             const interfaceContainer = (await request.getRequest(url, commonModel.token)).data;
             if (interfaceContainer.code === 1) {
@@ -756,8 +757,7 @@ const commonDocEvent = (WrapComponent) => {
           props.dispatchModifyState({ [name + 'Data']: data, ...addState, modalVisible: false });
         }
       }
-
-      if (params.type === 'examineFlow' && commonUtils.isNotEmptyArr(params.levelData)) {
+      else if (params.type === 'examineFlow' && commonUtils.isNotEmptyArr(params.levelData)) {
         // 审核流程
 
         const index = props.commonModel.commonConstant.findIndex(item => item.constantName === 'billExamineMsg');
@@ -768,8 +768,9 @@ const commonDocEvent = (WrapComponent) => {
           for(const formula of formulaData) {
             msgContent += formula.dataRow + ' ' + formula.formulaName + '\n';
           }
-          // 743388356183851008 消息路由Id
+          // 743388356183851008 消息 路由Id
           const masterMsgData = { ...props.onAdd(), billRouteId: routeId, routeId: '743388356183851008', billId: masterDataOld.id, billSerialCode: masterDataOld.serialCode,
+            examineLevelId: level.id, examineLevel: level.examineLevel,
             msgType: 'examineFlow', msgTitle: '【' + props.routeData.viewName + ':' + masterDataOld.serialCode + '】' + billExamineMsg, msgContent };
 
           const slaveData: any = [];

@@ -25,6 +25,8 @@ const xwrMainRouteInfo: any[] = [{
       path: '/examineFlow', name: 'examineFlow', title: '审核流程', component: () => import('./routes/examineFlow/ExamineFlow'),
     }, {
       path: '/examineCondition', name: 'examineCondition', title: '审核条件', component: () => import('./routes/examineCondition/ExamineCondition'),
+    }, {
+      path: '/msg', name: 'msg', title: '消息', component: () => import('./routes/msg/Msg'),
     }]
   },
 ];

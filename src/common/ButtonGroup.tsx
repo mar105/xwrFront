@@ -24,6 +24,7 @@ export function ButtonGroup(params) {
     params.dispatchModifyState({ pageLoading: true });
     const formData = new FormData();
     formData.append('file', request.file);
+    formData.append('type', '');
     formData.append('routeId', request.data.routeId);
     formData.append('groupId', request.data.groupId);
     formData.append('shopId', request.data.shopId);
@@ -159,6 +160,7 @@ export function ButtonGroup(params) {
             customRequest: onCustomRequest,
             data: {
               name: buttonConfig.key,
+              type: '',
               routeId: params.routeId,
               groupId: params.groupId,
               shopId: params.shopId,

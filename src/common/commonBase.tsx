@@ -890,7 +890,7 @@ const commonBase = (WrapComponent) => {
       }
     };
 
-    const onUpload = async (name) => {
+    const onUpload = async (name, type) => {
       const { [name + 'FileList']: fileList, [name + 'DelFileList']: delfileListOld }: any = stateRef.current;
       const { dispatch, commonModel } = props;
       const delFileList = commonUtils.isEmptyArr(delfileListOld) ? [] : delfileListOld;
@@ -898,6 +898,7 @@ const commonBase = (WrapComponent) => {
         // 先删除文件
         const formData = new FormData();
         formData.append('fileListStr', JSON.stringify(delFileList));
+        formData.append('type', type);
         formData.append('routeId', modifyState.routeId);
         formData.append('groupId', commonModel.userInfo.groupId);
         formData.append('shopId', commonModel.userInfo.shopId);
@@ -940,6 +941,7 @@ const commonBase = (WrapComponent) => {
           //使用当前文件的信息用md5加密生成一个key 这个加密是根据文件的信息来加密的 如果相同的文件 加的密还是一样的
           const key: any = Md5.hashAsciiStr(Md5.hashAsciiStr(fileDetails).toString());
           formData.append('fileName', fileName);
+          formData.append('type', type);
           formData.append('suffix', suffix);
           formData.append('shardSize', shardSize);
           formData.append('shardTotal', shardTotal);
@@ -966,7 +968,7 @@ const commonBase = (WrapComponent) => {
                   dispatchModifyState({[name + 'FileList']: fileList, pageLoading: false});
                 } else {
                   // 通过分片文件继续上传。
-                  uploadFile(name, fileObj, modifyState.routeName, modifyState.dataId, data.data);
+                  uploadFile(name, fileObj, type, modifyState.routeName, modifyState.dataId, data.data);
                 }
               }
             }
@@ -978,7 +980,7 @@ const commonBase = (WrapComponent) => {
       dispatchModifyState({ pageLoading: true, [name + 'FileList']: fileList, [name + 'DelFileList']: [] });
     };
 
-    const uploadFile = (name, fileObj, routeName, dataId, shardIndex) => {
+    const uploadFile = (name, fileObj, type, routeName, dataId, shardIndex) => {
       const file = fileObj.originFileObj;
       const { dispatch, commonModel } = props;
       const formData = new FormData();
@@ -1009,6 +1011,7 @@ const commonBase = (WrapComponent) => {
       //前面的参数必须和controller层定义的一样
       formData.append('file', fileShard);
       formData.append('fileName', fileName);
+      formData.append('type', type);
       formData.append('suffix', suffix);
       formData.append('shardIndex',shardIndex);
       formData.append('shardSize', shardSize);
@@ -1033,7 +1036,7 @@ const commonBase = (WrapComponent) => {
             const index = fileList.findIndex(item => item.uid === fileObj.uid);
             fileList[index].percent = Math.ceil(100  * (shardIndex / shardTotal));
             dispatchModifyState({ [name + 'FileList']: fileList, pageLoading: false });
-            uploadFile(name, fileObj, routeName, dataId, shardIndex);
+            uploadFile(name, fileObj, type, routeName, dataId, shardIndex);
           } else {
             const fileList = [...modifyState[name + 'FileList']];
             const index = fileList.findIndex(item => item.uid === fileObj.uid);
@@ -1275,6 +1278,7 @@ const commonBase = (WrapComponent) => {
       const { routeId, containerData, dataId, routeData } = stateRef.current;
       const { commonModel } = props;
       const requestParam = {
+        token: commonModel.token,
         routeId: routeId,
         groupId: commonModel.userInfo.groupId,
         shopId: commonModel.userInfo.shopId,
@@ -1293,7 +1297,7 @@ const commonBase = (WrapComponent) => {
       // @ts-ignore
       FR.doHyperlinkByPost({
         //报表路径
-        url: application.urlReport + '/webroot/decision/view/report?viewlet=doc/2.cpt',
+        url: application.urlReport + '/webroot/decision/view/report?viewlet=/mar105/tomcat-fineReport/webapps/webroot/WEB-INF/reportlets/2.cpt',
         //参数
         para: requestParam,
         target:'_dialog',    //对话框方式打开

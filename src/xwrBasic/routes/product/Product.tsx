@@ -47,7 +47,7 @@ const Product = (props) => {
       return saveData;
     };
     props.onFinish(values, { childCallback });
-    props.onUpload('upload');
+    props.onUpload('upload', '');
   }
 
   useEffect(() => {
@@ -84,6 +84,7 @@ const Product = (props) => {
   const getFileList = async () => {
     const { dispatch, dispatchModifyState } = props;
     const requestParam = {
+      type: '',
       routeId: props.routeId,
       groupId: commonModel.userInfo.groupId,
       shopId: commonModel.userInfo.shopId,

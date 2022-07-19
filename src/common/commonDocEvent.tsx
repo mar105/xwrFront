@@ -264,8 +264,14 @@ const commonDocEvent = (WrapComponent) => {
 
       } else if (key === 'setButton') {
         props.onSetPersonal('master', config);
-      } else if (key === 'printButton') {
-        props.onPrint();
+      } else if (key === 'printButton' || key === 'printToMenu') {
+        const printConfig = key === 'printToMenu' ? e.item.props.config : config;
+        if (e.key === 'reportUpload') {
+          // 报表上传
+          dispatchModifyState({ modalReportVisible: true });
+        } else {
+          props.onPrint(printConfig);
+        }
       }
     }
 
@@ -807,7 +813,7 @@ const commonDocEvent = (WrapComponent) => {
       const delIndex = commonModel.commonConstant.findIndex(item => item.constantName === 'delButton');
       const delButton = delIndex > -1 ? commonModel.commonConstant[delIndex].viewName : '删除';
       return <div>
-        { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, name, 'delButton', record)}> <Tooltip placement="top" title={delButton}><DeleteOutlined /> </Tooltip></a>}
+        { !propsRef.current.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, name, 'delButton', record)}> <Tooltip placement="top" title={delButton}><DeleteOutlined /> </Tooltip></a>}
       </div>;
     }
 
@@ -893,6 +899,28 @@ const commonDocEvent = (WrapComponent) => {
 
     };
 
+    const onReportUpload = async (name) => {
+      await props.onUpload(name, 'report');
+      const { masterData, routeId } = propsRef.current;
+      const { commonModel } = props;
+      const addState: any = {};
+
+      let state: any = masterData && (commonUtils.isNotEmpty(masterData.handType) || commonUtils.isNotEmpty(masterData.dataId)) ?
+        { handleType: masterData.handleType, dataId: masterData.handleType === 'add' ? undefined : masterData.id,
+          listTabId: props.listTabId,
+          listRouteId: props.listRouteId, listContainerId: props.listContainerId, listCondition: props.listCondition, listTableKey: props.listTableKey,
+          listRowIndex: props.listRowIndex, listRowTotal: props.listRowTotal} : {};
+      const url: string = application.urlPrefix + '/personal/getRouteContainer?id=' +
+        routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
+      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        state = {...state, routeId, ...interfaceReturn.data};
+        props.dispatchModifyState({...addState, modalReportVisible: false});
+        //需要更新pane中的state，防止刷新还是老数据。
+        props.callbackModifyPane(props.tabId, state);
+      }
+    }
+
 
     return <div>
       <WrapComponent
@@ -905,6 +933,7 @@ const commonDocEvent = (WrapComponent) => {
         onModalOk={onModalOk}
         getLastColumnButton={getLastColumnButton}
         onLastColumnClick={onLastColumnClick}
+        onReportUpload={onReportUpload}
       />
     </div>
   };

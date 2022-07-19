@@ -10,6 +10,8 @@ import {TableComponent} from "../../../components/TableComponent";
 
 import CommonModal from "../../../common/commonModal";
 import commonBillEvent from "../../../common/commonBillEvent";
+import {UploadFile} from "../../../common/UploadFile";
+import { CloudUploadOutlined } from '@ant-design/icons';
 
 const SaleOrder = (props) => {
   const [form] = Form.useForm();
@@ -20,8 +22,9 @@ const SaleOrder = (props) => {
   };
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
-    isModal: props.isModal, buttonGroup: props.getButtonGroup() };
+  const buttonGroup = { userInfo: commonModel.userInfo, token: commonModel.token, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData,
+    permissionData: props.permissionData, reportFileList: props.reportFileList, reportDelFileList: props.reportDelFileList, container: masterContainer,
+    isModal: props.isModal, buttonGroup: props.getButtonGroup(), dispatchModifyState: props.dispatchModifyState, onUploadSuccess: props.onUploadSuccess };
   const slaveParam: any = commonUtils.getTableProps('slave', props);
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;
@@ -30,6 +33,9 @@ const SaleOrder = (props) => {
     render: (text, record, index)=> {
     return props.getLastColumnButton(slaveParam.name, text, record, index);
   }, width: 50 , fixed: 'right' };
+
+  const uploadParam: any = commonUtils.getUploadProps('report', props);
+  uploadParam.enabled = true;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
@@ -49,6 +55,12 @@ const SaleOrder = (props) => {
         <ButtonGroup {...buttonGroup} />
       </Form>
       <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
+      <CommonModal modalVisible={props.modalReportVisible} onModalCancel={props.onModalCancel} modalPane={
+        <div>
+          <UploadFile {...uploadParam}/>
+          <a onClick={props.onReportUpload.bind(this, 'report')}><CloudUploadOutlined /></a>
+        </div>
+      } />
     </div>
   );
 }

@@ -894,6 +894,7 @@ const commonBase = (WrapComponent) => {
       const { [name + 'FileList']: fileList, [name + 'DelFileList']: delfileListOld }: any = stateRef.current;
       const { dispatch, commonModel } = props;
       const delFileList = commonUtils.isEmptyArr(delfileListOld) ? [] : delfileListOld;
+      dispatchModifyState({ pageLoading: true });
       if (commonUtils.isNotEmptyArr(delFileList)) {
         // 先删除文件
         const formData = new FormData();
@@ -902,19 +903,20 @@ const commonBase = (WrapComponent) => {
         formData.append('routeId', modifyState.routeId);
         formData.append('groupId', commonModel.userInfo.groupId);
         formData.append('shopId', commonModel.userInfo.shopId);
-        formData.append('dataId', modifyState.dataId);
+        formData.append('dataId', type === 'report' ? '' : modifyState.dataId);
         await reqwest({
           url: application.urlUpload + '/delFileList',
           method: 'post',
           processData: false,
           data: formData,
+          headers: {
+            authorization: commonModel.token,
+          },
           success: (data) => {
             if (data.code === 1) {
-              if (data.data === -1) {
-                // gotoSuccess(dispatch, data);
-              } else {
-                gotoError(dispatch, data);
-              }
+              gotoSuccess(dispatch, data);
+            } else {
+              gotoError(dispatch, data);
             }
           }
         });
@@ -923,7 +925,7 @@ const commonBase = (WrapComponent) => {
 
       // 第二步上传文件
       if (commonUtils.isNotEmptyArr(fileList)) {
-        fileList.filter(item => item.status !== 'done').forEach(async fileObj => {
+        await fileList.filter(item => item.status !== 'done').forEach(async fileObj => {
           fileObj.percent = 1;
           fileObj.status = 'uploading';
           const file = fileObj.originFileObj;
@@ -949,7 +951,7 @@ const commonBase = (WrapComponent) => {
           formData.append('routeId', modifyState.routeId);
           formData.append('groupId', commonModel.userInfo.groupId);
           formData.append('shopId', commonModel.userInfo.shopId);
-          formData.append('dataId', modifyState.dataId);
+          formData.append('dataId', type === 'report' ? '' : modifyState.dataId);
           formData.append('key', key);
           await reqwest({
             url: application.urlUpload + '/checkFile',
@@ -965,7 +967,7 @@ const commonBase = (WrapComponent) => {
                   gotoSuccess(dispatch, data);
                   fileObj.percent = 100;
                   fileObj.status = 'done';
-                  dispatchModifyState({[name + 'FileList']: fileList, pageLoading: false});
+                  dispatchModifyState({[name + 'FileList']: fileList });
                 } else {
                   // 通过分片文件继续上传。
                   uploadFile(name, fileObj, type, modifyState.routeName, modifyState.dataId, data.data);
@@ -976,8 +978,7 @@ const commonBase = (WrapComponent) => {
 
         });
       }
-
-      dispatchModifyState({ pageLoading: true, [name + 'FileList']: fileList, [name + 'DelFileList']: [] });
+      dispatchModifyState({ [name + 'FileList']: fileList, [name + 'DelFileList']: [], pageLoading: false });
     };
 
     const uploadFile = (name, fileObj, type, routeName, dataId, shardIndex) => {
@@ -1020,35 +1021,38 @@ const commonBase = (WrapComponent) => {
       formData.append('routeId', modifyState.routeId);
       formData.append('groupId', commonModel.userInfo.groupId);
       formData.append('shopId', commonModel.userInfo.shopId);
-      formData.append('dataId', dataId);
+      formData.append('dataId', type === 'report' ? '' : dataId);
       formData.append('key', key);
 
       // You can use any AJAX library you like
       reqwest({
-        url: application.urlUpload + '/uploadFile',
+        url: application.urlUpload + (type === 'report' ? '/uploadReportFile' : '/uploadFile'),
         method: 'post',
         processData: false,
         data: formData,
+        headers: {
+          authorization: commonModel.token,
+        },
         success: () => {
           if(shardIndex < shardTotal - 1) {
             shardIndex += 1;
             const fileList = [...modifyState[name + 'FileList']];
             const index = fileList.findIndex(item => item.uid === fileObj.uid);
             fileList[index].percent = Math.ceil(100  * (shardIndex / shardTotal));
-            dispatchModifyState({ [name + 'FileList']: fileList, pageLoading: false });
+            dispatchModifyState({ [name + 'FileList']: fileList });
             uploadFile(name, fileObj, type, routeName, dataId, shardIndex);
           } else {
             const fileList = [...modifyState[name + 'FileList']];
             const index = fileList.findIndex(item => item.uid === fileObj.uid);
             fileList[index].percent = 100;
             fileList[index].status = 'done';
-            dispatchModifyState({ [name + 'FileList']: fileList, pageLoading: false });
-            gotoSuccess(dispatch, {code: '1', msg: '上传成功！'});
+            dispatchModifyState({ [name + 'FileList']: fileList });
+            gotoSuccess(dispatch, {code: '1', msg: fileName + '上传成功！'});
           }
         },
         error: () => {
           dispatchModifyState({ pageLoading: false });
-          gotoError(dispatch, {code: '5000', msg: '上传失败！'});
+          gotoError(dispatch, {code: '5000', msg: fileName + '上传失败！'});
         },
       });
     };
@@ -1190,7 +1194,7 @@ const commonBase = (WrapComponent) => {
     }
 
     const onModalCancel = () => {
-      dispatchModifyState({ modalVisible: false });
+      dispatchModifyState({ modalReportVisible: false, modalVisible: false });
     }
 
     const onExpand = (name, expanded, record) => {
@@ -1274,7 +1278,7 @@ const commonBase = (WrapComponent) => {
         commonUtils.panesComponent({key: commonUtils.newId()}, route, null, onModalOk, null, state).component });
     }
 
-    const onPrint = () => {
+    const onPrint = (config) => {
       const { routeId, containerData, dataId, routeData } = stateRef.current;
       const { commonModel } = props;
       const requestParam = {
@@ -1297,7 +1301,7 @@ const commonBase = (WrapComponent) => {
       // @ts-ignore
       FR.doHyperlinkByPost({
         //报表路径
-        url: application.urlReport + '/webroot/decision/view/report?viewlet=/mar105/tomcat-fineReport/webapps/webroot/WEB-INF/reportlets/2.cpt',
+        url: application.urlReport + '/webroot/decision/view/report?viewlet=' + commonModel.userInfo.groupId + commonModel.userInfo.shopId + '/' + routeId + '//' + config.name,
         //参数
         para: requestParam,
         target:'_dialog',    //对话框方式打开

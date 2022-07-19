@@ -3,7 +3,7 @@ import {componentType} from "../utils/commonTypes";
 import * as commonUtils from "../utils/commonUtils";
 import {Col, Row, Menu, Popconfirm} from "antd";
 import React from 'react';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import {UploadFile} from "./UploadFile";
 import * as application from "../application";
 import reqwest from 'reqwest';
@@ -45,7 +45,7 @@ export function ButtonGroup(params) {
         params.dispatchModifyState({ pageLoading: false });
       },
     });
-  }
+  };
 
   const buttons = commonUtils.isEmptyObj(params.container) ? [] : params.container.slaveData.filter(item => item.containerType === 'control' && item.fieldName.endsWith('Button') && !item.fieldName.includes('.'));
   //先找到通用按钮，取配置
@@ -121,6 +121,21 @@ export function ButtonGroup(params) {
             params.onClick.bind(this, buttonConfig.key === 'copyToButton' ? 'copyToMenu' : 'copyFromMenu', null)} />
         }
       }
+      else if (buttonConfig.key === 'printButton') {
+        if (params.reportFileList) {
+          isDropDown = true;
+          if (params.reportFileList.length === 1) {
+            buttonConfig = {...buttonConfig, ...params.reportFileList[0], sortNum: buttonConfig.sortNum };
+          }
+
+          const menuItems = params.reportFileList.map(menu => {
+            return { label: menu.name.split('.')[0], key: menu.uid, config: menu}});
+          menuItems.push({ label: <CloudUploadOutlined />, key: 'reportUpload'});
+
+          menusData = <Menu items={menuItems} onClick={commonUtils.isEmpty(params.onClick) ? undefined :
+            params.onClick.bind(this, 'printToMenu', null)} />
+        }
+      }
       
       const button = {
         caption: buttonConfig.viewName,
@@ -170,7 +185,7 @@ export function ButtonGroup(params) {
             }
           },
         };
-        buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col><UploadFile {...uploadParam}></UploadFile></Col> } );
+        buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col><UploadFile {...uploadParam} /></Col> } );
         // return <Col><UploadFile {...uploadParam}></UploadFile></Col>;
       } else {
         buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col><ButtonComponent {...button} /></Col> } );
@@ -196,6 +211,8 @@ export function ButtonGroup(params) {
   buttonSort.forEach(button => {
     buttonGroup.push(button.component);
   });
+
+
 
   return <Row style={{ height: 'auto', overflow: 'auto' }}>{buttonGroup}</Row>;
 }

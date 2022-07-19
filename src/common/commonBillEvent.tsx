@@ -95,8 +95,9 @@ const commonBillEvent = (WrapComponent) => {
         { <Dropdown trigger={['click']} overlay={commonUtils.isEmpty(props.lowerMenus) ? '' : props.lowerMenus} placement="bottomLeft">
           <a onClick={props.onLastColumnClick.bind(this, 'slave', 'lowerButton', record)}> <Tooltip placement="top" title={lowerButton}><DownSquareOutlined /> </Tooltip></a>
         </Dropdown>}
+        {props.getLastColumnButton(name, text, record, index)}
       </div>
-      {props.getLastColumnButton(name, text, record, index)}
+
     }
 
 

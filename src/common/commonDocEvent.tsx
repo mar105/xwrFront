@@ -269,7 +269,7 @@ const commonDocEvent = (WrapComponent) => {
         if (e.key === 'reportUpload') {
           // 报表上传
           dispatchModifyState({ modalReportVisible: true });
-        } else {
+        } else if (commonUtils.isNotEmpty(printConfig.name)) {
           props.onPrint(printConfig);
         }
       }

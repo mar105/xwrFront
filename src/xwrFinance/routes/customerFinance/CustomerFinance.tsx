@@ -9,6 +9,8 @@ import { CommonExhibit } from "../../../common/CommonExhibit";
 import { DeleteOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
 import commonBillEvent from "../../../common/commonBillEvent";
+import {UploadFile} from "../../../common/UploadFile";
+import { CloudUploadOutlined } from '@ant-design/icons';
 
 const CustomerFinance = (props) => {
   const [form] = Form.useForm();
@@ -19,7 +21,8 @@ const CustomerFinance = (props) => {
   };
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData,
+    reportFileList: props.reportFileList, reportDelFileList: props.reportDelFileList, dispatchModifyState: props.dispatchModifyState, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const slaveParam: any = commonUtils.getTableProps('slave', props);
   slaveParam.isDragRow = true;
@@ -31,6 +34,9 @@ const CustomerFinance = (props) => {
       { !props.enabled ? '' : <a onClick={props.onLastColumnClick.bind(this, 'slave', 'delButton', record)}> <Tooltip placement="top" title="删除"><DeleteOutlined /> </Tooltip></a>}
     </div>
   }, width: 50 , fixed: 'right' };
+
+  const uploadParam: any = commonUtils.getUploadProps('report', props);
+  uploadParam.enabled = true;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
@@ -45,6 +51,12 @@ const CustomerFinance = (props) => {
         <ButtonGroup {...buttonGroup} />
       </Form>
       <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
+      <CommonModal modalVisible={props.modalReportVisible} onModalCancel={props.onModalCancel} modalPane={
+        <div>
+          <UploadFile {...uploadParam}/>
+          <a onClick={props.onReportUpload.bind(this, 'report')}><CloudUploadOutlined /></a>
+        </div>
+      } />
     </div>
   );
 }

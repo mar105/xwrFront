@@ -7,6 +7,8 @@ import {ButtonGroup} from "../../../common/ButtonGroup";
 import commonDocEvent from "../../../common/commonDocEvent";
 import { CommonExhibit } from "../../../common/CommonExhibit";
 import CommonModal from "../../../common/commonModal";
+import {UploadFile} from "../../../common/UploadFile";
+import { CloudUploadOutlined } from '@ant-design/icons';
 
 const CommonMaster = (props) => {
   const [form] = Form.useForm();
@@ -46,8 +48,13 @@ const CommonMaster = (props) => {
   }, [props.masterContainer.dataSetName]);
 
   const { enabled, masterContainer, masterData, commonModel } = props;
-  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: masterContainer,
+  const buttonGroup = { userInfo: commonModel.userInfo, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData,
+    reportFileList: props.reportFileList, reportDelFileList: props.reportDelFileList, dispatchModifyState: props.dispatchModifyState, container: masterContainer,
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
+
+  const uploadParam: any = commonUtils.getUploadProps('report', props);
+  uploadParam.enabled = true;
+
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
@@ -59,6 +66,12 @@ const CommonMaster = (props) => {
       </Row>
       <ButtonGroup {...buttonGroup} />
       <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
+      <CommonModal modalVisible={props.modalReportVisible} onModalCancel={props.onModalCancel} modalPane={
+        <div>
+          <UploadFile {...uploadParam}/>
+          <a onClick={props.onReportUpload.bind(this, 'report')}><CloudUploadOutlined /></a>
+        </div>
+      } />
     </Form>
   );
 }

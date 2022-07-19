@@ -23,8 +23,8 @@ const SaleOrder = (props) => {
 
   const { enabled, masterContainer, masterData, commonModel } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, token: commonModel.token, onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData,
-    permissionData: props.permissionData, reportFileList: props.reportFileList, reportDelFileList: props.reportDelFileList, container: masterContainer,
-    isModal: props.isModal, buttonGroup: props.getButtonGroup(), dispatchModifyState: props.dispatchModifyState, onUploadSuccess: props.onUploadSuccess };
+    permissionData: props.permissionData, reportFileList: props.reportFileList, reportDelFileList: props.reportDelFileList, dispatchModifyState: props.dispatchModifyState,
+    container: masterContainer, isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const slaveParam: any = commonUtils.getTableProps('slave', props);
   slaveParam.isDragRow = true;
   slaveParam.pagination = false;

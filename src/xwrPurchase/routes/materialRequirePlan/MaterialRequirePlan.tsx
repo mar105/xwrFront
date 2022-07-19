@@ -9,6 +9,8 @@ import Search from "../../../common/Search";
 import commonListEvent from "../../../common/commonListEvent";
 import { SaveOutlined } from '@ant-design/icons';
 import CommonModal from "../../../common/commonModal";
+import {UploadFile} from "../../../common/UploadFile";
+import { CloudUploadOutlined } from '@ant-design/icons';
 
 const CommonList = (props) => {
   const [form] = Form.useForm();
@@ -130,8 +132,9 @@ const CommonList = (props) => {
 
   const { commonModel, enabled, slaveContainer, searchRowKeys, searchData } = props;
   const buttonGroup = { userInfo: commonModel.userInfo, token: commonModel.token, routeId: props.routeId, groupId: commonModel.userInfo.groupId, shopId: commonModel.userInfo.shopId,
-    onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData, container: slaveContainer, buttonGroup: props.getButtonGroup(), isModal: props.isModal,
-    onUploadSuccess: props.onUploadSuccess, dispatchModifyState: props.dispatchModifyState };
+    onClick: props.onButtonClick, enabled, permissionEntityData: props.permissionEntityData, permissionData: props.permissionData,
+    reportFileList: props.reportFileList, reportDelFileList: props.reportDelFileList, dispatchModifyState: props.dispatchModifyState, container: slaveContainer, buttonGroup: props.getButtonGroup(), isModal: props.isModal,
+    onUploadSuccess: props.onUploadSuccess };
   const tableParam: any = commonUtils.getTableProps('slave', { ...props, onRowSelectChange });
   tableParam.enabled = false;
   tableParam.eventOnRow = { ...tableParam.eventOnRow, onRowDoubleClick: props.onRowDoubleClick };
@@ -144,6 +147,9 @@ const CommonList = (props) => {
   const search = useMemo(() => {
     return (<Search name="search" {...props} /> ) }, [slaveContainer, searchRowKeys, searchData]);
 
+  const uploadParam: any = commonUtils.getUploadProps('report', props);
+  uploadParam.enabled = true;
+
   return (
     <div>
       {props.slaveContainer ?
@@ -153,6 +159,12 @@ const CommonList = (props) => {
         </div>: ''}
       <ButtonGroup {...buttonGroup} />
       <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
+      <CommonModal modalVisible={props.modalReportVisible} onModalCancel={props.onModalCancel} modalPane={
+        <div>
+          <UploadFile {...uploadParam}/>
+          <a onClick={props.onReportUpload.bind(this, 'report')}><CloudUploadOutlined /></a>
+        </div>
+      } />
     </div>
 
   );

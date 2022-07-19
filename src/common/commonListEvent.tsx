@@ -101,8 +101,14 @@ const commonListEvent = (WrapComponent) => {
         // }
         // const interfaceReturn = await request.postExcelRequest(url, commonModel.token, application.paramInit(requestParam));
         // commonUtils.downloadExcel(interfaceReturn);
-      } else if (key === 'printButton') {
-        props.onPrint();
+      } else if (key === 'printButton' || key === 'printToMenu') {
+        const printConfig = key === 'printToMenu' ? e.item.props.config : config;
+        if (e.key === 'reportUpload') {
+          // 报表上传
+          dispatchModifyState({ modalReportVisible: true });
+        } else if (commonUtils.isNotEmpty(printConfig.name)) {
+          props.onPrint(printConfig);
+        }
       }
     }
 

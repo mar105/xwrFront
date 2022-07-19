@@ -899,28 +899,6 @@ const commonDocEvent = (WrapComponent) => {
 
     };
 
-    const onReportUpload = async (name) => {
-      await props.onUpload(name, 'report');
-      const { masterData, routeId } = propsRef.current;
-      const { commonModel } = props;
-      const addState: any = {};
-
-      let state: any = masterData && (commonUtils.isNotEmpty(masterData.handType) || commonUtils.isNotEmpty(masterData.dataId)) ?
-        { handleType: masterData.handleType, dataId: masterData.handleType === 'add' ? undefined : masterData.id,
-          listTabId: props.listTabId,
-          listRouteId: props.listRouteId, listContainerId: props.listContainerId, listCondition: props.listCondition, listTableKey: props.listTableKey,
-          listRowIndex: props.listRowIndex, listRowTotal: props.listRowTotal} : {};
-      const url: string = application.urlPrefix + '/personal/getRouteContainer?id=' +
-        routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
-      const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
-      if (interfaceReturn.code === 1) {
-        state = {...state, routeId, ...interfaceReturn.data};
-        props.dispatchModifyState({...addState, modalReportVisible: false});
-        //需要更新pane中的state，防止刷新还是老数据。
-        props.callbackModifyPane(props.tabId, state);
-      }
-    }
-
 
     return <div>
       <WrapComponent
@@ -933,7 +911,6 @@ const commonDocEvent = (WrapComponent) => {
         onModalOk={onModalOk}
         getLastColumnButton={getLastColumnButton}
         onLastColumnClick={onLastColumnClick}
-        onReportUpload={onReportUpload}
       />
     </div>
   };

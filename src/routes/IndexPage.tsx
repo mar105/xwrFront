@@ -7,7 +7,7 @@ import * as request from "../utils/request";
 import TabsPages from "../TabsPages";
 import commonBase from "../common/commonBase";
 import IndexMenu from "./IndexMenu";
-import {Dropdown, Menu, Row, Progress, Modal, ConfigProvider} from "antd";
+import {Dropdown, Menu, Row, Modal, ConfigProvider} from "antd";
 import {useRef} from "react";
 import {replacePath, routeInfo} from "../routeInfo";
 import { DownOutlined, MailOutlined } from '@ant-design/icons';
@@ -66,13 +66,10 @@ function IndexPage(props) {
 
       //这个是单人推送
       const syncRefreshData = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/syncRefreshData' + commonModel.userInfo.userId, syncRefreshDataResult);
-      const progress = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/progress' + commonModel.userInfo.userId, progressResult);
-
       //
       const saveDataReturn = props.commonModel.stompClient.subscribe('/xwrUser/topic-websocket/saveDataReturn' + commonModel.userInfo.userId, saveDataReturnResult);
       return () => {
         syncRefreshData.unsubscribe();
-        progress.unsubscribe();
         saveDataReturn.unsubscribe();
       };
     }
@@ -128,12 +125,6 @@ function IndexPage(props) {
     }
   }
 
-  const progressResult = (data) => {
-    // const { dispatch } = props;
-    const returnBody = JSON.parse(data.body);
-    dispatchModifySelfState({ progressPercent: returnBody });
-  }
-
   const saveDataReturnResult = (data) => {
     // const { dispatch } = props;
     const returnBody = data.body;
@@ -168,13 +159,7 @@ function IndexPage(props) {
     callbackAddPane(routeId, { handleType: 'add' });
   }
 
-  const onInvitation = () => {
-    dispatchModifySelfState({invitationIsVisible: true});
-  }
 
-  const onInvitationClose = () => {
-    dispatchModifySelfState({invitationIsVisible: false});
-  }
 
 
 
@@ -200,33 +185,6 @@ function IndexPage(props) {
       type: 'commonModel/gotoNewPage',
       payload: {newPage: '/login'},
     });
-  }
-
-  const onClearBusinessData = async () => {
-    const {dispatch, dispatchModifyState, commonModel} = props;
-    dispatchModifyState({ progressIsVisible: true });
-    const url: string = application.urlPrefix + '/clearData/clearBusinessData';
-    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,
-      shopId: commonModel.userInfo.shopId }))).data;
-    if (interfaceReturn.code === 1) {
-      props.gotoSuccess(dispatch, interfaceReturn);
-    } else {
-      props.gotoError(dispatch, interfaceReturn);
-    }
-    dispatchModifyState({ progressIsVisible: false, progressPercent: 0 });
-  }
-
-  const onClearAllData = async () => {
-    return;
-    const {dispatch, commonModel} = props;
-    const url: string = application.urlPrefix + '/clearData/clearAllData';
-    const interfaceReturn = (await request.postRequest(url, commonModel.token, application.paramInit({groupId: commonModel.userInfo.groupId,
-      shopId: commonModel.userInfo.shopId }))).data;
-    if (interfaceReturn.code === 1) {
-      props.gotoSuccess(dispatch, interfaceReturn);
-    } else {
-      props.gotoError(dispatch, interfaceReturn);
-    }
   }
 
   const callbackRemovePane = useCallback((targetKey) => {
@@ -383,6 +341,14 @@ function IndexPage(props) {
     callbackAddPane('743388342216818688', {});
   }
 
+  const onInvitation = () => {
+    dispatchModifySelfState({invitationIsVisible: true});
+  }
+
+  const onInvitationClose = () => {
+    dispatchModifySelfState({invitationIsVisible: false});
+  }
+
 
 
   const { commonModel } = props;
@@ -422,15 +388,10 @@ function IndexPage(props) {
         <a href="/login"> login</a>
         <button onClick={onClear}> 清除缓存</button>
         <button onClick={onExit}> 退出</button>
-        <button onClick={onClearBusinessData}> 初始化业务数据</button>
-        <button onClick={onClearAllData}> 初始化所有数据</button>
-        <Modal width={800} visible={modifySelfState.progressIsVisible} closable={false} mask={false} footer={null}>
-          <Progress type="circle" percent={modifySelfState.progressPercent} />
-        </Modal>
+        {shop}
         <Modal width={800} visible={modifySelfState.invitationIsVisible} closable={false} maskClosable={true} footer={null}>
           <ShopInvitation {...props} onInvitationClose={onInvitationClose} />
         </Modal>
-        {shop}
       </Row>
       <div><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} /></div>
       </ConfigProvider>

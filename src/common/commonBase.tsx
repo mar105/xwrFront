@@ -905,7 +905,7 @@ const commonBase = (WrapComponent) => {
         formData.append('shopId', commonModel.userInfo.shopId);
         formData.append('dataId', type === 'report' ? '' : modifyState.dataId);
         await reqwest({
-          url: application.urlUpload + '/delFileList',
+          url: application.urlUpload + (type === 'report' ? '/delReportFileList' : '/delFileList'),
           method: 'post',
           processData: false,
           data: formData,
@@ -1339,7 +1339,7 @@ const commonBase = (WrapComponent) => {
     const onReportUpload = async (name) => {
       await onUpload(name, 'report');
       const { masterData, routeId } = stateRef.current;
-      const { commonModel } = props;
+      const { dispatch, commonModel } = props;
       const addState: any = {};
 
       let state: any = masterData && (commonUtils.isNotEmpty(masterData.handType) || commonUtils.isNotEmpty(masterData.dataId)) ?
@@ -1351,10 +1351,13 @@ const commonBase = (WrapComponent) => {
         routeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
       const interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
       if (interfaceReturn.code === 1) {
-        state = {...state, routeId, ...interfaceReturn.data};
+        addState[name + 'FileList'] = interfaceReturn.data.reportFileList;
+        state = {...state, routeId, ...interfaceReturn.data };
         dispatchModifyState({...addState, modalReportVisible: false});
         //需要更新pane中的state，防止刷新还是老数据。
         props.callbackModifyPane(props.tabId, state);
+      } else {
+        gotoError(dispatch, interfaceReturn);
       }
     }
 

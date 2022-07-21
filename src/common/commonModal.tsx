@@ -7,6 +7,7 @@ const commonModal = (props) => {
     title={props.modalTitle}
     footer={null}
     width={2500}
+    destroyOnClose={props.destroyOnClose}
     onCancel={props.onModalCancel}
   >
     {props.modalPane}

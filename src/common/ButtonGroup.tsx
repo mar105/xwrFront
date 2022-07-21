@@ -130,7 +130,7 @@ export function ButtonGroup(params) {
 
           const menuItems = params.reportFileList.map(menu => {
             return { label: menu.name.split('.')[0], key: menu.uid, config: menu}});
-          menuItems.push({ label: <CloudUploadOutlined />, key: 'reportUpload'});
+          menuItems.push({ label: <div><CloudUploadOutlined /></div>, key: 'reportUpload'});
 
           menusData = <Menu items={menuItems} onClick={commonUtils.isEmpty(params.onClick) ? undefined :
             params.onClick.bind(this, 'printToMenu', null)} />

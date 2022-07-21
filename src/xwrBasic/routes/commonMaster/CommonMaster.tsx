@@ -54,6 +54,7 @@ const CommonMaster = (props) => {
 
   const uploadParam: any = commonUtils.getUploadProps('report', props);
   uploadParam.enabled = true;
+  uploadParam.isSelfModify = true;
 
   const component = useMemo(()=>{ return (
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
@@ -66,7 +67,7 @@ const CommonMaster = (props) => {
       </Row>
       <ButtonGroup {...buttonGroup} />
       <CommonModal modalVisible={props.modalVisible} modalTitle={props.modalTitle} onModalCancel={props.onModalCancel} modalPane={props.modalPane} />
-      <CommonModal modalVisible={props.modalReportVisible} onModalCancel={props.onModalCancel} modalPane={
+      <CommonModal modalVisible={props.modalReportVisible} onModalCancel={props.onModalCancel} destroyOnClose={true} modalPane={
         <div>
           <UploadFile {...uploadParam}/>
           <a onClick={props.onReportUpload.bind(this, 'report')}><CloudUploadOutlined /></a>

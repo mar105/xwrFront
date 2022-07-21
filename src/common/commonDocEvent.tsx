@@ -85,11 +85,14 @@ const commonDocEvent = (WrapComponent) => {
         if (masterDataOld.handleType === 'add') {
           // ------------清除复制从数据锁定数据。---------------------
           const originalSlaveIds: any = [];
-          slaveData.forEach(slave => {
-            if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-              originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
-            }
-          });
+          if (commonUtils.isNotEmptyArr(slaveData)) {
+            slaveData.forEach(slave => {
+              if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
+                originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
+              }
+            });
+          }
+
           if (commonUtils.isNotEmptyArr(originalSlaveIds)) {
             const url: string = application.urlCommon + '/verify/removeModifyingMulti';
             const params: any = {selectKeys: originalSlaveIds, groupId: commonModel.userInfo.groupId,
@@ -116,11 +119,14 @@ const commonDocEvent = (WrapComponent) => {
           const {dispatch, commonModel, tabId, masterData} = props;
           // 清除复制从数据锁定数据。
           const originalSlaveIds: any = [];
-          slaveData.filter(item => item.handleType === 'add').forEach(slave => {
-            if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
-              originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
-            }
-          });
+          if (commonUtils.isNotEmptyArr(slaveData)) {
+            slaveData.filter(item => item.handleType === 'add').forEach(slave => {
+              if (commonUtils.isNotEmpty(slave.originalSlaveId)) {
+                originalSlaveIds.push(slave.originalId + '_' + slave.originalSlaveId);
+              }
+            });
+
+          }
 
           const url: string = application.urlCommon + '/verify/removeModifyingMulti';
           const params = {id: masterData.id, tabId, groupId: commonModel.userInfo.groupId,

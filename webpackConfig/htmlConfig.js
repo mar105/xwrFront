@@ -21,6 +21,7 @@ getFilePath("./src").map((item)=>{
     htmlArr.push(new HtmlWebpackPlugin({
       hash: true,
       template: './src/index.html',
+      favicon: './src/favicon.ico',
       chunks: ['index'],
     }));
   } else {
@@ -34,6 +35,7 @@ getFilePath("./src").map((item)=>{
       chunks:[item + '/' + item], //引入的js
       // template: "./src/index.html",
       template: "./src/template.html",
+      favicon: './src/favicon.ico',
       inject: true,
       filename : item + '/index.html', //html位置
       minify:{//压缩html

@@ -8,7 +8,7 @@ import {NumberComponent} from "../components/NumberComponent";
 import {CheckboxComponent} from "../components/CheckboxComponent";
 import {DatePickerComponent} from "../components/DatePickerComponent";
 import {ButtonComponent} from "../components/ButtonComponent";
-import { DeleteOutlined, PlusOutlined, MinusOutlined, EditOutlined, QuestionCircleOutlined, StarTwoTone } from '@ant-design/icons';
+import { ClearOutlined, DeleteOutlined, PlusOutlined, MinusOutlined, EditOutlined, QuestionCircleOutlined, StarTwoTone } from '@ant-design/icons';
 import moment from 'moment';
 import * as application from "../application";
 import * as request from "../utils/request";
@@ -149,7 +149,34 @@ const Search = (props) => {
       }
 
       dispatchModifyState({...addState});
-    } else if (key === 'addSchemeButton') {
+    }
+    else if (key === 'clearButton') {
+      addState[name + 'SearchCondition'] = [];
+      dispatchModifyState({[name + 'Loading']: true });
+      const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { sorterInfo }, isWait: true });
+      addState = {...addState, ...returnData};
+
+      const index = containerData.findIndex(item => item.superiorContainerId === container.id);
+      if (index > -1) {
+        //嵌套表不分页
+        const superiorData = addState[container.dataSetName + 'Data'];
+        if (commonUtils.isNotEmptyArr(superiorData)) {
+          const childData: any = [];
+          for (const superior of superiorData) {
+            const searchNestCondition = commonUtils.isNotEmptyObj(props[containerData[index].dataSetName + 'SearchCondition']) ? [...props[containerData[index].dataSetName + 'SearchCondition']] : [];
+            searchNestCondition.push({ fieldName: containerData[index].treeSlaveKey, condition: '=', fieldValue: superior[containerData[index].treeKey] });
+            const returnData: any = await props.getDataList({ name: containerData[index].dataSetName, containerId: containerData[index].id, pageNum: undefined,
+              condition: { searchCondition: searchNestCondition, sorterInfo: props[containerData[index].dataSetName + 'SorterInfo'] }, isWait: true });
+            childData.push(...returnData[containerData[index].dataSetName + 'Data']);
+          };
+          addState = {...addState, [containerData[index].dataSetName + 'Data']: childData, [containerData[index].dataSetName + 'ModifyData']: [], [containerData[index].dataSetName + 'DelData']: []};
+        }
+
+      }
+
+      dispatchModifyState({...addState});
+    }
+    else if (key === 'addSchemeButton') {
       form.setFieldsValue({searchSchemeName: ''});
       dispatchModifyState({ sechemeHandleType: 'add', schemeIsVisible: true });
     } else if (key === 'modifySchemeButton') {
@@ -398,7 +425,7 @@ const Search = (props) => {
   index = commonModel.commonConstant.findIndex(item => item.constantName === 'addCondition');
   const addCondition = index > -1 ? commonModel.commonConstant[index].viewName : '添加条件';
   index = commonModel.commonConstant.findIndex(item => item.constantName === 'search');
-  const search = index > -1 ? commonModel.commonConstant[index].viewName : '修改方案';
+  const search = index > -1 ? commonModel.commonConstant[index].viewName : '搜索';
   index = commonModel.commonConstant.findIndex(item => item.constantName === 'post');
   const post = index > -1 ? commonModel.commonConstant[index].viewName : '保存';
   index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseInputScheme');
@@ -443,6 +470,7 @@ const Search = (props) => {
         {searchComponent}
         <ButtonComponent {...addConditionButton} />
         <ButtonComponent {...searchButton} />
+        <ClearOutlined onClick={onButtonClick.bind(this, 'clearButton')} />
         <Modal width={800} visible={props.schemeIsVisible} footer={null} onCancel={onButtonClick.bind(this, 'cancelSchemeButton')} >
           <Form form={form} onFinish={onFinish}>
             <InputComponent {...searchSchemeName} />

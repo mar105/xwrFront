@@ -122,8 +122,26 @@ const Search = (props) => {
       }
       const searchCondition: any = [];
       searchRowKeys.forEach(key => {
+        //-----方案设置取本月、今日，上月时，时间需要动态变化-------------------------------
+        const index = searchConfig.findIndex(item => item.fieldName === searchData['first' + key]);
+        if (index > -1 && searchConfig[index].fieldType === 'datetime') {
+          // 防止月转=或者今天时日期格式不对
+          searchData['third' + key] = moment().format('YYYY-MM-DD');
+        }
+        //-------------------------------
+        if (searchData['second' + key] === 'today') {
+          searchData['third' + key] = moment().format('YYYY-MM-DD');
+        }
+        else if (searchData['second' + key] === 'month') {
+          searchData['third' + key] = moment().format("YYYY-MM");
+        }
+        else if (searchData['second' + key] === 'monthPre') {
+          searchData['third' + key] = moment().startOf('month').subtract('month', 1).format('YYYY-MM');
+        }
+        //-----------------------------------------------------------------------
         searchCondition.push({ fieldName: searchData['first' + key], condition: searchData['second' + key], fieldValue: searchData['third' + key] });
       });
+
       addState[name + 'SearchCondition'] = searchCondition;
       dispatchModifyState({[name + 'Loading']: true });
       const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { searchCondition, sorterInfo }, isWait: true });
@@ -151,7 +169,25 @@ const Search = (props) => {
       dispatchModifyState({...addState});
     }
     else if (key === 'clearButton') {
+      searchRowKeys = [];
+      searchData = [];
+      if (commonUtils.isNotEmptyArr(searchConfig)) {
+        if (commonUtils.isEmptyArr(searchRowKeys)) {
+          const key = commonUtils.newId();
+          searchRowKeys.push(key);
+          searchData['first' + key] = searchConfig[0].fieldName;
+          const secondViewDrop = searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+            searchConfig[0].fieldType === 'datetime' ? searchType.datetime :
+              searchConfig[0].fieldType === 'tinyint' ? searchType.tinyint :
+                searchConfig[0].fieldType === 'varchar' ? searchType.varchar :
+                  searchConfig[0].fieldType === 'varchar' ? searchType.varchar : searchType.varchar;
+          searchData['second' + key] = secondViewDrop[0].id;
+        }
+      }
+      addState.searchData = searchData;
+      addState.searchRowKeys = searchRowKeys;
       addState[name + 'SearchCondition'] = [];
+      addState.searchSchemeId = '';
       dispatchModifyState({[name + 'Loading']: true });
       const returnData: any = await props.getDataList({ name, containerId: container.id, pageNum: container.isTree === 1 ? undefined : 1, condition: { sorterInfo }, isWait: true });
       addState = {...addState, ...returnData};
@@ -426,6 +462,10 @@ const Search = (props) => {
   const addCondition = index > -1 ? commonModel.commonConstant[index].viewName : '添加条件';
   index = commonModel.commonConstant.findIndex(item => item.constantName === 'search');
   const search = index > -1 ? commonModel.commonConstant[index].viewName : '搜索';
+
+  index = commonModel.commonConstant.findIndex(item => item.constantName === 'clearScheme');
+  const clearScheme = index > -1 ? commonModel.commonConstant[index].viewName : '清空方案';
+
   index = commonModel.commonConstant.findIndex(item => item.constantName === 'post');
   const post = index > -1 ? commonModel.commonConstant[index].viewName : '保存';
   index = commonModel.commonConstant.findIndex(item => item.constantName === 'pleaseInputScheme');
@@ -470,7 +510,7 @@ const Search = (props) => {
         {searchComponent}
         <ButtonComponent {...addConditionButton} />
         <ButtonComponent {...searchButton} />
-        <ClearOutlined onClick={onButtonClick.bind(this, 'clearButton')} />
+        <a onClick={onButtonClick.bind(this, 'clearButton')}> <Tooltip placement="top" title={clearScheme}><ClearOutlined /></Tooltip></a>
         <Modal width={800} visible={props.schemeIsVisible} footer={null} onCancel={onButtonClick.bind(this, 'cancelSchemeButton')} >
           <Form form={form} onFinish={onFinish}>
             <InputComponent {...searchSchemeName} />

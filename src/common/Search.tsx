@@ -123,11 +123,6 @@ const Search = (props) => {
       const searchCondition: any = [];
       searchRowKeys.forEach(key => {
         //-----方案设置取本月、今日，上月时，时间需要动态变化-------------------------------
-        const index = searchConfig.findIndex(item => item.fieldName === searchData['first' + key]);
-        if (index > -1 && searchConfig[index].fieldType === 'datetime') {
-          // 防止月转=或者今天时日期格式不对
-          searchData['third' + key] = moment().format('YYYY-MM-DD');
-        }
         //-------------------------------
         if (searchData['second' + key] === 'today') {
           searchData['third' + key] = moment().format('YYYY-MM-DD');

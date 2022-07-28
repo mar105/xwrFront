@@ -18,7 +18,7 @@ module.exports = function getFilePath(path){
     readdirSync.map((item)=>{
       let currentPath = path + "/" + item;
       let isDirector = fs.statSync(currentPath).isDirectory(); //判断是不是一个文件夹
-      if(isDirector && item !== "components" && item !== "models" && item !== "utils" && item !== "routes" && item !== "common"){ // component目录下为组件 需要排除
+      if(isDirector && item !== "components" && item !== "models" && item !== "utils" && item !== "routes" && item !== "common" && item !== "assets"){ // component目录下为组件 需要排除
         fileArr.push(item);
       }
     });

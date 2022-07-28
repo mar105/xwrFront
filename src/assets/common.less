@@ -1,0 +1,62 @@
+// 登录页
+.xwr-login-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto!important;
+  width: 400px;
+}
+.xwr-index-page {
+  height: 100vh;
+  .ant-row {
+    height: 100%;
+  }
+}
+
+.xwr-register-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 auto!important;
+  width: 600px;
+  padding-top: 200px!important;
+  .qr-code-row {
+    flex-wrap: nowrap;
+    .ant-form-item {
+      margin-bottom: 0px!important;
+    }
+    .qr-code-send-btn {
+      .ant-btn {
+        width: 100%;
+      }
+    }
+  } 
+  .register-btn {
+    width: 100%;
+  }
+}
+
+// 主界面
+.xwr-index-page {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  .xwr-index-page-body{
+    display: flex;
+    flex-direction: column;
+    width: calc(100vw - 256px);
+    .xwr-index-page-header {
+      height: 80px;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0px 24px;
+      .each-header-nav {
+        margin-left:10px;
+      }
+    }
+  }
+}

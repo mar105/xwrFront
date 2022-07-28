@@ -147,7 +147,7 @@ const WorkOrder = (props) => {
     <CommonExhibit name="master" {...props} />)}, [masterContainer, masterData, enabled]);
   return (
     <div>
-      <Form {...layout} name="basic" form={form} onFinish={onFinish}>
+      <Form {...layout} name="basic" form={form} onFinish={onFinish} >
         <Row>
           <Col>
             {component}

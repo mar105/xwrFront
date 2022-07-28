@@ -6,6 +6,7 @@
   justify-content: center;
   margin: 0 auto!important;
   width: 400px;
+  padding-top: 200px!important;
 }
 .xwr-index-page {
   height: 100vh;
@@ -48,15 +49,44 @@
     flex-direction: column;
     width: calc(100vw - 256px);
     .xwr-index-page-header {
+      width: 100%;
       height: 80px;
       display: flex;
       flex-direction: row;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       padding: 0px 24px;
       .each-header-nav {
         margin-left:10px;
       }
+      .header-notice-icon {
+        margin: 0px 10px;
+      }
+    }
+  }
+}
+
+// 列表通用查询
+.xwr-common-search-form-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 12px;
+  .search-dom {
+    width: 70;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    .add-condition-btn {
+      margin: 0px 4px;
+    }
+    .search-btn {
+      margin:0px 4px;
+    }
+    .search-component {
+      margin: 0px 10px;
     }
   }
 }

@@ -7,7 +7,7 @@ import * as request from "../utils/request";
 import TabsPages from "../TabsPages";
 import commonBase from "../common/commonBase";
 import IndexMenu from "./IndexMenu";
-import {Dropdown, Menu, Row, Modal, ConfigProvider} from "antd";
+import {Dropdown, Menu, Button, Modal, ConfigProvider} from "antd";
 import {useRef} from "react";
 import {replacePath, routeInfo} from "../routeInfo";
 import { DownOutlined, MailOutlined } from '@ant-design/icons';
@@ -358,8 +358,18 @@ function IndexPage(props) {
         return <Menu.Item key={item.id}>{item.shopName}</Menu.Item>
       }) : '' }
     </Menu>;
+
+    // const settingMenu = <Menu>
+    //   <Menu.Item><Button onClick={onClear} type="link"> 清除缓存</Button></Menu.Item>     
+    //   <Menu.Item><Button onClick={onExit} type="link"> 退出</Button></Menu.Item>
+    //   <Menu.Item><Button onClick={onSet} type="link"> 设置</Button> </Menu.Item>    
+    // </Menu>;
     return (
-    <div>{commonModel.userInfo.userName + '(' + commonModel.userInfo.userAbbr + ')'}
+    <div>
+      <a onClick={onMail} className="header-notice-icon"><MailOutlined />{modifySelfState.mailCount}</a>
+      {/* <Dropdown overlay={settingMenu}> */}
+        {commonModel.userInfo.userName + '(' + commonModel.userInfo.userAbbr + ')'}
+      {/* </Dropdown> */}
       {
         commonUtils.isEmptyArr(commonModel.userShop) ?
           <div>
@@ -374,29 +384,42 @@ function IndexPage(props) {
             </a>
           </Dropdown>
       }
-      <a onClick={onMail}><MailOutlined />{modifySelfState.mailCount}</a>
-      <button onClick={onSet}> 设置</button>
+      {/* <button onClick={onSet}> 设置</button> */}
       </div>)}, [commonModel.userInfo, modifySelfState.mailCount]);
+
   return (
     <div>
       <ConfigProvider locale={zhCN}>
-      <Row>
+      <div className='xwr-index-page'>
         <IndexMenu {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} />
-        <a href="/">主页</a>
-        <a href="/xwrManage">管理主页</a>
-        <a href="/register"> register</a>
-        <a href="/login"> login</a>
-        <button onClick={onClear}> 清除缓存</button>
-        <button onClick={onExit}> 退出</button>
-        {shop}
-        <Modal width={800} visible={modifySelfState.invitationIsVisible} closable={false} maskClosable={true} footer={null}>
-          <ShopInvitation {...props} onInvitationClose={onInvitationClose} />
-        </Modal>
-      </Row>
-      <div><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} /></div>
+        <div className="xwr-index-page-body">
+          <div className='xwr-index-page-header'>
+            <Menu  mode="horizontal">
+              <Menu.Item>
+                  <a href="/" className="each-header-nav">主页</a>
+              </Menu.Item>
+              <Menu.Item>
+                <a href="/xwrManage" className="each-header-nav">管理主页</a>
+              </Menu.Item>
+              <Menu.Item>
+                <a href="/register" className="each-header-nav"> register</a>
+              </Menu.Item>
+              <Menu.Item>
+                <a href="/login" className="each-header-nav"> login</a>
+              </Menu.Item>
+            </Menu>
+            {/* <Button onClick={onClear}> 清除缓存</Button>
+            <Button onClick={onExit}> 退出</Button> */}
+            {shop}
+            <Modal width={800} visible={modifySelfState.invitationIsVisible} closable={false} maskClosable={true} footer={null}>
+              <ShopInvitation {...props} onInvitationClose={onInvitationClose} />
+            </Modal>
+          </div>
+          <div className='index-tab-box'><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} /></div>
+        </div>
+      </div>
       </ConfigProvider>
     </div>
   );
 }
-
 export default connect(commonUtils.mapStateToProps)(commonBase(IndexPage));

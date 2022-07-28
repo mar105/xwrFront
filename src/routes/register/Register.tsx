@@ -99,19 +99,19 @@ const  Register = (props) => {
   };
   const loginButton = {
     caption: '注册',
-    property: { htmlType: 'submit' },
+    property: { htmlType: 'submit', className: 'register-btn' },
   };
 
   return (
-      <Form {...layout} name="basic" form={form} onFinish={onFinish}>
+      <Form {...layout} name="basic" form={form} onFinish={onFinish} className="xwr-register-form">
         <InputComponent {...userName} />
         <InputComponent {...userPwd} />
         <InputComponent {...userPwdTwo} />
         <FormItem>
-          <Row>
-            <Col><InputComponent {...userMobile} /></Col>
-            <Col style={{width:300}}><Slider value={sliderValue} disabled={sliderDisabled} onChange={handleSliderChange} /></Col>
-            <Col><ButtonComponent {...sendCaptchaButton} /></Col>
+          <Row gutter={8} className='qr-code-row'>
+            <Col span={8}><InputComponent {...userMobile} /></Col>
+            <Col span={8}><Slider value={sliderValue} disabled={sliderDisabled} onChange={handleSliderChange} /></Col>
+            <Col span={8} className="qr-code-send-btn"><ButtonComponent {...sendCaptchaButton} /></Col>
           </Row>
         </FormItem>
         <InputComponent {...userCaptcha} />

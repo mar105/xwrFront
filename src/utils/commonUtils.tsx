@@ -182,7 +182,7 @@ export function setFieldsValue(value, container: any = null) {
 
 export function panesComponent(pane, routeData, callbackAddPane, callbackRemovePane, callbackModifyPane, modalState?) {
   const Component: any = dynamic({...routeData});
-  return {key: pane.key, component: <Component tabId={pane.key} modalState={modalState} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane}/>};
+  return {key: pane.key, component: <Component  tabId={pane.key} modalState={modalState} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane}/>};
 };
 
 

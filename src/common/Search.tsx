@@ -476,14 +476,14 @@ const Search = (props) => {
 
   const addConditionButton = {
     caption: addCondition,
-    property: { name: 'addConditionButton', htmlType: 'button' },
+    property: { name: 'addConditionButton', htmlType: 'button', className: 'add-condition-btn' },
     event: { onClick: onButtonClick.bind(this, 'addConditionButton') },
     componentType: componentType.Soruce,
   };
 
   const searchButton = {
     caption: search,
-    property: { name: 'searchButton', htmlType: 'button' },
+    property: { name: 'searchButton',type: 'primary', htmlType: 'button', className: 'search-btn' },
     event: { onClick: onButtonClick.bind(this, 'searchButton') },
     componentType: componentType.Soruce,
   };
@@ -500,17 +500,26 @@ const Search = (props) => {
 
   return (<div><Form >
     {commonUtils.isEmptyArr(searchRowKeys) ? '' :
-      <div>
-        {searchSchemeComponent}
-        <a onClick={onButtonClick.bind(this, 'addSchemeButton')}> <Tooltip placement="top" title={addScheme}><PlusOutlined /></Tooltip></a>
-        <a onClick={onButtonClick.bind(this, 'delSchemeButton')}> <Tooltip placement="top" title={delScheme}><MinusOutlined /></Tooltip></a>
-        <a onClick={onButtonClick.bind(this, 'modifySchemeButton')}> <Tooltip placement="top" title={modifyScheme}><EditOutlined /></Tooltip></a>
-        <a onClick={onButtonClick.bind(this, 'setDefaultButton')}> <Tooltip placement="top" title={setDefault}><StarTwoTone /></Tooltip></a>
+      <div className="xwr-common-search-form-row">
+        <div className="search-dom">
+          {searchSchemeComponent}
+          <div className="search-component">
 
-        {searchComponent}
-        <ButtonComponent {...addConditionButton} />
-        <ButtonComponent {...searchButton} />
-        <a onClick={onButtonClick.bind(this, 'clearButton')}> <Tooltip placement="top" title={clearScheme}><ClearOutlined /></Tooltip></a>
+          {searchComponent}
+          </div>
+         
+          <ButtonComponent {...addConditionButton} />
+          <ButtonComponent {...searchButton} />
+        </div>
+      
+
+        <div className="basic-actions">
+          <a onClick={onButtonClick.bind(this, 'addSchemeButton')}> <Tooltip placement="top" title={addScheme}><PlusOutlined /></Tooltip></a>
+          <a onClick={onButtonClick.bind(this, 'delSchemeButton')}> <Tooltip placement="top" title={delScheme}><MinusOutlined /></Tooltip></a>
+          <a onClick={onButtonClick.bind(this, 'modifySchemeButton')}> <Tooltip placement="top" title={modifyScheme}><EditOutlined /></Tooltip></a>
+          <a onClick={onButtonClick.bind(this, 'setDefaultButton')}> <Tooltip placement="top" title={setDefault}><StarTwoTone /></Tooltip></a>
+          <a onClick={onButtonClick.bind(this, 'clearButton')}> <Tooltip placement="top" title={clearScheme}><ClearOutlined /></Tooltip></a>
+        </div>
         <Modal width={800} visible={props.schemeIsVisible} footer={null} onCancel={onButtonClick.bind(this, 'cancelSchemeButton')} >
           <Form form={form} onFinish={onFinish}>
             <InputComponent {...searchSchemeName} />

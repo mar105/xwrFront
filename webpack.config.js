@@ -25,6 +25,9 @@ module.exports = {
       rewrites: getRewritesList(),
     }, // 当找不到路径的时候，默认加载index.html文件
   },
+  optimization: {
+    nodeEnv: false,
+  },
   resolve: {extensions: ['.js', '.jsx', '.css', '.json', '.less', '.ts', '.tsx']},
   module: {
     rules: [{

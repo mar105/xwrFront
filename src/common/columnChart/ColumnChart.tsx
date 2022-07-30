@@ -8,12 +8,12 @@
  */
 import { connect } from 'dva';
 import React, { useMemo} from 'react';
-import commonBase from "../../../common/commonBase";
-import * as commonUtils from "../../../utils/commonUtils";
+import commonBase from "../commonBase";
+import * as commonUtils from "../../utils/commonUtils";
 
-import {ColumnChart} from "../../../components/plots/ColumnChart";
+import {ColumnPlot} from "../../components/plots/ColumnPlot";
 
-const SaleChart = (props) => {
+const ColumnChart = (props) => {
   const { slaveContainer, slaveData } = props;
   if (commonUtils.isNotEmptyObj(slaveContainer) && commonUtils.isNotEmpty(slaveContainer.virtualCondition)) {
     const virtualCondition = JSON.parse(slaveContainer.virtualCondition);
@@ -40,7 +40,7 @@ const SaleChart = (props) => {
     const config = { data: slaveData, xField, yField, meta };
 
     const component = useMemo(()=>{ return (
-      <ColumnChart {...config} />)}, [slaveData]);
+      <ColumnPlot {...config} />)}, [slaveData]);
     return (
       <div>
         {component}
@@ -52,4 +52,4 @@ const SaleChart = (props) => {
 
 }
 
-export default connect(commonUtils.mapStateToProps)(commonBase(SaleChart));
+export default connect(commonUtils.mapStateToProps)(commonBase(ColumnChart));

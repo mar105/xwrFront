@@ -1,7 +1,7 @@
 import React from 'react';
 import { Column } from '@ant-design/charts';
 
-export function ColumnChart(params) {
+export function ColumnPlot(params) {
   const config = {
     label: {
       // 可手动配置 label 数据标签位置

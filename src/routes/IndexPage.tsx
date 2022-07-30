@@ -15,7 +15,7 @@ import {useMemo} from "react";
 import {useReducer} from "react";
 import ShopInvitation from "./shop/ShopInvitation";
 import zhCN from 'antd/lib/locale/zh_CN';
-import SaleChart from "../xwrSale/routes/saleChart/SaleChart";
+import ColumnChart from "../common/columnChart/ColumnChart";
 
 function IndexPage(props) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
@@ -455,10 +455,10 @@ function IndexPage(props) {
               <ShopInvitation {...props} onInvitationClose={onInvitationClose} />
             </Modal>
           </div>
-          { modifySelfState.saleChartCustomer ? <SaleChart modalState={modifySelfState.saleChartCustomer} /> : ''}
-          { modifySelfState.saleChartCustomerCategory ? <SaleChart modalState={modifySelfState.saleChartCustomerCategory} /> : ''}
-          { modifySelfState.saleChartProduct ? <SaleChart modalState={modifySelfState.saleChartProduct} /> : ''}
-          { modifySelfState.saleChartProductCategory ? <SaleChart modalState={modifySelfState.saleChartProductCategory} /> : ''}
+          { modifySelfState.saleChartCustomer ? <ColumnChart modalState={modifySelfState.saleChartCustomer} /> : ''}
+          { modifySelfState.saleChartCustomerCategory ? <ColumnChart modalState={modifySelfState.saleChartCustomerCategory} /> : ''}
+          { modifySelfState.saleChartProduct ? <ColumnChart modalState={modifySelfState.saleChartProduct} /> : ''}
+          { modifySelfState.saleChartProductCategory ? <ColumnChart modalState={modifySelfState.saleChartProductCategory} /> : ''}
           <div className='index-tab-box'><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} /></div>
         </div>
       </div>

@@ -7,7 +7,7 @@ import * as request from "../utils/request";
 import TabsPages from "../TabsPages";
 import commonBase from "../common/commonBase";
 import IndexMenu from "./IndexMenu";
-import {Dropdown, Menu, Button, Modal, ConfigProvider} from "antd";
+import {Dropdown, Menu, Modal, ConfigProvider} from "antd";
 import {useRef} from "react";
 import {replacePath, routeInfo} from "../routeInfo";
 import { DownOutlined, MailOutlined } from '@ant-design/icons';
@@ -15,6 +15,7 @@ import {useMemo} from "react";
 import {useReducer} from "react";
 import ShopInvitation from "./shop/ShopInvitation";
 import zhCN from 'antd/lib/locale/zh_CN';
+import SaleChart from "../xwrSale/routes/saleChart/SaleChart";
 
 function IndexPage(props) {
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
@@ -51,6 +52,45 @@ function IndexPage(props) {
       connectionWebsocket();
     }, 5000);
     fetchData();
+
+    const fetchSaleChartData = async () => {
+      //销售图表
+      const addState: any = {};
+      //销售分析-按客户
+      let activeId = '749268629060583424';
+      let url: string = application.urlPrefix + '/personal/getRouteContainer?id=' + activeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
+      let interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        addState.saleChartCustomer = { routeId: activeId, ...interfaceReturn.data, dataId: undefined };
+      }
+
+      //销售分析-按客户分类
+      activeId = '750714962715869184';
+      url = application.urlPrefix + '/personal/getRouteContainer?id=' + activeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
+      interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        addState.saleChartCustomerCategory = { routeId: activeId, ...interfaceReturn.data, dataId: undefined };
+      }
+
+      //销售分析-按产品
+      activeId = '750714895816720384';
+      url = application.urlPrefix + '/personal/getRouteContainer?id=' + activeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
+      interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        addState.saleChartProduct = { routeId: activeId, ...interfaceReturn.data, dataId: undefined };
+      }
+
+      //销售分析-按产品分类
+      activeId = '750717473564655616';
+      url = application.urlPrefix + '/personal/getRouteContainer?id=' + activeId + '&groupId=' + commonModel.userInfo.groupId + '&shopId=' + commonModel.userInfo.shopId + '&downloadPrefix=' + application.urlUpload + '/downloadFile';
+      interfaceReturn = (await request.getRequest(url, commonModel.token)).data;
+      if (interfaceReturn.code === 1) {
+        addState.saleChartProductCategory = { routeId: activeId, ...interfaceReturn.data, dataId: undefined };
+      }
+
+      dispatchModifySelfState(addState);
+    }
+    fetchSaleChartData();
 
     dispatchModifySelfState({intervalWebsocket});
     syncRefreshDataResult({ body: JSON.stringify({type: 'formulaParam'})});
@@ -415,6 +455,10 @@ function IndexPage(props) {
               <ShopInvitation {...props} onInvitationClose={onInvitationClose} />
             </Modal>
           </div>
+          { modifySelfState.saleChartCustomer ? <SaleChart modalState={modifySelfState.saleChartCustomer} /> : ''}
+          { modifySelfState.saleChartCustomerCategory ? <SaleChart modalState={modifySelfState.saleChartCustomerCategory} /> : ''}
+          { modifySelfState.saleChartProduct ? <SaleChart modalState={modifySelfState.saleChartProduct} /> : ''}
+          { modifySelfState.saleChartProductCategory ? <SaleChart modalState={modifySelfState.saleChartProductCategory} /> : ''}
           <div className='index-tab-box'><TabsPages {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} /></div>
         </div>
       </div>

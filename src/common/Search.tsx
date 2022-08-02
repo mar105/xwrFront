@@ -165,7 +165,7 @@ const Search = (props) => {
     }
     else if (key === 'clearButton') {
       searchRowKeys = [];
-      searchData = [];
+      searchData = {};
       if (commonUtils.isNotEmptyArr(searchConfig)) {
         if (commonUtils.isEmptyArr(searchRowKeys)) {
           const key = commonUtils.newId();

@@ -140,7 +140,8 @@ export function ButtonGroup(params) {
       const button = {
         caption: buttonConfig.viewName,
         isDropDown,
-        property: { name: buttonConfig.key, htmlType: buttonConfig.htmlType, disabled: buttonConfig.disabled, overlay: menusData },
+        className:'xwr-button-group-item',
+        property: { name: buttonConfig.key, htmlType: buttonConfig.htmlType, disabled: buttonConfig.disabled, overlay: menusData, className:'xwr-button-group-item', type: buttonConfig.key === 'delButton' || buttonConfig.key === 'invalidButton'? 'danger': buttonConfig.key === 'editButton' ? 'warning':'primary'},
         event: { onClick: commonUtils.isEmpty(params.onClick) || buttonConfig.key === 'delButton' || buttonConfig.key === 'invalidButton' ? undefined :
             params.onClick.bind(this, buttonConfig.key, buttonConfig) },
         componentType: componentType.Soruce,
@@ -199,11 +200,12 @@ export function ButtonGroup(params) {
   buttons.filter(item => item.isVisible).map(item => {
     const button = {
       caption: item.viewName,
-      property: { name: item.fieldName, htmlType: 'button', disabled: item.disabled },
+      className:'xwr-button-group-item',
+      property: { name: item.fieldName, htmlType: 'button', disabled: item.disabled, className:'xwr-button-group-item'},
       event: { onClick: commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, item.fieldName, item) },
       componentType: componentType.Soruce,
     };
-    buttonSort.push({ sortNum: item.sortNum, component: <Col><ButtonComponent {...button} /></Col> } );
+    buttonSort.push({ sortNum: item.sortNum, component: <Col  ><ButtonComponent {...button} /></Col> } );
     // return <Col><ButtonComponent {...button} /></Col>;
   });
   buttonSort.sort((row1, row2) => row1.sortNum > row2.sortNum);
@@ -214,5 +216,5 @@ export function ButtonGroup(params) {
 
 
 
-  return <Row style={{ height: 'auto', overflow: 'auto' }}>{buttonGroup}</Row>;
+  return <Row style={{ height: 'auto', overflow: 'auto' }} className='xwr-button-group'>{buttonGroup}</Row>;
 }

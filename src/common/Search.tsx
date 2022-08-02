@@ -485,7 +485,7 @@ const Search = (props) => {
 
   const schemePostButton = {
     caption: post,
-    property: { name: 'schemePostButton', htmlType: 'submit' },
+    property: { name: 'schemePostButton', htmlType: 'submit', type: 'primary' },
     componentType: componentType.Soruce,
   };
   const searchSchemeName = {
@@ -496,29 +496,31 @@ const Search = (props) => {
   return (<div><Form >
     {commonUtils.isEmptyArr(searchRowKeys) ? '' :
       <div className="xwr-common-search-form-row">
-        <div className="search-dom">
-          {searchSchemeComponent}
-          <div className="search-component">
-
-          {searchComponent}
-          </div>
-         
-          <ButtonComponent {...addConditionButton} />
-          <ButtonComponent {...searchButton} />
-        </div>
-      
-
-        <div className="basic-actions">
+         <div className="basic-actions">
           <a onClick={onButtonClick.bind(this, 'addSchemeButton')}> <Tooltip placement="top" title={addScheme}><PlusOutlined /></Tooltip></a>
           <a onClick={onButtonClick.bind(this, 'delSchemeButton')}> <Tooltip placement="top" title={delScheme}><MinusOutlined /></Tooltip></a>
           <a onClick={onButtonClick.bind(this, 'modifySchemeButton')}> <Tooltip placement="top" title={modifyScheme}><EditOutlined /></Tooltip></a>
           <a onClick={onButtonClick.bind(this, 'setDefaultButton')}> <Tooltip placement="top" title={setDefault}><StarTwoTone /></Tooltip></a>
           <a onClick={onButtonClick.bind(this, 'clearButton')}> <Tooltip placement="top" title={clearScheme}><ClearOutlined /></Tooltip></a>
         </div>
-        <Modal width={800} visible={props.schemeIsVisible} footer={null} onCancel={onButtonClick.bind(this, 'cancelSchemeButton')} >
+        <div className="search-dom">
+          {searchSchemeComponent}
+          <div className="search-component">
+          {searchComponent}
+          </div>
+         
+          <ButtonComponent {...addConditionButton} />
+          <ButtonComponent {...searchButton} />
+        </div>
+       
+        <Modal width={800} visible={props.schemeIsVisible} footer={null} onCancel={onButtonClick.bind(this, 'cancelSchemeButton')} className="xwr-modal-box">
           <Form form={form} onFinish={onFinish}>
             <InputComponent {...searchSchemeName} />
+
+            <div className="footer-actions">
             <ButtonComponent {...schemePostButton} />
+
+            </div>
           </Form>
         </Modal>
       </div>

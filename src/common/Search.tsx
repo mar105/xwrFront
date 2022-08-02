@@ -429,7 +429,7 @@ const Search = (props) => {
         if (thirdConfig.dropType === 'sql' || thirdConfig.dropType === 'const') {
           thirdComponent = <SelectComponent {...thirdParams}  />;
         } else {
-          thirdComponent = <div style={{width: 200}}><InputComponent {...thirdParams}  /> </div>;
+          thirdComponent = <div style={{width: 200}} className="input-search-dom"><InputComponent {...thirdParams}  /> </div>;
         }
       } else if (thirdConfig.fieldType === 'decimal' || thirdConfig.fieldType === 'smallint' || thirdConfig.fieldType === 'int') {
         thirdComponent = <NumberComponent {...thirdParams}  />;
@@ -439,7 +439,7 @@ const Search = (props) => {
         thirdComponent = <DatePickerComponent {...thirdParams} />;
       }
 
-      return <div>{firstComponent} {secondComponent} {thirdComponent}
+      return <div className="search-component-group">{firstComponent} {secondComponent} {thirdComponent}
         {searchRowKeys.length === 1 ? '' : <a onClick={onRemoveSearch.bind(this, key)}><DeleteOutlined /></a>}
       </div>;
     }

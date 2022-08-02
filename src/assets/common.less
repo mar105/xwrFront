@@ -43,26 +43,72 @@
 .xwr-index-page {
   width: 100%;
   display: flex;
-  flex-direction: row;
-  .xwr-index-page-body{
+  flex-direction: column;
+  .xwr-index-page-header {
+    background-color: rgba(29,165,122, 0.8);
+    width: 100%;
+    height: 50px;
     display: flex;
-    flex-direction: column;
-    width: calc(100vw - 256px);
-    .xwr-index-page-header {
-      width: 100%;
-      height: 80px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .each-header-nav {
+      margin-left:10px;
+      color: #fff;
+    }
+    .header-notice-icon {
+      margin: 0px 10px;
+    }
+    .header-nav-menu {
+      background-color: transparent;
+      border-bottom: 0px;
+      margin-right: 256px;
+    }
+    .header-right-corner {
+      color: #fff;
       display: flex;
       flex-direction: row;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
-      padding: 0px 24px;
-      .each-header-nav {
-        margin-left:10px;
+      margin-right: 12px;
+      cursor: pointer;
+      .corner-mail {
+        margin-right: 20px;
       }
-      .header-notice-icon {
-        margin: 0px 10px;
+      .ant-dropdown-link {
+        color: #fff;
+        margin-left: 6px;
       }
     }
+  }
+  .xwr-index-page-body{
+    display: flex;
+    flex-direction: row;
+    .xwr-index-page-conetent {
+      width: calc(100vw - 256px);
+
+    }
+  }
+}
+
+//侧边栏
+.xwr-index-page-siderbar {
+  position: relative;
+  box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
+  .sider-bar-collapse-btn {
+    position: absolute;
+    bottom:0px;
+    right: 0px;
+    left:0px;
+    margin-bottom: 0px!important;
+    background-color: #fff;
+    color: #474747;
+    border: 0px;
+    border-top: 1px solid rgba(0,0,0,.06);
+  }
+  .ant-menu {
+    border-right: 0px!important;
+    
   }
 }
 
@@ -74,11 +120,12 @@
   align-items: center;
   padding: 0px 12px;
   .search-dom {
-    width: 70;
+    width: calc(100% - 100px);
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+
     .add-condition-btn {
       margin: 0px 4px;
     }
@@ -86,7 +133,39 @@
       margin:0px 4px;
     }
     .search-component {
+      width: 100%;
       margin: 0px 10px;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      .search-component-group {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        .input-search-dom{
+          border: 1px solid #ccc;
+        }
+      }
     }
   }
+}
+.xwr-table {
+}
+.index-tab-box {
+  height: calc(100vh - 60px);
+  padding: 12px;
+
+  .ant-tabs-nav {
+    margin:0px 12px;
+  }
+
+}
+.table-header-search-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
 }

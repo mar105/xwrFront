@@ -537,11 +537,13 @@ export function TableComponent(params: any) {
     };
   }
 
-  return <div style={{width: params.width ? params.width: 1000}}>
+  return <div style={{width: params.width ? params.width: 1000}}  className='xwr-table'>
     <ReactDragListView.DragColumn {...DragTitleColumn}>
-      <Table
+   
+    </ReactDragListView.DragColumn>
+    <Table
+       
         {...tableParams}
       />
-    </ReactDragListView.DragColumn>
   </div>;
 }

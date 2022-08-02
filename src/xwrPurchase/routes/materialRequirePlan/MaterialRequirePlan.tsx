@@ -138,7 +138,7 @@ const CommonList = (props) => {
   const tableParam: any = commonUtils.getTableProps('slave', { ...props, onRowSelectChange });
   tableParam.enabled = false;
   tableParam.eventOnRow = { ...tableParam.eventOnRow, onRowDoubleClick: props.onRowDoubleClick };
-  tableParam.width = 1500;
+  tableParam.width = '100%';
   tableParam.lastTitle = <div> {configSetting} </div>;
   tableParam.lastColumn = { title: 'o',
     render: (text,record, index)=> {

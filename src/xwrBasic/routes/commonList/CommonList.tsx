@@ -1,3 +1,11 @@
+/*
+ * @Author: xulinyu xlyhacker@gmail.com
+ * @Date: 2022-07-25 21:50:19
+ * @LastEditors: xulinyu xlyhacker@gmail.com
+ * @LastEditTime: 2022-08-02 21:06:50
+ * @FilePath: \xwrFront\src\xwrBasic\routes\commonList\CommonList.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import {connect} from "react-redux";
 import * as commonUtils from "../../../utils/commonUtils";
 import commonBase from "../../../common/commonBase";
@@ -29,7 +37,7 @@ const CommonList = (props) => {
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.enabled = false;
   tableParam.eventOnRow = { ...tableParam.eventOnRow, onRowDoubleClick: props.onRowDoubleClick };
-  tableParam.width = 1500;
+  tableParam.width = '100%';
   tableParam.lastTitle = <div> {configSetting} </div>;
   tableParam.lastColumn = { title: 'o',
     render: (text,record, index)=> {
@@ -46,10 +54,13 @@ const CommonList = (props) => {
     <div>
       {props.slaveContainer ?
         <div>
-          {search}
+          <div className="table-header-search-row">
+            {search}
+             <ButtonGroup {...buttonGroup} />
+          </div>
           <TableComponent {...tableParam} />
         </div>: ''}
-      <ButtonGroup {...buttonGroup} />
+     
       <Modal width={1500} maskClosable={false}  visible={importIsVisible} onCancel={props.onImportModalCancel.bind(this, 'import')} onOk={props.onImportModalOk.bind(this, 'import')}>
         <ImportList {...props } />
       </Modal>

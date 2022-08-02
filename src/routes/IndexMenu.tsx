@@ -1,3 +1,11 @@
+/*
+ * @Author: xulinyu xlyhacker@gmail.com
+ * @Date: 2022-07-25 21:50:19
+ * @LastEditors: xulinyu xlyhacker@gmail.com
+ * @LastEditTime: 2022-08-02 20:26:32
+ * @FilePath: \xwrFront\src\routes\IndexMenu.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import {useEffect, useReducer} from "react";
 import * as application from "../application";
 import * as request from "../utils/request";
@@ -57,13 +65,14 @@ const IndexMenu = (props) => {
     dispatchModifySelfState({ collapsed: !modifySelfState.collapsed });
   }
   return (
-    <div style={{ width: 256 }}>
-      <Button type="primary" onClick={onToggleCollapsed} style={{ marginBottom: 16 }}>
+    <div style={{ width: modifySelfState.collapsed ? 50 :256 }} className="xwr-index-page-siderbar">
+    
+      {/* {!modifySelfState.collapsed ? '' : */}
+        <Menu onClick={onClick} mode="vertical" subMenuCloseDelay={0.6} items={modifySelfState.menusData} />
+      {/* } */}
+      <Button type="primary" onClick={onToggleCollapsed} style={{ marginBottom: 16 }} className="sider-bar-collapse-btn">
         {modifySelfState.collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
       </Button>
-      {!modifySelfState.collapsed ? '' :
-        <Menu onClick={onClick} mode="vertical" subMenuCloseDelay={0.6} items={modifySelfState.menusData} />
-      }
     </div>
   );
 }

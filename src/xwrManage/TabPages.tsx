@@ -143,7 +143,7 @@ const TabsPages = (props) => {
   const panes = props.commonModel.panes;
   return (
     <DndProvider backend={HTML5Backend}>
-      <Tabs hideAdd type="editable-card" animated renderTabBar={renderTabBar} activeKey={props.commonModel.activePane.key} onEdit={onEdit} onChange={onChange}>
+      <Tabs className='manage-homepage-tab' hideAdd type="editable-card" animated renderTabBar={renderTabBar} activeKey={props.commonModel.activePane.key} onEdit={onEdit} onChange={onChange}>
         { panes.map(pane => tabPane(pane)) }
       </Tabs>
     </DndProvider>

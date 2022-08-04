@@ -3,3 +3,42 @@ html, body, :global(#root) {
   height: 100%;
 }
 
+.xwr-manage-homepage {
+  .top-row {
+    height: 50px;
+    padding: 0px 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .right-box {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      align-items: center;
+      .corner-action-dropdown {
+        margin-left: 20px;
+      }
+      .user-avatar {
+        margin-right: 12px;
+      }
+    }
+  }
+  .xwr-manage-homepage-tab-box {
+    padding: 24px;
+    height: calc(100vh - 50px);
+    overflow: hidden;
+    background-color: #f0f2f5;
+    .ant-tabs-nav {
+      margin-bottom: 0px;
+    }
+    .ant-tabs {
+      height: 100%;
+      .ant-tabs-content-holder {
+        height: 100%;
+        background-color: #fff;
+        padding: 24px;
+      }
+    }
+  }
+}

@@ -115,14 +115,22 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 0px 12px;
+  width: 100%;
+  .basic-actions {
+    padding-top: 10px;
+  }
   .search-dom {
     width: calc(100% - 100px);
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
+  flex-wrap: wrap;
+  .ant-segmented {
+    margin-bottom: 10px;
+  }
 
     .add-condition-btn {
       margin: 0px 4px;
@@ -130,20 +138,26 @@
     .search-btn {
       margin:0px 4px;
     }
+    .ant-btn {
+      margin-bottom: 10px;
+    }
     .search-component {
-      width: 100%;
       margin: 0px 10px;
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
       align-items: center;
+      width: calc(100% - 220px);
+      flex-wrap: wrap;
       .search-component-group {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
         align-items: center;
+        margin-bottom: 10px;
         .input-search-dom{
           border: 1px solid #ccc;
+          margin-right: 4px;
         }
       }
     }
@@ -163,14 +177,22 @@
 .table-header-search-row {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: flex-start;
-  margin-bottom: 18px;
   flex-wrap: wrap;
+  width: 100%;
   .left-dom {
-    width: calc(100% - 600px);
-    min-width: 800px;
+    width: 100%;
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+  flex-wrap: wrap;
+  .ant-form  {
+    width: 100%;
+  }
+
   }
 }
 
@@ -189,7 +211,7 @@
 
 // button 
 .xwr-button-group-item {
-  margin: 0px 4px;
+  margin:12px 0px;
 }
 
 // form 
@@ -230,4 +252,14 @@
 .ant-tabs-content-holder {
   height: calc(100vh - 120px);
   overflow: auto;
+}
+
+.xwr-manage-hoempage {
+  .top-row {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }

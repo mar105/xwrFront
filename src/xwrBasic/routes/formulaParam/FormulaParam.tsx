@@ -140,6 +140,7 @@ const FormulaParam = (props) => {
   const tableParam: any = commonUtils.getTableProps('slave', props);
   tableParam.isLastColumn = false;
   tableParam.enabled = false;
+  tableParam.width = '100%';
 
   const categoryParam: any = commonUtils.getTableProps('category', props);
   categoryParam.isLastColumn = false;

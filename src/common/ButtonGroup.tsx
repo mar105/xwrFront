@@ -151,7 +151,7 @@ export function ButtonGroup(params) {
       if (buttonConfig.key === 'delButton' || buttonConfig.key === 'invalidButton') {
         buttonSort.push({ sortNum: buttonConfig.sortNum, component:
             <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>} onConfirm={params.onClick.bind(this, buttonConfig.key, buttonConfig)}>
-              <Col><ButtonComponent {...button} /></Col>
+              <Col style={{padding:'0px 4px'}}><ButtonComponent {...button} /></Col>
             </Popconfirm> } );
         // return <Popconfirm title="Are you sure？" icon={<QuestionCircleOutlined style={{color: 'red'}}/>} onConfirm={params.onClick.bind(this, buttonItem.key, buttonConfig)}>
         //   <Col><ButtonComponent {...button} /></Col>
@@ -186,10 +186,10 @@ export function ButtonGroup(params) {
             }
           },
         };
-        buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col><UploadFile {...uploadParam} /></Col> } );
+        buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col style={{padding:'0px 4px'}}><UploadFile {...uploadParam} /></Col> } );
         // return <Col><UploadFile {...uploadParam}></UploadFile></Col>;
       } else {
-        buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col><ButtonComponent {...button} /></Col> } );
+        buttonSort.push({ sortNum: buttonConfig.sortNum, component: <Col style={{padding:'0px 4px'}}><ButtonComponent {...button} /></Col> } );
         // return <Col><ButtonComponent {...button} /></Col>;
       }
     }
@@ -205,7 +205,7 @@ export function ButtonGroup(params) {
       event: { onClick: commonUtils.isEmpty(params.onClick) ? undefined : params.onClick.bind(this, item.fieldName, item) },
       componentType: componentType.Soruce,
     };
-    buttonSort.push({ sortNum: item.sortNum, component: <Col  ><ButtonComponent {...button} /></Col> } );
+    buttonSort.push({ sortNum: item.sortNum, component: <Col  style={{padding:'0px 4px'}}><ButtonComponent {...button} /></Col> } );
     // return <Col><ButtonComponent {...button} /></Col>;
   });
   buttonSort.sort((row1, row2) => row1.sortNum > row2.sortNum);

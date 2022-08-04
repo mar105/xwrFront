@@ -507,10 +507,11 @@ const Search = (props) => {
           {searchSchemeComponent}
           <div className="search-component">
           {searchComponent}
-          </div>
-         
+          
           <ButtonComponent {...addConditionButton} />
           <ButtonComponent {...searchButton} />
+          </div>
+          
         </div>
        
         <Modal width={800} visible={props.schemeIsVisible} footer={null} onCancel={onButtonClick.bind(this, 'cancelSchemeButton')} className="xwr-modal-box">

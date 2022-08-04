@@ -493,6 +493,7 @@ export function TableComponent(params: any) {
   }
 
   const tableParams = {
+    width:'100%',
     bordered: true,
     rowKey,
     // 滚动的高度, 可以是受控属性。 (number | string) be controlled.

@@ -493,7 +493,7 @@ const Search = (props) => {
     property: { placeholder:  pleaseInputScheme},
   };
 
-  return (<div><Form >
+  return (<div className="left-dom"><Form >
     {commonUtils.isEmptyArr(searchRowKeys) ? '' :
       <div className="xwr-common-search-form-row">
          <div className="basic-actions">

@@ -16,10 +16,10 @@ const Formula = (props) => {
   const formulaParamRef: any = useRef();
   const [form] = Form.useForm();
   props.onSetForm(form);
-  const layout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 16 },
-  };
+  // const layout = {
+  //   labelCol: { span: 8 },
+  //   wrapperCol: { span: 16 },
+  // };
 
   useEffect(() => {
     formulaParamRef.current = props.formulaParam;
@@ -298,35 +298,36 @@ const Formula = (props) => {
     const buttonGroupNew = buttonGroup.map(item => {
       const button = {
         caption: item.caption,
-        property: { name: item.key, htmlType: item.htmlType, disabled: item.disabled },
+        property: { name: item.key, htmlType: item.htmlType, disabled: item.disabled, type: 'default' },
         event: { onClick: commonUtils.isEmpty(item.onClick) ? undefined : item.onClick.bind(this, item.key) },
         componentType: componentType.Soruce,
       };
-      return <Col span={6}><ButtonComponent {...button} /></Col>;
+      return <Col span={6} className="xwr-cal-btn-item"><ButtonComponent {...button} /></Col>;
     });
 
     return buttonGroupNew}, [masterContainer, masterData, enabled]);
   return (
-    <Form {...layout} name="basic" form={form} onFinish={onFinish}>
-      <Row style={{height: 'auto', overflow: 'auto' }}>
-        <Col>
+    <Form  name="basic" form={form} onFinish={onFinish} className="xwr-form-container">
+      <Row gutter={[16, 16]} justify="start" style={{width:'100%'}}>
           {component}
-        </Col>
       </Row>
-      <Row>
-        <Col>
-          <InputComponent {...inputParams}  />;
+      <Row style={{width: '100%' }} >
+        <Col  span={24}>
+          <InputComponent labeCol={2} {...inputParams}  />;
+          
         </Col>
-
-        <Col>
+        <Col span={8}>
           {tree}
         </Col>
-
-        <Col>
-          {paramButton}
+        <Col span={8}>
+          <Row>
+            {paramButton}
+          </Row>
         </Col>
       </Row>
-      <ButtonGroup {...buttonGroup} />
+      <div className='btn-box'>
+        <ButtonGroup {...buttonGroup} />
+      </div>
     </Form>
   );
 }

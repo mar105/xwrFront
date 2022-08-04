@@ -1,6 +1,6 @@
 import * as React from "react";
 import { connect } from "dva";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import * as commonUtils from "../utils/commonUtils";
 import * as application from "../application";
 import * as request from "../utils/request";
@@ -26,9 +26,12 @@ function IndexPage(props) {
     {}
   );
 
+
   const stompClientRef: any = useRef();
   const panesRef: any = useRef();
   const panesComponentsRef: any = useRef();
+  const [collapsedStatus, setCollapsedStatus] = useState(false)
+
   useEffect(() => {
     stompClientRef.current = props.commonModel.stompClient;
   }, [props.commonModel.stompClient]);
@@ -40,7 +43,11 @@ function IndexPage(props) {
   useEffect(() => {
     panesComponentsRef.current = props.panesComponents;
   }, [props.panesComponents]);
-
+  useEffect(() => {
+    let statusKey = sessionStorage.getItem('collapsed') == 'true' ? true : false
+    console.log('statusKey========', statusKey)
+    setCollapsedStatus(statusKey)
+  }, [sessionStorage.getItem('collapsed')]);
   const fetchData = async () => {
     const { commonModel } = props;
     const params = {
@@ -626,8 +633,8 @@ function IndexPage(props) {
   }, [commonModel.userInfo, modifySelfState.mailCount]);
 
   useEffect(() => {
-    console.log('commonModel.userInfo-----', commonModel.userInfo)
-  }, [commonModel.userInfo])
+    console.log('modifySelfState<<<<<<<<<<<<<<<<<<', modifySelfState)
+  }, [modifySelfState])
 
   return (
     <div>
@@ -657,8 +664,6 @@ function IndexPage(props) {
               </Menu.Item> */}
             </Menu>
             {shop}
-            {/* <Button onClick={onClear}> 清除缓存</Button>
-            <Button onClick={onExit}> 退出</Button> */}
           </div>
           <div className="xwr-index-page-body">
             <IndexMenu
@@ -667,7 +672,7 @@ function IndexPage(props) {
               callbackRemovePane={callbackRemovePane}
               callbackModifyPane={callbackModifyPane}
             />
-            <div className="xwr-index-page-conetent">
+            <div className="xwr-index-page-conetent" style={{width: collapsedStatus ?  "calc(100% - 50px)":"calc(100% - 256px)" }}>
               <Modal
                 width={800}
                 visible={modifySelfState.invitationIsVisible}

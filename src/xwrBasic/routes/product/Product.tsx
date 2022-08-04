@@ -139,6 +139,7 @@ const Product = (props) => {
     isModal: props.isModal, buttonGroup: props.getButtonGroup() };
   const customerParam: any = commonUtils.getTableProps('customer', props);
   customerParam.pagination = false;
+  customerParam.width = '100%';
   customerParam.lastColumn = { title: 'o', changeValue: commonUtils.isEmptyObj(masterData) ? '' : masterData.defaultCustomerId,
     render: (text,record, index)=> {
     return <div>
@@ -150,11 +151,12 @@ const Product = (props) => {
   const inventoryParam: any = commonUtils.getTableProps('inventory', props);
   inventoryParam.pagination = false;
   inventoryParam.isDragRow = true;
+  inventoryParam.width = '100%';
 
   const inventorySumParam: any = commonUtils.getTableProps('inventorySum', props);
   inventorySumParam.pagination = false;
   inventorySumParam.isDragRow = true;
-
+  inventorySumParam.width = '100%';
   const uploadParam: any = commonUtils.getUploadProps('upload', props);
 
   const component = useMemo(()=>{ return (
@@ -173,17 +175,17 @@ const Product = (props) => {
         </Col>
       </Row>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
-        <Col>
+        <Col span={24}>
           {commonUtils.isNotEmptyObj(props.customerContainer) ? <TableComponent {...customerParam} /> : '' }
         </Col>
       </Row>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
-        <Col>
+        <Col  span={24}>
           {commonUtils.isNotEmptyObj(props.inventoryContainer) ? <TableComponent {...inventoryParam} /> : '' }
         </Col>
       </Row>
       <Row style={{ height: 'auto', overflow: 'auto' }}>
-        <Col>
+        <Col  span={24}>
           {commonUtils.isNotEmptyObj(props.inventorySumContainer) ? <TableComponent {...inventorySumParam} /> : '' }
         </Col>
       </Row>

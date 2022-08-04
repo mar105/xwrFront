@@ -61,6 +61,7 @@ export function InputComponent(params) {
       return <Input.TextArea {...params.property} {...params.event} />;
     } else {
       return <Form.Item
+        labelCol={params.labelCol}
         label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}
         name={params.config.fieldName}
         rules={rules}
@@ -76,6 +77,7 @@ export function InputComponent(params) {
       return <Input bordered={false} {...params.property} { ...event } />;
     } else {
       return <Form.Item
+      labelCol={params.labelCol}
         label={commonUtils.isEmpty(params.property.placeholder) ? params.config.viewName : ''}
         name={params.config.fieldName}
         rules={rules}

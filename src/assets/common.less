@@ -44,6 +44,8 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
   .xwr-index-page-header {
     background-color: rgba(29,165,122, 0.8);
     width: 100%;
@@ -84,10 +86,6 @@
   .xwr-index-page-body{
     display: flex;
     flex-direction: row;
-    .xwr-index-page-conetent {
-      width: calc(100vw - 256px);
-
-    }
   }
 }
 
@@ -168,6 +166,12 @@
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 18px;
+  flex-wrap: wrap;
+  .left-dom {
+    width: calc(100% - 600px);
+    min-width: 800px;
+    margin-bottom: 10px;
+  }
 }
 
 // modal
@@ -186,4 +190,44 @@
 // button 
 .xwr-button-group-item {
   margin: 0px 4px;
+}
+
+// form 
+.xwr-form-container {
+  padding: 24px;
+  .btn-box {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+   }
+ 
+} 
+.xwr-cal-btn-item {
+  .ant-btn {
+    width: 100%;
+  }
+}
+.ant-form-item {
+  margin-bottom: 0px!important;
+  .ant-form-item-control {
+    .ant-form-item-control-input {
+      .ant-form-item-control-input-content {
+        .ant-input-number{
+          width: 100%;
+        }
+        .ant-picker {
+          width: 100%;
+        }
+
+      }
+  
+    }
+  }
+}
+.ant-row {
+  margin-bottom: 10px;
+}
+.ant-tabs-content-holder {
+  height: calc(100vh - 120px);
+  overflow: auto;
 }

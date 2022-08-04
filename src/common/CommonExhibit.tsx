@@ -1,3 +1,11 @@
+/*
+ * @Author: xulinyu xlyhacker@gmail.com
+ * @Date: 2022-07-25 21:50:19
+ * @LastEditors: xulinyu xlyhacker@gmail.com
+ * @LastEditTime: 2022-08-04 06:54:56
+ * @FilePath: \xwrFront\src\common\CommonExhibit.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import {Col, Row} from "antd";
 import React from "react";
 import * as commonUtils from "../utils/commonUtils";
@@ -10,6 +18,7 @@ import ProvinceCityArea from "./ProvinceCityArea";
 import {TreeSelectComponent} from "../components/TreeSelectComponent";
 
 export const CommonExhibit = (props) => {
+  const colSpan = { xs: 12, sm: 12, md: 8, lg: 6 }
   const { [props.name + 'Data']: masterDataOld, masterContainer, enabled: enabledOld } = props;
   const masterData = commonUtils.isEmptyObj(masterDataOld) ? {} : masterDataOld;
   const masterComponent = commonUtils.isEmptyObj(masterContainer) ? '' :
@@ -87,11 +96,11 @@ export const CommonExhibit = (props) => {
       }
       //只能在最外围使用钩子函数，里面再用的话，不能减少组件与增加组件显示不显示。否则报 Rendered fewer hooks than expected
       // component = useMemo(()=>{ return (component)}, [masterData[item.fieldName], enabled, item.viewName]);
-      return <Col span={8}>{component}</Col>;
+      return <Col {...colSpan}>{component}</Col>;
     });
 
   return (
-    <Row style={{ height: 'auto', overflow: 'auto' }}>
+    <Row style={{ height: 'auto', overflow: 'auto', width: '100%'}} gutter={[12, 12]} className="xwr-form-container-row">
       {masterComponent}
     </Row>
   );

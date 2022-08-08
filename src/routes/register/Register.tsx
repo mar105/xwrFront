@@ -14,8 +14,8 @@ const FormItem = Form.Item;
 const  Register = (props) => {
   const [form] = Form.useForm();
   const layout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 16 },
+    labelCol: { span: 0 },
+    wrapperCol: { span: 24 },
   };
 
   const onFinish = async (values: any) => {
@@ -86,7 +86,7 @@ const  Register = (props) => {
   const userMobile = {
     name: 'master',
     config: { fieldName: 'userMobile', isRequired: true, pattern: /^(((13[0-9])|(14[5-7])|(15[0-9])|(17[0-9])|(18[0-9])|(19[0-9]))+\d{8})$/, message: '请输入正确的手机号' },
-    property: { placeholder: '请输入你的手机号码' },
+    property: { placeholder: '请输入你的手机号码', },
   };
   const sendCaptchaButton = {
     componentType: 'Soruce',
@@ -99,23 +99,27 @@ const  Register = (props) => {
   };
   const loginButton = {
     caption: '注册',
-    property: { htmlType: 'submit', className: 'register-btn' },
+    property: { htmlType: 'submit', className: 'register-btn', type:'primary' },
   };
 
   return (
       <Form {...layout} name="basic" form={form} onFinish={onFinish} className="xwr-register-form">
-        <InputComponent {...userName} />
-        <InputComponent {...userPwd} />
-        <InputComponent {...userPwdTwo} />
-        <FormItem>
-          <Row gutter={8} className='qr-code-row'>
-            <Col span={8}><InputComponent {...userMobile} /></Col>
-            <Col span={8}><Slider value={sliderValue} disabled={sliderDisabled} onChange={handleSliderChange} /></Col>
-            <Col span={8} className="qr-code-send-btn"><ButtonComponent {...sendCaptchaButton} /></Col>
-          </Row>
-        </FormItem>
-        <InputComponent {...userCaptcha} />
-        <ButtonComponent {...loginButton} />
+        <div className="register-form-body">
+        <h1 className="login-form-title">注 册</h1>
+          <InputComponent {...userName} />
+          <InputComponent {...userPwd} />
+          <InputComponent {...userPwdTwo} />
+          <FormItem  className='phone-input-row'>
+            <Row gutter={8} className='qr-code-row'>
+              <Col span={12}><InputComponent {...userMobile} /></Col>
+              <Col span={8}><Slider value={sliderValue} disabled={sliderDisabled} onChange={handleSliderChange} /></Col>
+              <Col span={4} className="qr-code-send-btn"><ButtonComponent {...sendCaptchaButton} /></Col>
+            </Row>
+          </FormItem>
+          <InputComponent {...userCaptcha} />
+          <ButtonComponent {...loginButton} />
+        </div>
+      
       </Form>
   );
 }

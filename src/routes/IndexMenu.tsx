@@ -2,19 +2,21 @@
  * @Author: xulinyu xlyhacker@gmail.com
  * @Date: 2022-07-25 21:50:19
  * @LastEditors: xulinyu xlyhacker@gmail.com
- * @LastEditTime: 2022-08-04 08:24:07
+ * @LastEditTime: 2022-08-08 23:41:57
  * @FilePath: \xwrFront\src\routes\IndexMenu.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import {useEffect, useReducer} from "react";
+import {useEffect, useReducer, useState} from "react";
 import * as application from "../application";
 import * as request from "../utils/request";
 import * as commonUtils from "../utils/commonUtils";
+import IndexMenuDrop from "./IndexMenuDrop";
 import * as React from "react";
 import {Button, Menu} from "antd";
 import { MenuUnfoldOutlined, MenuFoldOutlined, AppstoreOutlined } from '@ant-design/icons';
 
 const IndexMenu = (props) => {
+  const [menuDrawVisible, setMenuDrawVisible] = useState(false)
   const [modifySelfState, dispatchModifySelfState] = useReducer((state, action) => {
     return {...state, ...action };
   },{});
@@ -63,6 +65,8 @@ const IndexMenu = (props) => {
   };
 
   const onToggleCollapsed = () => {
+    // setMenuDrawVisible(!menuDrawVisible)
+    // return false
     dispatchModifySelfState({ collapsed: !modifySelfState.collapsed });
     sessionStorage.setItem('collapsed',  JSON.stringify(!modifySelfState.collapsed))
   }
@@ -70,6 +74,8 @@ const IndexMenu = (props) => {
     <div style={{ width: modifySelfState.collapsed ? 50 :256 }} className="xwr-index-page-siderbar">
     
       {/* {!modifySelfState.collapsed ? '' : */}
+      {/* <IndexMenuDrop menus={modifySelfState.menusData} visible={menuDrawVisible}/> */}
+
         <Menu onClick={onClick} mode="vertical" subMenuCloseDelay={0.6} items={modifySelfState.menusData} />
       {/* } */}
       <Button type="primary" onClick={onToggleCollapsed} style={{ marginBottom: 16 }} className="sider-bar-collapse-btn">

@@ -1,65 +1,67 @@
 // 登录页
-#root{
-  height:100vh;
-  width:100vw;
+#root {
+  height: 100vh;
+  width: 100vw;
 }
-.xwr-login-form{
-  width:100%;
-  height:100%;
-  display:flex;
-  flex-direction: column;
-  justify-content: center;
-  .login-form-body {
-    margin: 0 auto !important;
-    width: 360px;
-    padding: 40px 24px 0px !important;
-    box-shadow: 0px 0px 10px #ccc;
-    border-radius: 8px;
-    .login-form-title {
-      text-align: center;
-      font-weight: bold;
+.xwr-login-form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .login-form-body  {
+    height: 300px;
+    width: 360px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px #ccc;
+    padding: 30px;
+    .login-form-title  {
+      text-align: center;
+      font-weight: bold;
     }
-  } 
-  .ant-form-item {
-    margin-bottom: 24px !important;
-  }
-  .xwr-login-form-btns {
-    width:100%;
-    height: 100px;
-    .ant-form-item-control {
-      width:100%;
-      .ant-form-item-control-input-content {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-end;
+    .ant-form-item  {
+      margin-bottom: 24px !important;
+    }
+    .xwr-login-form-btns  {
+      width: 100%;
+      height: 00px;
+      .ant-form-item-control  {
+        width: 100%;
+        .ant-form-item-control-input-content  {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: flex-end;
+        }
+      }
+      .login-btn  {
+        width: 100%;
+        margin-bottom: 12px;
       }
     }
-    .login-btn {
-      width:100%;
-      margin-bottom: 12px;
-    }
   }
 }
+
 .xwr-register-form {
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin: 0 auto!important;
+  margin: 0 auto !important;
   width: 600px;
-  padding-top: 200px!important;
+  padding-top: 200px !important;
   .qr-code-row {
     flex-wrap: nowrap;
     .ant-form-item {
-      margin-bottom: 0px!important;
+      margin-bottom: 0px !important;
     }
     .qr-code-send-btn {
       .ant-btn {
         width: 100%;
       }
     }
-  } 
+  }
   .register-btn {
     width: 100%;
   }
@@ -73,7 +75,7 @@
   height: 100vh;
   overflow: hidden;
   .xwr-index-page-header {
-    background-color: rgba(29,165,122, 0.8);
+    background-color: rgba(29, 165, 122, 0.8);
     width: 100%;
     height: 50px;
     display: flex;
@@ -81,7 +83,7 @@
     justify-content: space-between;
     align-items: center;
     .each-header-nav {
-      margin-left:10px;
+      margin-left: 10px;
       color: #fff;
     }
     .header-notice-icon {
@@ -109,7 +111,7 @@
       }
     }
   }
-  .xwr-index-page-body{
+  .xwr-index-page-body {
     display: flex;
     flex-direction: row;
   }
@@ -121,18 +123,17 @@
   box-shadow: 2px 0 8px 0 rgb(29 35 41 / 5%);
   .sider-bar-collapse-btn {
     position: absolute;
-    bottom:0px;
+    bottom: 0px;
     right: 0px;
-    left:0px;
-    margin-bottom: 0px!important;
+    left: 0px;
+    margin-bottom: 0px !important;
     background-color: #fff;
     color: #474747;
     border: 0px;
-    border-top: 1px solid rgba(0,0,0,.06);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
   }
   .ant-menu {
-    border-right: 0px!important;
-    
+    border-right: 0px !important;
   }
 }
 
@@ -153,16 +154,16 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
-  flex-wrap: wrap;
-  .ant-segmented {
-    margin-bottom: 10px;
-  }
+    flex-wrap: wrap;
+    .ant-segmented {
+      margin-bottom: 10px;
+    }
 
     .add-condition-btn {
       margin: 0px 4px;
     }
     .search-btn {
-      margin:0px 4px;
+      margin: 0px 4px;
     }
     .ant-btn {
       margin-bottom: 10px;
@@ -181,7 +182,7 @@
         justify-content: flex-start;
         align-items: center;
         margin-bottom: 10px;
-        .input-search-dom{
+        .input-search-dom {
           border: 1px solid #ccc;
           margin-right: 4px;
         }
@@ -196,9 +197,8 @@
   padding: 12px;
 
   .ant-tabs-nav {
-    margin:0px 12px;
+    margin: 0px 12px;
   }
-
 }
 .table-header-search-row {
   display: flex;
@@ -214,11 +214,10 @@
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
-  flex-wrap: wrap;
-  .ant-form  {
-    width: 100%;
-  }
-
+    flex-wrap: wrap;
+    .ant-form {
+      width: 100%;
+    }
   }
 }
 
@@ -232,43 +231,39 @@
     flex-direction: row;
     justify-content: flex-end;
   }
-
 }
 
-// button 
+// button
 .xwr-button-group-item {
-  margin:12px 0px;
+  margin: 12px 0px;
 }
 
-// form 
+// form
 .xwr-form-container {
   padding: 24px;
   .btn-box {
     margin-top: 20px;
     display: flex;
     justify-content: center;
-   }
- 
-} 
+  }
+}
 .xwr-cal-btn-item {
   .ant-btn {
     width: 100%;
   }
 }
 .ant-form-item {
-  margin-bottom: 0px!important;
+  margin-bottom: 0px !important;
   .ant-form-item-control {
     .ant-form-item-control-input {
       .ant-form-item-control-input-content {
-        .ant-input-number{
+        .ant-input-number {
           width: 100%;
         }
         .ant-picker {
           width: 100%;
         }
-
       }
-  
     }
   }
 }

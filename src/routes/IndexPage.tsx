@@ -10,15 +10,22 @@ import IndexMenu from "./IndexMenu";
 import { Dropdown, Menu, Modal, ConfigProvider, Button } from "antd";
 import { useRef } from "react";
 import { replacePath, routeInfo } from "../routeInfo";
-import { DownOutlined, MailOutlined } from "@ant-design/icons";
 import { useMemo } from "react";
 import { useReducer } from "react";
 import ShopInvitation from "./shop/ShopInvitation";
 import zhCN from "antd/lib/locale/zh_CN";
 import ChartPlots from "../common/ChartPlots";
-import { UserOutlined } from "@ant-design/icons";
+import IndexMenuDrop from "./IndexMenuDrop";
+import {
+  UserOutlined,
+  MenuUnfoldOutlined,
+  MailOutlined,
+  CloseOutlined,
+} from "@ant-design/icons";
 import { Avatar, Badge } from "antd";
 function IndexPage(props) {
+  const [menuDrawVisible, setMenuDrawVisible] = useState(false);
+
   const [modifySelfState, dispatchModifySelfState] = useReducer(
     (state, action) => {
       return { ...state, ...props.state, ...action };
@@ -26,11 +33,10 @@ function IndexPage(props) {
     {}
   );
 
-
   const stompClientRef: any = useRef();
   const panesRef: any = useRef();
   const panesComponentsRef: any = useRef();
-  const [collapsedStatus, setCollapsedStatus] = useState(false)
+  const [collapsedStatus, setCollapsedStatus] = useState(false);
 
   useEffect(() => {
     stompClientRef.current = props.commonModel.stompClient;
@@ -44,10 +50,11 @@ function IndexPage(props) {
     panesComponentsRef.current = props.panesComponents;
   }, [props.panesComponents]);
   useEffect(() => {
-    let statusKey = sessionStorage.getItem('collapsed') == 'true' ? true : false
-    console.log('statusKey========', statusKey)
-    setCollapsedStatus(statusKey)
-  }, [sessionStorage.getItem('collapsed')]);
+    let statusKey =
+      sessionStorage.getItem("collapsed") == "true" ? true : false;
+    console.log("statusKey========", statusKey);
+    setCollapsedStatus(statusKey);
+  }, [sessionStorage.getItem("collapsed")]);
   const fetchData = async () => {
     const { commonModel } = props;
     const params = {
@@ -590,7 +597,6 @@ function IndexPage(props) {
       </Menu>
     );
 
-   
     return (
       <div className="header-right-corner">
         <div onClick={onMail} className="corner-mail">
@@ -633,14 +639,36 @@ function IndexPage(props) {
   }, [commonModel.userInfo, modifySelfState.mailCount]);
 
   useEffect(() => {
-    console.log('modifySelfState<<<<<<<<<<<<<<<<<<', modifySelfState)
-  }, [modifySelfState])
+    console.log("modifySelfState<<<<<<<<<<<<<<<<<<", modifySelfState);
+  }, [modifySelfState]);
 
+  const onToggleCollapsed = () => {
+    setMenuDrawVisible(!menuDrawVisible);
+  };
+
+  const handleCloseMenu = () => {
+    setMenuDrawVisible(false);
+  }
   return (
     <div>
       <ConfigProvider locale={zhCN}>
         <div className="xwr-index-page">
           <div className="xwr-index-page-header">
+            <Button
+              type="primary"
+              onClick={onToggleCollapsed}
+              style={{ marginBottom: 16 }}
+              className="sider-bar-collapse-btn"
+            >
+              {menuDrawVisible ? <CloseOutlined /> : <MenuUnfoldOutlined />}
+            </Button>
+            {/* <IndexMenu {...props} callbackAddPane={callbackAddPane} callbackRemovePane={callbackRemovePane} callbackModifyPane={callbackModifyPane} /> */}
+            <IndexMenuDrop
+              {...props}
+              menus={modifySelfState.menusData}
+              visible={menuDrawVisible}
+              handleCloseMenu={handleCloseMenu}
+            />
             <Menu mode="horizontal" className="header-nav-menu">
               <Menu.Item>
                 <a href="/" className="each-header-nav">
@@ -666,13 +694,14 @@ function IndexPage(props) {
             {shop}
           </div>
           <div className="xwr-index-page-body">
-            <IndexMenu
-              {...props}
-              callbackAddPane={callbackAddPane}
-              callbackRemovePane={callbackRemovePane}
-              callbackModifyPane={callbackModifyPane}
-            />
-            <div className="xwr-index-page-conetent" style={{width: collapsedStatus ?  "calc(100% - 50px)":"calc(100% - 256px)" }}>
+            <div
+              className="xwr-index-page-conetent"
+              style={{
+                width: collapsedStatus
+                  ? "calc(100% - 50px)"
+                  : "calc(100% - 256px)",
+              }}
+            >
               <Modal
                 width={800}
                 visible={modifySelfState.invitationIsVisible}

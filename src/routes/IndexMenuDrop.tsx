@@ -19,7 +19,6 @@ const IndexMenuDrop = (props) => {
   const [drawVisible, setDrawVisivle] = useState(true);
   const [menuGroup, setMenuGroup] = useState([]);
   const [baiscMenu, setBasicMenu] = useState([]);
-  const [showSubMenu, setShowSubMenu] = useState(false);
   const [modifySelfState, dispatchModifySelfState] = useReducer(
     (state, action) => {
       return { ...state, ...action };
@@ -29,7 +28,6 @@ const IndexMenuDrop = (props) => {
   useEffect(() => {
     console.log("props.visible==================", props.visible);
     setDrawVisivle(props.visible);
-    setShowSubMenu(false);
   }, [props.visible]);
 
   useEffect(() => {
@@ -143,16 +141,19 @@ const IndexMenuDrop = (props) => {
     );
   }, [modifySelfState.menusData]);
 
-  /**
-   * 显示二集菜单dom
-   */
-  const handleShowSubMenu = () => {
-    setShowSubMenu(true);
+  const onClick = async (e) => {
+    props.callbackAddPane(e.key);
+    dispatchModifySelfState({ collapsed: !modifySelfState.collapsed });
+    sessionStorage.setItem('collapsed',  JSON.stringify(!modifySelfState.collapsed));
+    setDrawVisivle(false);
+    props.handleCloseMenu();
   };
+
+
   return (
     <Drawer
       zIndex={99}
-      width={showSubMenu ? 900 : 256}
+      width={900}
       style={{ marginTop: 50 }}
       placement="left"
       closable={false}
@@ -168,7 +169,6 @@ const IndexMenuDrop = (props) => {
               <div
                 className="first-menu-row"
                 key={index}
-                onClick={handleShowSubMenu}
               >
                 <div className="menu-name-box">
                   <AppstoreOutlined />
@@ -180,35 +180,33 @@ const IndexMenuDrop = (props) => {
             );
           })}
       </div>
-      {showSubMenu ? (
-        <div className="xwr-right-menu">
-          <div className="xwr-menu-group">
-            {modifySelfState.menusData &&
-              modifySelfState.menusData[0].children.map((item, index) => {
-                return (
-                  <div key={index} className="submenu-group">
-                    <h3 className="submenu-group-title">
-                      {item && item.label}
-                    </h3>
-                    <ul className="each-menu-group">
-                      {item &&
-                        item.children &&
-                        item.children
-                          .filter((item) => item != undefined)
-                          .map((menuItem, menuItemIndex) => {
-                            return (
-                              <li className="xwr-each-menu" key={menuItemIndex}>
-                                {menuItem && menuItem.label}
-                              </li>
-                            );
-                          })}
-                    </ul>
-                  </div>
-                );
-              })}
-          </div>
+      <div className="xwr-right-menu">
+        <div className="xwr-menu-group">
+          {modifySelfState.menusData &&
+          modifySelfState.menusData[0].children.map((item, index) => {
+            return (
+              <div key={index} className="submenu-group">
+                <h3 className="submenu-group-title">
+                  {item && item.label}
+                </h3>
+                <ul className="each-menu-group">
+                  {item &&
+                  item.children &&
+                  item.children
+                    .filter((item) => item != undefined)
+                    .map((menuItem, menuItemIndex) => {
+                      return (
+                        <li className="xwr-each-menu" key={menuItemIndex} onClick={onClick.bind(this, menuItem)}>
+                          {menuItem && menuItem.label}
+                        </li>
+                      );
+                    })}
+                </ul>
+              </div>
+            );
+          })}
         </div>
-      ) : null}
+      </div>
     </Drawer>
   );
 };

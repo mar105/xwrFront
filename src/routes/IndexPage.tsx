@@ -668,6 +668,9 @@ function IndexPage(props) {
               menus={modifySelfState.menusData}
               visible={menuDrawVisible}
               handleCloseMenu={handleCloseMenu}
+              callbackAddPane={callbackAddPane}
+              callbackRemovePane={callbackRemovePane}
+              callbackModifyPane={callbackModifyPane}
             />
             <Menu mode="horizontal" className="header-nav-menu">
               <Menu.Item>
@@ -714,10 +717,10 @@ function IndexPage(props) {
                   onInvitationClose={onInvitationClose}
                 />
               </Modal>
-              {/* { modifySelfState.saleChartCustomer ? <ChartPlots modalState={modifySelfState.saleChartCustomer} /> : ''}
-          { modifySelfState.saleChartCustomerCategory ? <ChartPlots modalState={modifySelfState.saleChartCustomerCategory} /> : ''}
-          { modifySelfState.saleChartProduct ? <ChartPlots modalState={modifySelfState.saleChartProduct} /> : ''}
-          { modifySelfState.saleChartProductCategory ? <ChartPlots modalState={modifySelfState.saleChartProductCategory} /> : ''} */}
+              {modifySelfState.saleChartCustomer ? <ChartPlots modalState={modifySelfState.saleChartCustomer} /> : ''}
+              { modifySelfState.saleChartCustomerCategory ? <ChartPlots modalState={modifySelfState.saleChartCustomerCategory} /> : ''}
+              { modifySelfState.saleChartProduct ? <ChartPlots modalState={modifySelfState.saleChartProduct} /> : ''}
+              { modifySelfState.saleChartProductCategory ? <ChartPlots modalState={modifySelfState.saleChartProductCategory} /> : ''}
               <div className="index-tab-box">
                 <TabsPages
                   {...props}
